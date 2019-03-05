@@ -37,6 +37,14 @@ variable "instance_size" {
   default = "I1"
 }
 
+variable "postgresql_user" {
+  default = "dbuserprofile"
+}
+
+variable "database_name" {
+  default = "dbuserprofile"
+}
+
 variable "appinsights_instrumentation_key" {
   default = ""
 }

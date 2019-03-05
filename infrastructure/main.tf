@@ -19,102 +19,123 @@ resource "azurerm_resource_group" "rg" {
   tags     = "${merge(var.common_tags, map("lastUpdated", "${timestamp()}"))}"
 }
 
-data "azurerm_key_vault" "ia_key_vault" {
+data "azurerm_key_vault" "rd_key_vault" {
   name                = "${local.key_vault_name}"
   resource_group_name = "${local.key_vault_name}"
 }
 
 data "azurerm_key_vault_secret" "case_documents_api_url" {
   name      = "case-documents-api-url"
-  vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
+  vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
 }
 
 data "azurerm_key_vault_secret" "case_notifications_api_url" {
   name      = "case-notifications-api-url"
-  vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
+  vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
 }
 
 data "azurerm_key_vault_secret" "docmosis_enabled" {
   name      = "docmosis-enabled"
-  vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
+  vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
 }
 
 data "azurerm_key_vault_secret" "test_caseofficer_username" {
   name      = "test-caseofficer-username"
-  vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
+  vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
 }
 
 data "azurerm_key_vault_secret" "test_caseofficer_password" {
   name      = "test-caseofficer-password"
-  vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
+  vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
 }
 
 data "azurerm_key_vault_secret" "test_law_firm_a_username" {
   name      = "test-law-firm-a-username"
-  vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
+  vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
 }
 
 data "azurerm_key_vault_secret" "test_law_firm_a_password" {
   name      = "test-law-firm-a-password"
-  vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
+  vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
 }
 
 data "azurerm_key_vault_secret" "system_username" {
   name      = "system-username"
-  vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
+  vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
 }
 
 data "azurerm_key_vault_secret" "system_password" {
   name      = "system-password"
-  vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
+  vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
 }
 
 data "azurerm_key_vault_secret" "idam_client_id" {
   name      = "idam-client-id"
-  vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
+  vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
 }
 
 data "azurerm_key_vault_secret" "idam_secret" {
   name      = "idam-secret"
-  vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
+  vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
 }
 
 data "azurerm_key_vault_secret" "idam_redirect_uri" {
   name      = "idam-redirect-uri"
-  vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
+  vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
 }
 
 data "azurerm_key_vault_secret" "s2s_secret" {
   name      = "s2s-secret"
-  vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
+  vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
 }
 
 data "azurerm_key_vault_secret" "s2s_microservice" {
   name      = "s2s-microservice"
-  vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
+  vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
 }
 
 data "azurerm_key_vault_secret" "ccd_url" {
   name      = "ccd-url"
-  vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
+  vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
 }
 
 data "azurerm_key_vault_secret" "dm_url" {
   name      = "dm-url"
-  vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
+  vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
 }
 
 data "azurerm_key_vault_secret" "idam_url" {
   name      = "idam-url"
-  vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
+  vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
 }
 
 data "azurerm_key_vault_secret" "s2s_url" {
   name      = "s2s-url"
-  vault_uri = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
+  vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
 }
 
-module "ia_case_api" {
+data "azurerm_key_vault_secret" "db_up_username" {
+  name = "db-up-username"
+  vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
+}
+
+data "azurerm_key_vault_secret" "db_up_password" {
+  name = "db-up-password"
+  vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
+}
+
+module "db-sys-ref-data" {
+  source = "git@github.com:hmcts/cnp-module-postgres?ref=master"
+  product = "${var.product}-${var.component}-postgres-db"
+  location = "${var.location}"
+  env = "${var.env}"
+  postgresql_user = "${var.postgresql_user}"
+  database_name = "${var.database_name}"
+  common_tags = "${var.common_tags}"
+
+}
+
+module "rd-user-profile-api" {
   source                          = "git@github.com:hmcts/cnp-module-webapp?ref=master"
   product                         = "${var.product}-${var.component}"
   location                        = "${var.location}"
@@ -133,20 +154,20 @@ module "ia_case_api" {
     LOGBACK_REQUIRE_ALERT_LEVEL = false
     LOGBACK_REQUIRE_ERROR_CODE  = false
 
-    IA_CASE_DOCUMENTS_API_URL     = "${data.azurerm_key_vault_secret.case_documents_api_url.value}"
-    IA_CASE_NOTIFICATIONS_API_URL = "${data.azurerm_key_vault_secret.case_notifications_api_url.value}"
-    IA_DOCMOSIS_ENABLED           = "${data.azurerm_key_vault_secret.docmosis_enabled.value}"
+    DB_UP_HOST = "${module.db-sys-ref-data.host_name}"
+    DB_UP_PORT = "${module.db-sys-ref-data.postgresql_listen_port}"
+    DB_UP_DATABASE = "${module.db-sys-ref-data.postgresql_database}"
+    DB_UP_USER = "${module.db-sys-ref-data.user_name}"
+    DB_UP_USERNAME = "${module.db-sys-ref-data.user_name}"
+    DB_UP_PASSWORD = "${module.db-sys-ref-data.postgresql_password}"
+    DB_UP_CONNECTION_OPTIONS = "?"
 
-    IA_SYSTEM_USERNAME            = "${data.azurerm_key_vault_secret.system_username.value}"
-    IA_SYSTEM_PASSWORD            = "${data.azurerm_key_vault_secret.system_password.value}"
     IA_IDAM_CLIENT_ID             = "${data.azurerm_key_vault_secret.idam_client_id.value}"
     IA_IDAM_SECRET                = "${data.azurerm_key_vault_secret.idam_secret.value}"
     IA_IDAM_REDIRECT_URI          = "${data.azurerm_key_vault_secret.idam_redirect_uri.value}"
     IA_S2S_SECRET                 = "${data.azurerm_key_vault_secret.s2s_secret.value}"
     IA_S2S_MICROSERVICE           = "${data.azurerm_key_vault_secret.s2s_microservice.value}"
 
-    CCD_URL  = "${data.azurerm_key_vault_secret.ccd_url.value}"
-    DM_URL   = "${data.azurerm_key_vault_secret.dm_url.value}"
     IDAM_URL = "${data.azurerm_key_vault_secret.idam_url.value}"
     S2S_URL  = "${data.azurerm_key_vault_secret.s2s_url.value}"
 

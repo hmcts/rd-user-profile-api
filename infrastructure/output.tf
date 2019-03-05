@@ -15,5 +15,5 @@ output "vaultName" {
 }
 
 output "vaultUri" {
-  value = "${data.azurerm_key_vault.ia_key_vault.vault_uri}"
+  value = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
 }

@@ -2,8 +2,8 @@ package uk.gov.hmcts.reform.userprofileapi;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.google.common.collect.ImmutableList;
 import io.restassured.RestAssured;
-import java.util.Arrays;
 import java.util.List;
 import net.serenitybdd.rest.SerenityRest;
 import org.junit.Before;
@@ -24,12 +24,8 @@ public class EndpointSecurityTest {
 
     @Value("${targetInstance}") private String targetInstance;
 
-    private final List<String> callbackEndpoints =
-        Arrays.asList(
-            "/asylum/ccdAboutToStart",
-            "/asylum/ccdAboutToSubmit",
-            "/asylum/ccdSubmitted"
-        );
+    private final List<String> endpoints =
+        ImmutableList.of("/profiles/1");
 
     @Autowired private AuthorizationHeadersProvider authorizationHeadersProvider;
 
@@ -52,7 +48,7 @@ public class EndpointSecurityTest {
                 .extract().body().asString();
 
         assertThat(response)
-            .contains("Welcome");
+            .contains("Welcome to the User Profile API");
     }
 
     @Test
@@ -74,7 +70,7 @@ public class EndpointSecurityTest {
     @Test
     public void should_not_allow_unauthenticated_requests_and_return_403_response_code() {
 
-        callbackEndpoints.forEach(callbackEndpoint ->
+        endpoints.forEach(callbackEndpoint ->
 
             SerenityRest
                 .given()
@@ -90,17 +86,11 @@ public class EndpointSecurityTest {
 
         String invalidServiceToken = "invalid";
 
-        String accessToken =
-            authorizationHeadersProvider
-                .getCaseOfficerAuthorization()
-                .getValue("Authorization");
-
-        callbackEndpoints.forEach(callbackEndpoint ->
+        endpoints.forEach(callbackEndpoint ->
 
             SerenityRest
                 .given()
                 .header("ServiceAuthorization", invalidServiceToken)
-                .header("Authorization", accessToken)
                 .when()
                 .get(callbackEndpoint)
                 .then()
@@ -108,26 +98,4 @@ public class EndpointSecurityTest {
         );
     }
 
-    @Test
-    public void should_not_allow_requests_without_valid_user_authorisation_and_return_403_response_code() {
-
-        String serviceToken =
-            authorizationHeadersProvider
-                .getCaseOfficerAuthorization()
-                .getValue("ServiceAuthorization");
-
-        String invalidAccessToken = "invalid";
-
-        callbackEndpoints.forEach(callbackEndpoint ->
-
-            SerenityRest
-                .given()
-                .header("ServiceAuthorization", serviceToken)
-                .header("Authorization", invalidAccessToken)
-                .when()
-                .get(callbackEndpoint)
-                .then()
-                .statusCode(HttpStatus.FORBIDDEN.value())
-        );
-    }
 }

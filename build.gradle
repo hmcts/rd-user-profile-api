@@ -18,6 +18,7 @@ plugins {
     id 'org.owasp.dependencycheck' version '3.2.1'
     id 'org.sonarqube' version '2.6.2'
     id 'org.springframework.boot' version '2.0.4.RELEASE'
+    id "org.flywaydb.flyway" version "5.0.7"
 }
 
 apply plugin: 'java'
@@ -83,6 +84,18 @@ sourceSets {
     }
 }
 
+idea {
+    module {
+        testSourceDirs += project.sourceSets.integrationTest.java.srcDirs
+        testSourceDirs += project.sourceSets.integrationTest.resources.srcDirs
+        testSourceDirs += project.sourceSets.functionalTest.java.srcDirs
+        testSourceDirs += project.sourceSets.functionalTest.resources.srcDirs
+        testSourceDirs += project.sourceSets.smokeTest.java.srcDirs
+        testSourceDirs += project.sourceSets.smokeTest.resources.srcDirs
+    }
+}
+
+
 configurations {
     integrationTestCompile.extendsFrom testCompile
     integrationTestRuntime.extendsFrom testRuntime
@@ -98,11 +111,14 @@ checkstyle {
 }
 
 pmd {
-    toolVersion = "5.8.1"
+    toolVersion = "6.12.0"
     ignoreFailures = true
     sourceSets = [sourceSets.main, sourceSets.test, sourceSets.integrationTest, sourceSets.functionalTest, sourceSets.smokeTest]
     reportsDir = file("$project.buildDir/reports/pmd")
-    ruleSetFiles = files("config/pmd/ruleset.xml")
+    ruleSets = [
+        'category/java/errorprone.xml',
+        'category/java/bestpractices.xml'
+    ]
 }
 
 task integration(type: Test, description: 'Runs the integration tests.', group: 'Verification') {
@@ -153,7 +169,7 @@ project.tasks['pitest'].group = "Verification"
 
 sonarqube {
     properties {
-        property "sonar.projectName", "RD :: Immigration & Asylum case api"
+        property "sonar.projectName", "RD :: User Profile API"
         property "sonar.projectKey", "RDUSERPROFILEAPI"
         property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
         property "sonar.jacoco.itReportPath", "${project.buildDir}/jacoco/integration.exec"
@@ -184,6 +200,7 @@ dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-json', version: versions.springBoot
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: versions.springBoot
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
     compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: versions.springHystrix
     compile group: 'org.springframework.retry', name: 'spring-retry', version: '1.2.1.RELEASE'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-cache', version: versions.springBoot
@@ -207,6 +224,9 @@ dependencies {
         exclude group: 'uk.gov.hmcts.reform', module: 'java-logging-spring'
     }
 
+    compile group: 'org.flywaydb', name: 'flyway-core', version: '5.1.0'
+    compile group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
+
     compile group: 'com.google.guava', name: 'guava', version: '27.0-jre'
     compile 'org.projectlombok:lombok:1.18.2'
 
@@ -215,6 +235,7 @@ dependencies {
         exclude group: "org.hamcrest", module: "hamcrest-library"
     }
 
+    testCompile group: 'com.h2database', name: 'h2'
     testCompile "com.github.tomakehurst:wiremock:2.19.0"
     testCompile group: 'org.mockito', name: 'mockito-core', version: '2.21.0'
     testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '1.7.4'

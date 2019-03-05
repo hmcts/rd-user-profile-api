@@ -1,0 +1,44 @@
+version: '2.1'
+
+services:
+  rd-user-profile-api:
+    build:
+      context: .
+      args:
+        - http_proxy
+        - https_proxy
+        - no_proxy
+    image: hmcts/rd-user-profile-api
+    container_name: rd-user-profile-api
+    environment:
+      - JAVA_OPTS
+      - DB_UP_USERNAME=dbuserprofile
+      - DB_UP_PASSWORD=dbuserprofile
+      - DB_UP_HOST=rd-user-profile-db
+      - DB_UP_PORT=5432
+      # these environment variables are used by java-logging library
+      - JSON_CONSOLE_PRETTY_PRINT
+      - ROOT_APPENDER
+      - ROOT_LOGGING_LEVEL
+      - REFORM_SERVICE_TYPE
+      - REFORM_SERVICE_NAME
+      - REFORM_TEAM
+      - REFORM_ENVIRONMENT
+      - LOGBACK_DATE_FORMAT
+      - LOGBACK_REQUIRE_THREAD
+      - LOGBACK_REQUIRE_ALERT_LEVEL=false
+      - LOGBACK_REQUIRE_ERROR_CODE=false
+    ports:
+      - ${SERVER_PORT:-8091}:${SERVER_PORT:-8091}
+    depends_on:
+      - rd-user-profile-db
+
+  rd-user-profile-db:
+    build:
+      context: database
+    image: hmcts/rd-user-profile-db
+    container_name: rd-user-profile-db
+    environment:
+      - DB_UP_PASSWORD="${DB_UP_PASSWORD:-dbuserprofile}"
+    ports:
+      - 5432:5432

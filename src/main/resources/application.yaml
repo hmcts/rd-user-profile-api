@@ -10,6 +10,33 @@ spring:
   application:
     name: User Profile API
   jackson.date-format: yyyy-MM-dd
+  flyway.enabled: true
+
+### database configuration
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://${DB_UP_HOST:localhost}:${DB_UP_PORT:5432}/${DB_UP_NAME:dbuserprofile}${DB_UP_CONNECTION_OPTIONS:?}
+    username: ${DB_UP_USERNAME:dbuserprofile}
+    password: ${DB_UP_PASSWORD:dbuserprofile}
+    properties:
+      charSet: UTF-8
+    tomcat:
+      max-active: 10
+      max-idle: 10
+      min-idle: 2
+      max-wait: 10000
+      test-on-borrow: true
+      test-on-connect: true
+      test-on-idle: true
+      validation-query: "SELECT 1"
+      time-between-eviction-runs-millis: 10000
+      test-while-idle: true
+      test-on-return: true
+      remove-abandoned: true
+      remove-abandoned-timeout: 60
+      log-abandoned: true
+      abandon-when-percentage-full: 0
+
 
 security:
   anonymousPaths:
@@ -21,9 +48,8 @@ security:
     - "/v2/api-docs"
     - "/webjars/springfox-swagger-ui/**"
   authorisedServices:
+    - "ccd_gw"
     - "iac"
-  authorisedRoles:
-    - "caseworker-ia"
 
 ### dependency configuration
 auth.idam.client.baseUrl: ${IDAM_URL:http://127.0.0.1:4501}
@@ -33,5 +59,5 @@ auth.idam.client.secret: ${IA_IDAM_SECRET:something}
 auth.idam.client.redirectUri: ${IA_IDAM_REDIRECT_URI:http://localhost}
 auth.provider.service.client.baseUrl: ${S2S_URL:http://127.0.0.1:4502}
 idam.s2s-auth.totp_secret: ${IA_S2S_SECRET:AAAAAAAAAAAAAAAC}
-idam.s2s-auth.microservice: ${IA_S2S_MICROSERVICE:ia}
+idam.s2s-auth.microservice: ${IA_S2S_MICROSERVICE:iac}
 idam.s2s-auth.url: ${S2S_URL:http://127.0.0.1:4502}

@@ -12,8 +12,10 @@ def component = "user-profile-api"
 
 List<LinkedHashMap<String, Object>> secrets = [
     secret('s2s-url', 'S2S_URL'),
-    secret('postgres-password', 'POSTGRES_PASSWORD'),
-    secret('postgres-username', 'POSTGRES_USERNAME'),
+    secret('s2s-secret', 'IA_S2S_SECRET'),
+    secret('s2s-microservice', 'IA_S2S_MICROSERVICE'),
+    secret('db-up-password', 'DB_UP_PASSWORD'),
+    secret('db-up-username', 'DB_UP_USERNAME'),
 ]
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
