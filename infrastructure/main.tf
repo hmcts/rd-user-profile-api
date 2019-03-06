@@ -4,113 +4,59 @@ provider "azurerm" {
 }
 
 locals {
-  preview_app_service_plan     = "${var.product}-${var.component}-${var.env}"
+  preview_app_service_plan = "${var.product}-${var.component}-${var.env}"
   non_preview_app_service_plan = "${var.product}-${var.env}"
-  app_service_plan             = "${var.env == "preview" || var.env == "spreview" ? local.preview_app_service_plan : local.non_preview_app_service_plan}"
+  app_service_plan = "${var.env == "preview" || var.env == "spreview" ? local.preview_app_service_plan : local.non_preview_app_service_plan}"
 
-  preview_vault_name     = "${var.raw_product}-aat"
+  preview_vault_name = "${var.raw_product}-aat"
   non_preview_vault_name = "${var.raw_product}-${var.env}"
-  key_vault_name         = "${var.env == "preview" || var.env == "spreview" ? local.preview_vault_name : local.non_preview_vault_name}"
+  key_vault_name = "${var.env == "preview" || var.env == "spreview" ? local.preview_vault_name : local.non_preview_vault_name}"
 }
 
 resource "azurerm_resource_group" "rg" {
-  name     = "${var.product}-${var.component}-${var.env}"
+  name = "${var.product}-${var.component}-${var.env}"
   location = "${var.location}"
-  tags     = "${merge(var.common_tags, map("lastUpdated", "${timestamp()}"))}"
+  tags = "${merge(var.common_tags, map("lastUpdated", "${timestamp()}"))}"
 }
 
 data "azurerm_key_vault" "rd_key_vault" {
-  name                = "${local.key_vault_name}"
+  name = "${local.key_vault_name}"
   resource_group_name = "${local.key_vault_name}"
 }
 
-data "azurerm_key_vault_secret" "case_documents_api_url" {
-  name      = "case-documents-api-url"
-  vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
-}
-
-data "azurerm_key_vault_secret" "case_notifications_api_url" {
-  name      = "case-notifications-api-url"
-  vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
-}
-
-data "azurerm_key_vault_secret" "docmosis_enabled" {
-  name      = "docmosis-enabled"
-  vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
-}
-
-data "azurerm_key_vault_secret" "test_caseofficer_username" {
-  name      = "test-caseofficer-username"
-  vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
-}
-
-data "azurerm_key_vault_secret" "test_caseofficer_password" {
-  name      = "test-caseofficer-password"
-  vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
-}
-
-data "azurerm_key_vault_secret" "test_law_firm_a_username" {
-  name      = "test-law-firm-a-username"
-  vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
-}
-
-data "azurerm_key_vault_secret" "test_law_firm_a_password" {
-  name      = "test-law-firm-a-password"
-  vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
-}
-
-data "azurerm_key_vault_secret" "system_username" {
-  name      = "system-username"
-  vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
-}
-
-data "azurerm_key_vault_secret" "system_password" {
-  name      = "system-password"
-  vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
-}
 
 data "azurerm_key_vault_secret" "idam_client_id" {
-  name      = "idam-client-id"
+  name = "idam-client-id"
   vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
 }
 
 data "azurerm_key_vault_secret" "idam_secret" {
-  name      = "idam-secret"
+  name = "idam-secret"
   vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
 }
 
 data "azurerm_key_vault_secret" "idam_redirect_uri" {
-  name      = "idam-redirect-uri"
+  name = "idam-redirect-uri"
   vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
 }
 
 data "azurerm_key_vault_secret" "s2s_secret" {
-  name      = "s2s-secret"
+  name = "s2s-secret"
   vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
 }
 
 data "azurerm_key_vault_secret" "s2s_microservice" {
-  name      = "s2s-microservice"
-  vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
-}
-
-data "azurerm_key_vault_secret" "ccd_url" {
-  name      = "ccd-url"
-  vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
-}
-
-data "azurerm_key_vault_secret" "dm_url" {
-  name      = "dm-url"
+  name = "s2s-microservice"
   vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
 }
 
 data "azurerm_key_vault_secret" "idam_url" {
-  name      = "idam-url"
+  name = "idam-url"
   vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
 }
 
 data "azurerm_key_vault_secret" "s2s_url" {
-  name      = "s2s-url"
+  name = "s2s-url"
   vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
 }
 
@@ -136,23 +82,23 @@ module "db-sys-ref-data" {
 }
 
 module "rd-user-profile-api" {
-  source                          = "git@github.com:hmcts/cnp-module-webapp?ref=master"
-  product                         = "${var.product}-${var.component}"
-  location                        = "${var.location}"
-  env                             = "${var.env}"
-  ilbIp                           = "${var.ilbIp}"
-  resource_group_name             = "${azurerm_resource_group.rg.name}"
-  subscription                    = "${var.subscription}"
-  capacity                        = "${var.capacity}"
-  instance_size                   = "${var.instance_size}"
-  common_tags                     = "${merge(var.common_tags, map("lastUpdated", "${timestamp()}"))}"
+  source = "git@github.com:hmcts/cnp-module-webapp?ref=master"
+  product = "${var.product}-${var.component}"
+  location = "${var.location}"
+  env = "${var.env}"
+  ilbIp = "${var.ilbIp}"
+  resource_group_name = "${azurerm_resource_group.rg.name}"
+  subscription = "${var.subscription}"
+  capacity = "${var.capacity}"
+  instance_size = "${var.instance_size}"
+  common_tags = "${merge(var.common_tags, map("lastUpdated", "${timestamp()}"))}"
   appinsights_instrumentation_key = "${var.appinsights_instrumentation_key}"
-  asp_name                        = "${local.app_service_plan}"
-  asp_rg                          = "${local.app_service_plan}"
+  asp_name = "${local.app_service_plan}"
+  asp_rg = "${local.app_service_plan}"
 
   app_settings = {
     LOGBACK_REQUIRE_ALERT_LEVEL = false
-    LOGBACK_REQUIRE_ERROR_CODE  = false
+    LOGBACK_REQUIRE_ERROR_CODE = false
 
     DB_UP_HOST = "${module.db-sys-ref-data.host_name}"
     DB_UP_PORT = "${module.db-sys-ref-data.postgresql_listen_port}"
@@ -162,18 +108,18 @@ module "rd-user-profile-api" {
     DB_UP_PASSWORD = "${module.db-sys-ref-data.postgresql_password}"
     DB_UP_CONNECTION_OPTIONS = "?"
 
-    IA_IDAM_CLIENT_ID             = "${data.azurerm_key_vault_secret.idam_client_id.value}"
-    IA_IDAM_SECRET                = "${data.azurerm_key_vault_secret.idam_secret.value}"
-    IA_IDAM_REDIRECT_URI          = "${data.azurerm_key_vault_secret.idam_redirect_uri.value}"
-    IA_S2S_SECRET                 = "${data.azurerm_key_vault_secret.s2s_secret.value}"
-    IA_S2S_MICROSERVICE           = "${data.azurerm_key_vault_secret.s2s_microservice.value}"
+    IA_IDAM_CLIENT_ID = "${data.azurerm_key_vault_secret.idam_client_id.value}"
+    IA_IDAM_SECRET = "${data.azurerm_key_vault_secret.idam_secret.value}"
+    IA_IDAM_REDIRECT_URI = "${data.azurerm_key_vault_secret.idam_redirect_uri.value}"
+    IA_S2S_SECRET = "${data.azurerm_key_vault_secret.s2s_secret.value}"
+    IA_S2S_MICROSERVICE = "${data.azurerm_key_vault_secret.s2s_microservice.value}"
 
     IDAM_URL = "${data.azurerm_key_vault_secret.idam_url.value}"
-    S2S_URL  = "${data.azurerm_key_vault_secret.s2s_url.value}"
+    S2S_URL = "${data.azurerm_key_vault_secret.s2s_url.value}"
 
-    ROOT_LOGGING_LEVEL   = "${var.root_logging_level}"
+    ROOT_LOGGING_LEVEL = "${var.root_logging_level}"
     LOG_LEVEL_SPRING_WEB = "${var.log_level_spring_web}"
-    LOG_LEVEL_IA         = "${var.log_level_ia}"
-    EXCEPTION_LENGTH     = 100
+    LOG_LEVEL_IA = "${var.log_level_ia}"
+    EXCEPTION_LENGTH = 100
   }
 }

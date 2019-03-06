@@ -3,7 +3,7 @@ variable "product" {
 }
 
 variable "raw_product" {
-  default = "ia" // jenkins-library overrides product for PRs and adds e.g. pr-123-ia
+  default = "rd" // jenkins-library overrides product for PRs and adds e.g. pr-123-rd
 }
 
 variable "component" {
