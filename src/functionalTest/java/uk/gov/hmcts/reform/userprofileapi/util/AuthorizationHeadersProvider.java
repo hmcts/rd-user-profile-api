@@ -5,16 +5,12 @@ import io.restassured.http.Headers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.security.idam.IdamAuthorizor;
 
 @Service
 public class AuthorizationHeadersProvider {
 
     @Autowired
     private AuthTokenGenerator serviceAuthTokenGenerator;
-
-    @Autowired
-    private IdamAuthorizor idamAuthorizor;
 
     public Headers getServiceAuthorization() {
 
@@ -23,6 +19,5 @@ public class AuthorizationHeadersProvider {
         return new Headers(
             new Header("ServiceAuthorization", serviceToken)
         );
-
     }
 }
