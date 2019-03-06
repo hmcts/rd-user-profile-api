@@ -57,6 +57,6 @@ variable "log_level_spring_web" {
   default = "INFO"
 }
 
-variable "log_level_ia" {
+variable "log_level_rd" {
   default = "INFO"
 }
