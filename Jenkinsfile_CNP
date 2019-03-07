@@ -28,6 +28,13 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 }
 
 withPipeline(type, product, component) {
+
+    before('buildinfra:prod') {
+        currentBuild.result = 'Success'
+        currentBuild.description = "Success"
+        error 'Reference Data projects are not authorised to be in production environments yet.'
+    }
+
     enableDockerBuild()
 
     setVaultName('rd')
