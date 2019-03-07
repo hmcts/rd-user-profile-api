@@ -24,6 +24,8 @@ public class WelcomeTest {
 
     @Autowired private AuthorizationHeadersProvider authorizationHeadersProvider;
 
+    private static final String MESSAGE = "Welcome to the User Profile API";
+
     @Test
     public void should_welcome_with_200_response_code() {
 
@@ -41,7 +43,6 @@ public class WelcomeTest {
                 .and()
                 .extract().body().asString();
 
-        assertThat(response)
-            .contains("Welcome to Immigration & Asylum case API");
+        assertThat(response).contains(MESSAGE);
     }
 }
