@@ -54,7 +54,7 @@ data "azurerm_key_vault_secret" "db_up_password" {
   vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
 }
 
-module "db-sys-ref-data" {
+module "db-user-profile" {
   source = "git@github.com:hmcts/cnp-module-postgres?ref=master"
   product = "${var.product}-${var.component}-postgres-db"
   location = "${var.location}"
@@ -84,12 +84,12 @@ module "rd-user-profile-api" {
     LOGBACK_REQUIRE_ALERT_LEVEL = false
     LOGBACK_REQUIRE_ERROR_CODE = false
 
-    DB_UP_HOST = "${module.db-sys-ref-data.host_name}"
-    DB_UP_PORT = "${module.db-sys-ref-data.postgresql_listen_port}"
-    DB_UP_DATABASE = "${module.db-sys-ref-data.postgresql_database}"
-    DB_UP_USER = "${module.db-sys-ref-data.user_name}"
-    DB_UP_USERNAME = "${module.db-sys-ref-data.user_name}"
-    DB_UP_PASSWORD = "${module.db-sys-ref-data.postgresql_password}"
+    DB_UP_HOST = "${module.db-user-profile.host_name}"
+    DB_UP_PORT = "${module.db-user-profile.postgresql_listen_port}"
+    DB_UP_DATABASE = "${module.db-user-profile.postgresql_database}"
+    DB_UP_USER = "${module.db-user-profile.user_name}"
+    DB_UP_USERNAME = "${module.db-user-profile.user_name}"
+    DB_UP_PASSWORD = "${module.db-user-profile.postgresql_password}"
     DB_UP_CONNECTION_OPTIONS = "?"
 
     IA_S2S_SECRET = "${data.azurerm_key_vault_secret.s2s_secret.value}"
