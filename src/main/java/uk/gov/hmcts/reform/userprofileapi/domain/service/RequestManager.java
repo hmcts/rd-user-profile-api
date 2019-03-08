@@ -1,7 +1,8 @@
 package uk.gov.hmcts.reform.userprofileapi.domain.service;
 
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileCreationData;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileIdentifier;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileResource;
 
@@ -16,12 +17,12 @@ public class RequestManager {
         this.userProfileRetriever = userProfileRetriever;
     }
 
-    public UserProfileResource handle(UserProfileCreationData requestData) {
-        return userProfileCreator.create(requestData);
+    public UserProfileResource handle(CreateUserProfileData requestData) {
+        return new UserProfileResource(userProfileCreator.create(requestData));
     }
 
     public UserProfileResource handle(UserProfileIdentifier requestData) {
-        return userProfileRetriever.retrieve(requestData.getIdentifier().getValue());
+        return new UserProfileResource(userProfileRetriever.retrieve(requestData));
     }
 
 }

@@ -3,16 +3,16 @@ package uk.gov.hmcts.reform.userprofileapi.infrastructure.clients;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserProfileCreationData {
+public class CreateUserProfileData implements RequestData {
 
     private String email;
     private String firstName;
     private String lastName;
 
-    public UserProfileCreationData() {
+    public CreateUserProfileData() {
     }
 
-    public UserProfileCreationData(String email, String firstName, String lastName) {
+    public CreateUserProfileData(String email, String firstName, String lastName) {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;

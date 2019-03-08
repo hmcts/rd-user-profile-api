@@ -1,31 +1,27 @@
 package uk.gov.hmcts.reform.userprofileapi.domain.service;
 
-import java.util.UUID;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileResource;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.UserProfileRepository;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileIdentifier;
 
 @Service
 public class UserProfileRetriever implements ResourceRetriever {
 
-    private UserProfileRepository userProfileRepository;
+    private UserProfileQuerySupplier querySupplier;
 
-    public UserProfileRetriever(UserProfileRepository userProfileRepository) {
-        this.userProfileRepository = userProfileRepository;
+    public UserProfileRetriever(UserProfileQuerySupplier userProfileQuerySupplier) {
+        this.querySupplier = userProfileQuerySupplier;
     }
 
     @Override
-    public UserProfileResource retrieve(String id) {
+    public UserProfile retrieve(UserProfileIdentifier identifier) {
 
-        UUID uuid = UUID.fromString(id);
+        String failureMessage = "Could not find resource from database with given identifier: ";
 
-        UserProfile userProfile = userProfileRepository.findById(uuid)
-            .orElseThrow(() -> new DataRetrievalFailureException("Could not find resource from database with id: " + id));
-
-        return new UserProfileResource(userProfile);
-
+        return querySupplier.getIdQuery(identifier).get()
+            .orElseThrow(() ->
+                new DataRetrievalFailureException(failureMessage + identifier.getValue()));
     }
 
 }

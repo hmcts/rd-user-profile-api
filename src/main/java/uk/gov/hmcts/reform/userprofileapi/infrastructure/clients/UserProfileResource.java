@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.userprofileapi.infrastructure.clients;
 import java.util.UUID;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 
-public class UserProfileResource implements RequestData {
+public class UserProfileResource {
 
     private UUID id;
     private String idamId;
@@ -26,8 +26,6 @@ public class UserProfileResource implements RequestData {
         this.firstName = firstName;
         this.lastName = lastName;
     }
-
-
 
     public UUID getId() {
         return id;

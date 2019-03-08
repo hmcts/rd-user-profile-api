@@ -1,9 +1,10 @@
 package uk.gov.hmcts.reform.userprofileapi.domain.service;
 
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileResource;
+import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileIdentifier;
 
 public interface ResourceRetriever {
 
-    UserProfileResource retrieve(String id);
+    UserProfile retrieve(UserProfileIdentifier identifier);
 
 }

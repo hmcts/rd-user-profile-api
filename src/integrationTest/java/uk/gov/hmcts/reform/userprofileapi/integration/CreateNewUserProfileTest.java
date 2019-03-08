@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,15 +17,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.userprofileapi.client.TestRequestHandler;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileCreationData;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileResource;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.UserProfileRepository;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
+@Transactional
 public class CreateNewUserProfileTest {
 
     @Autowired
@@ -47,11 +50,14 @@ public class CreateNewUserProfileTest {
     public void setUp() {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
 
+        Iterable<UserProfile> userProfiles = userProfileRepository.findAll();
+        assertThat(userProfiles).isEmpty();
+
         UserProfile user1 =
             userProfileRepository.save(
                 new UserProfile(
-                    "testIdamId",
-                    "joe.bloggs@somewhere.com",
+                    String.valueOf(new Random().nextInt()),
+                    "user1firstname.user1Lastname@somewhere.com",
                     "joe",
                     "bloggs"));
 
@@ -63,8 +69,8 @@ public class CreateNewUserProfileTest {
     @Test
     public void should_create_user_profile_resource() throws Exception {
 
-        UserProfileCreationData data =
-            new UserProfileCreationData("joe.bloggs@somewhere.com", "joe", "bloggs");
+        CreateUserProfileData data =
+            new CreateUserProfileData("joe.bloggs@somewhere.com", "joe", "bloggs");
 
         UserProfileResource createdResource =
             testRequestHandler.sendPost(
@@ -82,7 +88,8 @@ public class CreateNewUserProfileTest {
 
     }
 
-    public void should_retrieve_user_profile_resource() throws Exception {
+    @Test
+    public void should_retrieve_user_profile_resource_with_id() throws Exception {
         UserProfile userProfile = userProfileMap.get("user1");
 
         UserProfileResource retrievedResource =
@@ -97,5 +104,42 @@ public class CreateNewUserProfileTest {
         assertThat(retrievedResource).isEqualToComparingFieldByField(userProfile);
 
     }
+
+    @Test
+    public void should_retrieve_user_profile_resource_with_email() throws Exception {
+        UserProfile userProfile = userProfileMap.get("user1");
+        String path = APP_BASE_PATH + "?email=" + userProfile.getEmail();
+
+        UserProfileResource retrievedResource =
+            testRequestHandler.sendGet(
+                mockMvc,
+                path,
+                OK,
+                UserProfileResource.class
+            );
+
+        assertThat(retrievedResource).isNotNull();
+        assertThat(retrievedResource).isEqualToComparingFieldByField(userProfile);
+
+    }
+
+    @Test
+    public void should_retrieve_user_profile_resource_with_idamId() throws Exception {
+        UserProfile userProfile = userProfileMap.get("user1");
+        String path = APP_BASE_PATH + "?idamId=" + userProfile.getIdamId();
+
+        UserProfileResource retrievedResource =
+            testRequestHandler.sendGet(
+                mockMvc,
+                path,
+                OK,
+                UserProfileResource.class
+            );
+
+        assertThat(retrievedResource).isNotNull();
+        assertThat(retrievedResource).isEqualToComparingFieldByField(userProfile);
+
+    }
+
 
 }
