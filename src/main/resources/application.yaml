@@ -48,8 +48,6 @@ security:
     - "/v2/api-docs"
     - "/webjars/springfox-swagger-ui/**"
   authorisedServices:
-    - "ccd_gw"
-    - "iac"
 
 ### dependency configuration
 auth.idam.client.baseUrl: ${IDAM_URL:http://127.0.0.1:4501}

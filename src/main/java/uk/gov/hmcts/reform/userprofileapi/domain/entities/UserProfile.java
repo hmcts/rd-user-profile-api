@@ -1,27 +1,43 @@
 package uk.gov.hmcts.reform.userprofileapi.domain.entities;
 
+import java.util.UUID;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import org.hibernate.annotations.GenericGenerator;
+
+@Entity
 public class UserProfile {
-    private long id;
+
+    @Id
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    private UUID id;
     private String idamId;
+    private String email;
     private String firstName;
     private String lastName;
 
     public UserProfile() {
     }
 
-    public UserProfile(long id, String idamId, String firstName, String lastName) {
-        this.id = id;
+    public UserProfile(String idamId, String email, String firstName, String lastName) {
         this.idamId = idamId;
+        this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
     }
 
-    public long getId() {
+    public UUID getId() {
         return id;
     }
 
     public String getIdamId() {
         return idamId;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public String getFirstName() {
