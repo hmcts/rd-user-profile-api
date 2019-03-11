@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.userprofileapi.domain.service;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.UserProfileRepository;
 
 @Service
@@ -38,4 +39,5 @@ public class UserProfileCreator {
 
         return userProfileRepository.save(userProfile);
     }
+
 }

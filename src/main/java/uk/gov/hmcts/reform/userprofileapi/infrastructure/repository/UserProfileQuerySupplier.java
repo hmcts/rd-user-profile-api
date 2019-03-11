@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.userprofileapi.domain.service;
+package uk.gov.hmcts.reform.userprofileapi.infrastructure.repository;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.IdentifierName;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileIdentifier;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.UserProfileRepository;
 
 @Service
 public class UserProfileQuerySupplier {
@@ -18,7 +17,7 @@ public class UserProfileQuerySupplier {
         this.userProfileRepository = userProfileRepository;
     }
 
-    public Supplier<Optional<UserProfile>> getIdQuery(UserProfileIdentifier id) {
+    public Supplier<Optional<UserProfile>> getQueryByIdentifier(UserProfileIdentifier id) {
 
         if (id.getName() == IdentifierName.IDAMID) {
             return () -> userProfileRepository.findByIdamId(id.getValue());
@@ -28,7 +27,7 @@ public class UserProfileQuerySupplier {
             return () -> userProfileRepository.findById(UUID.fromString(id.getValue()));
         }
 
-        throw new IllegalStateException("Invalid User Profile identifier received");
+        throw new IllegalStateException("Invalid User Profile identifier supplied");
     }
 
 
