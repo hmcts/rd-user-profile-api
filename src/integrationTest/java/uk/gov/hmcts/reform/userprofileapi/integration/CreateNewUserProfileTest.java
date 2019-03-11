@@ -81,7 +81,26 @@ public class CreateNewUserProfileTest {
                 UserProfileResource.class
             );
 
-        assertThat(createdResource).isNotNull();
+        assertThat(createdResource).isEqualToIgnoringGivenFields(createdResource, "id");
+        assertThat(createdResource.getId()).isNotNull();
+        assertThat(createdResource.getId()).isInstanceOf(UUID.class);
+
+    }
+
+    @Test
+    public void should_create_user_profile_when_empty_body() throws Exception {
+
+        CreateUserProfileData data = new CreateUserProfileData();
+
+        UserProfileResource createdResource =
+            testRequestHandler.sendPost(
+                mockMvc,
+                APP_BASE_PATH,
+                data,
+                CREATED,
+                UserProfileResource.class
+            );
+
         assertThat(createdResource).isEqualToIgnoringGivenFields(createdResource, "id");
         assertThat(createdResource.getId()).isNotNull();
         assertThat(createdResource.getId()).isInstanceOf(UUID.class);

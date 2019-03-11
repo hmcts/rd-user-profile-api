@@ -18,11 +18,11 @@ public class UserProfileRetriever implements ResourceRetriever {
     @Override
     public UserProfile retrieve(UserProfileIdentifier identifier) {
 
-        String failureMessage = "Could not find resource from database with given identifier: ";
-
-        return querySupplier.getQueryByIdentifier(identifier).get()
-            .orElseThrow(() ->
-                new DataRetrievalFailureException(failureMessage + identifier.getValue()));
+        return
+            querySupplier.getRetrieveByIdQuery(identifier)
+                .get()
+                .orElseThrow(() ->
+                    new DataRetrievalFailureException("Could not find resource from database with given identifier: " + identifier.getValue()));
     }
 
 }

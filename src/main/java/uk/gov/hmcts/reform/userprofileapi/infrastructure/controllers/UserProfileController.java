@@ -9,6 +9,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import java.util.Objects;
+import javax.validation.constraints.NotEmpty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -74,7 +76,7 @@ public class UserProfileController {
     public ResponseEntity<UserProfileResource> getUserProfileById(@PathVariable String uuid) {
         LOG.info("Getting user profile with id: {}", uuid);
         return ResponseEntity.ok(
-            requestManager.handle(
+            requestManager.handleRetrieve(
                 new UserProfileIdentifier(UUID, uuid)
             )
         );
@@ -108,11 +110,30 @@ public class UserProfileController {
         LOG.info("Getting user profile with email: {}", email);
 
         return ResponseEntity.ok(
-            requestManager.handle(
+            requestManager.handleRetrieve(
                 new UserProfileIdentifier(EMAIL, email)
             )
         );
     }
+
+    @ApiOperation("Retrieves user profile queried by idamId")
+    @ApiResponses({
+        @ApiResponse(
+            code = 200,
+            message = "Representation of a user profile data",
+            response = String.class
+        ),
+        @ApiResponse(
+            code = 400,
+            message = "Bad Request",
+            response = String.class
+        ),
+        @ApiResponse(
+            code = 500,
+            message = "Internal Server Error",
+            response = String.class
+        )
+    })
 
     @GetMapping(
         params = "idamId",
@@ -124,7 +145,7 @@ public class UserProfileController {
         LOG.info("Getting user profile with idamId: {}", idamId);
 
         return ResponseEntity.ok(
-            requestManager.handle(
+            requestManager.handleRetrieve(
                 new UserProfileIdentifier(IDAMID, idamId)
             )
         );
@@ -154,10 +175,12 @@ public class UserProfileController {
         produces = APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseBody
-    public ResponseEntity<UserProfileResource> createUserProfile(@RequestBody CreateUserProfileData userProfileRequestData) {
+    public ResponseEntity<UserProfileResource> createUserProfile(@NotEmpty @RequestBody CreateUserProfileData createUserProfileData) {
         LOG.info("Creating new User Profile");
 
-        UserProfileResource resource = requestManager.handle(userProfileRequestData);
+        //TODO validate required incoming parameters
+
+        UserProfileResource resource = requestManager.handleCreate(createUserProfileData);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(resource);
 

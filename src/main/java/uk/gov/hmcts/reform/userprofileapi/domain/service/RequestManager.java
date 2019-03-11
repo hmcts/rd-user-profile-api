@@ -17,11 +17,11 @@ public class RequestManager {
         this.userProfileRetriever = userProfileRetriever;
     }
 
-    public UserProfileResource handle(CreateUserProfileData requestData) {
+    public UserProfileResource handleCreate(CreateUserProfileData requestData) {
         return new UserProfileResource(userProfileCreator.create(requestData));
     }
 
-    public UserProfileResource handle(UserProfileIdentifier requestData) {
+    public UserProfileResource handleRetrieve(UserProfileIdentifier requestData) {
         return new UserProfileResource(userProfileRetriever.retrieve(requestData));
     }
 
