@@ -35,7 +35,19 @@ spring:
       remove-abandoned: true
       remove-abandoned-timeout: 60
       log-abandoned: true
-      abandon-when-percentage-full: 0
+      abandon-when-percentage-full:
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+
+
+
+
+
+
 
 
 security:
