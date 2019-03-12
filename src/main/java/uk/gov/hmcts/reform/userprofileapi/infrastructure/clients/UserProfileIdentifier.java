@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.infrastructure.clients;
 
-public class UserProfileIdentifier {
+public class UserProfileIdentifier implements RequestData {
 
     private IdentifierName name;
     private String value;

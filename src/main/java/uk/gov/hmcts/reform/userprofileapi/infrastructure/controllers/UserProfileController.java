@@ -1,16 +1,13 @@
 package uk.gov.hmcts.reform.userprofileapi.infrastructure.controllers;
 
-import static java.util.Objects.*;
+import static java.util.Objects.requireNonNull;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
-import static uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.IdentifierName.EMAIL;
-import static uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.IdentifierName.IDAMID;
-import static uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.IdentifierName.UUID;
+import static uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.IdentifierName.*;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.util.Objects;
 import javax.validation.constraints.NotEmpty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +36,7 @@ import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileReso
 public class UserProfileController {
     private static final Logger LOG = LoggerFactory.getLogger(UserProfileController.class);
 
-    private UserProfileService requestManager;
+    private UserProfileService userProfileService;
 
     @ApiOperation("Create a User Profile")
     @ApiResponses({
@@ -70,14 +67,14 @@ public class UserProfileController {
 
         requireNonNull(createUserProfileData, "createUserProfileData cannot be null");
 
-        UserProfileResource resource = requestManager.handleCreate(createUserProfileData);
+        UserProfileResource resource = userProfileService.create(createUserProfileData);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(resource);
 
     }
 
-    public UserProfileController(UserProfileService requestManager) {
-        this.requestManager = requestManager;
+    public UserProfileController(UserProfileService userProfileService) {
+        this.userProfileService = userProfileService;
     }
 
     @ApiOperation("Retrieves user profile data by id")
@@ -90,11 +87,6 @@ public class UserProfileController {
         @ApiResponse(
             code = 400,
             message = "Bad Request",
-            response = String.class
-        ),
-        @ApiResponse(
-            code = 404,
-            message = "Not Found",
             response = String.class
         ),
         @ApiResponse(
@@ -115,7 +107,7 @@ public class UserProfileController {
         requireNonNull(uuid, "uuid cannot be null");
 
         return ResponseEntity.ok(
-            requestManager.handleRetrieve(
+            userProfileService.retrieve(
                 new UserProfileIdentifier(UUID, uuid)
             )
         );
@@ -151,7 +143,7 @@ public class UserProfileController {
         requireNonNull(email, "email cannot be null");
 
         return ResponseEntity.ok(
-            requestManager.handleRetrieve(
+            userProfileService.retrieve(
                 new UserProfileIdentifier(EMAIL, email)
             )
         );
@@ -188,12 +180,11 @@ public class UserProfileController {
         requireNonNull(idamId, "idamId cannot be null");
 
         return ResponseEntity.ok(
-            requestManager.handleRetrieve(
+            userProfileService.retrieve(
                 new UserProfileIdentifier(IDAMID, idamId)
             )
         );
     }
-
 
 
 }

@@ -9,19 +9,19 @@ import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.UserProfileR
 @Service
 public class UserProfileService {
 
-    private UserProfileCreator userProfileCreator;
-    private UserProfileRetriever userProfileRetriever;
+    private ResourceCreator<CreateUserProfileData> userProfileCreator;
+    private ResourceRetriever<UserProfileIdentifier> userProfileRetriever;
 
     public UserProfileService(UserProfileCreator userProfileCreator, UserProfileRetriever userProfileRetriever) {
         this.userProfileCreator = userProfileCreator;
         this.userProfileRetriever = userProfileRetriever;
     }
 
-    public UserProfileResource handleCreate(CreateUserProfileData requestData) {
+    public UserProfileResource create(CreateUserProfileData requestData) {
         return new UserProfileResource(userProfileCreator.create(requestData));
     }
 
-    public UserProfileResource handleRetrieve(UserProfileIdentifier requestData) {
+    public UserProfileResource retrieve(UserProfileIdentifier requestData) {
         return new UserProfileResource(userProfileRetriever.retrieve(requestData));
     }
 

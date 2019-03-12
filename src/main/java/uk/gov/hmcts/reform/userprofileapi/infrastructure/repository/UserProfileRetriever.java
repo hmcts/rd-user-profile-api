@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.service.ResourceRetriever;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileIdentifier;
 
 @Service
-public class UserProfileRetriever implements ResourceRetriever {
+public class UserProfileRetriever implements ResourceRetriever<UserProfileIdentifier> {
 
     private UserProfileQuerySupplier querySupplier;
 
