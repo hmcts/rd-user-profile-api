@@ -1,18 +1,18 @@
-package uk.gov.hmcts.reform.userprofileapi.infrastructure.repository;
+package uk.gov.hmcts.reform.userprofileapi.domain.service;
 
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.domain.service.ResourceRetriever;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileIdentifier;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.UserProfileQueryProvider;
 
 @Service
 public class UserProfileRetriever implements ResourceRetriever<UserProfileIdentifier> {
 
-    private UserProfileQuerySupplier querySupplier;
+    private UserProfileQueryProvider querySupplier;
 
-    public UserProfileRetriever(UserProfileQuerySupplier userProfileQuerySupplier) {
-        this.querySupplier = userProfileQuerySupplier;
+    public UserProfileRetriever(UserProfileQueryProvider userProfileQueryProvider) {
+        this.querySupplier = userProfileQueryProvider;
     }
 
     @Override

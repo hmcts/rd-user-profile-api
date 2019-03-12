@@ -3,19 +3,19 @@ package uk.gov.hmcts.reform.userprofileapi.domain.service;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.UserProfileRepository;
 
 @Service
 public class UserProfileCreator implements ResourceCreator<CreateUserProfileData> {
 
+    private IdentityManagerService identityManagerService;
     private UserProfileRepository userProfileRepository;
 
-    //TODO introduce IdamService to register user
-    //private IdentityManagerService identityManagerService;
-
-    public UserProfileCreator(UserProfileRepository userProfileRepository) {
+    public UserProfileCreator(UserProfileRepository userProfileRepository, IdamService identityManagerService) {
         this.userProfileRepository = userProfileRepository;
+        this.identityManagerService = identityManagerService;
     }
 
     public UserProfile create(CreateUserProfileData profileData) {
@@ -28,8 +28,7 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
         //4: Create a User Profile Resource to return to the client app
 
         //TODO should call Idam service
-        String idamId = "idamId";
-        //String idamId = identityManagerService.registerUser(profileData);
+        String idamId = identityManagerService.registerUser(profileData);
 
         UserProfile userProfile =
             new UserProfile(

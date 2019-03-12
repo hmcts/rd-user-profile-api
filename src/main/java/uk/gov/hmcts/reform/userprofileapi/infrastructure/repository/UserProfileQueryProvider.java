@@ -9,11 +9,11 @@ import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.IdentifierName;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileIdentifier;
 
 @Service
-public class UserProfileQuerySupplier {
+public class UserProfileQueryProvider {
 
     private UserProfileRepository userProfileRepository;
 
-    public UserProfileQuerySupplier(UserProfileRepository userProfileRepository) {
+    public UserProfileQueryProvider(UserProfileRepository userProfileRepository) {
         this.userProfileRepository = userProfileRepository;
     }
 

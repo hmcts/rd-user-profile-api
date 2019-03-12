@@ -43,13 +43,6 @@ spring:
           lob:
             non_contextual_creation: true
 
-
-
-
-
-
-
-
 security:
   anonymousPaths:
     - "/"
