@@ -7,12 +7,12 @@ import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileReso
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.UserProfileRetriever;
 
 @Service
-public class RequestManager {
+public class UserProfileService {
 
     private UserProfileCreator userProfileCreator;
     private UserProfileRetriever userProfileRetriever;
 
-    public RequestManager(UserProfileCreator userProfileCreator, UserProfileRetriever userProfileRetriever) {
+    public UserProfileService(UserProfileCreator userProfileCreator, UserProfileRetriever userProfileRetriever) {
         this.userProfileCreator = userProfileCreator;
         this.userProfileRetriever = userProfileRetriever;
     }

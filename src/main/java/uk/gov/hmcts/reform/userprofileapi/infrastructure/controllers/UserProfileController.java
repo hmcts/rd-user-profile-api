@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.infrastructure.controllers;
 
+import static java.util.Objects.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.IdentifierName.EMAIL;
 import static uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.IdentifierName.IDAMID;
@@ -17,7 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uk.gov.hmcts.reform.userprofileapi.domain.service.RequestManager;
+import uk.gov.hmcts.reform.userprofileapi.domain.service.UserProfileService;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileIdentifier;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileResource;
@@ -38,9 +39,44 @@ import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileReso
 public class UserProfileController {
     private static final Logger LOG = LoggerFactory.getLogger(UserProfileController.class);
 
-    private RequestManager requestManager;
+    private UserProfileService requestManager;
 
-    public UserProfileController(RequestManager requestManager) {
+    @ApiOperation("Create a User Profile")
+    @ApiResponses({
+        @ApiResponse(
+            code = 201,
+            message = "Create a User Profile using request body",
+            response = UserProfileResource.class
+        ),
+        @ApiResponse(
+            code = 400,
+            message = "Bad Request",
+            response = String.class
+        ),
+        @ApiResponse(
+            code = 500,
+            message = "Internal Server Error",
+            response = String.class
+        )
+    })
+
+    @PostMapping(
+        consumes = APPLICATION_JSON_UTF8_VALUE,
+        produces = APPLICATION_JSON_UTF8_VALUE
+    )
+    @ResponseBody
+    public ResponseEntity<UserProfileResource> createUserProfile(@NotEmpty @RequestBody CreateUserProfileData createUserProfileData) {
+        LOG.info("Creating new User Profile");
+
+        requireNonNull(createUserProfileData, "createUserProfileData cannot be null");
+
+        UserProfileResource resource = requestManager.handleCreate(createUserProfileData);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(resource);
+
+    }
+
+    public UserProfileController(UserProfileService requestManager) {
         this.requestManager = requestManager;
     }
 
@@ -75,6 +111,9 @@ public class UserProfileController {
     @ResponseBody
     public ResponseEntity<UserProfileResource> getUserProfileById(@PathVariable String uuid) {
         LOG.info("Getting user profile with id: {}", uuid);
+
+        requireNonNull(uuid, "uuid cannot be null");
+
         return ResponseEntity.ok(
             requestManager.handleRetrieve(
                 new UserProfileIdentifier(UUID, uuid)
@@ -108,6 +147,8 @@ public class UserProfileController {
     @ResponseBody
     public ResponseEntity<UserProfileResource> getUserProfileByEmail(@RequestParam String email) {
         LOG.info("Getting user profile with email: {}", email);
+
+        requireNonNull(email, "email cannot be null");
 
         return ResponseEntity.ok(
             requestManager.handleRetrieve(
@@ -144,6 +185,8 @@ public class UserProfileController {
     public ResponseEntity<UserProfileResource> getUserProfileByIdamId(@RequestParam String idamId) {
         LOG.info("Getting user profile with idamId: {}", idamId);
 
+        requireNonNull(idamId, "idamId cannot be null");
+
         return ResponseEntity.ok(
             requestManager.handleRetrieve(
                 new UserProfileIdentifier(IDAMID, idamId)
@@ -151,39 +194,6 @@ public class UserProfileController {
         );
     }
 
-    @ApiOperation("Create a User Profile")
-    @ApiResponses({
-        @ApiResponse(
-            code = 201,
-            message = "Create a User Profile using request body",
-            response = UserProfileResource.class
-        ),
-        @ApiResponse(
-            code = 400,
-            message = "Bad Request",
-            response = String.class
-        ),
-        @ApiResponse(
-            code = 500,
-            message = "Internal Server Error",
-            response = String.class
-        )
-    })
 
-    @PostMapping(
-        consumes = APPLICATION_JSON_UTF8_VALUE,
-        produces = APPLICATION_JSON_UTF8_VALUE
-    )
-    @ResponseBody
-    public ResponseEntity<UserProfileResource> createUserProfile(@NotEmpty @RequestBody CreateUserProfileData createUserProfileData) {
-        LOG.info("Creating new User Profile");
-
-        //TODO validate required incoming parameters
-
-        UserProfileResource resource = requestManager.handleCreate(createUserProfileData);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(resource);
-
-    }
 
 }
