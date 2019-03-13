@@ -27,6 +27,7 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
         //4: Create a User Profile Resource to return to the client app
 
         //TODO should call Idam service
+        //Only call if idam profile required
         String idamId = identityManagerService.registerUser(profileData);
 
         UserProfile userProfile =

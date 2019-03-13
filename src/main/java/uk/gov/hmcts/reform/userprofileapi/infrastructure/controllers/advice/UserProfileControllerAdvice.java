@@ -14,9 +14,9 @@ import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
 
 @ControllerAdvice(basePackages = "uk.gov.hmcts.reform.userprofileapi.infrastructure.controllers")
 @RequestMapping(produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-public class CallbackControllerAdvice {
+public class UserProfileControllerAdvice {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CallbackControllerAdvice.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UserProfileControllerAdvice.class);
 
     @ExceptionHandler(RequiredFieldMissingException.class)
     protected ResponseEntity<String> handleRequiredFieldMissingException(

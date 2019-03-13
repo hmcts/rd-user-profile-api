@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
@@ -88,22 +90,19 @@ public class CreateNewUserProfileTest {
     }
 
     @Test
-    public void should_create_user_profile_when_empty_body() throws Exception {
+    public void should_not_create_user_profile_when_empty_body() throws Exception {
 
         CreateUserProfileData data = new CreateUserProfileData();
 
-        UserProfileResource createdResource =
+        assertThatThrownBy(() ->
             testRequestHandler.sendPost(
                 mockMvc,
                 APP_BASE_PATH,
                 data,
-                CREATED,
+                BAD_REQUEST,
                 UserProfileResource.class
-            );
-
-        assertThat(createdResource).isEqualToIgnoringGivenFields(createdResource, "id");
-        assertThat(createdResource.getId()).isNotNull();
-        assertThat(createdResource.getId()).isInstanceOf(UUID.class);
+            )).hasMessageContaining("cannot be null")
+            .hasCauseInstanceOf(NullPointerException.class);
 
     }
 

@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.userprofileapi.domain.entities;
 
+import static java.util.Objects.*;
+
+import java.util.Objects;
 import java.util.UUID;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,6 +25,11 @@ public class UserProfile {
     }
 
     public UserProfile(String idamId, String email, String firstName, String lastName) {
+        requireNonNull(idamId, "idamId must not be null");
+        requireNonNull(email, "email must not be null");
+        requireNonNull(firstName, "firstname must not be null");
+        requireNonNull(lastName, "lastname must not be null");
+
         this.idamId = idamId;
         this.email = email;
         this.firstName = firstName;

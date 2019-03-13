@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.domain.service.UserProfileService;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileIdentifier;
@@ -66,6 +67,10 @@ public class UserProfileController {
         LOG.info("Creating new User Profile");
 
         requireNonNull(createUserProfileData, "createUserProfileData cannot be null");
+        requireNonNull(createUserProfileData.getEmail(), "email cannot be null");
+        requireNonNull(createUserProfileData.getFirstName(), "firstname cannot be null");
+        requireNonNull(createUserProfileData.getLastName(), "lastname cannot be null");
+
 
         UserProfileResource resource = userProfileService.create(createUserProfileData);
 
@@ -87,6 +92,11 @@ public class UserProfileController {
         @ApiResponse(
             code = 400,
             message = "Bad Request",
+            response = String.class
+        ),
+        @ApiResponse(
+            code = 404,
+            message = "Not Found",
             response = String.class
         ),
         @ApiResponse(
@@ -126,6 +136,11 @@ public class UserProfileController {
             response = String.class
         ),
         @ApiResponse(
+            code = 404,
+            message = "Not Found",
+            response = String.class
+        ),
+        @ApiResponse(
             code = 500,
             message = "Internal Server Error",
             response = String.class
@@ -162,6 +177,11 @@ public class UserProfileController {
             response = String.class
         ),
         @ApiResponse(
+            code = 404,
+            message = "Not Found",
+            response = String.class
+        ),
+        @ApiResponse(
             code = 500,
             message = "Internal Server Error",
             response = String.class
@@ -185,6 +205,5 @@ public class UserProfileController {
             )
         );
     }
-
 
 }

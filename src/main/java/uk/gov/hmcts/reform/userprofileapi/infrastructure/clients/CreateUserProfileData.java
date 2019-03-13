@@ -8,6 +8,8 @@ public class CreateUserProfileData implements RequestData {
     private String email;
     private String firstName;
     private String lastName;
+    //TODO
+    private boolean createIdamProfile;
 
     public CreateUserProfileData() {
     }
