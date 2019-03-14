@@ -1,8 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.domain.entities;
 
-import static java.util.Objects.*;
+import static java.util.Objects.requireNonNull;
 
-import java.util.Objects;
 import java.util.UUID;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

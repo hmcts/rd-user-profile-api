@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Random;
 import java.util.UUID;
-import org.agileware.test.PropertiesTester;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -13,15 +12,26 @@ import org.mockito.junit.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class UserProfileTest {
 
-    private PropertiesTester tester = new PropertiesTester();
-
     private final String idamId = UUID.randomUUID().toString();
     private final String email = "someone@somewhere.com";
     private final String firstname = String.valueOf(new Random().nextInt());
     private final String lastname = String.valueOf(new Random().nextInt());
 
     @Test
-    public void should_create_successfully() {
+    public void should_create_successfully_with_no_args_constructor() {
+
+        UserProfile userProfile = new UserProfile();
+        assertThat(userProfile).isNotNull();
+        assertThat(userProfile.getId()).isNull();
+        assertThat(userProfile.getIdamId()).isNull();
+        assertThat(userProfile.getEmail()).isNull();
+        assertThat(userProfile.getFirstName()).isNull();
+        assertThat(userProfile.getLastName()).isNull();
+
+    }
+
+    @Test
+    public void should_create_and_get_successfully() {
 
         UserProfile userProfile = new UserProfile(idamId, email, firstname, lastname);
 
