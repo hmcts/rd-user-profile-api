@@ -8,7 +8,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -62,14 +62,10 @@ public class UserProfileController {
         produces = APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseBody
-    public ResponseEntity<UserProfileResource> createUserProfile(@NotEmpty @RequestBody CreateUserProfileData createUserProfileData) {
+    public ResponseEntity<UserProfileResource> createUserProfile(@Valid @RequestBody CreateUserProfileData createUserProfileData) {
         LOG.info("Creating new User Profile");
 
         requireNonNull(createUserProfileData, "createUserProfileData cannot be null");
-        requireNonNull(createUserProfileData.getEmail(), "email cannot be null");
-        requireNonNull(createUserProfileData.getFirstName(), "firstname cannot be null");
-        requireNonNull(createUserProfileData.getLastName(), "lastname cannot be null");
-
 
         UserProfileResource resource = userProfileService.create(createUserProfileData);
 

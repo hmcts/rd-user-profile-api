@@ -14,8 +14,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.DataRetrievalFailureException;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.IdentifierName;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileIdentifier;
@@ -71,7 +69,7 @@ public class UserProfileRetrieverTest {
         when(supplier.get()).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> userProfileRetriever.retrieve(identifier))
-            .isInstanceOf(DataRetrievalFailureException.class)
+            .isInstanceOf(ResourceNotFoundException.class)
             .hasMessage("Could not find resource from database with given identifier: " + identifier.getValue());
 
     }
@@ -100,10 +98,10 @@ public class UserProfileRetrieverTest {
                 UUID.randomUUID().toString());
 
         when(querySupplier.getRetrieveByIdQuery(identifier)).thenReturn(supplier);
-        when(supplier.get()).thenThrow(DataIntegrityViolationException.class);
+        when(supplier.get()).thenThrow(ResourceNotFoundException.class);
 
         assertThatThrownBy(() -> userProfileRetriever.retrieve(identifier))
-            .isInstanceOf(DataIntegrityViolationException.class);
+            .isInstanceOf(ResourceNotFoundException.class);
 
     }
 }

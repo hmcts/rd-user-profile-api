@@ -1,13 +1,14 @@
 package uk.gov.hmcts.reform.userprofileapi.infrastructure.clients;
 
+import javax.validation.constraints.NotNull;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CreateUserProfileData implements RequestData {
 
-    private String email;
-    private String firstName;
-    private String lastName;
+    @NotNull private String email;
+    @NotNull private String firstName;
+    @NotNull private String lastName;
 
     public CreateUserProfileData() {
     }

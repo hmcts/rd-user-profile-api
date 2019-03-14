@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.userprofileapi.domain.service;
 
-import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileIdentifier;
@@ -22,7 +21,9 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
             querySupplier.getRetrieveByIdQuery(identifier)
                 .get()
                 .orElseThrow(() ->
-                    new DataRetrievalFailureException("Could not find resource from database with given identifier: " + identifier.getValue()));
+                    new ResourceNotFoundException(
+                        "Could not find resource from database with given identifier: " +
+                        identifier.getValue()));
     }
 
 }
