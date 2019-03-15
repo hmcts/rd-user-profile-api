@@ -35,7 +35,7 @@ public class UserProfileControllerTest {
     public void should_call_create_successfully_when_post_with_correct_data() {
 
         CreateUserProfileData createUserProfileData = new CreateUserProfileData("test@somewhere.com", "jane", "doe");
-        UserProfileResource expectedBody = new UserProfileResource(UUID.randomUUID(), "test-idamId", "jane", "doe");
+        UserProfileResource expectedBody = new UserProfileResource(UUID.randomUUID(), UUID.randomUUID().toString(), "test-idamId", "jane", "doe");
 
         when(requestManager.create(createUserProfileData)).thenReturn(expectedBody);
 
@@ -90,7 +90,7 @@ public class UserProfileControllerTest {
     public void should_call_retrieve_successfully_when_get_with_uuid_param() {
 
         UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID, UUID.randomUUID().toString());
-        UserProfileResource expectedResource = new UserProfileResource(UUID.randomUUID(), "test-idamId", "jane", "doe");
+        UserProfileResource expectedResource = new UserProfileResource(UUID.randomUUID(), UUID.randomUUID().toString(), "test-idamId", "jane", "doe");
 
         when(requestManager.retrieve(identifierArgumentCaptor.capture())).thenReturn(expectedResource);
 
@@ -134,7 +134,7 @@ public class UserProfileControllerTest {
     public void should_call_retrieve_successfully_when_get_with_email_param() {
 
         UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.EMAIL, "test@email.com");
-        UserProfileResource expectedResource = new UserProfileResource(UUID.randomUUID(), "test-idamId", "jane", "doe");
+        UserProfileResource expectedResource = new UserProfileResource(UUID.randomUUID(), UUID.randomUUID().toString(), "test-idamId", "jane", "doe");
 
         when(requestManager.retrieve(identifierArgumentCaptor.capture())).thenReturn(expectedResource);
 
@@ -178,7 +178,7 @@ public class UserProfileControllerTest {
     public void should_call_request_manager_retrieve_method_with_idamId() {
 
         UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.IDAMID, "test-idam-id");
-        UserProfileResource expectedResource = new UserProfileResource(UUID.randomUUID(), "test-idamId", "jane", "doe");
+        UserProfileResource expectedResource = new UserProfileResource(UUID.randomUUID(), UUID.randomUUID().toString(), "test-idamId", "jane", "doe");
 
         when(requestManager.retrieve(identifierArgumentCaptor.capture())).thenReturn(expectedResource);
 

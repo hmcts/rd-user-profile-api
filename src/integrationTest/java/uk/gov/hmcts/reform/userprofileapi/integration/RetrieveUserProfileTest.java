@@ -167,6 +167,20 @@ public class RetrieveUserProfileTest {
 
     }
 
+    @Test
+    public void should_return_404_when_query_by_email_is_empty() throws Exception {
+        MvcResult result =
+            testRequestHandler.sendGet(
+                mockMvc,
+                APP_BASE_PATH + "?email=",
+                NOT_FOUND
+            );
+
+        assertThat(result.getResponse()).isNotNull();
+        assertThat(result.getResponse().getContentAsString()).isEmpty();
+
+    }
+
 
     @Test
     public void should_retrieve_user_profile_resource_with_idamId() throws Exception {
@@ -183,6 +197,21 @@ public class RetrieveUserProfileTest {
 
         assertThat(retrievedResource).isNotNull();
         assertThat(retrievedResource).isEqualToComparingFieldByField(userProfile);
+
+    }
+
+    @Test
+    public void should_return_404_when_query_by_idamId_is_empty() throws Exception {
+
+        MvcResult result =
+            testRequestHandler.sendGet(
+                mockMvc,
+                APP_BASE_PATH + "?idamId=",
+                NOT_FOUND
+            );
+
+        assertThat(result.getResponse()).isNotNull();
+        assertThat(result.getResponse().getContentAsString()).isEmpty();
 
     }
 

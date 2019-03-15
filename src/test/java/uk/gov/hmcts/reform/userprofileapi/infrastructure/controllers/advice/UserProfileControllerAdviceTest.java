@@ -23,7 +23,7 @@ public class UserProfileControllerAdviceTest {
         String message = "test-ex-message";
         RequiredFieldMissingException ex = mock(RequiredFieldMissingException.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
-        ResponseEntity<String> expected = new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+        ResponseEntity<String> expected = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         when(ex.getMessage()).thenReturn(message);
 

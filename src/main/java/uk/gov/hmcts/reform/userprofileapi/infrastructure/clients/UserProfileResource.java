@@ -7,6 +7,7 @@ public class UserProfileResource {
 
     private UUID id;
     private String idamId;
+    private String email;
     private String firstName;
     private String lastName;
 
@@ -16,13 +17,19 @@ public class UserProfileResource {
     public UserProfileResource(UserProfile userProfile) {
         this.id = userProfile.getId();
         this.idamId = userProfile.getIdamId();
+        this.email = userProfile.getEmail();
         this.firstName = userProfile.getFirstName();
         this.lastName = userProfile.getLastName();
     }
 
-    public UserProfileResource(UUID id, String idamId, String firstName, String lastName) {
+    public UserProfileResource(UUID id,
+                               String idamId,
+                               String email,
+                               String firstName,
+                               String lastName) {
         this.id = id;
         this.idamId = idamId;
+        this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
     }
@@ -35,6 +42,10 @@ public class UserProfileResource {
         return idamId;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
     public String getFirstName() {
         return firstName;
     }
@@ -42,4 +53,5 @@ public class UserProfileResource {
     public String getLastName() {
         return lastName;
     }
+
 }
