@@ -6,9 +6,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class CreateUserProfileData implements RequestData {
 
-    @NotNull private String email;
-    @NotNull private String firstName;
-    @NotNull private String lastName;
+    @NotNull
+    private String email;
+
+    @NotNull
+    private String firstName;
+
+    @NotNull
+    private String lastName;
 
     public CreateUserProfileData() {
     }

@@ -19,14 +19,14 @@ public class UserProfileControllerAdvice {
 
     private static final Logger LOG = LoggerFactory.getLogger(UserProfileControllerAdvice.class);
 
-    private static final String logMessage = "handling exception: {}";
+    private static final String LOG_STRING = "handling exception: {}";
 
     @ExceptionHandler(RequiredFieldMissingException.class)
     protected ResponseEntity<String> handleRequiredFieldMissingException(
         HttpServletRequest request,
         RequiredFieldMissingException e
     ) {
-        LOG.info(logMessage, e.getMessage());
+        LOG.info(LOG_STRING, e.getMessage());
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
@@ -35,16 +35,16 @@ public class UserProfileControllerAdvice {
         HttpServletRequest request,
         ResourceNotFoundException e
     ) {
-        LOG.info(logMessage, e.getMessage());
+        LOG.info(LOG_STRING, e.getMessage());
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(RuntimeException.class)
+    @ExceptionHandler(Exception.class)
     protected ResponseEntity<String> handleUnknownRuntimeException(
         HttpServletRequest request,
         RuntimeException e
     ) {
-        LOG.info(logMessage, e.getMessage());
+        LOG.info(LOG_STRING, e.getMessage());
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

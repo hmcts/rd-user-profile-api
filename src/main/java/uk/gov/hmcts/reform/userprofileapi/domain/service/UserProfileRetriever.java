@@ -22,8 +22,8 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
                 .get()
                 .orElseThrow(() ->
                     new ResourceNotFoundException(
-                        "Could not find resource from database with given identifier: " +
-                        identifier.getValue()));
+                        "Could not find resource from database with given identifier: "
+                        + identifier.getValue()));
     }
 
 }
