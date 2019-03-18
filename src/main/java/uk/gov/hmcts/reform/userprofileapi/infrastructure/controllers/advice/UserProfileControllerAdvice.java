@@ -42,7 +42,7 @@ public class UserProfileControllerAdvice {
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<String> handleUnknownRuntimeException(
         HttpServletRequest request,
-        RuntimeException e
+        Exception e
     ) {
         LOG.info(LOG_STRING, e.getMessage());
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

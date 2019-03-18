@@ -9,12 +9,12 @@ import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.UserProfileR
 @Service
 public class UserProfileCreator implements ResourceCreator<CreateUserProfileData> {
 
-    private IdentityManagerService identityManagerService;
+    private IdamService idamService;
     private UserProfileRepository userProfileRepository;
 
-    public UserProfileCreator(UserProfileRepository userProfileRepository, IdamService identityManagerService) {
+    public UserProfileCreator(UserProfileRepository userProfileRepository, IdamService idamService) {
         this.userProfileRepository = userProfileRepository;
-        this.identityManagerService = identityManagerService;
+        this.idamService = idamService;
     }
 
     public UserProfile create(CreateUserProfileData profileData) {
@@ -28,7 +28,7 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
 
         //TODO should call Idam service
         //Only call if idam profile required
-        String idamId = identityManagerService.registerUser(profileData);
+        String idamId = idamService.registerUser(profileData);
 
         UserProfile userProfile =
             new UserProfile(

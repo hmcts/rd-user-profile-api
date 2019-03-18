@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.infrastructure.clients;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Objects;
 import java.util.UUID;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 

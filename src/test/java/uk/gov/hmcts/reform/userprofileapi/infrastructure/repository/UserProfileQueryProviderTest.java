@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.infrastructure.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 import java.util.Optional;
@@ -84,6 +85,18 @@ public class UserProfileQueryProviderTest {
 
         verify(userProfileRepository).findByIdamId(id);
         verifyNoMoreInteractions(userProfileRepository);
+
+    }
+
+    @Test
+    public void should_thow_exception_if_no_query_found() {
+
+        UserProfileIdentifier identifier = mock(UserProfileIdentifier.class);
+
+        when(identifier.getName()).thenReturn(null);
+
+        assertThatThrownBy(() -> queryProvider.getRetrieveByIdQuery(identifier))
+            .isInstanceOf(IllegalStateException.class);
 
     }
 
