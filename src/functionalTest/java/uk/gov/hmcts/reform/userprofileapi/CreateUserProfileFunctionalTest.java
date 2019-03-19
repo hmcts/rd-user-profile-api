@@ -60,7 +60,7 @@ public class CreateUserProfileFunctionalTest {
     }
 
     @Test
-    public void should_return_400_when_required_field_is_missing() {
+    public void should_return_400_when_required_email_field_is_missing() {
         String json = "{\"firstName\":\"iWvKhGLXCiOMMbZtngbR\",\"lastName\":\"mXlpNLcbodhABAWKCKbj\"}";
         testRequestHandler.doPost(json, HttpStatus.BAD_REQUEST, requestUri);
     }

@@ -1,19 +1,14 @@
 package uk.gov.hmcts.reform.userprofileapi.domain.service;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.when;
 
 import java.util.UUID;
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.internal.InOrderImpl;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;

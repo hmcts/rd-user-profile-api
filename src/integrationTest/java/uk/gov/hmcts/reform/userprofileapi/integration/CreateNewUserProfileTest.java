@@ -5,6 +5,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 import java.util.UUID;
@@ -13,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,6 +79,19 @@ public class CreateNewUserProfileTest {
                 BAD_REQUEST,
                 UserProfileResource.class
             ));
+    }
+
+    @Test
+    public void should_return_400() throws Exception {
+
+        String json = "{\"firstName\":\"iWvKhGLXCiOMMbZtngbR\",\"lastName\":\"mXlpNLcbodhABAWKCKbj\"}";
+
+        mockMvc.perform(post(APP_BASE_PATH)
+            .content(json)
+            .contentType(APPLICATION_JSON_UTF8))
+            .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
+            .andReturn();
+
     }
 
 }

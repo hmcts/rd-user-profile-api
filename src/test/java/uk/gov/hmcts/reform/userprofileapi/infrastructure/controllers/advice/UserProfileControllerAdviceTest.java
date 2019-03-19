@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.domain.service.ResourceNotFoundException;
 
@@ -44,6 +45,21 @@ public class UserProfileControllerAdviceTest {
         when(ex.getMessage()).thenReturn(message);
 
         ResponseEntity response = advice.handleResourceNotFoundException(request, ex);
+
+        assertThat(response).isEqualToComparingFieldByField(expected);
+
+    }
+
+    @Test
+    public void should_return_400_when_invalid_method_argument() {
+        String message = "test-ex-message";
+        MethodArgumentNotValidException ex = mock(MethodArgumentNotValidException.class);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        ResponseEntity<String> expected = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        when(ex.getMessage()).thenReturn(message);
+
+        ResponseEntity response = advice.handleMethodArgumentNotValidException(request, ex);
 
         assertThat(response).isEqualToComparingFieldByField(expected);
 
