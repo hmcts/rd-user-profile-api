@@ -4,10 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.IdentifierName.*;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,6 +116,8 @@ public class UserProfileController {
     }
 
     @ApiOperation("Retrieves user profile queried by email")
+    @ApiParam(name = "email", required = true)
+
     @ApiResponses({
         @ApiResponse(
             code = 200,
@@ -160,6 +159,7 @@ public class UserProfileController {
     }
 
     @ApiOperation("Retrieves user profile queried by idamId")
+    @ApiParam(name = "idamId", required = true)
     @ApiResponses({
         @ApiResponse(
             code = 200,

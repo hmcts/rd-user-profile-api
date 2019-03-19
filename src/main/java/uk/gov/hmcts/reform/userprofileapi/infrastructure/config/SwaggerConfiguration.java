@@ -27,14 +27,13 @@ public class SwaggerConfiguration {
             .select()
             .apis(RequestHandlerSelectors.withClassAnnotation(RestController.class))
             .paths(PathSelectors.any())
-            .build()
+            .build().enableUrlTemplating(true)
             .securitySchemes(apiKeyList());
     }
 
     private List<ApiKey> apiKeyList() {
         return
             newArrayList(
-                new ApiKey("Authorization", "Authorization", "header"),
                 new ApiKey("ServiceAuthorization", "ServiceAuthorization", "header")
             );
     }
