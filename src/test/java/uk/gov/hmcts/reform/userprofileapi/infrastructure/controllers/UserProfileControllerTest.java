@@ -13,6 +13,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.ResponseEntity;
+import uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder;
+import uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder;
+import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.service.UserProfileService;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.*;
 
@@ -31,8 +34,9 @@ public class UserProfileControllerTest {
     @Test
     public void should_call_create_successfully_when_post_with_correct_data() {
 
-        CreateUserProfileData createUserProfileData = new CreateUserProfileData("test@somewhere.com", "jane", "doe");
-        UserProfileResource expectedBody = new UserProfileResource(UUID.randomUUID(), UUID.randomUUID().toString(), "test-idamId", "jane", "doe");
+        CreateUserProfileData createUserProfileData = CreateUserProfileDataTestBuilder.buildCreateUserProfileData();
+        UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
+        UserProfileResource expectedBody = new UserProfileResource(userProfile);
 
         when(userProfileService.create(createUserProfileData)).thenReturn(expectedBody);
 
@@ -46,7 +50,7 @@ public class UserProfileControllerTest {
     @Test
     public void should_propagate_exception_when_post_and_create_method_throws_exception() {
 
-        CreateUserProfileData createUserProfileData = new CreateUserProfileData("test@somewhere.com", "jane", "doe");
+        CreateUserProfileData createUserProfileData = CreateUserProfileDataTestBuilder.buildCreateUserProfileData();
         IllegalStateException ex = new IllegalStateException("this is a test exception");
 
         when(userProfileService.create(createUserProfileData)).thenThrow(ex);
@@ -72,7 +76,7 @@ public class UserProfileControllerTest {
     @Test
     public void should_return_null_body_when_post_and_create_method_returns_null() {
 
-        CreateUserProfileData createUserProfileData = new CreateUserProfileData("test@somewhere.com", "jane", "doe");
+        CreateUserProfileData createUserProfileData = CreateUserProfileDataTestBuilder.buildCreateUserProfileData();
 
         when(userProfileService.create(createUserProfileData)).thenReturn(null);
 
@@ -87,7 +91,8 @@ public class UserProfileControllerTest {
     public void should_call_retrieve_successfully_when_get_with_uuid_param() {
 
         UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID, UUID.randomUUID().toString());
-        UserProfileResource expectedResource = new UserProfileResource(UUID.randomUUID(), UUID.randomUUID().toString(), "test-idamId", "jane", "doe");
+        UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
+        UserProfileResource expectedResource = new UserProfileResource(userProfile);
 
         when(userProfileService.retrieve(identifierArgumentCaptor.capture())).thenReturn(expectedResource);
 
@@ -131,7 +136,9 @@ public class UserProfileControllerTest {
     public void should_call_retrieve_successfully_when_get_with_email_param() {
 
         UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.EMAIL, "test@email.com");
-        UserProfileResource expectedResource = new UserProfileResource(UUID.randomUUID(), UUID.randomUUID().toString(), "test-idamId", "jane", "doe");
+        UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
+        UserProfileResource expectedResource = new UserProfileResource(userProfile);
+
 
         when(userProfileService.retrieve(identifierArgumentCaptor.capture())).thenReturn(expectedResource);
 
@@ -175,7 +182,8 @@ public class UserProfileControllerTest {
     public void should_call_request_manager_retrieve_method_with_idamId() {
 
         UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.IDAMID, "test-idam-id");
-        UserProfileResource expectedResource = new UserProfileResource(UUID.randomUUID(), UUID.randomUUID().toString(), "test-idamId", "jane", "doe");
+        UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
+        UserProfileResource expectedResource = new UserProfileResource(userProfile);
 
         when(userProfileService.retrieve(identifierArgumentCaptor.capture())).thenReturn(expectedResource);
 

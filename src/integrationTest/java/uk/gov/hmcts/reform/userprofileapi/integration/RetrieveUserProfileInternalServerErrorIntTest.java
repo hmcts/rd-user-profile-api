@@ -1,13 +1,14 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.ACCEPTED;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
 
 import java.util.UUID;
 import org.junit.Before;
@@ -21,10 +22,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
-import uk.gov.hmcts.reform.userprofileapi.client.TestRequestHandler;
-import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.client.IntTestRequestHandler;
+import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileResource;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.idam.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.UserProfileRepository;
 
 @RunWith(SpringRunner.class)
@@ -38,8 +39,11 @@ public class RetrieveUserProfileInternalServerErrorIntTest {
     @MockBean
     private UserProfileRepository userProfileRepository;
 
+    @MockBean
+    private IdamService idamService;
+
     @Autowired
-    private TestRequestHandler testRequestHandler;
+    private IntTestRequestHandler intTestRequestHandler;
 
     private MockMvc mockMvc;
 
@@ -52,38 +56,39 @@ public class RetrieveUserProfileInternalServerErrorIntTest {
     }
 
     @Test
-    public void should_return_500_and_not_create_user_profile_when_app_throws_internal_exception() {
+    public void should_return_500_and_not_create_user_profile_when_idam_service_throws_exception() throws Exception {
 
-        when(userProfileRepository.findById(any(UUID.class)))
+        when(idamService.registerUser(any(CreateUserProfileData.class)))
             .thenThrow(new RuntimeException("This is a test exception"));
 
-        CreateUserProfileData data = mock(CreateUserProfileData.class);
+        CreateUserProfileData data = buildCreateUserProfileData();
 
-        assertThatThrownBy(() ->
-            testRequestHandler.sendPost(
-                mockMvc,
-                APP_BASE_PATH,
-                data,
-                BAD_REQUEST,
-                UserProfileResource.class
-            ));
+        MvcResult result = intTestRequestHandler.sendPost(
+            mockMvc,
+            APP_BASE_PATH,
+            data,
+            INTERNAL_SERVER_ERROR
+        );
+
+        assertThat(result.getResponse().getContentAsString()).isEmpty();
 
     }
 
     @Test
     public void should_return_500_when_repository_throws_an_unknown_exception() throws Exception {
 
+        when(idamService.registerUser(any(CreateUserProfileData.class)))
+            .thenReturn(new IdamRegistrationInfo(ACCEPTED));
         when(userProfileRepository.findById(any(UUID.class)))
             .thenThrow(new RuntimeException("This is a test exception"));
 
         MvcResult result =
-            testRequestHandler.sendGet(
+            intTestRequestHandler.sendGet(
                 mockMvc,
                 APP_BASE_PATH + SLASH + UUID.randomUUID().toString(),
                 INTERNAL_SERVER_ERROR
             );
 
-        assertThat(result.getResponse()).isNotNull();
         assertThat(result.getResponse().getContentAsString()).isEmpty();
 
     }
@@ -91,19 +96,38 @@ public class RetrieveUserProfileInternalServerErrorIntTest {
     @Test
     public void should_return_500_when_query_by_email_and_repository_throws_an_unknown_exception() throws Exception {
 
-        when(userProfileRepository.save(any(UserProfile.class)))
+        when(idamService.registerUser(any(CreateUserProfileData.class)))
+            .thenReturn(new IdamRegistrationInfo(ACCEPTED));
+        when(userProfileRepository.findByEmail(anyString()))
             .thenThrow(new RuntimeException("This is a test exception"));
 
         MvcResult result =
-            testRequestHandler.sendGet(
+            intTestRequestHandler.sendGet(
                 mockMvc,
                 APP_BASE_PATH + "?email=" + "randomemail@somewhere.com",
-                NOT_FOUND
+                INTERNAL_SERVER_ERROR
             );
 
-        assertThat(result.getResponse()).isNotNull();
         assertThat(result.getResponse().getContentAsString()).isEmpty();
 
+    }
+
+    @Test
+    public void should_return_500_when_query_by_idamId_and_repository_throws_an_unknown_exception() throws Exception {
+
+        when(idamService.registerUser(any(CreateUserProfileData.class)))
+            .thenReturn(new IdamRegistrationInfo(ACCEPTED));
+        when(userProfileRepository.findByIdamId(anyString()))
+            .thenThrow(new RuntimeException("This is a test exception"));
+
+        MvcResult result =
+            intTestRequestHandler.sendGet(
+                mockMvc,
+                APP_BASE_PATH + "?idamId=" + "randomemail@somewhere.com",
+                INTERNAL_SERVER_ERROR
+            );
+
+        assertThat(result.getResponse().getContentAsString()).isEmpty();
 
     }
 

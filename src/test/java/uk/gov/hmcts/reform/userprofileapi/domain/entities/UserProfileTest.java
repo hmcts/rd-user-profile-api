@@ -1,60 +1,129 @@
 package uk.gov.hmcts.reform.userprofileapi.domain.entities;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
+import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildCreateUserProfileDataMandatoryFieldsOnly;
 
-import java.util.Random;
-import java.util.UUID;
+import java.lang.reflect.Field;
+import java.time.LocalDateTime;
+import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
+import uk.gov.hmcts.reform.userprofileapi.domain.CreationChannel;
+import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
+import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
+import uk.gov.hmcts.reform.userprofileapi.domain.UserProfileStatus;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserProfileTest {
 
-    private final String idamId = UUID.randomUUID().toString();
-    private final String email = "someone@somewhere.com";
-    private final String firstname = String.valueOf(new Random().nextInt());
-    private final String lastname = String.valueOf(new Random().nextInt());
+    private final IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.ACCEPTED);
+
+    @Test
+    public void should_represent_same_number_of_fields_as_in_db() {
+        long numberOfFieldsInDb = 19;
+        long fieldCount = Stream.of(UserProfile.class.getDeclaredFields())
+            .filter(field -> !field.getName().startsWith("$"))
+            .map(Field::getName)
+            .count();
+
+        assertThat(fieldCount).isEqualTo(numberOfFieldsInDb);
+
+    }
+
 
     @Test
     public void should_create_successfully_with_no_args_constructor() {
 
         UserProfile userProfile = new UserProfile();
         assertThat(userProfile).isNotNull();
+
         assertThat(userProfile.getId()).isNull();
-        assertThat(userProfile.getIdamId()).isNull();
         assertThat(userProfile.getEmail()).isNull();
         assertThat(userProfile.getFirstName()).isNull();
         assertThat(userProfile.getLastName()).isNull();
+        assertThat(userProfile.getLanguagePreference()).isNull();
+
+        assertThat(userProfile.isEmailCommsConsent()).isFalse();
+        assertThat(userProfile.getEmailCommsConsentTs()).isNull();
+        assertThat(userProfile.isPostalCommsConsent()).isFalse();
+        assertThat(userProfile.getPostalCommsConsentTs()).isNull();
+
+        assertThat(userProfile.getCreationChannel()).isNull();
+        assertThat(userProfile.getUserCategory()).isNull();
+        assertThat(userProfile.getUserType()).isNull();
+
+        assertThat(userProfile.getIdamId()).isNull();
+        assertThat(userProfile.getIdamStatus()).isNull();
+        assertThat(userProfile.getIdamRoles()).isNull();
+        assertThat(userProfile.getIdamRegistrationResponse()).isNull();
+
+
+        assertThat(userProfile.getCreatedTs()).isNull();
+        assertThat(userProfile.getLastUpdatedTs()).isNull();
+        assertThat(userProfile.getUserProfileStatus()).isNull();
 
     }
 
     @Test
     public void should_create_and_get_successfully() {
 
-        UserProfile userProfile = new UserProfile(idamId, email, firstname, lastname);
+        CreateUserProfileData data = buildCreateUserProfileData();
+        UserProfile userProfile = new UserProfile(data,
+            new IdamRegistrationInfo(HttpStatus.ACCEPTED));
 
         assertThat(userProfile.getId()).isNull();
-        assertThat(userProfile.getIdamId()).isEqualTo(idamId);
-        assertThat(userProfile.getEmail()).isEqualTo(email);
-        assertThat(userProfile.getFirstName()).isEqualTo(firstname);
-        assertThat(userProfile.getLastName()).isEqualTo(lastname);
+        assertThat(userProfile.getEmail()).isEqualTo(data.getEmail());
+        assertThat(userProfile.getFirstName()).isEqualTo(data.getFirstName());
+        assertThat(userProfile.getLastName()).isEqualTo(data.getLastName());
 
+        assertThat(userProfile.getLanguagePreference())
+            .isEqualTo(LanguagePreference.valueOf(data.getLanguagePreference()));
+        assertThat(userProfile.isEmailCommsConsent()).isEqualTo(data.isEmailCommsConsent());
+        assertThat(userProfile.getEmailCommsConsentTs())
+            .isBetween(LocalDateTime.now().minusSeconds(10), LocalDateTime.now());
+        assertThat(userProfile.isPostalCommsConsent()).isEqualTo(data.isPostalCommsConsent());
+        assertThat(userProfile.getPostalCommsConsentTs())
+            .isBetween(LocalDateTime.now().minusSeconds(10), LocalDateTime.now());
+
+        assertThat(userProfile.getCreationChannel().toString()).isEqualTo(CreationChannel.API.toString());
+        assertThat(userProfile.getUserCategory().toString()).isEqualTo(data.getUserCategory());
+        assertThat(userProfile.getUserType().toString()).isEqualTo(data.getUserType());
+
+        assertThat(userProfile.getIdamId()).isNull();
+        assertThat(userProfile.getIdamStatus()).isNull();
+        assertThat(userProfile.getIdamRoles()).isEqualTo(data.getIdamRoles());
+        assertThat(userProfile.getIdamRegistrationResponse())
+            .isEqualTo(idamRegistrationInfo.getIdamRegistrationResponse().value());
+
+        //Timestamps set by hibernate at insertion time
+        assertThat(userProfile.getCreatedTs()).isNull();
+        assertThat(userProfile.getLastUpdatedTs()).isNull();
     }
 
     @Test
-    public void should_not_allow_null_values() {
+    public void should_set_defaults_when_optional_field_is_not_provided() {
 
-        assertThatThrownBy(() -> new UserProfile(null, email, firstname, lastname))
-            .isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> new UserProfile(idamId, null, firstname, lastname))
-            .isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> new UserProfile(idamId, email, null, lastname))
-            .isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> new UserProfile(idamId, email, firstname, null))
-            .isInstanceOf(NullPointerException.class);
+        UserProfile userProfile = new UserProfile(buildCreateUserProfileDataMandatoryFieldsOnly(),
+            new IdamRegistrationInfo(HttpStatus.ACCEPTED)
+        );
+
+        assertThat(userProfile.getLanguagePreference()).isEqualTo(LanguagePreference.EN);
+        assertThat(userProfile.isEmailCommsConsent()).isFalse();
+        assertThat(userProfile.getEmailCommsConsentTs())
+            .isBetween(LocalDateTime.now().minusSeconds(10), LocalDateTime.now());
+        assertThat(userProfile.isPostalCommsConsent()).isFalse();
+        assertThat(userProfile.getPostalCommsConsentTs())
+            .isBetween(LocalDateTime.now().minusSeconds(10), LocalDateTime.now());
+        assertThat(userProfile.getCreationChannel())
+            .isEqualTo(CreationChannel.API);
+        assertThat(userProfile.getUserProfileStatus())
+            .isEqualTo(UserProfileStatus.ACTIVE);
 
     }
+
 
 }

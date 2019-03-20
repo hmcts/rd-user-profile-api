@@ -1,7 +1,8 @@
 package uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.idam;
 
-import java.util.UUID;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.service.IdentityManagerService;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
 
@@ -9,7 +10,7 @@ import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfi
 public class IdamService implements IdentityManagerService {
 
     @Override
-    public String registerUser(CreateUserProfileData requestData) {
-        return UUID.randomUUID().toString();
+    public IdamRegistrationInfo registerUser(CreateUserProfileData requestData) {
+        return new IdamRegistrationInfo(HttpStatus.ACCEPTED);
     }
 }

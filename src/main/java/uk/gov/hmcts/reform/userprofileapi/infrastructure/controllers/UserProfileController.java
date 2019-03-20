@@ -6,6 +6,7 @@ import static uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.Identifi
 
 import io.swagger.annotations.*;
 import javax.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,7 @@ import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileReso
     produces = MediaType.APPLICATION_JSON_UTF8_VALUE
 )
 
+@Slf4j
 @RestController
 public class UserProfileController {
 
@@ -62,6 +64,8 @@ public class UserProfileController {
     )
     @ResponseBody
     public ResponseEntity<UserProfileResource> createUserProfile(@Valid @RequestBody CreateUserProfileData createUserProfileData) {
+        log.info("Creating new User Profile");
+
         requireNonNull(createUserProfileData, "createUserProfileData cannot be null");
 
         UserProfileResource resource = userProfileService.create(createUserProfileData);
@@ -100,6 +104,8 @@ public class UserProfileController {
     )
     @ResponseBody
     public ResponseEntity<UserProfileResource> getUserProfileById(@PathVariable String uuid) {
+        log.info("Getting user profile with id: {}", uuid);
+
         requireNonNull(uuid, "uuid cannot be null");
 
         return ResponseEntity.ok(
@@ -141,6 +147,8 @@ public class UserProfileController {
     )
     @ResponseBody
     public ResponseEntity<UserProfileResource> getUserProfileByEmail(@RequestParam String email) {
+        log.info("Getting user profile with email: {}", email);
+
         requireNonNull(email, "email cannot be null");
 
         return ResponseEntity.ok(
@@ -182,6 +190,8 @@ public class UserProfileController {
     )
     @ResponseBody
     public ResponseEntity<UserProfileResource> getUserProfileByIdamId(@RequestParam String idamId) {
+        log.info("Getting user profile with idamId: {}", idamId);
+
         requireNonNull(idamId, "idamId cannot be null");
 
         return ResponseEntity.ok(

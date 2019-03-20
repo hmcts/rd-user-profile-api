@@ -14,12 +14,23 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 @Component
-public class TestRequestHandler {
+public class IntTestRequestHandler {
 
     @Autowired
     private ObjectMapper objectMapper;
 
-    public TestRequestHandler() {
+    public IntTestRequestHandler() {
+    }
+
+    public MvcResult sendPost(MockMvc mockMvc,
+                              String path,
+                              String jsonBody,
+                              HttpStatus expectedHttpStatus) throws Exception {
+
+        return mockMvc.perform(post(path)
+            .content(jsonBody)
+            .contentType(APPLICATION_JSON_UTF8))
+            .andExpect(status().is(expectedHttpStatus.value())).andReturn();
     }
 
     public MvcResult sendPost(MockMvc mockMvc,
@@ -27,10 +38,8 @@ public class TestRequestHandler {
                               Object body,
                               HttpStatus expectedHttpStatus) throws Exception {
 
-        return mockMvc.perform(post(path)
-            .content(objectMapper.writeValueAsString(body))
-            .contentType(APPLICATION_JSON_UTF8))
-            .andExpect(status().is(expectedHttpStatus.value())).andReturn();
+        return sendPost(mockMvc, path, objectMapper.writeValueAsString(body), expectedHttpStatus);
+
     }
 
     public <T> T sendPost(MockMvc mockMvc,
@@ -53,7 +62,8 @@ public class TestRequestHandler {
 
         return mockMvc.perform(get(path)
             .contentType(APPLICATION_JSON_UTF8))
-            .andExpect(status().is(expectedHttpStatus.value())).andReturn();
+            .andExpect(status().is(expectedHttpStatus.value()))
+            .andReturn();
     }
 
     public <T> T sendGet(MockMvc mockMvc,

@@ -3,13 +3,15 @@ package uk.gov.hmcts.reform.userprofileapi.domain.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-import java.util.UUID;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
+import uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder;
+import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.idam.IdamService;
@@ -30,12 +32,12 @@ public class UserProfileCreatorTest {
     @Test
     public void should_create_user_profile_successfully() {
 
-        UUID idamId = UUID.randomUUID();
+        IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.ACCEPTED);
         CreateUserProfileData createUserProfileData =
-            new CreateUserProfileData("joe.bloggs@somewhere.com", "joe", "bloggs");
-        UserProfile userProfile = new UserProfile(idamId.toString(), "joe.bloggs@somewhere.com", "joe", "bloggs");
+            CreateUserProfileDataTestBuilder.buildCreateUserProfileData();
+        UserProfile userProfile = new UserProfile(createUserProfileData, idamRegistrationInfo);
 
-        when(idamService.registerUser(any())).thenReturn(idamId.toString());
+        when(idamService.registerUser(any())).thenReturn(idamRegistrationInfo);
         when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);
 
         UserProfile response = userProfileCreator.create(createUserProfileData);
@@ -48,6 +50,5 @@ public class UserProfileCreatorTest {
         verifyNoMoreInteractions(idamService, userProfileRepository);
 
     }
-
 
 }

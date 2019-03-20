@@ -1,67 +1,79 @@
 package uk.gov.hmcts.reform.userprofileapi.infrastructure.clients;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-import java.util.Random;
-import java.util.UUID;
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.stream.Stream;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserProfileResourceTest {
 
-    private final UUID uuid = UUID.randomUUID();
-    private final String idamId = UUID.randomUUID().toString();
-    private final String email = "someone@somewhere.com";
-    private final String firstname = String.valueOf(new Random().nextInt());
-    private final String lastname = String.valueOf(new Random().nextInt());
+    @Test
+    public void should_represent_same_number_of_fields_as_in_db() {
+        long numberOfFieldsInDb = 19;
+        long fieldCount = Stream.of(UserProfileResource.class.getDeclaredFields())
+            .filter(field -> !field.getName().startsWith("$"))
+            .map(Field::getName)
+            .count();
+
+        assertThat(fieldCount).isEqualTo(numberOfFieldsInDb);
+
+    }
 
     @Test
     public void should_create_successfully_with_no_args_constructor() {
 
         UserProfileResource userProfile = new UserProfileResource();
-        assertThat(userProfile).isNotNull();
-        assertThat(userProfile.getId()).isNull();
-        assertThat(userProfile.getIdamId()).isNull();
-        assertThat(userProfile.getEmail()).isNull();
-        assertThat(userProfile.getFirstName()).isNull();
-        assertThat(userProfile.getLastName()).isNull();
-
-    }
-
-    @Test
-    public void should_create_and_get_successfully() {
-
-        UserProfileResource userProfile = new UserProfileResource(uuid, idamId, email, firstname, lastname);
-
-        assertThat(userProfile.getId()).isEqualTo(uuid);
-        assertThat(userProfile.getIdamId()).isEqualTo(idamId);
-        assertThat(userProfile.getEmail()).isEqualTo(email);
-        assertThat(userProfile.getFirstName()).isEqualTo(firstname);
-        assertThat(userProfile.getLastName()).isEqualTo(lastname);
-
+        Arrays.asList(userProfile.getClass().getDeclaredMethods()).forEach(method -> {
+            try {
+                if (method.getName().startsWith("get")) {
+                    assertThat(method.invoke(userProfile)).isNull();
+                } else if (method.getName().startsWith("is")) {
+                    assertThat((Boolean) method.invoke(userProfile)).isFalse();
+                }
+            } catch (Exception e) {
+                Assertions.fail("unable to invoke method %s", method.getName());
+            }
+        });
     }
 
     @Test
     public void should_create_from_user_profile_successfully() {
 
-        UserProfile userProfile = mock(UserProfile.class);
+        UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfileWithAllFields();
+        UserProfileResource userProfileResource = new UserProfileResource(userProfile);
 
-        when(userProfile.getId()).thenReturn(uuid);
-        when(userProfile.getIdamId()).thenReturn(idamId);
-        when(userProfile.getEmail()).thenReturn(email);
-        when(userProfile.getFirstName()).thenReturn(firstname);
-        when(userProfile.getLastName()).thenReturn(lastname);
+        assertThat(userProfileResource.getId()).isNotNull();
+        assertThat(userProfileResource.getId()).isEqualTo(userProfile.getId());
+        assertThat(userProfileResource.getEmail()).isEqualTo(userProfile.getEmail());
+        assertThat(userProfileResource.getFirstName()).isEqualTo(userProfile.getFirstName());
+        assertThat(userProfileResource.getLastName()).isEqualTo(userProfile.getLastName());
+        assertThat(userProfileResource.getLanguagePreference()).isEqualTo(userProfile.getLanguagePreference().toString());
 
-        assertThat(userProfile.getId()).isNotNull();
-        assertThat(userProfile.getIdamId()).isEqualTo(idamId);
-        assertThat(userProfile.getEmail()).isEqualTo(email);
-        assertThat(userProfile.getFirstName()).isEqualTo(firstname);
-        assertThat(userProfile.getLastName()).isEqualTo(lastname);
+        assertThat(userProfileResource.isEmailCommsConsent()).isEqualTo(userProfile.isEmailCommsConsent());
+        assertThat(userProfileResource.getEmailCommsConsentTs()).isEqualTo(userProfile.getEmailCommsConsentTs());
+        assertThat(userProfileResource.isPostalCommsConsent()).isEqualTo(userProfile.isPostalCommsConsent());
+        assertThat(userProfileResource.getPostalCommsConsentTs()).isEqualTo(userProfile.getPostalCommsConsentTs());
+
+        assertThat(userProfileResource.getCreationChannel()).isEqualTo(userProfile.getCreationChannel().toString());
+        assertThat(userProfileResource.getUserCategory()).isEqualTo(userProfile.getUserCategory().toString());
+        assertThat(userProfileResource.getUserType()).isEqualTo(userProfile.getUserType().toString());
+
+        assertThat(userProfileResource.getIdamId()).isEqualTo(userProfile.getIdamId());
+        assertThat(userProfileResource.getIdamStatus()).isEqualTo(userProfile.getIdamStatus());
+        assertThat(userProfileResource.getIdamRoles()).isEqualTo(userProfile.getIdamRoles());
+        assertThat(userProfileResource.getIdamRegistrationResponse()).isEqualTo(userProfile.getIdamRegistrationResponse());
+
+        assertThat(userProfileResource.getCreatedTs()).isEqualTo(userProfile.getCreatedTs());
+        assertThat(userProfileResource.getLastUpdatedTs()).isEqualTo(userProfile.getLastUpdatedTs());
+        assertThat(userProfileResource.getIdamRoles()).isEqualTo(userProfile.getIdamRoles());
 
     }
 

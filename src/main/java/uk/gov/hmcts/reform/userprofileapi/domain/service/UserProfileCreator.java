@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.domain.service;
 
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.idam.IdamService;
@@ -18,14 +19,11 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
     }
 
     public UserProfile create(CreateUserProfileData profileData) {
-        String idamId = idamService.registerUser(profileData);
 
-        UserProfile userProfile =
-            new UserProfile(
-                idamId,
-                profileData.getEmail(),
-                profileData.getFirstName(),
-                profileData.getLastName());
+        // Call idam to register new user and store response
+        final IdamRegistrationInfo idamRegistrationInfo = idamService.registerUser(profileData);
+
+        UserProfile userProfile = new UserProfile(profileData, idamRegistrationInfo);
 
         return userProfileRepository.save(userProfile);
     }
