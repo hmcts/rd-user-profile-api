@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.idam.IdamService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IdamServiceTest {

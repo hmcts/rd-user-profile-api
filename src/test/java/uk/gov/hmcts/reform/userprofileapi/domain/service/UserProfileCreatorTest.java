@@ -12,7 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.IdamService;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.idam.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.UserProfileRepository;
 
 @RunWith(MockitoJUnitRunner.class)

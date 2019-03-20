@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.reform.userprofileapi.domain.service.UserProfileService;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileIdentifier;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileResource;
 
@@ -33,7 +34,11 @@ import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileReso
 public class UserProfileController {
     private static final Logger LOG = LoggerFactory.getLogger(UserProfileController.class);
 
-    private UserProfileService userProfileService;
+    private UserProfileService<RequestData> userProfileService;
+
+    public UserProfileController(UserProfileService<RequestData> userProfileService) {
+        this.userProfileService = userProfileService;
+    }
 
     @ApiOperation("Create a User Profile")
     @ApiResponses({
@@ -68,10 +73,6 @@ public class UserProfileController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(resource);
 
-    }
-
-    public UserProfileController(UserProfileService userProfileService) {
-        this.userProfileService = userProfileService;
     }
 
     @ApiOperation("Retrieves user profile data by id")

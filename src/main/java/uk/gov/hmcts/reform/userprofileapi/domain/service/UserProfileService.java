@@ -1,27 +1,26 @@
 package uk.gov.hmcts.reform.userprofileapi.domain.service;
 
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileIdentifier;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileResource;
 
 @Service
-public class UserProfileService {
+public class UserProfileService<T extends RequestData> {
 
-    private ResourceCreator<CreateUserProfileData> userProfileCreator;
-    private ResourceRetriever<UserProfileIdentifier> userProfileRetriever;
+    private ResourceCreator<T> resourceCreator;
+    private ResourceRetriever<T> resourceRetriever;
 
-    public UserProfileService(UserProfileCreator userProfileCreator, UserProfileRetriever userProfileRetriever) {
-        this.userProfileCreator = userProfileCreator;
-        this.userProfileRetriever = userProfileRetriever;
+    public UserProfileService(ResourceCreator<T> resourceCreator, ResourceRetriever<T> resourceRetriever) {
+        this.resourceCreator = resourceCreator;
+        this.resourceRetriever = resourceRetriever;
     }
 
-    public UserProfileResource create(CreateUserProfileData requestData) {
-        return new UserProfileResource(userProfileCreator.create(requestData));
+    public UserProfileResource create(T requestData) {
+        return new UserProfileResource(resourceCreator.create(requestData));
     }
 
-    public UserProfileResource retrieve(UserProfileIdentifier requestData) {
-        return new UserProfileResource(userProfileRetriever.retrieve(requestData));
+    public UserProfileResource retrieve(T requestData) {
+        return new UserProfileResource(resourceRetriever.retrieve(requestData));
     }
 
 }

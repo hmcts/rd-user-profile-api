@@ -14,10 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.userprofileapi.domain.service.UserProfileService;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.IdentifierName;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileIdentifier;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileResource;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserProfileControllerTest {
@@ -26,7 +23,7 @@ public class UserProfileControllerTest {
     private ArgumentCaptor<UserProfileIdentifier> identifierArgumentCaptor;
 
     @Mock
-    private UserProfileService requestManager;
+    private UserProfileService<RequestData> userProfileService;
 
     @InjectMocks
     private UserProfileController userProfileController;
@@ -37,12 +34,12 @@ public class UserProfileControllerTest {
         CreateUserProfileData createUserProfileData = new CreateUserProfileData("test@somewhere.com", "jane", "doe");
         UserProfileResource expectedBody = new UserProfileResource(UUID.randomUUID(), UUID.randomUUID().toString(), "test-idamId", "jane", "doe");
 
-        when(requestManager.create(createUserProfileData)).thenReturn(expectedBody);
+        when(userProfileService.create(createUserProfileData)).thenReturn(expectedBody);
 
         ResponseEntity<UserProfileResource> resource = userProfileController.createUserProfile(createUserProfileData);
         assertThat(resource.getBody()).isEqualToComparingFieldByField(expectedBody);
 
-        verify(requestManager).create(any(CreateUserProfileData.class));
+        verify(userProfileService).create(any(CreateUserProfileData.class));
 
     }
 
@@ -52,12 +49,12 @@ public class UserProfileControllerTest {
         CreateUserProfileData createUserProfileData = new CreateUserProfileData("test@somewhere.com", "jane", "doe");
         IllegalStateException ex = new IllegalStateException("this is a test exception");
 
-        when(requestManager.create(createUserProfileData)).thenThrow(ex);
+        when(userProfileService.create(createUserProfileData)).thenThrow(ex);
 
         assertThatThrownBy(() -> userProfileController.createUserProfile(createUserProfileData))
             .isEqualTo(ex);
 
-        verify(requestManager).create(any(CreateUserProfileData.class));
+        verify(userProfileService).create(any(CreateUserProfileData.class));
 
     }
 
@@ -68,7 +65,7 @@ public class UserProfileControllerTest {
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("createUserProfileData");
 
-        verifyZeroInteractions(requestManager);
+        verifyZeroInteractions(userProfileService);
 
     }
 
@@ -77,12 +74,12 @@ public class UserProfileControllerTest {
 
         CreateUserProfileData createUserProfileData = new CreateUserProfileData("test@somewhere.com", "jane", "doe");
 
-        when(requestManager.create(createUserProfileData)).thenReturn(null);
+        when(userProfileService.create(createUserProfileData)).thenReturn(null);
 
         ResponseEntity<UserProfileResource> resource = userProfileController.createUserProfile(createUserProfileData);
         assertThat(resource.getBody()).isNull();
 
-        verify(requestManager).create(any(CreateUserProfileData.class));
+        verify(userProfileService).create(any(CreateUserProfileData.class));
 
     }
 
@@ -92,14 +89,14 @@ public class UserProfileControllerTest {
         UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID, UUID.randomUUID().toString());
         UserProfileResource expectedResource = new UserProfileResource(UUID.randomUUID(), UUID.randomUUID().toString(), "test-idamId", "jane", "doe");
 
-        when(requestManager.retrieve(identifierArgumentCaptor.capture())).thenReturn(expectedResource);
+        when(userProfileService.retrieve(identifierArgumentCaptor.capture())).thenReturn(expectedResource);
 
         ResponseEntity<UserProfileResource> resource = userProfileController.getUserProfileById(identifier.getValue());
 
         assertThat(resource.getBody()).isEqualToComparingFieldByField(expectedResource);
         assertThat(identifierArgumentCaptor.getValue()).isEqualToComparingFieldByField(identifier);
 
-        verify(requestManager).retrieve(any(UserProfileIdentifier.class));
+        verify(userProfileService).retrieve(any(UserProfileIdentifier.class));
 
     }
 
@@ -108,13 +105,13 @@ public class UserProfileControllerTest {
         UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID, UUID.randomUUID().toString());
         IllegalStateException ex = new IllegalStateException("This is a test exception");
 
-        when(requestManager.retrieve(identifierArgumentCaptor.capture())).thenThrow(ex);
+        when(userProfileService.retrieve(identifierArgumentCaptor.capture())).thenThrow(ex);
 
         assertThatThrownBy(() -> userProfileController.getUserProfileById(identifier.getValue())).isEqualTo(ex);
 
         assertThat(identifierArgumentCaptor.getValue()).isEqualToComparingFieldByField(identifier);
 
-        verify(requestManager).retrieve(any(UserProfileIdentifier.class));
+        verify(userProfileService).retrieve(any(UserProfileIdentifier.class));
 
     }
 
@@ -125,7 +122,7 @@ public class UserProfileControllerTest {
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("uuid");
 
-        verifyZeroInteractions(requestManager);
+        verifyZeroInteractions(userProfileService);
 
     }
 
@@ -136,14 +133,14 @@ public class UserProfileControllerTest {
         UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.EMAIL, "test@email.com");
         UserProfileResource expectedResource = new UserProfileResource(UUID.randomUUID(), UUID.randomUUID().toString(), "test-idamId", "jane", "doe");
 
-        when(requestManager.retrieve(identifierArgumentCaptor.capture())).thenReturn(expectedResource);
+        when(userProfileService.retrieve(identifierArgumentCaptor.capture())).thenReturn(expectedResource);
 
         ResponseEntity<UserProfileResource> resource = userProfileController.getUserProfileByEmail(identifier.getValue());
 
         assertThat(resource.getBody()).isEqualToComparingFieldByField(expectedResource);
         assertThat(identifierArgumentCaptor.getValue()).isEqualToComparingFieldByField(identifier);
 
-        verify(requestManager).retrieve(any(UserProfileIdentifier.class));
+        verify(userProfileService).retrieve(any(UserProfileIdentifier.class));
 
     }
 
@@ -153,13 +150,13 @@ public class UserProfileControllerTest {
         UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.EMAIL, UUID.randomUUID().toString());
         IllegalStateException ex = new IllegalStateException("This is a test exception");
 
-        when(requestManager.retrieve(identifierArgumentCaptor.capture())).thenThrow(ex);
+        when(userProfileService.retrieve(identifierArgumentCaptor.capture())).thenThrow(ex);
 
         assertThatThrownBy(() -> userProfileController.getUserProfileByEmail(identifier.getValue())).isEqualTo(ex);
 
         assertThat(identifierArgumentCaptor.getValue()).isEqualToComparingFieldByField(identifier);
 
-        verify(requestManager).retrieve(any(UserProfileIdentifier.class));
+        verify(userProfileService).retrieve(any(UserProfileIdentifier.class));
 
     }
 
@@ -170,7 +167,7 @@ public class UserProfileControllerTest {
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("email");
 
-        verifyZeroInteractions(requestManager);
+        verifyZeroInteractions(userProfileService);
 
     }
 
@@ -180,14 +177,14 @@ public class UserProfileControllerTest {
         UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.IDAMID, "test-idam-id");
         UserProfileResource expectedResource = new UserProfileResource(UUID.randomUUID(), UUID.randomUUID().toString(), "test-idamId", "jane", "doe");
 
-        when(requestManager.retrieve(identifierArgumentCaptor.capture())).thenReturn(expectedResource);
+        when(userProfileService.retrieve(identifierArgumentCaptor.capture())).thenReturn(expectedResource);
 
         ResponseEntity<UserProfileResource> resource = userProfileController.getUserProfileByIdamId(identifier.getValue());
 
         assertThat(resource.getBody()).isEqualToComparingFieldByField(expectedResource);
         assertThat(identifierArgumentCaptor.getValue()).isEqualToComparingFieldByField(identifier);
 
-        verify(requestManager).retrieve(any(UserProfileIdentifier.class));
+        verify(userProfileService).retrieve(any(UserProfileIdentifier.class));
 
     }
 
@@ -197,13 +194,13 @@ public class UserProfileControllerTest {
         UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.IDAMID, UUID.randomUUID().toString());
         IllegalStateException ex = new IllegalStateException("This is a test exception");
 
-        when(requestManager.retrieve(identifierArgumentCaptor.capture())).thenThrow(ex);
+        when(userProfileService.retrieve(identifierArgumentCaptor.capture())).thenThrow(ex);
 
         assertThatThrownBy(() -> userProfileController.getUserProfileByIdamId(identifier.getValue())).isEqualTo(ex);
 
         assertThat(identifierArgumentCaptor.getValue()).isEqualToComparingFieldByField(identifier);
 
-        verify(requestManager).retrieve(any(UserProfileIdentifier.class));
+        verify(userProfileService).retrieve(any(UserProfileIdentifier.class));
 
     }
 
@@ -214,7 +211,7 @@ public class UserProfileControllerTest {
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("idamId");
 
-        verifyZeroInteractions(requestManager);
+        verifyZeroInteractions(userProfileService);
 
     }
 

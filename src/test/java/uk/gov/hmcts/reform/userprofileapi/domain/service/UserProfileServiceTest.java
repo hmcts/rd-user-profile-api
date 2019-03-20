@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileIdentifier;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileResource;
 
@@ -24,7 +25,7 @@ public class UserProfileServiceTest {
     private UserProfileRetriever userProfileRetriever;
 
     @InjectMocks
-    private UserProfileService userProfileService;
+    private UserProfileService<RequestData> userProfileService;
 
     @Test
     public void should_call_creator_create_method_successfully() {
