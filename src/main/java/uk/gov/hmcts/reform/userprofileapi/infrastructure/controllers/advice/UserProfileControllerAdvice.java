@@ -5,6 +5,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -49,12 +50,22 @@ public class UserProfileControllerAdvice {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    protected ResponseEntity<String> handleDataIntegrityViolationException(
+        HttpServletRequest request,
+        DataIntegrityViolationException e
+    ) {
+        LOG.info(LOG_STRING, e.getMessage());
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(Exception.class)
-    protected ResponseEntity<String> handleUnknownRuntimeException(
+    protected ResponseEntity<String> handleUnknownException(
         HttpServletRequest request,
         Exception e
     ) {
         LOG.info(LOG_STRING, e.getMessage());
+        LOG.info(LOG_STRING, e);
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

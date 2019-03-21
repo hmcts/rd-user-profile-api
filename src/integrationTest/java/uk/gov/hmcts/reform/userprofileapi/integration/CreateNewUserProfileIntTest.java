@@ -28,7 +28,7 @@ import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileReso
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
 @Transactional
-public class CreateNewUserProfileTest {
+public class CreateNewUserProfileIntTest {
 
     private MockMvc mockMvc;
 
@@ -46,7 +46,7 @@ public class CreateNewUserProfileTest {
     }
 
     @Test
-    public void should_return_200_and_create_user_profile_resource() throws Exception {
+    public void should_return_201_and_create_user_profile_resource() throws Exception {
 
         CreateUserProfileData data =
             new CreateUserProfileData("joe.bloggs@somewhere.com", "joe", "bloggs");
@@ -82,7 +82,7 @@ public class CreateNewUserProfileTest {
     }
 
     @Test
-    public void should_return_400() throws Exception {
+    public void should_return_400_when_mandatory_field_missing() throws Exception {
 
         String json = "{\"firstName\":\"iWvKhGLXCiOMMbZtngbR\",\"lastName\":\"mXlpNLcbodhABAWKCKbj\"}";
 

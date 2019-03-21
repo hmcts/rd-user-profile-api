@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -66,7 +67,22 @@ public class UserProfileControllerAdviceTest {
     }
 
     @Test
-    public void should_return_500_when_unhandled_exception_() {
+    public void should_return_400_when_duplicate_email() {
+        String message = "test-ex-message";
+        DataIntegrityViolationException ex = mock(DataIntegrityViolationException.class);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        ResponseEntity<String> expected = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        when(ex.getMessage()).thenReturn(message);
+
+        ResponseEntity response = advice.handleDataIntegrityViolationException(request, ex);
+
+        assertThat(response).isEqualToComparingFieldByField(expected);
+
+    }
+
+    @Test
+    public void should_return_500_when_unhandled_exception() {
         String message = "test-ex-message";
         Exception ex = mock(Exception.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
@@ -74,7 +90,7 @@ public class UserProfileControllerAdviceTest {
 
         when(ex.getMessage()).thenReturn(message);
 
-        ResponseEntity response =  advice.handleUnknownRuntimeException(request, ex);
+        ResponseEntity response =  advice.handleUnknownException(request, ex);
 
         assertThat(response).isEqualToComparingFieldByField(expected);
     }

@@ -17,9 +17,9 @@ import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileReso
 import uk.gov.hmcts.reform.userprofileapi.util.AuthorizationHeadersProvider;
 
 @Service
-public class TestRequestHandler {
+public class FuncTestRequestHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TestRequestHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FuncTestRequestHandler.class);
 
     @Autowired
     private AuthorizationHeadersProvider authorizationHeadersProvider;

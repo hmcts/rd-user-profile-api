@@ -28,7 +28,7 @@ import uk.gov.hmcts.reform.userprofileapi.integration.util.TestUserProfileReposi
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
 @Transactional
-public class RetrieveUserProfileTest {
+public class RetrieveUserProfileIntTest {
 
     private static final String APP_BASE_PATH = "/profiles";
     private static final String SLASH = "/";

@@ -29,7 +29,7 @@ import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.UserProfileR
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
 @Transactional
-public class RetrieveUserProfileInternalServerErrorTest {
+public class RetrieveUserProfileInternalServerErrorIntTest {
 
     private static final String APP_BASE_PATH = "/profiles";
     private static final String SLASH = "/";

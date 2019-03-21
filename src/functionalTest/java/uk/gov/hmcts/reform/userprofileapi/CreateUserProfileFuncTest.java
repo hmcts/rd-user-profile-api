@@ -17,21 +17,21 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.hmcts.reform.userprofileapi.client.TestRequestHandler;
+import uk.gov.hmcts.reform.userprofileapi.client.FuncTestRequestHandler;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileResource;
 
 @RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest
 @ActiveProfiles("functional")
-public class CreateUserProfileFunctionalTest {
+public class CreateUserProfileFuncTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CreateUserProfileFunctionalTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CreateUserProfileFuncTest.class);
 
     @Value("${targetInstance}") private String targetInstance;
 
     @Autowired private Environment environment;
-    @Autowired private TestRequestHandler testRequestHandler;
+    @Autowired private FuncTestRequestHandler testRequestHandler;
 
     private String requestUri = "/profiles";
 
@@ -110,6 +110,21 @@ public class CreateUserProfileFunctionalTest {
         JSONObject json = new JSONObject(testRequestHandler.getObjectMapper().writeValueAsString(data));
 
         testRequestHandler.doPost(json.toString(), HttpStatus.METHOD_NOT_ALLOWED, requestUri + "/id");
+    }
+
+    @Test
+    public void should_return_400_when_attempting_to_add_duplicate_emails() throws Exception {
+
+        final String email = randomAlphabetic(10) + "@somewhere.com";
+        CreateUserProfileData data = new CreateUserProfileData(email,
+            randomAlphabetic(20),
+            randomAlphabetic(20));
+
+        UserProfileResource createdResource = testRequestHandler.doPostAndVerify(data, HttpStatus.CREATED, requestUri);
+        testRequestHandler.doGetAndVerify(createdResource, requestUri + "/" + createdResource.getId());
+
+        testRequestHandler.doPost(testRequestHandler.getObjectMapper().writeValueAsString(data), HttpStatus.BAD_REQUEST, requestUri);
+
     }
 
 }
