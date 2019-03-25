@@ -60,9 +60,11 @@ public class CreateNewUserProfileIntTest {
                 UserProfileResource.class
             );
 
-        assertThat(createdResource).isEqualToIgnoringGivenFields(createdResource, "id");
+        assertThat(createdResource).isEqualToIgnoringGivenFields(data, "id", "idamId");
         assertThat(createdResource.getId()).isNotNull();
         assertThat(createdResource.getId()).isInstanceOf(UUID.class);
+        assertThat(createdResource.getIdamId()).isNotNull();
+        assertThat(createdResource.getIdamId()).isInstanceOf(String.class);
 
     }
 
