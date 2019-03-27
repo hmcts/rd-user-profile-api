@@ -35,7 +35,7 @@ spring:
       remove-abandoned: true
       remove-abandoned-timeout: 60
       log-abandoned: true
-      abandon-when-percentage-full:
+      abandon-when-percentage-full: 0
   jpa:
     properties:
       hibernate:
