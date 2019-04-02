@@ -28,13 +28,13 @@ public class UserProfileResource {
     public UserProfileResource(UUID uuid,
                                String idamIdentifier,
                                String emailAdd,
-                               String fName,
-                               String lName) {
+                               String fname,
+                               String lname) {
         this.id = uuid;
         this.idamId = idamIdentifier;
         this.email = emailAdd;
-        this.firstName = fName;
-        this.lastName = lName;
+        this.firstName = fname;
+        this.lastName = lname;
     }
 
 }
