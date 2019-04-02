@@ -16,6 +16,7 @@ public class CreateUserProfileData implements RequestData {
     private String lastName;
 
     public CreateUserProfileData() {
+        //noop constructor
     }
 
     public CreateUserProfileData(String email, String firstName, String lastName) {

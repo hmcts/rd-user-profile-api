@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.userprofileapi.infrastructure.clients;
 
 import java.util.UUID;
+import lombok.Getter;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 
+@Getter
 public class UserProfileResource {
 
     private UUID id;
@@ -12,6 +14,7 @@ public class UserProfileResource {
     private String lastName;
 
     public UserProfileResource() {
+        //noop for deserialization
     }
 
     public UserProfileResource(UserProfile userProfile) {
@@ -22,36 +25,16 @@ public class UserProfileResource {
         this.lastName = userProfile.getLastName();
     }
 
-    public UserProfileResource(UUID id,
-                               String idamId,
-                               String email,
-                               String firstName,
-                               String lastName) {
-        this.id = id;
-        this.idamId = idamId;
-        this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public String getIdamId() {
-        return idamId;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
+    public UserProfileResource(UUID uuid,
+                               String idamIdentifier,
+                               String emailAdd,
+                               String fName,
+                               String lName) {
+        this.id = uuid;
+        this.idamId = idamIdentifier;
+        this.email = emailAdd;
+        this.firstName = fName;
+        this.lastName = lName;
     }
 
 }

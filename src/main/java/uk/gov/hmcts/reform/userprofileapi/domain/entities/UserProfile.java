@@ -21,6 +21,7 @@ public class UserProfile {
     private String lastName;
 
     public UserProfile() {
+        //noop
     }
 
     public UserProfile(String idamId, String email, String firstName, String lastName) {

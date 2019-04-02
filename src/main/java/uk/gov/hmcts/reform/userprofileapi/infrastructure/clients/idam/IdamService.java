@@ -10,7 +10,6 @@ public class IdamService implements IdentityManagerService {
 
     @Override
     public String registerUser(CreateUserProfileData requestData) {
-        //TODO Currently Stubbed and not implemented yet
         return UUID.randomUUID().toString();
     }
 }

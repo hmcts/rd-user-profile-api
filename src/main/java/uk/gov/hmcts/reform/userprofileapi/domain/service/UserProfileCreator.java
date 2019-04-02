@@ -18,11 +18,6 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
     }
 
     public UserProfile create(CreateUserProfileData profileData) {
-
-        //TODO complete the following:
-        //Check if email already exists in DB as must be unique?
-        //1: call idam to register new user and get an IDAM ID
-
         String idamId = idamService.registerUser(profileData);
 
         UserProfile userProfile =
