@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.userprofileapi.integration;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 import static org.springframework.http.HttpStatus.*;
@@ -56,7 +57,7 @@ public class RetrieveUserProfileInternalServerErrorIntTest {
         when(userProfileRepository.findById(any(UUID.class)))
             .thenThrow(new RuntimeException("This is a test exception"));
 
-        CreateUserProfileData data = new CreateUserProfileData();
+        CreateUserProfileData data = mock(CreateUserProfileData.class);
 
         assertThatThrownBy(() ->
             testRequestHandler.sendPost(

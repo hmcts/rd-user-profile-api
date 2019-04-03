@@ -6,8 +6,6 @@ import static uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.Identifi
 
 import io.swagger.annotations.*;
 import javax.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +30,6 @@ import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileReso
 
 @RestController
 public class UserProfileController {
-    private static final Logger LOG = LoggerFactory.getLogger(UserProfileController.class);
 
     private UserProfileService<RequestData> userProfileService;
 
@@ -65,8 +62,6 @@ public class UserProfileController {
     )
     @ResponseBody
     public ResponseEntity<UserProfileResource> createUserProfile(@Valid @RequestBody CreateUserProfileData createUserProfileData) {
-        LOG.info("Creating new User Profile");
-
         requireNonNull(createUserProfileData, "createUserProfileData cannot be null");
 
         UserProfileResource resource = userProfileService.create(createUserProfileData);
@@ -105,8 +100,6 @@ public class UserProfileController {
     )
     @ResponseBody
     public ResponseEntity<UserProfileResource> getUserProfileById(@PathVariable String uuid) {
-        LOG.info("Getting user profile with id: {}", uuid);
-
         requireNonNull(uuid, "uuid cannot be null");
 
         return ResponseEntity.ok(
@@ -148,8 +141,6 @@ public class UserProfileController {
     )
     @ResponseBody
     public ResponseEntity<UserProfileResource> getUserProfileByEmail(@RequestParam String email) {
-        LOG.info("Getting user profile with email: {}", email);
-
         requireNonNull(email, "email cannot be null");
 
         return ResponseEntity.ok(
@@ -191,8 +182,6 @@ public class UserProfileController {
     )
     @ResponseBody
     public ResponseEntity<UserProfileResource> getUserProfileByIdamId(@RequestParam String idamId) {
-        LOG.info("Getting user profile with idamId: {}", idamId);
-
         requireNonNull(idamId, "idamId cannot be null");
 
         return ResponseEntity.ok(

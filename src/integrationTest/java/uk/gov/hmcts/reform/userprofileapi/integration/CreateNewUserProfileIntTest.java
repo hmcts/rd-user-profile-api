@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.userprofileapi.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
@@ -71,7 +72,7 @@ public class CreateNewUserProfileIntTest {
     @Test
     public void should_return_400_and_not_create_user_profile_when_empty_body() {
 
-        CreateUserProfileData data = new CreateUserProfileData();
+        CreateUserProfileData data = mock(CreateUserProfileData.class);
 
         assertThatThrownBy(() ->
             testRequestHandler.sendPost(

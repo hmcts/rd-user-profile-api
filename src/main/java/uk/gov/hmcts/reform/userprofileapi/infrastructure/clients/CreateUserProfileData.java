@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.userprofileapi.infrastructure.clients;
 
 import javax.validation.constraints.NotNull;
-import org.springframework.stereotype.Component;
+import lombok.NoArgsConstructor;
 
-@Component
+@NoArgsConstructor
 public class CreateUserProfileData implements RequestData {
 
     @NotNull
@@ -14,10 +14,6 @@ public class CreateUserProfileData implements RequestData {
 
     @NotNull
     private String lastName;
-
-    public CreateUserProfileData() {
-        //noop constructor
-    }
 
     public CreateUserProfileData(String email, String firstName, String lastName) {
         this.email = email;
