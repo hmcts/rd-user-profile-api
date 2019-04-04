@@ -7,11 +7,10 @@ import uk.gov.hmcts.reform.logging.exception.UnknownErrorCodeException;
 public class IdentityManagerResponseException extends UnknownErrorCodeException {
 
     public IdentityManagerResponseException(
-        AlertLevel alertLevel,
         String message,
         Throwable cause) {
 
-        super(alertLevel, message, cause);
+        super(AlertLevel.P2, message, cause);
 
     }
 

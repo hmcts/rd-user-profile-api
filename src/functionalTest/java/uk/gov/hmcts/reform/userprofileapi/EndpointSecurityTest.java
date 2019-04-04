@@ -25,7 +25,7 @@ public class EndpointSecurityTest {
     @Value("${targetInstance}") private String targetInstance;
 
     private final List<String> endpoints =
-        ImmutableList.of("/profiles/1");
+        ImmutableList.of("/profiles/1", "/profiles");
 
     @Autowired private AuthorizationHeadersProvider authorizationHeadersProvider;
 
@@ -86,13 +86,13 @@ public class EndpointSecurityTest {
 
         String invalidServiceToken = "invalid";
 
-        endpoints.forEach(callbackEndpoint ->
+        endpoints.forEach(endpoint ->
 
             SerenityRest
                 .given()
                 .header("ServiceAuthorization", invalidServiceToken)
                 .when()
-                .get(callbackEndpoint)
+                .get(endpoint)
                 .then()
                 .statusCode(HttpStatus.FORBIDDEN.value())
         );

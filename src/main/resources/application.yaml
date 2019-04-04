@@ -36,7 +36,12 @@ spring:
       remove-abandoned-timeout: 60
       log-abandoned: true
       abandon-when-percentage-full: 0
-
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
 
 security:
   anonymousPaths:
@@ -48,7 +53,6 @@ security:
     - "/v2/api-docs"
     - "/webjars/springfox-swagger-ui/**"
   authorisedServices:
-    - "ccd_gw"
     - "iac"
 
 ### dependency configuration
