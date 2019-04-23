@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.IdentifierName;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileIdentifier;
@@ -34,13 +35,7 @@ public class UserProfileRetrieverTest {
     @Test
     public void should_run_query_and_respond_with_user_profile() {
 
-        UserProfile userProfile =
-            new UserProfile(
-                "test-idam-id",
-                "joe.bloggs@somewhere.com",
-                "joe",
-                "bloggs");
-
+        UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
 
         Stream.of(IdentifierName.values())
             .forEach(identifierName -> {

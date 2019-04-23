@@ -3,11 +3,11 @@ package uk.gov.hmcts.reform.userprofileapi.infrastructure.controllers.advice;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import javax.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,11 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.domain.service.ResourceNotFoundException;
 
+@Slf4j
 @ControllerAdvice(basePackages = "uk.gov.hmcts.reform.userprofileapi.infrastructure.controllers")
 @RequestMapping(produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
 public class UserProfileControllerAdvice {
-
-    private static final Logger LOG = LoggerFactory.getLogger(UserProfileControllerAdvice.class);
 
     private static final String LOG_STRING = "handling exception: {}";
 
@@ -28,7 +27,16 @@ public class UserProfileControllerAdvice {
         HttpServletRequest request,
         RequiredFieldMissingException e
     ) {
-        LOG.info(LOG_STRING, e.getMessage());
+        logException(e);
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    protected ResponseEntity<String> handleMethodArgumentNotValidException(
+        HttpServletRequest request,
+        MethodArgumentNotValidException e
+    ) {
+        logException(e);
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
@@ -37,17 +45,8 @@ public class UserProfileControllerAdvice {
         HttpServletRequest request,
         ResourceNotFoundException e
     ) {
-        LOG.info(LOG_STRING, e.getMessage());
+        logException(e);
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    protected ResponseEntity<String> handleMethodArgumentNotValidException(
-        HttpServletRequest request,
-        MethodArgumentNotValidException e
-    ) {
-        LOG.info(LOG_STRING, e.getMessage());
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -55,7 +54,16 @@ public class UserProfileControllerAdvice {
         HttpServletRequest request,
         DataIntegrityViolationException e
     ) {
-        LOG.info(LOG_STRING, e.getMessage());
+        logException(e);
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(HttpMessageConversionException.class)
+    protected ResponseEntity<String> handleHttpMessageConversionException(
+        HttpServletRequest request,
+        HttpMessageConversionException e
+    ) {
+        logException(e);
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
@@ -64,8 +72,11 @@ public class UserProfileControllerAdvice {
         HttpServletRequest request,
         Exception e
     ) {
-        LOG.info(LOG_STRING, e.getMessage());
-        LOG.info(LOG_STRING, e);
+        logException(e);
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private void logException(Exception e) {
+        log.info(LOG_STRING, e.getMessage());
     }
 }

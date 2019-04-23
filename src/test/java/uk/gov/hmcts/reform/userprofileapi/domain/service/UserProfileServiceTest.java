@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.RequestData;
@@ -32,8 +33,7 @@ public class UserProfileServiceTest {
 
         CreateUserProfileData userProfileData = mock(CreateUserProfileData.class);
 
-        UserProfile userProfile =
-            new UserProfile("test-idam-id", "joe.bloggs@somewhere.com", "joe", "bloggs");
+        UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         UserProfileResource expected = new UserProfileResource(userProfile);
 
         when(userProfileCreator.create(userProfileData)).thenReturn(userProfile);
@@ -49,8 +49,7 @@ public class UserProfileServiceTest {
     public void should_call_retriever_retrieve_method_successfully() {
         UserProfileIdentifier identifier = mock(UserProfileIdentifier.class);
 
-        UserProfile userProfile =
-            new UserProfile("test-idam-id", "joe.bloggs@somewhere.com", "joe", "bloggs");
+        UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         UserProfileResource expected = new UserProfileResource(userProfile);
 
         when(userProfileRetriever.retrieve(identifier)).thenReturn(userProfile);
