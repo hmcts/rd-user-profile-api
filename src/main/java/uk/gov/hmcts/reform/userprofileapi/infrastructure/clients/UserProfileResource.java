@@ -9,7 +9,8 @@ import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 public class UserProfileResource {
 
     private UUID id;
-    private String email;
+    private Integer idamStatusCode;
+    /*private String email;
     private String firstName;
     private String lastName;
     private String languagePreference;
@@ -31,7 +32,7 @@ public class UserProfileResource {
     private LocalDateTime createdTs;
     private LocalDateTime lastUpdatedTs;
 
-    private String userProfileStatus;
+    private String userProfileStatus;*/
 
     public UserProfileResource() {
     }
@@ -41,7 +42,8 @@ public class UserProfileResource {
         requireNonNull(userProfile, "userProfile must not be null");
 
         this.id = userProfile.getId();
-        this.email = userProfile.getEmail();
+        this.idamStatusCode = userProfile.getIdamRegistrationResponse();
+       /* this.email = userProfile.getEmail();
         this.firstName = userProfile.getFirstName();
         this.lastName = userProfile.getLastName();
 
@@ -63,15 +65,18 @@ public class UserProfileResource {
         this.createdTs = userProfile.getCreatedTs();
         this.lastUpdatedTs = userProfile.getLastUpdatedTs();
 
-        this.userProfileStatus = userProfile.getUserProfileStatus().toString();
+        this.userProfileStatus = userProfile.getUserProfileStatus().toString();*/
 
     }
 
     public UUID getId() {
         return id;
     }
+    public Integer getIdamStatusCode() {
+        return idamStatusCode;
+    }
 
-    public String getEmail() {
+   /* public String getEmail() {
         return email;
     }
 
@@ -141,6 +146,6 @@ public class UserProfileResource {
 
     public String getUserProfileStatus() {
         return userProfileStatus;
-    }
+    }*/
 }
 
