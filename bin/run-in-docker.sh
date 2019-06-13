@@ -19,8 +19,8 @@ print_help() {
   "
 }
 
-GRADLE_CLEAN=false
-GRADLE_INSTALL=false
+GRADLE_CLEAN=true
+GRADLE_INSTALL=true
 
 execute_script() {
   cd $(dirname "$0")/..

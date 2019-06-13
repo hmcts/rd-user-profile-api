@@ -6,10 +6,10 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 
-public class UserProfileResource {
+public class CreateUserProfileResponse {
 
     private UUID id;
-    private Integer idamStatusCode;
+    private Integer idamRegistrationResponse;
     /*private String email;
     private String firstName;
     private String lastName;
@@ -34,15 +34,15 @@ public class UserProfileResource {
 
     private String userProfileStatus;*/
 
-    public UserProfileResource() {
+    public CreateUserProfileResponse() {
     }
 
-    public UserProfileResource(UserProfile userProfile) {
+    public CreateUserProfileResponse(UserProfile userProfile) {
 
         requireNonNull(userProfile, "userProfile must not be null");
 
         this.id = userProfile.getId();
-        this.idamStatusCode = userProfile.getIdamRegistrationResponse();
+        this.idamRegistrationResponse = userProfile.getIdamRegistrationResponse();
        /* this.email = userProfile.getEmail();
         this.firstName = userProfile.getFirstName();
         this.lastName = userProfile.getLastName();
@@ -73,7 +73,7 @@ public class UserProfileResource {
         return id;
     }
     public Integer getIdamStatusCode() {
-        return idamStatusCode;
+        return idamRegistrationResponse;
     }
 
    /* public String getEmail() {
