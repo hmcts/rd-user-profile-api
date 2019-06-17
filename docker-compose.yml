@@ -41,4 +41,4 @@ services:
     environment:
       - DB_UP_PASSWORD="${DB_UP_PASSWORD:-dbuserprofile}"
     ports:
-      - 5432:5432
+      - 5432

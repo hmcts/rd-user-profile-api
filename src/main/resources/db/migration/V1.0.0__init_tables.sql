@@ -1,21 +1,23 @@
-CREATE TABLE user_profile
-(
-  ID                         UUID         NOT NULL,
-  EMAIL                      VARCHAR(255) NOT NULL UNIQUE,
-  FIRST_NAME                 VARCHAR(255) NOT NULL,
-  LAST_NAME                  VARCHAR(255) NOT NULL,
-  LANGUAGE_PREFERENCE        VARCHAR(255) NOT NULL,
-  EMAIL_COMMS_CONSENT        BOOLEAN      NOT NULL DEFAULT FALSE,
-  EMAIL_COMMS_CONSENT_TS     TIMESTAMP,
-  POSTAL_COMMS_CONSENT       BOOLEAN      NOT NULL DEFAULT FALSE,
-  POSTAL_COMMS_CONSENT_TS    TIMESTAMP,
-  USER_CATEGORY              VARCHAR(255) NOT NULL,
-  USER_TYPE                  VARCHAR(255) NOT NULL,
-  EXTENDED_ATTRIBUTES        JSON,
-  IDAM_STATUS                VARCHAR(255),
-  IDAM_REGISTRATION_RESPONSE SMALLINT,
-  CREATED_TS                 TIMESTAMP    NOT NULL,
-  LAST_UPDATED_TS            TIMESTAMP    NOT NULL,
+CREATE schema if not exists dbuserprofile;
 
-  PRIMARY KEY (ID)
+CREATE TABLE user_profile(
+	id uuid NOT NULL,
+	email varchar(255) NOT NULL,
+	first_name varchar(255) NOT NULL,
+	last_name varchar(255) NOT NULL,
+	language_preference varchar(255) NOT NULL,
+	email_comms_consent boolean NOT NULL DEFAULT false,
+	email_comms_consent_ts timestamp,
+	postal_comms_consent boolean NOT NULL DEFAULT false,
+	postal_comms_consent_ts timestamp,
+	user_category varchar(255) NOT NULL,
+	user_type varchar(255) NOT NULL,
+	extended_attributes json,
+	idam_status varchar(255),
+	idam_registration_response integer,
+	created_ts timestamp NOT NULL,
+	last_updated_ts timestamp NOT NULL,
+	CONSTRAINT "user_profilePK" PRIMARY KEY (id),
+	CONSTRAINT uc_email_col UNIQUE (email)
+
 );
