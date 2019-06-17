@@ -1,16 +1,14 @@
 package uk.gov.hmcts.reform.userprofileapi.domain;
 
-import org.springframework.http.HttpStatus;
+import lombok.Getter;
+import java.util.List;
 
-public class IdamRegistrationInfo {
+@Getter
+public class IdamRolesInfo {
 
-    private HttpStatus idamRegistrationResponse;
+    private List<String> roles;
 
-    public IdamRegistrationInfo(HttpStatus httpStatus) {
-        this.idamRegistrationResponse = httpStatus;
-    }
-
-    public HttpStatus getIdamRegistrationResponse() {
-        return idamRegistrationResponse;
+    public IdamRolesInfo(List<String> roles){
+        this.roles =roles;
     }
 }

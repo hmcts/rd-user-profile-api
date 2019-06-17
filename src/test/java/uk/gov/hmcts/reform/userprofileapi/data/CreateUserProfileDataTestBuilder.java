@@ -6,6 +6,9 @@ import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CreateUserProfileDataTestBuilder {
 
     private CreateUserProfileDataTestBuilder() {
@@ -17,11 +20,6 @@ public class CreateUserProfileDataTestBuilder {
             buildRandomEmail(),
             RandomStringUtils.randomAlphabetic(20),
             RandomStringUtils.randomAlphabetic(20),
-            LanguagePreference.EN.toString(),
-
-            false,
-            false,
-
             UserCategory.PROFESSIONAL.toString(),
             UserType.INTERNAL.toString(),
             getIdamRolesJson());
@@ -32,22 +30,19 @@ public class CreateUserProfileDataTestBuilder {
             buildRandomEmail(),
             RandomStringUtils.randomAlphabetic(20),
             RandomStringUtils.randomAlphabetic(20),
-            null,
-
-            false,
-            false,
-
             UserCategory.PROFESSIONAL.toString(),
             UserType.INTERNAL.toString(),
-            null);
+            getIdamRolesJson());
     }
 
     private static String buildRandomEmail() {
         return RandomStringUtils.randomAlphanumeric(20) + "@somewhere.com";
     }
 
-    public static String getIdamRolesJson() {
-        return "{\"roles\":\"role\": \"some-role\"}";
+    public static List<String> getIdamRolesJson() {
+        List<String> roles = new ArrayList<String>();
+        roles.add("pui-user-manager");
+        return roles;
     }
 
 }

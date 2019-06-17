@@ -24,7 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.userprofileapi.client.IntTestRequestHandler;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileResource;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.integration.util.TestUserProfileRepository;
 
 @RunWith(SpringRunner.class)
@@ -71,23 +72,19 @@ public class RetrieveUserProfileIntTest {
     public void should_retrieve_user_profile_resource_with_id() throws Exception {
         UserProfile userProfile = userProfileMap.get("user1");
 
-        UserProfileResource retrievedResource =
+        GetUserProfileResponse retrievedResource =
             intTestRequestHandler.sendGet(
                 mockMvc,
                 APP_BASE_PATH + SLASH + userProfile.getId(),
                 OK,
-                UserProfileResource.class
+                GetUserProfileResponse.class
             );
 
         assertThat(retrievedResource).isNotNull();
         assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile,
             "languagePreference","creationChannel", "userCategory", "userType", "userProfileStatus");
-       /* assertThat(retrievedResource.getLanguagePreference()).isEqualTo(userProfile.getLanguagePreference().toString());
-
-        assertThat(retrievedResource.getCreationChannel()).isEqualTo(userProfile.getCreationChannel().toString());
         assertThat(retrievedResource.getUserCategory()).isEqualTo(userProfile.getUserCategory().toString());
         assertThat(retrievedResource.getUserType()).isEqualTo(userProfile.getUserType().toString());
-        assertThat(retrievedResource.getUserProfileStatus()).isEqualTo(userProfile.getUserProfileStatus().toString());*/
 
     }
 
@@ -130,17 +127,16 @@ public class RetrieveUserProfileIntTest {
         UserProfile userProfile = userProfileMap.get("user1");
         String path = APP_BASE_PATH + "?email=" + userProfile.getEmail();
 
-        UserProfileResource retrievedResource =
+        GetUserProfileResponse retrievedResource =
             intTestRequestHandler.sendGet(
                 mockMvc,
                 path,
                 OK,
-                UserProfileResource.class
+                    GetUserProfileResponse.class
             );
 
         assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile,
             "languagePreference","creationChannel", "userCategory", "userType", "userProfileStatus");
-        //assertThat(retrievedResource.getLanguagePreference()).isEqualTo(userProfile.getLanguagePreference().toString());
 
 
     }
@@ -198,19 +194,18 @@ public class RetrieveUserProfileIntTest {
     @Test
     public void should_retrieve_user_profile_resource_with_idamId() throws Exception {
         UserProfile userProfile = userProfileMap.get("userWithIdamId");
-        String path = APP_BASE_PATH + "?idamId=" + userProfile.getIdamId();
+        String path = APP_BASE_PATH + "?idamId=" + userProfile.getId();
 
-        UserProfileResource retrievedResource =
+        GetUserProfileResponse retrievedResource =
             intTestRequestHandler.sendGet(
                 mockMvc,
                 path,
                 OK,
-                UserProfileResource.class
+                    GetUserProfileResponse.class
             );
 
         assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile,
             "languagePreference","creationChannel", "userCategory", "userType", "userProfileStatus");
-        //assertThat(retrievedResource.getLanguagePreference()).isEqualTo(userProfile.getLanguagePreference().toString());
 
     }
 

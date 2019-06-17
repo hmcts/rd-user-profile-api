@@ -52,19 +52,15 @@ public class UserProfileTest {
         assertThat(userProfile.isPostalCommsConsent()).isFalse();
         assertThat(userProfile.getPostalCommsConsentTs()).isNull();
 
-        assertThat(userProfile.getCreationChannel()).isNull();
         assertThat(userProfile.getUserCategory()).isNull();
         assertThat(userProfile.getUserType()).isNull();
 
-        assertThat(userProfile.getIdamId()).isNull();
         assertThat(userProfile.getIdamStatus()).isNull();
-        assertThat(userProfile.getIdamRoles()).isNull();
         assertThat(userProfile.getIdamRegistrationResponse()).isNull();
 
 
         assertThat(userProfile.getCreatedTs()).isNull();
         assertThat(userProfile.getLastUpdatedTs()).isNull();
-        assertThat(userProfile.getUserProfileStatus()).isNull();
 
     }
 
@@ -80,22 +76,15 @@ public class UserProfileTest {
         assertThat(userProfile.getFirstName()).isEqualTo(data.getFirstName());
         assertThat(userProfile.getLastName()).isEqualTo(data.getLastName());
 
-        assertThat(userProfile.getLanguagePreference())
-            .isEqualTo(LanguagePreference.valueOf(data.getLanguagePreference()));
-        assertThat(userProfile.isEmailCommsConsent()).isEqualTo(data.isEmailCommsConsent());
         assertThat(userProfile.getEmailCommsConsentTs())
             .isBetween(LocalDateTime.now().minusSeconds(10), LocalDateTime.now());
-        assertThat(userProfile.isPostalCommsConsent()).isEqualTo(data.isPostalCommsConsent());
         assertThat(userProfile.getPostalCommsConsentTs())
             .isBetween(LocalDateTime.now().minusSeconds(10), LocalDateTime.now());
 
-        assertThat(userProfile.getCreationChannel().toString()).isEqualTo(CreationChannel.API.toString());
         assertThat(userProfile.getUserCategory().toString()).isEqualTo(data.getUserCategory());
         assertThat(userProfile.getUserType().toString()).isEqualTo(data.getUserType());
 
-        assertThat(userProfile.getIdamId()).isNull();
         assertThat(userProfile.getIdamStatus()).isNull();
-        assertThat(userProfile.getIdamRoles()).isEqualTo(data.getIdamRoles());
         assertThat(userProfile.getIdamRegistrationResponse())
             .isEqualTo(idamRegistrationInfo.getIdamRegistrationResponse().value());
 
@@ -118,11 +107,6 @@ public class UserProfileTest {
         assertThat(userProfile.isPostalCommsConsent()).isFalse();
         assertThat(userProfile.getPostalCommsConsentTs())
             .isBetween(LocalDateTime.now().minusSeconds(10), LocalDateTime.now());
-        assertThat(userProfile.getCreationChannel())
-            .isEqualTo(CreationChannel.API);
-        assertThat(userProfile.getUserProfileStatus())
-            .isEqualTo(UserProfileStatus.ACTIVE);
-
     }
 
 

@@ -12,9 +12,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileIdentifier;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileResource;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserProfileServiceTest {
@@ -34,11 +35,11 @@ public class UserProfileServiceTest {
         CreateUserProfileData userProfileData = mock(CreateUserProfileData.class);
 
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
-        UserProfileResource expected = new UserProfileResource(userProfile);
+        CreateUserProfileResponse expected = new CreateUserProfileResponse(userProfile);
 
         when(userProfileCreator.create(userProfileData)).thenReturn(userProfile);
 
-        UserProfileResource resource = userProfileService.create(userProfileData);
+        CreateUserProfileResponse resource = userProfileService.create(userProfileData);
 
         assertThat(resource).isEqualToComparingFieldByField(expected);
         verify(userProfileCreator).create(any(CreateUserProfileData.class));
@@ -50,11 +51,11 @@ public class UserProfileServiceTest {
         UserProfileIdentifier identifier = mock(UserProfileIdentifier.class);
 
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
-        UserProfileResource expected = new UserProfileResource(userProfile);
+        GetUserProfileResponse expected = new GetUserProfileResponse(userProfile);
 
         when(userProfileRetriever.retrieve(identifier)).thenReturn(userProfile);
 
-        UserProfileResource resource = userProfileService.retrieve(identifier);
+        GetUserProfileResponse resource = userProfileService.retrieve(identifier);
 
         assertThat(resource).isEqualToComparingFieldByField(expected);
         verify(userProfileRetriever).retrieve(any(UserProfileIdentifier.class));

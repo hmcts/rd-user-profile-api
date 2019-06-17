@@ -2,20 +2,34 @@ package uk.gov.hmcts.reform.userprofileapi.infrastructure.controllers;
 
 import static java.util.Objects.requireNonNull;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
-import static uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.IdentifierName.*;
+import static uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.IdentifierName.EMAIL;
+import static uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.IdentifierName.UUID;
 
-import io.swagger.annotations.*;
 import javax.validation.Valid;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.userprofileapi.domain.service.UserProfileService;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileIdentifier;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileResource;
 
 @Api(
     value = "/profiles",
@@ -44,7 +58,7 @@ public class UserProfileController {
         @ApiResponse(
             code = 201,
             message = "Create a User Profile using request body",
-            response = UserProfileResource.class
+            response = CreateUserProfileResponse.class
         ),
         @ApiResponse(
             code = 400,
@@ -63,12 +77,12 @@ public class UserProfileController {
         produces = APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseBody
-    public ResponseEntity<UserProfileResource> createUserProfile(@Valid @RequestBody CreateUserProfileData createUserProfileData) {
+    public ResponseEntity<CreateUserProfileResponse> createUserProfile(@Valid @RequestBody CreateUserProfileData createUserProfileData) {
         log.info("Creating new User Profile");
 
         requireNonNull(createUserProfileData, "createUserProfileData cannot be null");
 
-        UserProfileResource resource = userProfileService.create(createUserProfileData);
+        CreateUserProfileResponse resource = userProfileService.create(createUserProfileData);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(resource);
 
@@ -103,7 +117,7 @@ public class UserProfileController {
         produces = APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseBody
-    public ResponseEntity<UserProfileResource> getUserProfileById(@PathVariable String uuid) {
+    public ResponseEntity<GetUserProfileResponse> getUserProfileById(@PathVariable String uuid) {
         log.info("Getting user profile with id: {}", uuid);
 
         requireNonNull(uuid, "uuid cannot be null");
@@ -146,7 +160,7 @@ public class UserProfileController {
         produces = APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseBody
-    public ResponseEntity<UserProfileResource> getUserProfileByEmail(@RequestParam String email) {
+    public ResponseEntity<GetUserProfileResponse> getUserProfileByEmail(@RequestParam String email) {
         log.info("Getting user profile with email: {}", email);
 
         requireNonNull(email, "email cannot be null");
@@ -189,14 +203,14 @@ public class UserProfileController {
         produces = APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseBody
-    public ResponseEntity<UserProfileResource> getUserProfileByIdamId(@RequestParam String idamId) {
+    public ResponseEntity<GetUserProfileResponse> getUserProfileByIdamId(@RequestParam String idamId) {
         log.info("Getting user profile with idamId: {}", idamId);
 
         requireNonNull(idamId, "idamId cannot be null");
 
         return ResponseEntity.ok(
             userProfileService.retrieve(
-                new UserProfileIdentifier(IDAMID, idamId)
+                new UserProfileIdentifier(UUID, idamId)
             )
         );
     }

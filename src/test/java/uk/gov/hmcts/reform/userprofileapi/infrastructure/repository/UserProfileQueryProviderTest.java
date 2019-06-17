@@ -73,7 +73,7 @@ public class UserProfileQueryProviderTest {
         UserProfile userProfile = mock(UserProfile.class);
         String id = String.valueOf(new Random().nextInt());
 
-        when(userProfileRepository.findByIdamId(id)).thenReturn(Optional.of(userProfile));
+        when(userProfileRepository.findById(id)).thenReturn(Optional.of(userProfile));
 
         Supplier<Optional<UserProfile>> querySupplier =
             queryProvider.getRetrieveByIdQuery(new UserProfileIdentifier(IdentifierName.IDAMID, id));
@@ -83,7 +83,7 @@ public class UserProfileQueryProviderTest {
         assertThat(optionalProfile.isPresent()).isTrue();
         assertThat(optionalProfile.get()).isEqualTo(userProfile);
 
-        verify(userProfileRepository).findByIdamId(id);
+        verify(userProfileRepository).findById(id);
         verifyNoMoreInteractions(userProfileRepository);
 
     }

@@ -12,5 +12,5 @@ public interface UserProfileRepository extends CrudRepository<UserProfile, UUID>
     Optional<UserProfile> findByEmail(String email);
 
     @Transactional(readOnly = true, timeout = 10)
-    Optional<UserProfile> findByIdamId(String idamId);
+    Optional<UserProfile> findById(String id);
 }

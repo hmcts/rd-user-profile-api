@@ -19,9 +19,7 @@ public class UserProfileQueryProvider {
 
     public Supplier<Optional<UserProfile>> getRetrieveByIdQuery(UserProfileIdentifier id) {
 
-        if (id.getName() == IdentifierName.IDAMID) {
-            return () -> userProfileRepository.findByIdamId(id.getValue());
-        } else if (id.getName() == IdentifierName.EMAIL) {
+       if (id.getName() == IdentifierName.EMAIL) {
             return () -> userProfileRepository.findByEmail(id.getValue());
         } else if (id.getName() == IdentifierName.UUID) {
             return () -> userProfileRepository.findById(UUID.fromString(id.getValue()));

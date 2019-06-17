@@ -36,11 +36,11 @@ public class UserProfileControllerTest {
 
         CreateUserProfileData createUserProfileData = CreateUserProfileDataTestBuilder.buildCreateUserProfileData();
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
-        UserProfileResource expectedBody = new UserProfileResource(userProfile);
+        CreateUserProfileResponse expectedBody = new CreateUserProfileResponse(userProfile);
 
         when(userProfileService.create(createUserProfileData)).thenReturn(expectedBody);
 
-        ResponseEntity<UserProfileResource> resource = userProfileController.createUserProfile(createUserProfileData);
+        ResponseEntity<CreateUserProfileResponse> resource = userProfileController.createUserProfile(createUserProfileData);
         assertThat(resource.getBody()).isEqualToComparingFieldByField(expectedBody);
 
         verify(userProfileService).create(any(CreateUserProfileData.class));
@@ -80,7 +80,7 @@ public class UserProfileControllerTest {
 
         when(userProfileService.create(createUserProfileData)).thenReturn(null);
 
-        ResponseEntity<UserProfileResource> resource = userProfileController.createUserProfile(createUserProfileData);
+        ResponseEntity<CreateUserProfileResponse> resource = userProfileController.createUserProfile(createUserProfileData);
         assertThat(resource.getBody()).isNull();
 
         verify(userProfileService).create(any(CreateUserProfileData.class));
@@ -92,11 +92,11 @@ public class UserProfileControllerTest {
 
         UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID, UUID.randomUUID().toString());
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
-        UserProfileResource expectedResource = new UserProfileResource(userProfile);
+        GetUserProfileResponse expectedResource = new GetUserProfileResponse(userProfile);
 
         when(userProfileService.retrieve(identifierArgumentCaptor.capture())).thenReturn(expectedResource);
 
-        ResponseEntity<UserProfileResource> resource = userProfileController.getUserProfileById(identifier.getValue());
+        ResponseEntity<GetUserProfileResponse> resource = userProfileController.getUserProfileById(identifier.getValue());
 
         assertThat(resource.getBody()).isEqualToComparingFieldByField(expectedResource);
         assertThat(identifierArgumentCaptor.getValue()).isEqualToComparingFieldByField(identifier);
@@ -137,12 +137,12 @@ public class UserProfileControllerTest {
 
         UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.EMAIL, "test@email.com");
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
-        UserProfileResource expectedResource = new UserProfileResource(userProfile);
+        GetUserProfileResponse expectedResource = new GetUserProfileResponse(userProfile);
 
 
         when(userProfileService.retrieve(identifierArgumentCaptor.capture())).thenReturn(expectedResource);
 
-        ResponseEntity<UserProfileResource> resource = userProfileController.getUserProfileByEmail(identifier.getValue());
+        ResponseEntity<GetUserProfileResponse> resource = userProfileController.getUserProfileByEmail(identifier.getValue());
 
         assertThat(resource.getBody()).isEqualToComparingFieldByField(expectedResource);
         assertThat(identifierArgumentCaptor.getValue()).isEqualToComparingFieldByField(identifier);
@@ -183,11 +183,11 @@ public class UserProfileControllerTest {
 
         UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.IDAMID, "test-idam-id");
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
-        UserProfileResource expectedResource = new UserProfileResource(userProfile);
+        GetUserProfileResponse expectedResource = new GetUserProfileResponse(userProfile);
 
         when(userProfileService.retrieve(identifierArgumentCaptor.capture())).thenReturn(expectedResource);
 
-        ResponseEntity<UserProfileResource> resource = userProfileController.getUserProfileByIdamId(identifier.getValue());
+        ResponseEntity<GetUserProfileResponse> resource = userProfileController.getUserProfileByIdamId(identifier.getValue());
 
         assertThat(resource.getBody()).isEqualToComparingFieldByField(expectedResource);
         assertThat(identifierArgumentCaptor.getValue()).isEqualToComparingFieldByField(identifier);

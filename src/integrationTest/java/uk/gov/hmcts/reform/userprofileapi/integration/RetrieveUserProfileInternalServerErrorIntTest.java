@@ -117,7 +117,7 @@ public class RetrieveUserProfileInternalServerErrorIntTest {
 
         when(idamService.registerUser(any(CreateUserProfileData.class)))
             .thenReturn(new IdamRegistrationInfo(ACCEPTED));
-        when(userProfileRepository.findByIdamId(anyString()))
+        when(userProfileRepository.findById(anyString()))
             .thenThrow(new RuntimeException("This is a test exception"));
 
         MvcResult result =

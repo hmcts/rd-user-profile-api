@@ -1,15 +1,31 @@
 package uk.gov.hmcts.reform.userprofileapi.domain.entities;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Transient;
+
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
-import uk.gov.hmcts.reform.userprofileapi.domain.*;
+import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
+import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
+import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
+import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
+import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
+import uk.gov.hmcts.reform.userprofileapi.domain.service.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
 
+@Getter
+@Setter
 @Entity
 public class UserProfile {
 
@@ -30,15 +46,12 @@ public class UserProfile {
     private LocalDateTime postalCommsConsentTs;
 
     @Enumerated(EnumType.STRING)
-    private CreationChannel creationChannel;
-    @Enumerated(EnumType.STRING)
     private UserCategory userCategory;
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
-    private String idamId;
-    private String idamStatus;
-    private String idamRoles;
+    @Enumerated(EnumType.STRING)
+    private IdamStatus idamStatus;
     private Integer idamRegistrationResponse;
 
     @CreationTimestamp
@@ -47,8 +60,8 @@ public class UserProfile {
     @UpdateTimestamp
     private LocalDateTime lastUpdatedTs;
 
-    @Enumerated(EnumType.STRING)
-    private UserProfileStatus userProfileStatus;
+    @Transient
+    private List<String> roles = new ArrayList<String>();
 
     public UserProfile() {
         //noop
@@ -59,102 +72,15 @@ public class UserProfile {
         this.email = data.getEmail();
         this.firstName = data.getFirstName();
         this.lastName = data.getLastName();
-
-        this.languagePreference =
-            LanguagePreference.valueOf(
-                Optional.ofNullable((
-                    data.getLanguagePreference())).orElse(
-                    LanguagePreference.EN.toString()));
-
-        this.emailCommsConsent = data.isEmailCommsConsent();
-        this.emailCommsConsentTs = LocalDateTime.now();
-        this.postalCommsConsent = data.isPostalCommsConsent();
-        this.postalCommsConsentTs = LocalDateTime.now();
-
-        this.creationChannel = CreationChannel.API;
+        this.languagePreference = LanguagePreference.EN;
         this.userCategory = UserCategory.valueOf(data.getUserCategory());
         this.userType = UserType.valueOf(data.getUserType());
-
-        this.idamRoles = data.getIdamRoles();
         this.idamRegistrationResponse = idamInfo.getIdamRegistrationResponse().value();
-
-        this.userProfileStatus = UserProfileStatus.ACTIVE;
+        this.idamStatus = IdamStatus.PENDING;
 
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public LanguagePreference getLanguagePreference() {
-        return languagePreference;
-    }
-
-    public boolean isEmailCommsConsent() {
-        return emailCommsConsent;
-    }
-
-    public LocalDateTime getEmailCommsConsentTs() {
-        return emailCommsConsentTs;
-    }
-
-    public boolean isPostalCommsConsent() {
-        return postalCommsConsent;
-    }
-
-    public LocalDateTime getPostalCommsConsentTs() {
-        return postalCommsConsentTs;
-    }
-
-    public CreationChannel getCreationChannel() {
-        return creationChannel;
-    }
-
-    public UserCategory getUserCategory() {
-        return userCategory;
-    }
-
-    public UserType getUserType() {
-        return userType;
-    }
-
-    public String getIdamId() {
-        return idamId;
-    }
-
-    public String getIdamStatus() {
-        return idamStatus;
-    }
-
-    public String getIdamRoles() {
-        return idamRoles;
-    }
-
-    public Integer getIdamRegistrationResponse() {
-        return idamRegistrationResponse;
-    }
-
-    public LocalDateTime getCreatedTs() {
-        return createdTs;
-    }
-
-    public LocalDateTime getLastUpdatedTs() {
-        return lastUpdatedTs;
-    }
-
-    public UserProfileStatus getUserProfileStatus() {
-        return userProfileStatus;
+    public void setRoles(IdamRolesInfo idamrolesInfo) {
+        this.roles = idamrolesInfo.getRoles();
     }
 }

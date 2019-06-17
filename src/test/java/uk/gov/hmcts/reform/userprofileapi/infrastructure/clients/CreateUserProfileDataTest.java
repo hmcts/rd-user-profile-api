@@ -20,9 +20,6 @@ public class CreateUserProfileDataTest {
                 "test-email-@somewhere.com",
                 "test-first-name",
                 "test-last-name",
-                LanguagePreference.CY.toString(),
-                true,
-                true,
                 UserCategory.CITIZEN.toString(),
                 UserType.EXTERNAL.toString(),
                 getIdamRolesJson());
@@ -30,9 +27,6 @@ public class CreateUserProfileDataTest {
         assertThat(userProfileData.getEmail()).isEqualTo("test-email-@somewhere.com");
         assertThat(userProfileData.getFirstName()).isEqualTo("test-first-name");
         assertThat(userProfileData.getLastName()).isEqualTo("test-last-name");
-        assertThat(userProfileData.getLanguagePreference()).isEqualTo(LanguagePreference.CY.toString());
-        assertThat(userProfileData.isEmailCommsConsent()).isTrue();
-        assertThat(userProfileData.isPostalCommsConsent()).isTrue();
         assertThat(userProfileData.getUserCategory()).isEqualTo(UserCategory.CITIZEN.toString());
         assertThat(userProfileData.getUserType()).isEqualTo(UserType.EXTERNAL.toString());
         assertThat(userProfileData.getIdamRoles()).isEqualTo(getIdamRolesJson());
@@ -46,9 +40,6 @@ public class CreateUserProfileDataTest {
             null,
             "test-first-name",
             "test-last-name",
-            LanguagePreference.CY.toString(),
-            true,
-            true,
             UserCategory.CITIZEN.toString(),
             UserType.EXTERNAL.toString(),
             getIdamRolesJson()))
@@ -59,21 +50,16 @@ public class CreateUserProfileDataTest {
             "some-email",
             null,
             "test-last-name",
-            LanguagePreference.CY.toString(),
-            true,
-            true,
             UserCategory.CITIZEN.toString(),
             UserType.EXTERNAL.toString(),
             getIdamRolesJson()))
             .isInstanceOf(RequiredFieldMissingException.class)
             .hasMessageContaining("firstName");
+
         assertThatThrownBy(() -> new CreateUserProfileData(
             "some-email",
             "test-first-name",
             null,
-            LanguagePreference.CY.toString(),
-            true,
-            true,
             UserCategory.CITIZEN.toString(),
             UserType.EXTERNAL.toString(),
             getIdamRolesJson()))
@@ -84,9 +70,6 @@ public class CreateUserProfileDataTest {
             "some-email",
             "test-first-name",
             "test-last-name",
-            LanguagePreference.CY.toString(),
-            true,
-            true,
             null,
             UserType.EXTERNAL.toString(),
             getIdamRolesJson()))
@@ -97,42 +80,11 @@ public class CreateUserProfileDataTest {
             "some-email",
             "test-first-name",
             "test-last-name",
-            LanguagePreference.CY.toString(),
-            true,
-            true,
             UserCategory.PROFESSIONAL.toString(),
             null,
             getIdamRolesJson()))
             .isInstanceOf(RequiredFieldMissingException.class)
             .hasMessageContaining("userType");
-
-    }
-
-    @Test
-    public void should_not_throw_exception_when_optional_fields_are_null() {
-
-        assertThat(new CreateUserProfileData(
-            "some-email",
-            "test-first-name",
-            "test-last-name",
-            null,
-            true,
-            true,
-            UserCategory.PROFESSIONAL.toString(),
-            UserType.INTERNAL.toString(),
-            getIdamRolesJson())).isNotNull();
-
-        assertThat(new CreateUserProfileData(
-            "some-email",
-            "test-first-name",
-            "test-last-name",
-            LanguagePreference.CY.toString(),
-            true,
-            true,
-            UserCategory.PROFESSIONAL.toString(),
-            UserType.INTERNAL.toString(),
-            null)).isNotNull();
-
 
     }
 }

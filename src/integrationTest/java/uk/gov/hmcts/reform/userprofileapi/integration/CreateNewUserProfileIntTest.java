@@ -12,7 +12,6 @@ import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestB
 import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildCreateUserProfileDataMandatoryFieldsOnly;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import org.assertj.core.api.Assertions;
@@ -33,7 +32,7 @@ import uk.gov.hmcts.reform.userprofileapi.client.IntTestRequestHandler;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileResource;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileResponse;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
@@ -77,15 +76,15 @@ public class CreateNewUserProfileIntTest {
         IdamRegistrationInfo idamInfo = new IdamRegistrationInfo(HttpStatus.ACCEPTED);
         UserProfile userProfile = new UserProfile(data, idamInfo);
 
-        UserProfileResource expectedResource = new UserProfileResource(userProfile);
+        CreateUserProfileResponse expectedResource = new CreateUserProfileResponse(userProfile);
 
-        UserProfileResource createdResource =
+        CreateUserProfileResponse createdResource =
             intTestRequestHandler.sendPost(
                 mockMvc,
                 APP_BASE_PATH,
                 data,
                 CREATED,
-                UserProfileResource.class
+                CreateUserProfileResponse.class
             );
 
         verifyUserProfileResource(createdResource, expectedResource);
@@ -99,36 +98,28 @@ public class CreateNewUserProfileIntTest {
         IdamRegistrationInfo idamInfo = new IdamRegistrationInfo(HttpStatus.ACCEPTED);
         UserProfile userProfile = new UserProfile(data, idamInfo);
 
-        UserProfileResource expectedResource = new UserProfileResource(userProfile);
+        CreateUserProfileResponse expectedResource = new CreateUserProfileResponse(userProfile);
 
-        UserProfileResource createdResource =
+        CreateUserProfileResponse createdResource =
             intTestRequestHandler.sendPost(
                 mockMvc,
                 APP_BASE_PATH,
                 data,
                 CREATED,
-                UserProfileResource.class
+                CreateUserProfileResponse.class
             );
 
         verifyUserProfileResource(createdResource, expectedResource);
 
     }
 
-    private void verifyUserProfileResource(UserProfileResource createdResource, UserProfileResource expectedResource) {
+    private void verifyUserProfileResource(CreateUserProfileResponse createdResource, CreateUserProfileResponse expectedResource) {
 
         assertThat(createdResource).isEqualToIgnoringGivenFields(expectedResource,
             apiGeneratedFields.toArray(new String[apiGeneratedFields.size()]));
 
-        assertThat(createdResource.getId()).isNotNull();
-        assertThat(createdResource.getId()).isInstanceOf(UUID.class);
-      /*  assertThat(createdResource.getEmailCommsConsentTs())
-            .isBetween(LocalDateTime.now().minusSeconds(30), LocalDateTime.now());
-        assertThat(createdResource.getPostalCommsConsentTs())
-            .isBetween(LocalDateTime.now().minusSeconds(30), LocalDateTime.now());
-
-        //not currently being populated
-        assertThat(createdResource.getIdamId()).isNull();
-        assertThat(createdResource.getIdamStatus()).isNull();*/
+        assertThat(createdResource.getIdamId()).isNotNull();
+        assertThat(createdResource.getIdamId()).isInstanceOf(UUID.class);
 
     }
 
