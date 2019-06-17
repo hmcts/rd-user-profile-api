@@ -83,8 +83,6 @@ public class RetrieveUserProfileIntTest {
         assertThat(retrievedResource).isNotNull();
         assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile,
             "languagePreference","creationChannel", "userCategory", "userType", "userProfileStatus");
-        assertThat(retrievedResource.getUserCategory()).isEqualTo(userProfile.getUserCategory().toString());
-        assertThat(retrievedResource.getUserType()).isEqualTo(userProfile.getUserType().toString());
 
     }
 

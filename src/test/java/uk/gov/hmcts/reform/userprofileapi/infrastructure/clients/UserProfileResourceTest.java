@@ -30,7 +30,7 @@ public class UserProfileResourceTest {
     @Test
     public void should_create_successfully_with_no_args_constructor() {
 
-        CreateUserProfileResponse userProfile = new CreateUserProfileResponse();
+        CreateUserProfileResponse userProfile = new CreateUserProfileResponse(new UserProfile());
         Arrays.asList(userProfile.getClass().getDeclaredMethods()).forEach(method -> {
             try {
                 if (method.getName().startsWith("get")) {

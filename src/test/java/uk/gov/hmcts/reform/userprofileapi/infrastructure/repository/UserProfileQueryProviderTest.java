@@ -76,7 +76,7 @@ public class UserProfileQueryProviderTest {
         when(userProfileRepository.findById(id)).thenReturn(Optional.of(userProfile));
 
         Supplier<Optional<UserProfile>> querySupplier =
-            queryProvider.getRetrieveByIdQuery(new UserProfileIdentifier(IdentifierName.IDAMID, id));
+            queryProvider.getRetrieveByIdQuery(new UserProfileIdentifier(IdentifierName.UUID, id));
 
         Optional<UserProfile> optionalProfile = querySupplier.get();
 

@@ -8,7 +8,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.idam.IdamService;
+import uk.gov.hmcts.reform.userprofileapi.domain.service.IdamService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IdamServiceTest {

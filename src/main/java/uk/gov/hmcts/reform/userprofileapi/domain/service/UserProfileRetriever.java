@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileIdentifier;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.idam.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.UserProfileQueryProvider;
 
 @Service
@@ -28,7 +27,7 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
                     new ResourceNotFoundException(
                         "Could not find resource from database with given identifier: "
                         + identifier.getValue()));
-        IdamRolesInfo idamRolesInfo = idamService.getIdamRoles();
+        IdamRolesInfo idamRolesInfo = idamService.getUserById(userProfile.getId());
         userProfile.setRoles(idamRolesInfo);
         return userProfile;
     }

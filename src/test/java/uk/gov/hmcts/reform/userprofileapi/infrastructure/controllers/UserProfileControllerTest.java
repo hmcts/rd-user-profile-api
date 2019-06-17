@@ -181,7 +181,7 @@ public class UserProfileControllerTest {
     @Test
     public void should_call_request_manager_retrieve_method_with_idamId() {
 
-        UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.IDAMID, "test-idam-id");
+        UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID, "test-idam-id");
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         GetUserProfileResponse expectedResource = new GetUserProfileResponse(userProfile);
 
@@ -199,7 +199,7 @@ public class UserProfileControllerTest {
     @Test
     public void should_propagate_exception_when_handle_retrieve_with_idamId_throws_exception() {
 
-        UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.IDAMID, UUID.randomUUID().toString());
+        UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID, UUID.randomUUID().toString());
         IllegalStateException ex = new IllegalStateException("This is a test exception");
 
         when(userProfileService.retrieve(identifierArgumentCaptor.capture())).thenThrow(ex);
