@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.service.UserProfileService;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileIdentifier;
 
@@ -117,7 +118,7 @@ public class UserProfileController {
         produces = APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseBody
-    public ResponseEntity<GetUserProfileResponse> getUserProfileById(@PathVariable String id) {
+    public ResponseEntity<GetUserProfileWithRolesResponse> getUserProfileById(@PathVariable String id) {
         log.info("Getting user profile with id: {}", id);
 
         requireNonNull(id, "id cannot be null");
@@ -161,7 +162,7 @@ public class UserProfileController {
             produces = APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseBody
-    public ResponseEntity<GetUserProfileResponse> getUserProfileByEmail(@RequestParam String email) {
+    public ResponseEntity<GetUserProfileWithRolesResponse> getUserProfileByEmail(@RequestParam String email) {
         log.info("Getting user profile with email: {}", email);
 
         requireNonNull(email, "email cannot be null");

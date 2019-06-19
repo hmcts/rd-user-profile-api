@@ -16,7 +16,6 @@ public class GetUserProfileResponse{
     private String firstName;
     private String lastName;
     private IdamStatus status;
-    private List<String> roles;
 
     public GetUserProfileResponse(UserProfile userProfile) {
 
@@ -26,7 +25,6 @@ public class GetUserProfileResponse{
         this.firstName = userProfile.getFirstName();
         this.lastName = userProfile.getLastName();
         this.status = userProfile.getIdamStatus();
-        this.roles = userProfile.getRoles();
     }
 
 }

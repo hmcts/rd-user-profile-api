@@ -52,6 +52,8 @@ public class CreateUserProfileData implements RequestData {
             throw new RequiredFieldMissingException("firstName must not be null");
         } else if (lastName == null) {
             throw new RequiredFieldMissingException("lastName must not be null");
+        } else if (languagePreference == null) {
+            throw new RequiredFieldMissingException("languagePreference must not be null");
         } else if (userCategory == null) {
             throw new RequiredFieldMissingException("userCategory must not be null");
         } else if (userType == null) {

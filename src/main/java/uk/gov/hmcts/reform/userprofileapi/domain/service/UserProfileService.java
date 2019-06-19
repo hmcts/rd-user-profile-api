@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.userprofileapi.domain.service;
 
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.RequestData;
 
 @Service
@@ -20,8 +20,8 @@ public class UserProfileService<T extends RequestData> {
         return new CreateUserProfileResponse(resourceCreator.create(requestData));
     }
 
-    public GetUserProfileResponse retrieve(T requestData) {
-        return new GetUserProfileResponse(resourceRetriever.retrieve(requestData));
+    public GetUserProfileWithRolesResponse retrieve(T requestData) {
+        return new GetUserProfileWithRolesResponse(resourceRetriever.retrieve(requestData));
     }
 
 }

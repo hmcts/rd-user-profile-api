@@ -92,11 +92,11 @@ public class UserProfileControllerTest {
 
         UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID, UUID.randomUUID().toString());
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
-        GetUserProfileResponse expectedResource = new GetUserProfileResponse(userProfile);
+        GetUserProfileWithRolesResponse expectedResource = new GetUserProfileWithRolesResponse(userProfile);
 
         when(userProfileService.retrieve(identifierArgumentCaptor.capture())).thenReturn(expectedResource);
 
-        ResponseEntity<GetUserProfileResponse> resource = userProfileController.getUserProfileById(identifier.getValue());
+        ResponseEntity<GetUserProfileWithRolesResponse> resource = userProfileController.getUserProfileById(identifier.getValue());
 
         assertThat(resource.getBody()).isEqualToComparingFieldByField(expectedResource);
         assertThat(identifierArgumentCaptor.getValue()).isEqualToComparingFieldByField(identifier);
@@ -137,12 +137,12 @@ public class UserProfileControllerTest {
 
         UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.EMAIL, "test@email.com");
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
-        GetUserProfileResponse expectedResource = new GetUserProfileResponse(userProfile);
+        GetUserProfileWithRolesResponse expectedResource = new GetUserProfileWithRolesResponse(userProfile);
 
 
         when(userProfileService.retrieve(identifierArgumentCaptor.capture())).thenReturn(expectedResource);
 
-        ResponseEntity<GetUserProfileResponse> resource = userProfileController.getUserProfileByEmail(identifier.getValue());
+        ResponseEntity<GetUserProfileWithRolesResponse> resource = userProfileController.getUserProfileByEmail(identifier.getValue());
 
         assertThat(resource.getBody()).isEqualToComparingFieldByField(expectedResource);
         assertThat(identifierArgumentCaptor.getValue()).isEqualToComparingFieldByField(identifier);
@@ -183,11 +183,11 @@ public class UserProfileControllerTest {
 
         UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID, "test-idam-id");
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
-        GetUserProfileResponse expectedResource = new GetUserProfileResponse(userProfile);
+        GetUserProfileWithRolesResponse expectedResource = new GetUserProfileWithRolesResponse(userProfile);
 
         when(userProfileService.retrieve(identifierArgumentCaptor.capture())).thenReturn(expectedResource);
 
-        ResponseEntity<GetUserProfileResponse> resource = userProfileController.getUserProfileByIdamId(identifier.getValue());
+        ResponseEntity<GetUserProfileWithRolesResponse> resource = userProfileController.getUserProfileById(identifier.getValue());
 
         assertThat(resource.getBody()).isEqualToComparingFieldByField(expectedResource);
         assertThat(identifierArgumentCaptor.getValue()).isEqualToComparingFieldByField(identifier);
@@ -204,7 +204,7 @@ public class UserProfileControllerTest {
 
         when(userProfileService.retrieve(identifierArgumentCaptor.capture())).thenThrow(ex);
 
-        assertThatThrownBy(() -> userProfileController.getUserProfileByIdamId(identifier.getValue())).isEqualTo(ex);
+        assertThatThrownBy(() -> userProfileController.getUserProfileById(identifier.getValue())).isEqualTo(ex);
 
         assertThat(identifierArgumentCaptor.getValue()).isEqualToComparingFieldByField(identifier);
 
@@ -215,7 +215,7 @@ public class UserProfileControllerTest {
     @Test
     public void should_throw_exception_when_get_with_idamId_null_parameters_passed_in() {
 
-        assertThatThrownBy(() -> userProfileController.getUserProfileByIdamId(null))
+        assertThatThrownBy(() -> userProfileController.getUserProfileById(null))
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("idamId");
 

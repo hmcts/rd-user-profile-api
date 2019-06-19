@@ -20,6 +20,7 @@ public class CreateUserProfileDataTest {
                 "test-email-@somewhere.com",
                 "test-first-name",
                 "test-last-name",
+                LanguagePreference.EN.toString(),
                 UserCategory.CITIZEN.toString(),
                 UserType.EXTERNAL.toString(),
                 getIdamRolesJson());
@@ -40,6 +41,7 @@ public class CreateUserProfileDataTest {
             null,
             "test-first-name",
             "test-last-name",
+            LanguagePreference.EN.toString(),
             UserCategory.CITIZEN.toString(),
             UserType.EXTERNAL.toString(),
             getIdamRolesJson()))
@@ -50,6 +52,7 @@ public class CreateUserProfileDataTest {
             "some-email",
             null,
             "test-last-name",
+            LanguagePreference.EN.toString(),
             UserCategory.CITIZEN.toString(),
             UserType.EXTERNAL.toString(),
             getIdamRolesJson()))
@@ -60,6 +63,7 @@ public class CreateUserProfileDataTest {
             "some-email",
             "test-first-name",
             null,
+                LanguagePreference.EN.toString(),
             UserCategory.CITIZEN.toString(),
             UserType.EXTERNAL.toString(),
             getIdamRolesJson()))
@@ -70,6 +74,7 @@ public class CreateUserProfileDataTest {
             "some-email",
             "test-first-name",
             "test-last-name",
+                LanguagePreference.EN.toString(),
             null,
             UserType.EXTERNAL.toString(),
             getIdamRolesJson()))
@@ -80,6 +85,7 @@ public class CreateUserProfileDataTest {
             "some-email",
             "test-first-name",
             "test-last-name",
+                LanguagePreference.EN.toString(),
             UserCategory.PROFESSIONAL.toString(),
             null,
             getIdamRolesJson()))

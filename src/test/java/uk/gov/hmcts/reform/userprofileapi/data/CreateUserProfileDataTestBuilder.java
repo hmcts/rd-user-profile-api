@@ -20,6 +20,7 @@ public class CreateUserProfileDataTestBuilder {
             buildRandomEmail(),
             RandomStringUtils.randomAlphabetic(20),
             RandomStringUtils.randomAlphabetic(20),
+            LanguagePreference.EN.toString(),
             UserCategory.PROFESSIONAL.toString(),
             UserType.INTERNAL.toString(),
             getIdamRolesJson());
@@ -30,6 +31,7 @@ public class CreateUserProfileDataTestBuilder {
             buildRandomEmail(),
             RandomStringUtils.randomAlphabetic(20),
             RandomStringUtils.randomAlphabetic(20),
+            LanguagePreference.EN.toString(),
             UserCategory.PROFESSIONAL.toString(),
             UserType.INTERNAL.toString(),
             getIdamRolesJson());
