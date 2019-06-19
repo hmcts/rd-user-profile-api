@@ -155,7 +155,7 @@ public class UserProfileController {
         )
     })
     @GetMapping(
-            path = "/roles"
+            path = "/roles",
             params = "email",
             consumes = APPLICATION_JSON_UTF8_VALUE,
             produces = APPLICATION_JSON_UTF8_VALUE

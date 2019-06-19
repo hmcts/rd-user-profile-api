@@ -21,6 +21,9 @@ public class CreateUserProfileData implements RequestData {
     private String lastName;
 
     @NotNull
+    private String languagePreference;
+
+    @NotNull
     private String userCategory;
 
     @NotNull
@@ -78,7 +81,7 @@ public class CreateUserProfileData implements RequestData {
         return lastName;
     }
 
-    public String getLanguagePreference { return userCategory; }
+    public String getLanguagePreference() { return languagePreference; }
 
     public String getUserCategory() {
         return userCategory;
