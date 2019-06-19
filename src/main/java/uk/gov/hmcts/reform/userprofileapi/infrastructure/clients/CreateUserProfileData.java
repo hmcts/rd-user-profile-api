@@ -33,9 +33,10 @@ public class CreateUserProfileData implements RequestData {
     public CreateUserProfileData(@JsonProperty(value = "email") String email,
                                  @JsonProperty(value = "firstName") String firstName,
                                  @JsonProperty(value = "lastName") String lastName,
+                                 @JsonProperty(value = "languagePreference") String languagePreference,
                                  @JsonProperty(value = "userCategory") String userCategory,
                                  @JsonProperty(value = "userType") String userType,
-                                 @JsonProperty(value = "roles") List<String> idamRoles) {
+                                 @JsonProperty(value = "roles") List<String> roles) {
 
         if (email == null) {
             throw new RequiredFieldMissingException("email must not be null");
@@ -52,16 +53,17 @@ public class CreateUserProfileData implements RequestData {
             throw new RequiredFieldMissingException("userCategory must not be null");
         } else if (userType == null) {
             throw new RequiredFieldMissingException("userType must not be null");
-        } else if (CollectionUtils.isEmpty(idamRoles)) {
+        } else if (CollectionUtils.isEmpty(roles)) {
             throw new RequiredFieldMissingException("at least one role required");
         }
 
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.languagePreference = languagePreference;
         this.userCategory = userCategory;
         this.userType = userType;
-        this.roles = idamRoles;
+        this.roles = roles;
     }
 
     public String getEmail() {
@@ -75,6 +77,8 @@ public class CreateUserProfileData implements RequestData {
     public String getLastName() {
         return lastName;
     }
+
+    public String getLanguagePreference { return userCategory; }
 
     public String getUserCategory() {
         return userCategory;

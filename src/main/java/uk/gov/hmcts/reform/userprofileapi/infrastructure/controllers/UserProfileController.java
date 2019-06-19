@@ -32,13 +32,13 @@ import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileIdentifier;
 
 @Api(
-    value = "/profiles",
+    value = "/v1/userprofile",
     consumes = APPLICATION_JSON_UTF8_VALUE,
     produces = APPLICATION_JSON_UTF8_VALUE
 )
 
 @RequestMapping(
-    path = "/profiles",
+    path = "/v1/userprofile",
     consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
     produces = MediaType.APPLICATION_JSON_UTF8_VALUE
 )
@@ -83,7 +83,7 @@ public class UserProfileController {
         requireNonNull(createUserProfileData, "createUserProfileData cannot be null");
 
         CreateUserProfileResponse resource = userProfileService.create(createUserProfileData);
-
+        log.info("idamid:" + resource.getIdamId() + "idamRegistrationResponse:" + resource.getIdamRegistrationResponse());
         return ResponseEntity.status(HttpStatus.CREATED).body(resource);
 
     }
@@ -112,19 +112,19 @@ public class UserProfileController {
         )
     })
     @GetMapping(
-        path = "/{uuid}",
+        path = "/{id}/roles",
         consumes = APPLICATION_JSON_UTF8_VALUE,
         produces = APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseBody
-    public ResponseEntity<GetUserProfileResponse> getUserProfileById(@PathVariable String uuid) {
-        log.info("Getting user profile with id: {}", uuid);
+    public ResponseEntity<GetUserProfileResponse> getUserProfileById(@PathVariable String id) {
+        log.info("Getting user profile with id: {}", id);
 
-        requireNonNull(uuid, "uuid cannot be null");
+        requireNonNull(id, "id cannot be null");
 
         return ResponseEntity.ok(
             userProfileService.retrieve(
-                new UserProfileIdentifier(UUID, uuid)
+                new UserProfileIdentifier(UUID, id)
             )
         );
     }
@@ -155,9 +155,10 @@ public class UserProfileController {
         )
     })
     @GetMapping(
-        params = "email",
-        consumes = APPLICATION_JSON_UTF8_VALUE,
-        produces = APPLICATION_JSON_UTF8_VALUE
+            path = "/roles"
+            params = "email",
+            consumes = APPLICATION_JSON_UTF8_VALUE,
+            produces = APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseBody
     public ResponseEntity<GetUserProfileResponse> getUserProfileByEmail(@RequestParam String email) {
@@ -171,48 +172,4 @@ public class UserProfileController {
             )
         );
     }
-
-    @ApiOperation("Retrieves user profile queried by idamId")
-    @ApiParam(name = "idamId", required = true)
-    @ApiResponses({
-        @ApiResponse(
-            code = 200,
-            message = "Representation of a user profile data",
-            response = String.class
-        ),
-        @ApiResponse(
-            code = 400,
-            message = "Bad Request",
-            response = String.class
-        ),
-        @ApiResponse(
-            code = 404,
-            message = "Not Found",
-            response = String.class
-        ),
-        @ApiResponse(
-            code = 500,
-            message = "Internal Server Error",
-            response = String.class
-        )
-    })
-
-    @GetMapping(
-        params = "idamId",
-        consumes = APPLICATION_JSON_UTF8_VALUE,
-        produces = APPLICATION_JSON_UTF8_VALUE
-    )
-    @ResponseBody
-    public ResponseEntity<GetUserProfileResponse> getUserProfileByIdamId(@RequestParam String idamId) {
-        log.info("Getting user profile with idamId: {}", idamId);
-
-        requireNonNull(idamId, "idamId cannot be null");
-
-        return ResponseEntity.ok(
-            userProfileService.retrieve(
-                new UserProfileIdentifier(UUID, idamId)
-            )
-        );
-    }
-
 }
