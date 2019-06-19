@@ -27,8 +27,6 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
                     new ResourceNotFoundException(
                         "Could not find resource from database with given identifier: "
                         + identifier.getValue()));
-        IdamRolesInfo idamRolesInfo = idamService.getUserById(userProfile.getId());
-        userProfile.setRoles(idamRolesInfo);
         return userProfile;
     }
 
