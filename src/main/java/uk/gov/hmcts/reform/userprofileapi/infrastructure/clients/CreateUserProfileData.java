@@ -93,7 +93,7 @@ public class CreateUserProfileData implements RequestData {
         return userType;
     }
 
-    public List<String> getIdamRoles() {
+    public List<String> getRoles() {
         return roles;
     }
 }

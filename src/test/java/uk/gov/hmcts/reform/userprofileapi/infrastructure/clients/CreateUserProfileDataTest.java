@@ -30,7 +30,7 @@ public class CreateUserProfileDataTest {
         assertThat(userProfileData.getLastName()).isEqualTo("test-last-name");
         assertThat(userProfileData.getUserCategory()).isEqualTo(UserCategory.CITIZEN.toString());
         assertThat(userProfileData.getUserType()).isEqualTo(UserType.EXTERNAL.toString());
-        assertThat(userProfileData.getIdamRoles()).isEqualTo(getIdamRolesJson());
+        assertThat(userProfileData.getRoles()).isEqualTo(getIdamRolesJson());
 
     }
 

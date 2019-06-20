@@ -6,7 +6,6 @@ import static uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.Identifi
 import static uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.IdentifierName.UUID;
 
 import javax.validation.Valid;
-import java.util.UUID;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -32,11 +31,8 @@ import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfi
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfileWithRolesResponse;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfilesRequest;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileIdentifier;
-
-import java.util.UUID;
 
 @Api(
     value = "/v1/userprofile",
@@ -122,7 +118,6 @@ public class UserProfileController {
     })
     @GetMapping(
         path = "/{id}/roles",
-        consumes = APPLICATION_JSON_UTF8_VALUE,
         produces = APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseBody
@@ -135,47 +130,6 @@ public class UserProfileController {
         response.setRoles(idamRolesInfo.getRoles());
 
         return ResponseEntity.ok(response);
-    }
-
-    @ApiOperation("Retrieves user profile by id")
-    @ApiResponses({
-            @ApiResponse(
-                    code = 200,
-                    message = "Representation of a user profile data",
-                    response = String.class
-            ),
-            @ApiResponse(
-                    code = 400,
-                    message = "Bad Request",
-                    response = String.class
-            ),
-            @ApiResponse(
-                    code = 404,
-                    message = "Not Found",
-                    response = String.class
-            ),
-            @ApiResponse(
-                    code = 500,
-                    message = "Internal Server Error",
-                    response = String.class
-            )
-    })
-    @GetMapping(
-            path = "/{id}",
-            consumes = APPLICATION_JSON_UTF8_VALUE,
-            produces = APPLICATION_JSON_UTF8_VALUE
-    )
-    @ResponseBody
-    public ResponseEntity<GetUserProfileResponse> getUserProfileById(@PathVariable String id) {
-        log.info("Getting user profile with id: {}", id);
-
-        requireNonNull(id, "id cannot be null");
-
-        return ResponseEntity.ok(
-                userProfileService.retrieve(
-                        new UserProfileIdentifier(UUID, id)
-                )
-        );
     }
 
     @ApiOperation("Retrieves user profile with roles by email")
@@ -206,7 +160,6 @@ public class UserProfileController {
     @GetMapping(
             path = "/roles",
             params = "email",
-            consumes = APPLICATION_JSON_UTF8_VALUE,
             produces = APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseBody
@@ -222,81 +175,51 @@ public class UserProfileController {
         return ResponseEntity.ok(response);
     }
 
-    @ApiOperation("Retrieves user profile queried by email")
-    @ApiParam(name = "email", required = true)
-
+    @ApiOperation("Retrieves user profile queried by email or userId. If both provided email is preferred")
     @ApiResponses({
             @ApiResponse(
                     code = 200,
                     message = "Representation of a user profile data",
-                    response = String.class
+                    response = GetUserProfileResponse.class
             ),
             @ApiResponse(
                     code = 400,
-                    message = "Bad Request",
-                    response = String.class
+                    message = "Bad Request"
             ),
             @ApiResponse(
                     code = 404,
-                    message = "Not Found",
-                    response = String.class
+                    message = "Not Found"
             ),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error",
-                    response = String.class
+                    message = "Internal Server Error"
             )
     })
     @GetMapping(
-            params = "email",
-            consumes = APPLICATION_JSON_UTF8_VALUE,
             produces = APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseBody
-    public ResponseEntity<GetUserProfileResponse> getUserProfileByEmail(@RequestParam String email) {
-        log.info("Getting user profile with email: {}", email);
+    public ResponseEntity<GetUserProfileResponse> getUserProfileByEmail(@ApiParam(name = "email", required = false) @RequestParam (value = "email", required = false) String email,
+                                                                     @ApiParam(name = "userId", required = false) @RequestParam (value = "id", required = false) String userId) {
 
-        requireNonNull(email, "email cannot be null");
+        if (email == null && userId == null) return ResponseEntity.badRequest().build();
 
-        return ResponseEntity.ok(
-                userProfileService.retrieve(
-                        new UserProfileIdentifier(EMAIL, email)
-                )
-        );
-    }
+        if (email != null) {
 
-   /* @ApiOperation("Get user profiles")
-    @ApiResponses({
-            @ApiResponse(
-                    code = 200,
-                    message = "Get all user profiles using ids in request body",
-                    response = CreateUserProfileResponse.class
-            ),
-            @ApiResponse(
-                    code = 400,
-                    message = "Bad Request",
-                    response = String.class
-            ),
-            @ApiResponse(
-                    code = 500,
-                    message = "Internal Server Error",
-                    response = String.class
-            )
-    })
+            log.info("Getting user profile with email: {}", email);
 
-    @PostMapping(
-            consumes = APPLICATION_JSON_UTF8_VALUE,
-            produces = APPLICATION_JSON_UTF8_VALUE
-    )
-    @ResponseBody
-    public ResponseEntity<CreateUserProfileResponse> getUserProfiles(@Valid @RequestBody GetUserProfilesRequest getUserProfilesRequest) {
-        log.info("Getting multiple user profiles");
+            return ResponseEntity.ok(
+                    userProfileService.retrieve(
+                            new UserProfileIdentifier(EMAIL, email)
+                    )
+            );
+        }  else {
 
-        requireNonNull(getUserProfilesRequest, "getUserProfilesRequest cannot be null");
-        if(getUserProfilesRequest.getUserIds().isEmpty()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.ok(
+                    userProfileService.retrieve(
+                            new UserProfileIdentifier(UUID, userId)
+                    )
+            );
         }
-        return ResponseEntity.status(HttpStatus.OK).build();
-
-    }*/
+    }
 }
