@@ -2,9 +2,8 @@ package uk.gov.hmcts.reform.userprofileapi.domain.feign;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import javax.validation.constraints.NotNull;
 import java.util.List;
+import javax.validation.constraints.NotNull;
 
 public class IdamUserResponse {
     private Boolean active;

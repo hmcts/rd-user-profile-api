@@ -7,7 +7,6 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder.buildUserProfile;
-import static uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder.buildUserProfileWithAnIdamId;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.userprofileapi.client.IntTestRequestHandler;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.integration.util.TestUserProfileRepository;
@@ -32,7 +30,7 @@ import uk.gov.hmcts.reform.userprofileapi.integration.util.TestUserProfileReposi
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
 @Transactional
-public class RetrieveUserProfileIntTest extends AbstractIntegration{
+public class RetrieveUserProfileIntTest extends AbstractIntegration {
 
     private static final String APP_BASE_PATH = "/v1/userprofile";
     private static final String SLASH = "/";

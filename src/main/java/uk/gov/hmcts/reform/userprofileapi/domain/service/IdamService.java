@@ -9,9 +9,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamUserResponse;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
+
 
 @Slf4j
 @Component
@@ -19,6 +20,7 @@ public class IdamService implements IdentityManagerService {
 
     @Autowired
     IdamFeignClient idamClient;
+
     @Override
     public IdamRegistrationInfo registerUser(CreateUserProfileData requestData) {
         ResponseEntity response = idamClient.createUserProfile(requestData);
@@ -31,8 +33,7 @@ public class IdamService implements IdentityManagerService {
         ResponseEntity<IdamUserResponse> response = idamClient.getUserById(userId.toString());
         if (HttpStatus.OK == response.getStatusCode()) {
             return new IdamRolesInfo(response.getBody().getRoles());
-        }
-        else{
+        } else {
             throw new ResourceNotFoundException("Get Idam user info failed");
         }
     }

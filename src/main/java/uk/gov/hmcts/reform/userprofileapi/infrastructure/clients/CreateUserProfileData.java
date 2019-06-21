@@ -2,12 +2,10 @@ package uk.gov.hmcts.reform.userprofileapi.infrastructure.clients;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
 import javax.validation.constraints.NotNull;
-
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
-
-import java.util.List;
 
 public class CreateUserProfileData implements RequestData {
 
@@ -78,7 +76,9 @@ public class CreateUserProfileData implements RequestData {
         return lastName;
     }
 
-    public String getLanguagePreference() { return languagePreference; }
+    public String getLanguagePreference() {
+        return languagePreference;
+    }
 
     public String getUserCategory() {
         return userCategory;

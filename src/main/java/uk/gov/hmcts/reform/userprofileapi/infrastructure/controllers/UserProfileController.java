@@ -5,13 +5,12 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.IdentifierName.EMAIL;
 import static uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.IdentifierName.UUID;
 
-import javax.validation.Valid;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -203,7 +202,9 @@ public class UserProfileController {
     public ResponseEntity<GetUserProfileResponse> getUserProfileByEmail(@ApiParam(name = "email", required = false) @RequestParam (value = "email", required = false) String email,
                                                                      @ApiParam(name = "userId", required = false) @RequestParam (value = "userId", required = false) String userId) {
 
-        if (email == null && userId == null) return ResponseEntity.badRequest().build();
+        if (email == null && userId == null) {
+            return ResponseEntity.badRequest().build();
+        }
 
         if (email != null) {
 
@@ -228,7 +229,7 @@ public class UserProfileController {
         try {
             java.util.UUID.fromString(userId);
         } catch (IllegalArgumentException ex) {
-           throw new ResourceNotFoundException("Malformed userId. Should have UUID format");
+            throw new ResourceNotFoundException("Malformed userId. Should have UUID format");
         }
     }
 }

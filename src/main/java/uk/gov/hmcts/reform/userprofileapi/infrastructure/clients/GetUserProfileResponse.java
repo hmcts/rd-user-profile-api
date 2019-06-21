@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.service.IdamStatus;
 
 @Getter
 @NoArgsConstructor
-public class GetUserProfileResponse{
+public class GetUserProfileResponse {
 
     private UUID idamId;
     private String email;

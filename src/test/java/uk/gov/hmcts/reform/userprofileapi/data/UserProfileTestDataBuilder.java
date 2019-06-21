@@ -12,6 +12,7 @@ import org.junit.Ignore;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+
 @Ignore
 public class UserProfileTestDataBuilder {
 

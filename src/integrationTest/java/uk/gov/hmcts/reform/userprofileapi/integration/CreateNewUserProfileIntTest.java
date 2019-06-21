@@ -43,7 +43,7 @@ import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.UserProfileR
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
 @Transactional
-public class CreateNewUserProfileIntTest extends AbstractIntegration{
+public class CreateNewUserProfileIntTest extends AbstractIntegration {
 
     private MockMvc mockMvc;
 

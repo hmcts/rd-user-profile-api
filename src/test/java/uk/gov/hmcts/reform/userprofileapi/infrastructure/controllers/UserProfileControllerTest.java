@@ -19,7 +19,13 @@ import uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder;
 import uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.service.UserProfileService;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.*;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfileWithRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.IdentifierName;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.RequestData;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileIdentifier;
+
 @Ignore
 @RunWith(MockitoJUnitRunner.class)
 public class UserProfileControllerTest {
@@ -113,9 +119,7 @@ public class UserProfileControllerTest {
         IllegalStateException ex = new IllegalStateException("This is a test exception");
 
         when(userProfileService.retrieve(identifierArgumentCaptor.capture())).thenThrow(ex);
-
-     //   assertThatThrownBy(() -> userProfileController.getUserProfileById(identifier.getValue())).isEqualTo(ex);
-
+        //   assertThatThrownBy(() -> userProfileController.getUserProfileById(identifier.getValue())).isEqualTo(ex);
         assertThat(identifierArgumentCaptor.getValue()).isEqualToComparingFieldByField(identifier);
 
         verify(userProfileService).retrieve(any(UserProfileIdentifier.class));
@@ -125,7 +129,7 @@ public class UserProfileControllerTest {
     @Test
     public void should_throw_exception_when_get_with_uuid_null_parameters_passed_in() {
 
-       /* assertThatThrownBy(() -> userProfileController.getUserProfileById(null))
+        /* assertThatThrownBy(() -> userProfileController.getUserProfileById(null))
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("uuid");*/
 
@@ -144,9 +148,9 @@ public class UserProfileControllerTest {
 
         when(userProfileService.retrieve(identifierArgumentCaptor.capture())).thenReturn(expectedResource);
 
-      //  ResponseEntity<GetUserProfileWithRolesResponse> resource = userProfileController.getUserProfileByEmail(identifier.getValue());
+        //  ResponseEntity<GetUserProfileWithRolesResponse> resource = userProfileController.getUserProfileByEmail(identifier.getValue());
 
-       // assertThat(resource.getBody()).isEqualToComparingFieldByField(expectedResource);
+        // assertThat(resource.getBody()).isEqualToComparingFieldByField(expectedResource);
         assertThat(identifierArgumentCaptor.getValue()).isEqualToComparingFieldByField(identifier);
 
         verify(userProfileService).retrieve(any(UserProfileIdentifier.class));
@@ -161,7 +165,7 @@ public class UserProfileControllerTest {
 
         when(userProfileService.retrieve(identifierArgumentCaptor.capture())).thenThrow(ex);
 
-      //  assertThatThrownBy(() -> userProfileController.getUserProfileByEmail(identifier.getValue())).isEqualTo(ex);
+        //  assertThatThrownBy(() -> userProfileController.getUserProfileByEmail(identifier.getValue())).isEqualTo(ex);
 
         assertThat(identifierArgumentCaptor.getValue()).isEqualToComparingFieldByField(identifier);
 
@@ -172,7 +176,7 @@ public class UserProfileControllerTest {
     @Test
     public void should_throw_exception_when_get_with_email_null_parameters_passed_in() {
 
-      /*  assertThatThrownBy(() -> userProfileController.getUserProfileByEmail(null))
+        /*  assertThatThrownBy(() -> userProfileController.getUserProfileByEmail(null))
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("email");*/
 
@@ -189,9 +193,9 @@ public class UserProfileControllerTest {
 
         when(userProfileService.retrieve(identifierArgumentCaptor.capture())).thenReturn(expectedResource);
 
-       // ResponseEntity<GetUserProfileWithRolesResponse> resource = userProfileController.getUserProfileById(identifier.getValue());
+        // ResponseEntity<GetUserProfileWithRolesResponse> resource = userProfileController.getUserProfileById(identifier.getValue());
 
-      //  assertThat(resource.getBody()).isEqualToComparingFieldByField(expectedResource);
+        //  assertThat(resource.getBody()).isEqualToComparingFieldByField(expectedResource);
         assertThat(identifierArgumentCaptor.getValue()).isEqualToComparingFieldByField(identifier);
 
         verify(userProfileService).retrieve(any(UserProfileIdentifier.class));
@@ -206,7 +210,7 @@ public class UserProfileControllerTest {
 
         when(userProfileService.retrieve(identifierArgumentCaptor.capture())).thenThrow(ex);
 
-       // assertThatThrownBy(() -> userProfileController.getUserProfileById(identifier.getValue())).isEqualTo(ex);
+        // assertThatThrownBy(() -> userProfileController.getUserProfileById(identifier.getValue())).isEqualTo(ex);
 
         assertThat(identifierArgumentCaptor.getValue()).isEqualToComparingFieldByField(identifier);
 
@@ -217,7 +221,7 @@ public class UserProfileControllerTest {
     @Test
     public void should_throw_exception_when_get_with_idamId_null_parameters_passed_in() {
 
-     /*   assertThatThrownBy(() -> userProfileController.getUserProfileById(null))
+        /*   assertThatThrownBy(() -> userProfileController.getUserProfileById(null))
             .isInstanceOf(NullPointerException.class)
             .hasMessageContaining("idamId");*/
 

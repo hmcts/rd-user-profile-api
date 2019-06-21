@@ -1,13 +1,10 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
-
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import org.junit.Before;
@@ -33,15 +30,15 @@ public class AbstractIntegration {
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(200)
-                        .withBody("{" +
-                                "  \"active\": \"true\"," +
-                                "  \"forename\": \"Super\"," +
-                                "  \"surname\": \"User\"," +
-                                "  \"email\": \"super.user@hmcts.net\"," +
-                                "  \"locked\": \"false\"," +
-                                "  \"roles\": [" +
-                                "    \"pui-organisation-manager\"" +
-                                "  ]" +
-                                "}")));
+                        .withBody("{"
+                                + "  \"active\": \"true\","
+                                + "  \"forename\": \"Super\","
+                                + "  \"surname\": \"User\","
+                                + "  \"email\": \"super.user@hmcts.net\","
+                                + "  \"locked\": \"false\","
+                                + "  \"roles\": ["
+                                + "    \"pui-organisation-manager\""
+                                + "  ]"
+                                + "}")));
     }
 }

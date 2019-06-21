@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.domain.service;
 
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileIdentifier;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.UserProfileQueryProvider;
