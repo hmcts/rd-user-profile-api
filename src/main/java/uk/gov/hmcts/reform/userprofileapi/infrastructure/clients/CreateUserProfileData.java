@@ -43,12 +43,7 @@ public class CreateUserProfileData implements RequestData {
 
         if (email == null) {
             throw new RequiredFieldMissingException("email must not be null");
-        } /*else if(email != null) {
-            String regEx = "^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^-]+(?:\\\\.[a-zA-Z0-9_!#$%&’*+/=?`{|}~^-]+)*@[a-zA-Z0-9-]+(?:\\\\.[a-zA-Z0-9-]+)*$";
-            if(!email.matches(regEx)){
-                throw new RequiredFieldMissingException("email is not valid");
-            }
-        } */else if (firstName == null) {
+        } else if (firstName == null) {
             throw new RequiredFieldMissingException("firstName must not be null");
         } else if (lastName == null) {
             throw new RequiredFieldMissingException("lastName must not be null");

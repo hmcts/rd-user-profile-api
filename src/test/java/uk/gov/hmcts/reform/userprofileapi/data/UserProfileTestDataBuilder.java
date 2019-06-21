@@ -20,7 +20,7 @@ public class UserProfileTestDataBuilder {
 
     public static UserProfile buildUserProfile() {
         return new UserProfile(buildCreateUserProfileData(),
-            new IdamRegistrationInfo(HttpStatus.ACCEPTED));
+            new IdamRegistrationInfo(HttpStatus.CREATED));
     }
 
     public static UserProfile buildUserProfileWithAllFields() {
@@ -29,7 +29,7 @@ public class UserProfileTestDataBuilder {
             Lists.newArrayList("id", "idamId", "idamStatus", "createdTs", "lastUpdatedTs");
 
         UserProfile userProfile = new UserProfile(buildCreateUserProfileData(),
-            new IdamRegistrationInfo(HttpStatus.ACCEPTED));
+            new IdamRegistrationInfo(HttpStatus.CREATED));
 
         unInitFields.forEach(fieldName -> {
 
@@ -62,7 +62,7 @@ public class UserProfileTestDataBuilder {
 
     public static UserProfile buildUserProfileWithAnIdamId() {
         UserProfile userProfile = new UserProfile(buildCreateUserProfileData(),
-            new IdamRegistrationInfo(HttpStatus.ACCEPTED));
+            new IdamRegistrationInfo(HttpStatus.CREATED));
 
         Field idamIdField;
         try {

@@ -26,14 +26,15 @@ import uk.gov.hmcts.reform.userprofileapi.client.IntTestRequestHandler;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.integration.util.TestUserProfileRepository;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
 @Transactional
-public class RetrieveUserProfileIntTest {
+public class RetrieveUserProfileIntTest extends AbstractIntegration{
 
-    private static final String APP_BASE_PATH = "/profiles";
+    private static final String APP_BASE_PATH = "/v1/userprofile";
     private static final String SLASH = "/";
 
     @Autowired
@@ -57,32 +58,81 @@ public class RetrieveUserProfileIntTest {
         assertThat(userProfiles).isEmpty();
 
         UserProfile user1 = testUserProfileRepository.save(buildUserProfile());
-        UserProfile userWithIdamId = testUserProfileRepository.save(buildUserProfileWithAnIdamId());
 
         assertTrue(testUserProfileRepository.existsById(user1.getId()));
-        assertTrue(testUserProfileRepository.existsById(userWithIdamId.getId()));
 
         userProfileMap = new HashMap<>();
-        userProfileMap.put("user1", user1);
-        userProfileMap.put("userWithIdamId", userWithIdamId);
+        userProfileMap.put("user", user1);
 
     }
 
     @Test
     public void should_retrieve_user_profile_resource_with_id() throws Exception {
-        UserProfile userProfile = userProfileMap.get("user1");
+        UserProfile userProfile = userProfileMap.get("user");
 
         GetUserProfileResponse retrievedResource =
             intTestRequestHandler.sendGet(
                 mockMvc,
-                APP_BASE_PATH + SLASH + userProfile.getId(),
+                APP_BASE_PATH + "?" + "userId=" + userProfile.getIdamId(),
                 OK,
                 GetUserProfileResponse.class
             );
 
         assertThat(retrievedResource).isNotNull();
-        assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile,
-            "languagePreference","creationChannel", "userCategory", "userType", "userProfileStatus");
+        assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile, "roles");
+
+    }
+
+    @Test
+    public void should_retrieve_user_profile_resource_with_roles_by_id() throws Exception {
+        UserProfile userProfile = userProfileMap.get("user");
+
+        GetUserProfileWithRolesResponse retrievedResource =
+                intTestRequestHandler.sendGet(
+                        mockMvc,
+                        APP_BASE_PATH + SLASH + userProfile.getIdamId() + "/roles",
+                        OK,
+                        GetUserProfileWithRolesResponse.class
+                );
+
+        assertThat(retrievedResource).isNotNull();
+        assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile, "roles");
+        assertThat(retrievedResource.getRoles().size()).isGreaterThan(0);
+
+    }
+
+    @Test
+    public void should_retrieve_user_profile_resource_with_roles_by_email() throws Exception {
+        UserProfile userProfile = userProfileMap.get("user");
+
+        GetUserProfileWithRolesResponse retrievedResource =
+                intTestRequestHandler.sendGet(
+                        mockMvc,
+                        APP_BASE_PATH + SLASH + "roles" + "?" + "email=" + userProfile.getEmail(),
+                        OK,
+                        GetUserProfileWithRolesResponse.class
+                );
+
+        assertThat(retrievedResource).isNotNull();
+        assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile, "roles");
+        assertThat(retrievedResource.getRoles().size()).isGreaterThan(0);
+
+    }
+
+    @Test
+    public void should_retrieve_user_profile_resource_with_email() throws Exception {
+        UserProfile userProfile = userProfileMap.get("user");
+
+        GetUserProfileResponse retrievedResource =
+                intTestRequestHandler.sendGet(
+                        mockMvc,
+                        APP_BASE_PATH + "?" + "email=" + userProfile.getEmail(),
+                        OK,
+                        GetUserProfileResponse.class
+                );
+
+        assertThat(retrievedResource).isNotNull();
+        assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile, "roles");
 
     }
 
@@ -104,8 +154,7 @@ public class RetrieveUserProfileIntTest {
     @Test
     public void should_return_404_when_nothing_in_the_db() throws Exception {
 
-        testUserProfileRepository.delete(userProfileMap.get("user1"));
-        testUserProfileRepository.delete(userProfileMap.get("userWithIdamId"));
+        testUserProfileRepository.delete(userProfileMap.get("user"));
         Iterable<UserProfile> userProfiles = testUserProfileRepository.findAll();
         assertThat(userProfiles).isEmpty();
 
@@ -117,25 +166,6 @@ public class RetrieveUserProfileIntTest {
             );
         assertThat(result.getResponse()).isNotNull();
         assertThat(result.getResponse().getContentAsString()).isEmpty();
-
-    }
-
-    @Test
-    public void should_retrieve_user_profile_resource_with_email() throws Exception {
-        UserProfile userProfile = userProfileMap.get("user1");
-        String path = APP_BASE_PATH + "?email=" + userProfile.getEmail();
-
-        GetUserProfileResponse retrievedResource =
-            intTestRequestHandler.sendGet(
-                mockMvc,
-                path,
-                OK,
-                    GetUserProfileResponse.class
-            );
-
-        assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile,
-            "languagePreference","creationChannel", "userCategory", "userType", "userProfileStatus");
-
 
     }
 
@@ -157,8 +187,8 @@ public class RetrieveUserProfileIntTest {
     @Test
     public void should_return_404_when_query_by_email_and_nothing_in_the_db() throws Exception {
 
-        testUserProfileRepository.delete(userProfileMap.get("user1"));
-        testUserProfileRepository.delete(userProfileMap.get("userWithIdamId"));
+        testUserProfileRepository.delete(userProfileMap.get("user"));
+        //testUserProfileRepository.delete(userProfileMap.get("userWithIdamId"));
         Iterable<UserProfile> userProfiles = testUserProfileRepository.findAll();
         assertThat(userProfiles).isEmpty();
 
@@ -190,30 +220,12 @@ public class RetrieveUserProfileIntTest {
 
 
     @Test
-    public void should_retrieve_user_profile_resource_with_idamId() throws Exception {
-        UserProfile userProfile = userProfileMap.get("userWithIdamId");
-        String path = APP_BASE_PATH + "?idamId=" + userProfile.getId();
-
-        GetUserProfileResponse retrievedResource =
-            intTestRequestHandler.sendGet(
-                mockMvc,
-                path,
-                OK,
-                    GetUserProfileResponse.class
-            );
-
-        assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile,
-            "languagePreference","creationChannel", "userCategory", "userType", "userProfileStatus");
-
-    }
-
-    @Test
-    public void should_return_404_when_query_by_idamId_is_empty() throws Exception {
+    public void should_return_404_when_query_by_userId_is_empty() throws Exception {
 
         MvcResult result =
             intTestRequestHandler.sendGet(
                 mockMvc,
-                APP_BASE_PATH + "?idamId=",
+                APP_BASE_PATH + "?userId=",
                 NOT_FOUND
             );
 
@@ -223,12 +235,12 @@ public class RetrieveUserProfileIntTest {
     }
 
     @Test
-    public void should_return_404_when_user_profile_idamId_not_in_the_db() throws Exception {
+    public void should_return_404_when_user_profile_userId_not_in_the_db() throws Exception {
 
         MvcResult result =
             intTestRequestHandler.sendGet(
                 mockMvc,
-                APP_BASE_PATH + "?idamId=" + "randomIdamId",
+                APP_BASE_PATH + "?userId=" + UUID.randomUUID().toString(),
                 NOT_FOUND
             );
 

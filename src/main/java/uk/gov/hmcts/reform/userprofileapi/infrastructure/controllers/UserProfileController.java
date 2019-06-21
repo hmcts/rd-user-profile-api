@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.service.IdamService;
+import uk.gov.hmcts.reform.userprofileapi.domain.service.ResourceNotFoundException;
 import uk.gov.hmcts.reform.userprofileapi.domain.service.UserProfileService;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileResponse;
@@ -124,7 +125,7 @@ public class UserProfileController {
     public ResponseEntity<GetUserProfileWithRolesResponse> getUserProfileWithRolesById(@PathVariable String id) {
         log.info("Getting user profile with id: {}", id);
         requireNonNull(id, "id cannot be null");
-
+        isUserIdValid(id);
         GetUserProfileWithRolesResponse response = userProfileService.retrieveWithRoles(new UserProfileIdentifier(UUID, id));
         IdamRolesInfo idamRolesInfo = idamService.getUserById(response.getIdamId());
         response.setRoles(idamRolesInfo.getRoles());
@@ -200,7 +201,7 @@ public class UserProfileController {
     )
     @ResponseBody
     public ResponseEntity<GetUserProfileResponse> getUserProfileByEmail(@ApiParam(name = "email", required = false) @RequestParam (value = "email", required = false) String email,
-                                                                     @ApiParam(name = "userId", required = false) @RequestParam (value = "id", required = false) String userId) {
+                                                                     @ApiParam(name = "userId", required = false) @RequestParam (value = "userId", required = false) String userId) {
 
         if (email == null && userId == null) return ResponseEntity.badRequest().build();
 
@@ -214,12 +215,20 @@ public class UserProfileController {
                     )
             );
         }  else {
-
+            isUserIdValid(userId);
             return ResponseEntity.ok(
                     userProfileService.retrieve(
                             new UserProfileIdentifier(UUID, userId)
                     )
             );
+        }
+    }
+
+    static void isUserIdValid(String userId) {
+        try {
+            java.util.UUID.fromString(userId);
+        } catch (IllegalArgumentException ex) {
+           throw new ResourceNotFoundException("Malformed userId. Should have UUID format");
         }
     }
 }

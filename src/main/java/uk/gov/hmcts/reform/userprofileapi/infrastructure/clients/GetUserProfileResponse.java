@@ -2,13 +2,14 @@ package uk.gov.hmcts.reform.userprofileapi.infrastructure.clients;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.List;
 import java.util.UUID;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.service.IdamStatus;
 
 @Getter
+@NoArgsConstructor
 public class GetUserProfileResponse{
 
     private UUID idamId;
@@ -20,11 +21,11 @@ public class GetUserProfileResponse{
     public GetUserProfileResponse(UserProfile userProfile) {
 
         requireNonNull(userProfile, "userProfile must not be null");
-        this.idamId = userProfile.getId();
+        this.idamId = userProfile.getIdamId();
         this.email = userProfile.getEmail();
         this.firstName = userProfile.getFirstName();
         this.lastName = userProfile.getLastName();
-        this.status = userProfile.getIdamStatus();
+        this.status = userProfile.getStatus();
     }
 
 }

@@ -1,6 +1,6 @@
 spring:
   datasource:
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:dbuserprofile
+    url: jdbc:h2:mem:dbuserprofile;INIT=create domain if not exists json as text
     username: ${DB_UP_USERNAME:dbuserprofile}
     password: ${DB_UP_PASSWORD:dbuserprofile}

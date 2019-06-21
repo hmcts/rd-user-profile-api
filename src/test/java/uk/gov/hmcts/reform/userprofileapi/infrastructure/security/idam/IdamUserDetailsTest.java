@@ -31,7 +31,7 @@ public class IdamUserDetailsTest {
         assertEquals(accessToken, userDetails.getAccessToken());
         assertEquals(id, userDetails.getId());
         assertEquals(roles, userDetails.getRoles());
-        assertEquals(emailAddress, userDetails.getEmailAddress());
+        assertEquals(emailAddress, userDetails.getEmail());
         assertEquals(forename, userDetails.getForename());
         assertEquals(surname, userDetails.getSurname());
     }

@@ -22,18 +22,7 @@ public class CreateUserProfileDataTestBuilder {
             RandomStringUtils.randomAlphabetic(20),
             LanguagePreference.EN.toString(),
             UserCategory.PROFESSIONAL.toString(),
-            UserType.INTERNAL.toString(),
-            getIdamRolesJson());
-    }
-
-    public static CreateUserProfileData buildCreateUserProfileDataMandatoryFieldsOnly() {
-        return new CreateUserProfileData(
-            buildRandomEmail(),
-            RandomStringUtils.randomAlphabetic(20),
-            RandomStringUtils.randomAlphabetic(20),
-            LanguagePreference.EN.toString(),
-            UserCategory.PROFESSIONAL.toString(),
-            UserType.INTERNAL.toString(),
+            UserType.EXTERNAL.toString(),
             getIdamRolesJson());
     }
 
