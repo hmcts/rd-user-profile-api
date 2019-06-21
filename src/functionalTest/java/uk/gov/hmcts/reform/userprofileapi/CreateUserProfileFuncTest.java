@@ -8,6 +8,7 @@ import io.restassured.RestAssured;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.json.JSONObject;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfi
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfileResponse;
 
+@Ignore
 @RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest
 @ActiveProfiles("functional")

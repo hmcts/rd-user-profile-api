@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.data;
 
 import org.apache.commons.lang.RandomStringUtils;
+import org.junit.Ignore;
 import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
@@ -9,6 +10,7 @@ import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfi
 import java.util.ArrayList;
 import java.util.List;
 
+@Ignore
 public class CreateUserProfileDataTestBuilder {
 
     private CreateUserProfileDataTestBuilder() {
