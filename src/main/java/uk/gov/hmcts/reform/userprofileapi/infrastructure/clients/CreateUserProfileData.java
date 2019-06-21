@@ -50,7 +50,7 @@ public class CreateUserProfileData implements RequestData {
             throw new RequiredFieldMissingException("userType must not be null");
         }
 
-        this.email = email;
+        this.email = email.toLowerCase();
         this.firstName = firstName;
         this.lastName = lastName;
         this.languagePreference = languagePreference;

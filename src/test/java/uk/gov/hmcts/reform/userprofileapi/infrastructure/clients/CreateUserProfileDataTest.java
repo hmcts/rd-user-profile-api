@@ -40,6 +40,24 @@ public class CreateUserProfileDataTest {
     }
 
     @Test
+    public void should_make_email_lowercase() {
+
+        CreateUserProfileData userProfileData =
+                new CreateUserProfileData(
+                        "TEST-EMAIL@someWhere.Com",
+                        "test-first-name",
+                        "test-last-name",
+                        LanguagePreference.CY.toString(),
+                        true,
+                        true,
+                        UserCategory.CITIZEN.toString(),
+                        UserType.EXTERNAL.toString(),
+                        getIdamRolesJson());
+
+        assertThat(userProfileData.getEmail()).isEqualTo("test-email@somewhere.com");
+    }
+
+    @Test
     public void should_throw_exception_when_mandatory_fields_are_null() {
 
         assertThatThrownBy(() -> new CreateUserProfileData(
