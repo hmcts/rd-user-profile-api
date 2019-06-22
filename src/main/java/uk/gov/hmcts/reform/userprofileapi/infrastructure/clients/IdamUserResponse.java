@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.userprofileapi.domain.feign;
+package uk.gov.hmcts.reform.userprofileapi.infrastructure.clients;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

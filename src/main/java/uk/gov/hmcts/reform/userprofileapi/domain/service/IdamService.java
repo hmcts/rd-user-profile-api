@@ -10,9 +10,8 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
-import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamUserResponse;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
-
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.IdamUserResponse;
 
 @Slf4j
 @Component

@@ -4,8 +4,11 @@ import static java.util.stream.Collectors.toList;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
+
+import lombok.Getter;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 
+@Getter
 public class GetUserProfilesResponse {
 
     @JsonProperty
