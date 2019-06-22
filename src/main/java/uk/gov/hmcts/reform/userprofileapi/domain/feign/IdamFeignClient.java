@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "IdamFeignClient", url = "172.29.14.129:8888")
+@FeignClient(name = "IdamFeignClient", url = "localhost:8888")
 public interface IdamFeignClient {
 
 
