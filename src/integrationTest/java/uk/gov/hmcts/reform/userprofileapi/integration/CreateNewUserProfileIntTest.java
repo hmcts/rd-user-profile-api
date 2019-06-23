@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -94,7 +95,7 @@ public class CreateNewUserProfileIntTest extends AbstractIntegration {
         UserProfile userProfile = persistedUserProfile.get();
         assertThat(userProfile.getId()).isNotNull().isExactlyInstanceOf(Long.class);
         assertThat(userProfile.getIdamRegistrationResponse()).isEqualTo(201);
-        assertThat(userProfile.getEmail()).isEqualTo(data.getEmail());
+        assertThat(userProfile.getEmail()).isEqualToIgnoringCase(data.getEmail());
         assertThat(userProfile.getFirstName()).isNotEmpty().isEqualTo(data.getFirstName());
         assertThat(userProfile.getLastName()).isNotEmpty().isEqualTo(data.getLastName());
         assertThat(userProfile.getLanguagePreference()).isEqualTo(LanguagePreference.EN);
@@ -160,6 +161,56 @@ public class CreateNewUserProfileIntTest extends AbstractIntegration {
                     .contentType(APPLICATION_JSON_UTF8))
                     .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
                     .andReturn();
+
+            } catch (Exception e) {
+                Assertions.fail("could not run test correctly", e);
+            }
+
+        });
+
+    }
+
+    @Test
+    public void should_return_400_when_fields_are_blank_or_having_only_whitespaces() throws Exception {
+
+        List<String> mandatoryFieldList =
+                Lists.newArrayList(
+                        "email",
+                        "firstName",
+                        "lastName",
+                        "languagePreference",
+                        "userCategory",
+                        "userType"
+                );
+
+        new JSONObject(
+                objectMapper.writeValueAsString(
+                        buildCreateUserProfileData()
+                )
+        );
+
+        mandatoryFieldList.forEach(s -> {
+
+            try {
+
+                JSONObject jsonObject =
+                        new JSONObject(objectMapper.writeValueAsString(buildCreateUserProfileData()));
+
+                jsonObject.put(s,"");
+
+                mockMvc.perform(post(APP_BASE_PATH)
+                        .content(jsonObject.toString())
+                        .contentType(APPLICATION_JSON_UTF8))
+                        .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
+                        .andReturn();
+
+                jsonObject.put(s," ");
+
+                mockMvc.perform(post(APP_BASE_PATH)
+                        .content(jsonObject.toString())
+                        .contentType(APPLICATION_JSON_UTF8))
+                        .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
+                        .andReturn();
 
             } catch (Exception e) {
                 Assertions.fail("could not run test correctly", e);

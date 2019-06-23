@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.domain.service.ResourceNotFoundException;
 
+
 @Slf4j
 @ControllerAdvice(basePackages = "uk.gov.hmcts.reform.userprofileapi.infrastructure.controllers")
 @RequestMapping(produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
@@ -76,7 +77,32 @@ public class UserProfileControllerAdvice {
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    /*@Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        List<String> details = new ArrayList<String>();
+        for(ObjectError error : ex.getBindingResult().getAllErrors()) {
+            details.add(error.getDefaultMessage());
+        }
+        ErrorResponse error = new ErrorResponse("Validation Failed", details);
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }*/
+
     private void logException(Exception e) {
         log.info(LOG_STRING, e.getMessage());
     }
 }
+
+
+/*
+class ErrorResponse
+{
+    public ErrorResponse(String message, List<String> details) {
+        super();
+        this.message = message;
+        this.details = details;
+    }
+
+    private String message;
+    private List<String> details;
+
+}*/

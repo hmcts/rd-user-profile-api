@@ -3,31 +3,34 @@ package uk.gov.hmcts.reform.userprofileapi.infrastructure.clients;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
-import javax.validation.constraints.NotNull;
-import org.springframework.util.CollectionUtils;
-import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import lombok.Setter;
 
+@Setter
 public class CreateUserProfileData implements RequestData {
 
-    @NotNull
+    @Email(regexp = "\\A(?=[a-zA-Z0-9@.!#$%&'*+/=?^_`{|}~-]{6,254}\\z)(?=[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]{1,64}@)[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:(?=[a-zA-Z0-9-]{1,63}\\.)[a-zA-Z0-9](?:[a-z0-9-]*[a-zA-Z0-9])?\\.)+(?=[a-zA-Z0-9-]{1,63}\\z)[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\z")
+    @NotBlank (message = "email must not be null or blank")
     private String email;
 
-    @NotNull
+    @NotBlank (message = "firstName must not be null or blank")
     private String firstName;
 
-    @NotNull
+    @NotBlank (message = "lastName must not be null or blank")
     private String lastName;
 
-    @NotNull
+    @NotBlank (message = "languagePreference must not be null or blank")
     private String languagePreference;
 
-    @NotNull
+    @NotBlank (message = "userCategory must not be null or blank")
     private String userCategory;
 
-    @NotNull
+    @NotBlank(message = "userType must not be null or blank")
     private String userType;
 
-    @NotNull
+    @NotEmpty(message = "at least one role is required")
     private List<String> roles;
 
     @JsonCreator
@@ -38,22 +41,6 @@ public class CreateUserProfileData implements RequestData {
                                  @JsonProperty(value = "userCategory") String userCategory,
                                  @JsonProperty(value = "userType") String userType,
                                  @JsonProperty(value = "roles") List<String> roles) {
-
-        if (email == null) {
-            throw new RequiredFieldMissingException("email must not be null");
-        } else if (firstName == null) {
-            throw new RequiredFieldMissingException("firstName must not be null");
-        } else if (lastName == null) {
-            throw new RequiredFieldMissingException("lastName must not be null");
-        } else if (languagePreference == null) {
-            throw new RequiredFieldMissingException("languagePreference must not be null");
-        } else if (userCategory == null) {
-            throw new RequiredFieldMissingException("userCategory must not be null");
-        } else if (userType == null) {
-            throw new RequiredFieldMissingException("userType must not be null");
-        } else if (CollectionUtils.isEmpty(roles)) {
-            throw new RequiredFieldMissingException("at least one role required");
-        }
 
         this.email = email;
         this.firstName = firstName;

@@ -75,10 +75,10 @@ public class UserProfile {
 
     public UserProfile(CreateUserProfileData data, IdamRegistrationInfo idamInfo) {
 
-        this.email = data.getEmail();
-        this.firstName = data.getFirstName();
-        this.lastName = data.getLastName();
-        this.languagePreference = LanguagePreference.EN;
+        this.email = data.getEmail().trim().toUpperCase();
+        this.firstName = data.getFirstName().trim();
+        this.lastName = data.getLastName().trim();
+        this.languagePreference = LanguagePreference.valueOf(data.getLanguagePreference());
         this.userCategory = UserCategory.valueOf(data.getUserCategory());
         this.userType = UserType.valueOf(data.getUserType());
         this.idamRegistrationResponse = idamInfo.getIdamRegistrationResponse().value();
