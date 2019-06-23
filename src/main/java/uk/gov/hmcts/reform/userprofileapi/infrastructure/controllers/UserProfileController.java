@@ -168,7 +168,7 @@ public class UserProfileController {
 
         requireNonNull(email, "email cannot be null");
 
-        GetUserProfileWithRolesResponse response = userProfileService.retrieveWithRoles(new UserProfileIdentifier(EMAIL, email));
+        GetUserProfileWithRolesResponse response = userProfileService.retrieveWithRoles(new UserProfileIdentifier(EMAIL, email.toUpperCase()));
         IdamRolesInfo idamRolesInfo = idamService.getUserById(response.getIdamId());
         response.setRoles(idamRolesInfo.getRoles());
 
@@ -212,7 +212,7 @@ public class UserProfileController {
 
             return ResponseEntity.ok(
                     userProfileService.retrieve(
-                            new UserProfileIdentifier(EMAIL, email)
+                            new UserProfileIdentifier(EMAIL, email.toUpperCase())
                     )
             );
         }  else {

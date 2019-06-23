@@ -140,7 +140,7 @@ public class RetrieveUserProfileIntTest extends AbstractIntegration {
         MvcResult result =
             intTestRequestHandler.sendGet(
                 mockMvc,
-                APP_BASE_PATH + SLASH + UUID.randomUUID().toString(),
+                APP_BASE_PATH + "?userId=" + UUID.randomUUID().toString(),
                 NOT_FOUND
             );
 
@@ -159,7 +159,7 @@ public class RetrieveUserProfileIntTest extends AbstractIntegration {
         MvcResult result =
             intTestRequestHandler.sendGet(
                 mockMvc,
-                APP_BASE_PATH + SLASH + UUID.randomUUID().toString(),
+                APP_BASE_PATH + "?userId=" + UUID.randomUUID().toString(),
                 NOT_FOUND
             );
         assertThat(result.getResponse()).isNotNull();
@@ -186,7 +186,6 @@ public class RetrieveUserProfileIntTest extends AbstractIntegration {
     public void should_return_404_when_query_by_email_and_nothing_in_the_db() throws Exception {
 
         testUserProfileRepository.delete(userProfileMap.get("user"));
-        //testUserProfileRepository.delete(userProfileMap.get("userWithIdamId"));
         Iterable<UserProfile> userProfiles = testUserProfileRepository.findAll();
         assertThat(userProfiles).isEmpty();
 
@@ -231,19 +230,4 @@ public class RetrieveUserProfileIntTest extends AbstractIntegration {
         assertThat(result.getResponse().getContentAsString()).isEmpty();
 
     }
-
-    @Test
-    public void should_return_404_when_user_profile_userId_not_in_the_db() throws Exception {
-
-        MvcResult result =
-            intTestRequestHandler.sendGet(
-                mockMvc,
-                APP_BASE_PATH + "?userId=" + UUID.randomUUID().toString(),
-                NOT_FOUND
-            );
-
-        assertThat(result.getResponse().getContentAsString()).isEmpty();
-
-    }
-
 }
