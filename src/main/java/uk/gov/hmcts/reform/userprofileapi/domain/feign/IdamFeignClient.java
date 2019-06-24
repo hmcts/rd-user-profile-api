@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.IdamUserResponse;
 
-@FeignClient(name = "IdamFeignClient", url = "localhost:8888")
+@FeignClient(name = "IdamFeignClient", url = "${idamUrl}")
 public interface IdamFeignClient {
 
 

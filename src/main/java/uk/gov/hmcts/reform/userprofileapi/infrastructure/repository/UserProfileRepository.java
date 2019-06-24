@@ -8,9 +8,9 @@ import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 
 public interface UserProfileRepository extends CrudRepository<UserProfile, Long> {
 
-    @Transactional(readOnly = true, timeout = 10)
+    @Transactional(readOnly = true)
     Optional<UserProfile> findByEmail(String email);
 
-    @Transactional(readOnly = true, timeout = 10)
+    @Transactional(readOnly = true)
     Optional<UserProfile> findByIdamId(UUID id);
 }

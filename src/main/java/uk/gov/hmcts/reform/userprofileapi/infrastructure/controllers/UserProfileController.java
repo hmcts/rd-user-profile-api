@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.IdentifierName.EMAIL;
 import static uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.IdentifierName.UUID;
+import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -222,14 +223,6 @@ public class UserProfileController {
                             new UserProfileIdentifier(UUID, userId)
                     )
             );
-        }
-    }
-
-    static void isUserIdValid(String userId) {
-        try {
-            java.util.UUID.fromString(userId);
-        } catch (IllegalArgumentException ex) {
-            throw new ResourceNotFoundException("Malformed userId. Should have UUID format");
         }
     }
 }
