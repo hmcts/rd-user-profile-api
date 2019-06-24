@@ -4,13 +4,17 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import javax.validation.constraints.NotNull;
+import lombok.Getter;
 
+@Getter
 public class IdamUserResponse {
     private Boolean active;
-    @NotNull
     private String email;
     private String forename;
     private String id;
+    private Boolean locked;
+    private List<String> roles;
+    private String surname;
 
     @JsonCreator
     public IdamUserResponse(@JsonProperty(value = "active") Boolean active,
@@ -26,66 +30,6 @@ public class IdamUserResponse {
         this.id = id;
         this.locked = locked;
         this.roles = roles;
-        this.surname = surname;
-    }
-
-    private Boolean locked;
-    private List<String> roles;
-    private String surname;
-
-    public Boolean getActive() {
-        return active;
-    }
-
-    public void setActive(Boolean active) {
-        this.active = active;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getForename() {
-        return forename;
-    }
-
-    public void setForename(String forename) {
-        this.forename = forename;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public Boolean getLocked() {
-        return locked;
-    }
-
-    public void setLocked(Boolean locked) {
-        this.locked = locked;
-    }
-
-    public List<String> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<String> roles) {
-        this.roles = roles;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
-
-    public void setSurname(String surname) {
         this.surname = surname;
     }
 }

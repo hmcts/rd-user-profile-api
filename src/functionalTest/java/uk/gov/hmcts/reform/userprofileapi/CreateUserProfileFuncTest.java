@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
 
 import io.restassured.RestAssured;
+import java.util.UUID;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -35,7 +36,7 @@ public class CreateUserProfileFuncTest {
 
     @Autowired private FuncTestRequestHandler testRequestHandler;
 
-    private String requestUri = "/profiles";
+    private String requestUri = "/v1/userprofile";
 
     @Before
     public void setUp() {
@@ -60,16 +61,14 @@ public class CreateUserProfileFuncTest {
 
         GetUserProfileResponse resource =
             testRequestHandler.sendGet(
-                requestUri + "/" + createdResource.getIdamId(),
+                requestUri + "?userId=" + createdResource.getIdamId(),
                     GetUserProfileResponse.class);
 
         verifyGetUserProfile(resource, expectedData);
 
-        String emailUrl = "";//requestUri + "?email=" + createdResource.getEmail();
-
         resource =
             testRequestHandler.sendGet(
-                emailUrl,
+                    requestUri + "?email=" + expectedData.getEmail(),
                     GetUserProfileResponse.class
             );
 
@@ -138,7 +137,7 @@ public class CreateUserProfileFuncTest {
 
         GetUserProfileResponse resource =
             testRequestHandler.sendGet(
-                requestUri + "/" + createdResource.getIdamId(),
+                    requestUri + "?userId=" + createdResource.getIdamId(),
                     GetUserProfileResponse.class
             );
 
@@ -153,10 +152,8 @@ public class CreateUserProfileFuncTest {
     private void verifyCreateUserProfile(CreateUserProfileResponse resource, CreateUserProfileData expectedData) {
 
         assertThat(resource).isNotNull();
-
-        assertThat(resource.getIdamId()).isNotNull();
-        assertThat(resource.getIdamRegistrationResponse()).isEqualTo(HttpStatus.ACCEPTED.value());
-
+        assertThat(resource.getIdamId()).isInstanceOf(UUID.class);
+        assertThat(resource.getIdamRegistrationResponse()).isEqualTo(HttpStatus.CREATED.value());
     }
 
     private void verifyGetUserProfile(GetUserProfileResponse resource, CreateUserProfileData expectedResource) {

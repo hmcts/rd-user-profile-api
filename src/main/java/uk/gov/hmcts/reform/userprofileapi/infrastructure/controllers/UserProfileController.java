@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.service.IdamService;
-import uk.gov.hmcts.reform.userprofileapi.domain.service.ResourceNotFoundException;
 import uk.gov.hmcts.reform.userprofileapi.domain.service.UserProfileService;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileResponse;
@@ -51,13 +51,10 @@ import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileIden
 @RestController
 public class UserProfileController {
 
+    @Autowired
     private UserProfileService<RequestData> userProfileService;
+    @Autowired
     private IdamService idamService;
-
-    public UserProfileController(UserProfileService<RequestData> userProfileService, IdamService idamService) {
-        this.userProfileService = userProfileService;
-        this.idamService = idamService;
-    }
 
     @ApiOperation("Create a User Profile")
     @ApiResponses({
@@ -205,9 +202,7 @@ public class UserProfileController {
 
         if (email == null && userId == null) {
             return ResponseEntity.badRequest().build();
-        }
-
-        if (email != null) {
+        } else if (email != null) {
 
             log.info("Getting user profile with email: {}", email);
 
@@ -216,7 +211,7 @@ public class UserProfileController {
                             new UserProfileIdentifier(EMAIL, email.toUpperCase())
                     )
             );
-        }  else {
+        } else {
             isUserIdValid(userId);
             return ResponseEntity.ok(
                     userProfileService.retrieve(
