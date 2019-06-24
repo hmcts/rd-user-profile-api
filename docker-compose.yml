@@ -14,8 +14,8 @@ services:
       - JAVA_OPTS
       - DB_UP_USERNAME=dbuserprofile
       - DB_UP_PASSWORD=dbuserprofile
-      - DB_UP_HOST=rd-user-profile-db
-      - DB_UP_PORT=5432
+      - DB_UP_POSTGRES_HOST=rd-user-profile-db
+      - DB_UP_POSTGRES_PORT=5432
       # these environment variables are used by java-logging library
       - JSON_CONSOLE_PRETTY_PRINT
       - ROOT_APPENDER
