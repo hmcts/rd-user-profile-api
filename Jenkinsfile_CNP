@@ -29,16 +29,19 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 
 withPipeline(type, product, component) {
 
-    before('buildinfra:prod') {
-        currentBuild.result = 'Success'
-        currentBuild.description = "Success"
-        error 'Reference Data projects are not authorised to be in production environments yet.'
+    after('smoketest:aat') {
+        sh "rm -rf infrastructure/"
     }
 
-    enableDockerBuild()
-
-    setVaultName('rd')
+    overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)
+
+    enableDbMigration()
+    enableDockerBuild()
+    installCharts()
+
+    env.S2S_URL_FOR_TESTS = "http://rpe-service-auth-provider-${env}.service.core-compute-${env}.internal"
+
 
     after('functionalTest:preview') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
