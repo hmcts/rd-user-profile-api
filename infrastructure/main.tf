@@ -29,6 +29,11 @@ data "azurerm_key_vault" "rd_key_vault" {
   resource_group_name = "${local.key_vault_name}"
 }
 
+data "azurerm_key_vault" "s2s_key_vault" {
+  name = "s2s-${local.local_env}"
+  resource_group_name = "rpe-service-auth-provider-${local.local_env}"
+}
+
 data "azurerm_key_vault_secret" "up_s2s_secret" {
   name = "up-s2s-secret"
   vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
