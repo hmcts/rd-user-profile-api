@@ -6,11 +6,11 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 
-public interface UserProfileRepository extends CrudRepository<UserProfile, UUID> {
+public interface UserProfileRepository extends CrudRepository<UserProfile, Long> {
 
-    @Transactional(readOnly = true, timeout = 10)
+    @Transactional(readOnly = true)
     Optional<UserProfile> findByEmail(String email);
 
-    @Transactional(readOnly = true, timeout = 10)
-    Optional<UserProfile> findByIdamId(String idamId);
+    @Transactional(readOnly = true)
+    Optional<UserProfile> findByIdamId(UUID id);
 }

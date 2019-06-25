@@ -2,14 +2,14 @@ package uk.gov.hmcts.reform.userprofileapi;
 
 import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpStatus.*;
 import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
 
 import io.restassured.RestAssured;
-import java.time.LocalDateTime;
+import java.util.UUID;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.json.JSONObject;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -17,12 +17,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.userprofileapi.client.FuncTestRequestHandler;
-import uk.gov.hmcts.reform.userprofileapi.domain.CreationChannel;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileResource;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfileResponse;
 
+@Ignore
 @RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest
 @ActiveProfiles("functional")
@@ -34,7 +36,7 @@ public class CreateUserProfileFuncTest {
 
     @Autowired private FuncTestRequestHandler testRequestHandler;
 
-    private String requestUri = "/profiles";
+    private String requestUri = "/v1/userprofile";
 
     @Before
     public void setUp() {
@@ -47,44 +49,42 @@ public class CreateUserProfileFuncTest {
 
         CreateUserProfileData expectedData = buildCreateUserProfileData();
 
-        UserProfileResource createdResource =
+        CreateUserProfileResponse createdResource =
             testRequestHandler.sendPost(
                 expectedData,
-                CREATED,
+                HttpStatus.CREATED,
                 requestUri,
-                UserProfileResource.class
+                CreateUserProfileResponse.class
             );
 
         verifyCreateUserProfile(createdResource, expectedData);
 
-        UserProfileResource resource =
+        GetUserProfileResponse resource =
             testRequestHandler.sendGet(
-                requestUri + "/" + createdResource.getId(),
-                UserProfileResource.class);
+                requestUri + "?userId=" + createdResource.getIdamId(),
+                    GetUserProfileResponse.class);
 
-        verifyGetUserProfile(resource, createdResource);
-
-        String emailUrl = requestUri + "?email=" + createdResource.getEmail();
+        verifyGetUserProfile(resource, expectedData);
 
         resource =
             testRequestHandler.sendGet(
-                emailUrl,
-                UserProfileResource.class
+                    requestUri + "?email=" + expectedData.getEmail(),
+                    GetUserProfileResponse.class
             );
 
-        verifyGetUserProfile(resource, createdResource);
+        verifyGetUserProfile(resource, expectedData);
     }
 
     @Test
     public void should_return_400_when_required_email_field_is_missing() {
         String json = "{\"firstName\":\"iWvKhGLXCiOMMbZtngbR\",\"lastName\":\"mXlpNLcbodhABAWKCKbj\"}";
-        testRequestHandler.sendPost(json, BAD_REQUEST, requestUri);
+        testRequestHandler.sendPost(json, HttpStatus.BAD_REQUEST, requestUri);
     }
 
     @Test
     public void should_return_404_when_retrieving_user_profile_when_email_param_is_empty() {
         String emailUrl = requestUri + "?email=";
-        testRequestHandler.sendGet(NOT_FOUND, emailUrl);
+        testRequestHandler.sendGet(HttpStatus.NOT_FOUND, emailUrl);
     }
 
     @Test
@@ -99,12 +99,12 @@ public class CreateUserProfileFuncTest {
         LOG.info("json output {} ", json.toString());
 
 
-        testRequestHandler.sendPost(json.toString(), CREATED, requestUri);
+        testRequestHandler.sendPost(json.toString(), HttpStatus.CREATED, requestUri);
     }
 
     @Test
     public void should_return_400_and_not_allow_get_request_on_base_url_with_no_params() {
-        testRequestHandler.sendGet(BAD_REQUEST, requestUri);
+        testRequestHandler.sendGet(HttpStatus.BAD_REQUEST, requestUri);
     }
 
     @Test
@@ -115,7 +115,7 @@ public class CreateUserProfileFuncTest {
 
         testRequestHandler.sendPost(
             json.toString(),
-            METHOD_NOT_ALLOWED,
+            HttpStatus.METHOD_NOT_ALLOWED,
             requestUri + "/id"
         );
     }
@@ -125,61 +125,40 @@ public class CreateUserProfileFuncTest {
 
         CreateUserProfileData data = buildCreateUserProfileData();
 
-        UserProfileResource createdResource =
+        CreateUserProfileResponse createdResource =
             testRequestHandler.sendPost(
                 data,
-                CREATED,
+                HttpStatus.CREATED,
                 requestUri,
-                UserProfileResource.class
+                    CreateUserProfileResponse.class
             );
 
         assertThat(createdResource).isNotNull();
 
-        UserProfileResource resource =
+        GetUserProfileResponse resource =
             testRequestHandler.sendGet(
-                requestUri + "/" + createdResource.getId(),
-                UserProfileResource.class
+                    requestUri + "?userId=" + createdResource.getIdamId(),
+                    GetUserProfileResponse.class
             );
 
         assertThat(resource).isNotNull();
 
         testRequestHandler.sendPost(
             testRequestHandler.asJsonString(data),
-            BAD_REQUEST,
+            HttpStatus.BAD_REQUEST,
             requestUri);
     }
 
-    private void verifyCreateUserProfile(UserProfileResource resource, CreateUserProfileData expectedData) {
+    private void verifyCreateUserProfile(CreateUserProfileResponse resource, CreateUserProfileData expectedData) {
 
         assertThat(resource).isNotNull();
-
-        assertThat(resource.getId()).isNotNull();
-        assertThat(resource.getFirstName()).isEqualTo(expectedData.getFirstName());
-        assertThat(resource.getLastName()).isEqualTo(expectedData.getLastName());
-        assertThat(resource.getEmail()).isEqualTo(expectedData.getEmail());
-        assertThat(resource.getLanguagePreference()).isEqualTo(resource.getLanguagePreference());
-
-        assertThat(resource.isEmailCommsConsent()).isEqualTo(expectedData.isEmailCommsConsent());
-        assertThat(resource.getEmailCommsConsentTs()).isBetween(LocalDateTime.now().minusSeconds(30), LocalDateTime.now());
-        assertThat(resource.isPostalCommsConsent()).isEqualTo(expectedData.isPostalCommsConsent());
-        assertThat(resource.getPostalCommsConsentTs()).isBetween(LocalDateTime.now().minusSeconds(30), LocalDateTime.now());
-
-        assertThat(resource.getCreationChannel()).isEqualTo(CreationChannel.API.toString());
-        assertThat(resource.getUserCategory()).isEqualTo(expectedData.getUserCategory());
-        assertThat(resource.getUserType()).isEqualTo(expectedData.getUserType());
-
-        assertThat(resource.getIdamId()).isNull();
-        assertThat(resource.getIdamStatus()).isNull();
-        assertThat(resource.getIdamRoles()).isEqualTo(expectedData.getIdamRoles());
-        assertThat(resource.getIdamRegistrationResponse()).isEqualTo(ACCEPTED.value());
-
+        assertThat(resource.getIdamId()).isInstanceOf(UUID.class);
+        assertThat(resource.getIdamRegistrationResponse()).isEqualTo(HttpStatus.CREATED.value());
     }
 
-    private void verifyGetUserProfile(UserProfileResource resource, UserProfileResource expectedResource) {
+    private void verifyGetUserProfile(GetUserProfileResponse resource, CreateUserProfileData expectedResource) {
 
         assertThat(resource).isNotNull();
-        assertThat(resource.getId()).isEqualTo(expectedResource.getId());
-        assertThat(resource.getIdamId()).isEqualTo(expectedResource.getIdamId());
         assertThat(resource.getFirstName()).isEqualTo(expectedResource.getFirstName());
         assertThat(resource.getLastName()).isEqualTo(expectedResource.getLastName());
         assertThat(resource.getEmail()).isEqualTo(expectedResource.getEmail());

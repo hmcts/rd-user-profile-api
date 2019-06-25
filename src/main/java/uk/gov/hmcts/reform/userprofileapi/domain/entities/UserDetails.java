@@ -10,7 +10,7 @@ public interface UserDetails {
 
     List<String> getRoles();
 
-    String getEmailAddress();
+    String getEmail();
 
     String getForename();
 

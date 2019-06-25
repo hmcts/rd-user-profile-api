@@ -48,19 +48,28 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        AuthCheckerServiceOnlyFilter authCheckerServiceOnlyFilter =
-            new AuthCheckerServiceOnlyFilter(serviceRequestAuthorizer);
+        AuthCheckerServiceOnlyFilter authCheckerServiceOnlyFilter = new AuthCheckerServiceOnlyFilter(
+                serviceRequestAuthorizer);
 
         authCheckerServiceOnlyFilter.setAuthenticationManager(authenticationManager);
 
-        http
-            .addFilter(authCheckerServiceOnlyFilter)
-            .sessionManagement().sessionCreationPolicy(STATELESS)
-            .and()
-            .csrf().disable()
-            .formLogin().disable()
-            .logout().disable()
-            .authorizeRequests().anyRequest().authenticated()
-        ;
+        http.authorizeRequests()
+                .antMatchers("/actuator/**")
+                .permitAll()
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(STATELESS)
+                .and()
+                .csrf()
+                .disable()
+                .formLogin()
+                .disable()
+                .logout()
+                .disable()
+                /*.authorizeRequests()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .addFilter(authCheckerServiceOnlyFilter)*/;
     }
 }

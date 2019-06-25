@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 import static org.springframework.http.HttpStatus.ACCEPTED;
+import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
@@ -24,8 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.userprofileapi.client.IntTestRequestHandler;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
+import uk.gov.hmcts.reform.userprofileapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.idam.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.UserProfileRepository;
 
 @RunWith(SpringRunner.class)
@@ -33,7 +34,7 @@ import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.UserProfileR
 @Transactional
 public class RetrieveUserProfileInternalServerErrorIntTest {
 
-    private static final String APP_BASE_PATH = "/profiles";
+    private static final String APP_BASE_PATH = "/v1/userprofile";
     private static final String SLASH = "/";
 
     @MockBean
@@ -78,14 +79,14 @@ public class RetrieveUserProfileInternalServerErrorIntTest {
     public void should_return_500_when_repository_throws_an_unknown_exception() throws Exception {
 
         when(idamService.registerUser(any(CreateUserProfileData.class)))
-            .thenReturn(new IdamRegistrationInfo(ACCEPTED));
-        when(userProfileRepository.findById(any(UUID.class)))
+            .thenReturn(new IdamRegistrationInfo(CREATED));
+        when(userProfileRepository.findByIdamId(any(UUID.class)))
             .thenThrow(new RuntimeException("This is a test exception"));
 
         MvcResult result =
             intTestRequestHandler.sendGet(
                 mockMvc,
-                APP_BASE_PATH + SLASH + UUID.randomUUID().toString(),
+                APP_BASE_PATH + "?" + "userId=" + UUID.randomUUID(),
                 INTERNAL_SERVER_ERROR
             );
 
@@ -113,17 +114,17 @@ public class RetrieveUserProfileInternalServerErrorIntTest {
     }
 
     @Test
-    public void should_return_500_when_query_by_idamId_and_repository_throws_an_unknown_exception() throws Exception {
+    public void should_return_500_when_query_by_userId_and_repository_throws_an_unknown_exception() throws Exception {
 
         when(idamService.registerUser(any(CreateUserProfileData.class)))
             .thenReturn(new IdamRegistrationInfo(ACCEPTED));
-        when(userProfileRepository.findByIdamId(anyString()))
+        when(userProfileRepository.findByIdamId(any(UUID.class)))
             .thenThrow(new RuntimeException("This is a test exception"));
 
         MvcResult result =
             intTestRequestHandler.sendGet(
                 mockMvc,
-                APP_BASE_PATH + "?idamId=" + "randomemail@somewhere.com",
+                APP_BASE_PATH + "?userId=" + UUID.randomUUID(),
                 INTERNAL_SERVER_ERROR
             );
 

@@ -9,21 +9,24 @@ import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.UserProfileQ
 public class UserProfileRetriever implements ResourceRetriever<UserProfileIdentifier> {
 
     private UserProfileQueryProvider querySupplier;
+    private IdamService idamService;
 
-    public UserProfileRetriever(UserProfileQueryProvider userProfileQueryProvider) {
+    public UserProfileRetriever(UserProfileQueryProvider userProfileQueryProvider, IdamService idamService) {
         this.querySupplier = userProfileQueryProvider;
+        this.idamService = idamService;
     }
 
     @Override
     public UserProfile retrieve(UserProfileIdentifier identifier) {
 
-        return
+        UserProfile userProfile =
             querySupplier.getRetrieveByIdQuery(identifier)
                 .get()
                 .orElseThrow(() ->
                     new ResourceNotFoundException(
                         "Could not find resource from database with given identifier: "
                         + identifier.getValue()));
+        return userProfile;
     }
 
 }

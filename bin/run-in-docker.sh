@@ -19,23 +19,13 @@ print_help() {
   "
 }
 
-GRADLE_CLEAN=false
-GRADLE_INSTALL=false
+GRADLE_CLEAN=true
+GRADLE_INSTALL=true
 
 execute_script() {
   cd $(dirname "$0")/..
 
-  if [ ${GRADLE_CLEAN} = true ]
-  then
-    echo "Clearing previous build.."
-    ./gradlew clean
-  fi
-
-  if [ ${GRADLE_INSTALL} = true ]
-  then
-    echo "Assembling distribution.."
-    ./gradlew assemble
-  fi
+./gradlew clean assemble
 
   echo "Assigning environment variables.."
   export SERVER_PORT="${SERVER_PORT:-8091}"

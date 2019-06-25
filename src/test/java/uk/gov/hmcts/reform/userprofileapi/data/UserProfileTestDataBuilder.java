@@ -8,10 +8,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import org.assertj.core.util.Lists;
+import org.junit.Ignore;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 
+@Ignore
 public class UserProfileTestDataBuilder {
 
     private UserProfileTestDataBuilder() {
@@ -20,7 +22,7 @@ public class UserProfileTestDataBuilder {
 
     public static UserProfile buildUserProfile() {
         return new UserProfile(buildCreateUserProfileData(),
-            new IdamRegistrationInfo(HttpStatus.ACCEPTED));
+            new IdamRegistrationInfo(HttpStatus.CREATED));
     }
 
     public static UserProfile buildUserProfileWithAllFields() {
@@ -29,7 +31,7 @@ public class UserProfileTestDataBuilder {
             Lists.newArrayList("id", "idamId", "idamStatus", "createdTs", "lastUpdatedTs");
 
         UserProfile userProfile = new UserProfile(buildCreateUserProfileData(),
-            new IdamRegistrationInfo(HttpStatus.ACCEPTED));
+            new IdamRegistrationInfo(HttpStatus.CREATED));
 
         unInitFields.forEach(fieldName -> {
 
@@ -62,7 +64,7 @@ public class UserProfileTestDataBuilder {
 
     public static UserProfile buildUserProfileWithAnIdamId() {
         UserProfile userProfile = new UserProfile(buildCreateUserProfileData(),
-            new IdamRegistrationInfo(HttpStatus.ACCEPTED));
+            new IdamRegistrationInfo(HttpStatus.CREATED));
 
         Field idamIdField;
         try {
