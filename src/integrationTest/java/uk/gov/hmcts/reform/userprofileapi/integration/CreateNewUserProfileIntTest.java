@@ -9,14 +9,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
-import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildCreateUserProfileDataMandatoryFieldsOnly;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalDateTime;
+
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+
 import org.assertj.core.api.Assertions;
 import org.assertj.core.util.Lists;
+
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,19 +32,23 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.userprofileapi.client.IntTestRequestHandler;
-import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
+import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
+import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
+import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.domain.service.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileResource;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.UserProfileRepository;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
 @Transactional
-public class CreateNewUserProfileIntTest {
+public class CreateNewUserProfileIntTest extends AbstractIntegration {
 
     private MockMvc mockMvc;
 
-    private static final String APP_BASE_PATH = "/profiles";
+    private static final String APP_BASE_PATH = "/v1/userprofile";
 
     @Autowired
     private IntTestRequestHandler intTestRequestHandler;
@@ -53,16 +59,8 @@ public class CreateNewUserProfileIntTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    //fields set internally by the api
-    private List<String> apiGeneratedFields =
-        Lists.newArrayList(
-            "id",
-            "emailCommsConsentTs",
-            "postalCommsConsentTs",
-            "creationChannel",
-            "idamId",
-            "idamStatus"
-        );
+    @Autowired
+    private UserProfileRepository userProfileRepository;
 
     @Before
     public void setUp() {
@@ -72,65 +70,48 @@ public class CreateNewUserProfileIntTest {
     @Test
     public void should_return_201_and_create_user_profile_resource() throws Exception {
 
-        CreateUserProfileData data =
-            buildCreateUserProfileData();
-        IdamRegistrationInfo idamInfo = new IdamRegistrationInfo(HttpStatus.ACCEPTED);
-        UserProfile userProfile = new UserProfile(data, idamInfo);
+        CreateUserProfileData data = buildCreateUserProfileData();
 
-        UserProfileResource expectedResource = new UserProfileResource(userProfile);
-
-        UserProfileResource createdResource =
+        CreateUserProfileResponse createdResource =
             intTestRequestHandler.sendPost(
                 mockMvc,
                 APP_BASE_PATH,
                 data,
                 CREATED,
-                UserProfileResource.class
+                CreateUserProfileResponse.class
             );
 
-        verifyUserProfileResource(createdResource, expectedResource);
+        verifyUserProfileCreation(createdResource, CREATED, data);
 
     }
 
-    @Test
-    public void should_return_201_when_only_mandatory_fields_sent() throws Exception {
+    private void verifyUserProfileCreation(CreateUserProfileResponse createdResource, HttpStatus idamStatus, CreateUserProfileData data) {
 
-        CreateUserProfileData data = buildCreateUserProfileDataMandatoryFieldsOnly();
-        IdamRegistrationInfo idamInfo = new IdamRegistrationInfo(HttpStatus.ACCEPTED);
-        UserProfile userProfile = new UserProfile(data, idamInfo);
+        assertThat(createdResource.getIdamId()).isNotNull();
+        assertThat(createdResource.getIdamId()).isInstanceOf(UUID.class);
+        assertThat(createdResource.getIdamRegistrationResponse()).isEqualTo(idamStatus.value());
 
-        UserProfileResource expectedResource = new UserProfileResource(userProfile);
+        Optional<UserProfile> persistedUserProfile = userProfileRepository.findByIdamId(createdResource.getIdamId());
+        UserProfile userProfile = persistedUserProfile.get();
+        assertThat(userProfile.getId()).isNotNull().isExactlyInstanceOf(Long.class);
+        assertThat(userProfile.getIdamRegistrationResponse()).isEqualTo(201);
+        assertThat(userProfile.getEmail()).isEqualToIgnoringCase(data.getEmail());
+        assertThat(userProfile.getFirstName()).isNotEmpty().isEqualTo(data.getFirstName());
+        assertThat(userProfile.getLastName()).isNotEmpty().isEqualTo(data.getLastName());
+        assertThat(userProfile.getLanguagePreference()).isEqualTo(LanguagePreference.EN);
+        assertThat(userProfile.getUserCategory()).isEqualTo(UserCategory.PROFESSIONAL);
+        assertThat(userProfile.getUserType()).isEqualTo(UserType.EXTERNAL);
+        assertThat(userProfile.getStatus()).isEqualTo(IdamStatus.PENDING);
+        assertThat(userProfile.isEmailCommsConsent()).isEqualTo(false);
+        assertThat(userProfile.isPostalCommsConsent()).isEqualTo(false);
+        assertThat(userProfile.getEmailCommsConsentTs()).isNull();
+        assertThat(userProfile.getPostalCommsConsentTs()).isNull();
+        assertThat(userProfile.getCreated()).isNotNull();
+        assertThat(userProfile.getLastUpdated()).isNotNull();
 
-        UserProfileResource createdResource =
-            intTestRequestHandler.sendPost(
-                mockMvc,
-                APP_BASE_PATH,
-                data,
-                CREATED,
-                UserProfileResource.class
-            );
-
-        verifyUserProfileResource(createdResource, expectedResource);
-
-    }
-
-    private void verifyUserProfileResource(UserProfileResource createdResource, UserProfileResource expectedResource) {
-
-        assertThat(createdResource).isEqualToIgnoringGivenFields(expectedResource,
-            apiGeneratedFields.toArray(new String[apiGeneratedFields.size()]));
-
-        assertThat(createdResource.getId()).isNotNull();
-        assertThat(createdResource.getId()).isInstanceOf(UUID.class);
-        assertThat(createdResource.getEmailCommsConsentTs())
-            .isBetween(LocalDateTime.now().minusSeconds(30), LocalDateTime.now());
-        assertThat(createdResource.getPostalCommsConsentTs())
-            .isBetween(LocalDateTime.now().minusSeconds(30), LocalDateTime.now());
-
-        //not currently being populated
-        assertThat(createdResource.getIdamId()).isNull();
-        assertThat(createdResource.getIdamStatus()).isNull();
 
     }
+
 
     @Test
     public void should_return_400_and_not_create_user_profile_when_empty_body() throws Exception {
@@ -154,13 +135,15 @@ public class CreateNewUserProfileIntTest {
                 "email",
                 "firstName",
                 "lastName",
+                "languagePreference",
                 "userCategory",
-                "userType"
+                "userType",
+                "roles"
             );
 
         new JSONObject(
             objectMapper.writeValueAsString(
-                buildCreateUserProfileDataMandatoryFieldsOnly()
+                    buildCreateUserProfileData()
             )
         );
 
@@ -169,7 +152,7 @@ public class CreateNewUserProfileIntTest {
             try {
 
                 JSONObject jsonObject =
-                    new JSONObject(objectMapper.writeValueAsString(buildCreateUserProfileDataMandatoryFieldsOnly()));
+                    new JSONObject(objectMapper.writeValueAsString(buildCreateUserProfileData()));
 
                 jsonObject.remove(s);
 
@@ -178,6 +161,56 @@ public class CreateNewUserProfileIntTest {
                     .contentType(APPLICATION_JSON_UTF8))
                     .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
                     .andReturn();
+
+            } catch (Exception e) {
+                Assertions.fail("could not run test correctly", e);
+            }
+
+        });
+
+    }
+
+    @Test
+    public void should_return_400_when_fields_are_blank_or_having_only_whitespaces() throws Exception {
+
+        List<String> mandatoryFieldList =
+                Lists.newArrayList(
+                        "email",
+                        "firstName",
+                        "lastName",
+                        "languagePreference",
+                        "userCategory",
+                        "userType"
+                );
+
+        new JSONObject(
+                objectMapper.writeValueAsString(
+                        buildCreateUserProfileData()
+                )
+        );
+
+        mandatoryFieldList.forEach(s -> {
+
+            try {
+
+                JSONObject jsonObject =
+                        new JSONObject(objectMapper.writeValueAsString(buildCreateUserProfileData()));
+
+                jsonObject.put(s,"");
+
+                mockMvc.perform(post(APP_BASE_PATH)
+                        .content(jsonObject.toString())
+                        .contentType(APPLICATION_JSON_UTF8))
+                        .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
+                        .andReturn();
+
+                jsonObject.put(s," ");
+
+                mockMvc.perform(post(APP_BASE_PATH)
+                        .content(jsonObject.toString())
+                        .contentType(APPLICATION_JSON_UTF8))
+                        .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
+                        .andReturn();
 
             } catch (Exception e) {
                 Assertions.fail("could not run test correctly", e);

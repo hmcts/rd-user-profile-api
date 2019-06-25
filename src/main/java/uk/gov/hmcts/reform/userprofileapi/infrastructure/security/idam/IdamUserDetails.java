@@ -54,7 +54,7 @@ public class IdamUserDetails implements UserDetails {
     }
 
     @Override
-    public String getEmailAddress() {
+    public String getEmail() {
         return emailAddress;
     }
 
