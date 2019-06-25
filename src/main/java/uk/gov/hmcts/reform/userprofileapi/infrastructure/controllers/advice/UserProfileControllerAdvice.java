@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
+import uk.gov.hmcts.reform.userprofileapi.domain.service.IdamServiceException;
 import uk.gov.hmcts.reform.userprofileapi.domain.service.ResourceNotFoundException;
 
 
@@ -66,6 +67,15 @@ public class UserProfileControllerAdvice {
     ) {
         logException(e);
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(IdamServiceException.class)
+    protected ResponseEntity<String> handleIdamServiceException(
+            HttpServletRequest request,
+            IdamServiceException e
+    ) {
+        logException(e);
+        return new ResponseEntity<>(e.getHttpStatus());
     }
 
     @ExceptionHandler(Exception.class)

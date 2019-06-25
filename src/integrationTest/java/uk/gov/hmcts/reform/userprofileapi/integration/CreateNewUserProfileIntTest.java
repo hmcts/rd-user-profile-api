@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
+import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.ACCEPTED;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -35,10 +36,13 @@ import uk.gov.hmcts.reform.userprofileapi.client.IntTestRequestHandler;
 import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
+import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.service.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.ResponseSource;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.UserProfileRepository;
 
 @RunWith(SpringRunner.class)
@@ -61,6 +65,9 @@ public class CreateNewUserProfileIntTest extends AbstractIntegration {
 
     @Autowired
     private UserProfileRepository userProfileRepository;
+
+    @Autowired
+    private AuditRepository auditRepository;
 
     @Before
     public void setUp() {
@@ -108,6 +115,15 @@ public class CreateNewUserProfileIntTest extends AbstractIntegration {
         assertThat(userProfile.getPostalCommsConsentTs()).isNull();
         assertThat(userProfile.getCreated()).isNotNull();
         assertThat(userProfile.getLastUpdated()).isNotNull();
+
+        Optional<Audit> optional = auditRepository.findById(1L);
+        Audit audit = optional.get();
+
+        assertThat(audit.getIdamRegistrationResponse()).isEqualTo(201);
+        assertThat(audit.getStatusMessage()).isEqualTo(ACCEPTED);
+        assertThat(audit.getSource()).isEqualTo(ResponseSource.SIDAM);
+        assertThat(audit.getUserProfile().getIdamId()).isEqualTo(createdResource.getIdamId());
+
 
 
     }
