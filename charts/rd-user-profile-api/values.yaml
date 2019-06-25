@@ -1,5 +1,5 @@
 java:
-  applicationPort: 8090
+  applicationPort: 8091
   environment:
     DB_UP_POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
     DB_UP_USERNAME: "{{ .Values.postgresql.postgresqlDatabase}}"
