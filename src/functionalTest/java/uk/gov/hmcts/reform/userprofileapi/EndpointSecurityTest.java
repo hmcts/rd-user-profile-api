@@ -27,7 +27,7 @@ public class EndpointSecurityTest {
     @Value("${targetInstance}") private String targetInstance;
 
     private final List<String> endpoints =
-        ImmutableList.of("/profiles/1", "/profiles");
+        ImmutableList.of("/v1/userprofile/1", "/v1/userprofile");
 
     @Autowired private AuthorizationHeadersProvider authorizationHeadersProvider;
 
