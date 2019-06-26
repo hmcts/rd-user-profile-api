@@ -80,7 +80,7 @@ resource "azurerm_key_vault_secret" "DB_UP_POSTGRES_PORT" {
 
 resource "azurerm_key_vault_secret" "DB_UP_POSTGRES_DATABASE" {
   name      = "${var.component}-DB-UP-POSTGRES-DATABASE"
-  value     = "${module.db-professional-ref-data.postgresql_database}"
+  value     = "${module.db-user-profile.postgresql_database}"
   key_vault_id = "${data.azurerm_key_vault.rd_key_vault.id}"
 }
 
