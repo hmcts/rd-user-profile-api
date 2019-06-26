@@ -22,11 +22,11 @@ public class UserProfileService<T extends RequestData> {
     }
 
     public GetUserProfileWithRolesResponse retrieveWithRoles(T requestData) {
-        return new GetUserProfileWithRolesResponse(resourceRetriever.retrieve(requestData));
+        return new GetUserProfileWithRolesResponse(resourceRetriever.retrieve(requestData, true));
     }
 
     public GetUserProfileResponse retrieve(T requestData) {
-        return new GetUserProfileResponse(resourceRetriever.retrieve(requestData));
+        return new GetUserProfileResponse(resourceRetriever.retrieve(requestData, false));
     }
 
 }

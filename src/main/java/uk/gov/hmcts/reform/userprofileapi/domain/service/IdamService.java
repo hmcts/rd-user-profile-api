@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.domain.service;
 
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
+import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.IdamUserResponse;
@@ -27,13 +29,15 @@ public class IdamService implements IdentityManagerService {
     }
 
     @Override
-    public IdamRolesInfo getUserById(UUID userId) {
-        log.info("Getting Idam roles by id for user id:" + userId);
-        ResponseEntity<IdamUserResponse> response = idamClient.getUserById(userId.toString());
-        if (HttpStatus.OK == response.getStatusCode()) {
-            return new IdamRolesInfo(response.getBody().getRoles());
-        } else {
-            throw new ResourceNotFoundException("Get Idam user info failed");
+    public IdamRolesInfo getUserById(UserProfile userProfile) {
+        log.info("Getting Idam roles by id for user id:" + userProfile.getIdamId());
+        List<String> roles = new ArrayList<String>();
+
+        ResponseEntity<IdamUserResponse> response = idamClient.getUserById(userProfile.getIdamId().toString());
+        HttpStatus idamResponseStatus = response.getStatusCode();
+        if (idamResponseStatus.is2xxSuccessful()) {
+            roles = response.getBody().getRoles();
         }
+        return new IdamRolesInfo(roles, idamResponseStatus);
     }
 }

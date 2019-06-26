@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.domain.service.UserProfileService;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
@@ -124,9 +123,6 @@ public class UserProfileController {
         requireNonNull(id, "id cannot be null");
         isUserIdValid(id);
         GetUserProfileWithRolesResponse response = userProfileService.retrieveWithRoles(new UserProfileIdentifier(UUID, id));
-        IdamRolesInfo idamRolesInfo = idamService.getUserById(response.getIdamId());
-        response.setRoles(idamRolesInfo.getRoles());
-
         return ResponseEntity.ok(response);
     }
 
@@ -165,11 +161,7 @@ public class UserProfileController {
         log.info("Getting user profile with email: {}", email);
 
         requireNonNull(email, "email cannot be null");
-
         GetUserProfileWithRolesResponse response = userProfileService.retrieveWithRoles(new UserProfileIdentifier(EMAIL, email.toUpperCase()));
-        IdamRolesInfo idamRolesInfo = idamService.getUserById(response.getIdamId());
-        response.setRoles(idamRolesInfo.getRoles());
-
         return ResponseEntity.ok(response);
     }
 

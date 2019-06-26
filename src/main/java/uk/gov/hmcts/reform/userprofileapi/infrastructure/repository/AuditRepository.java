@@ -1,8 +1,14 @@
 package uk.gov.hmcts.reform.userprofileapi.infrastructure.repository;
 
+import java.util.Optional;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
+import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 
 public interface AuditRepository extends CrudRepository<Audit, Long> {
+
+    @Transactional(readOnly = true)
+    Optional<Audit> findByUserProfile(UserProfile userProfile);
 
 }

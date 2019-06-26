@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 @SuppressWarnings("HideUtilityClassConstructor")
 public final class IdamStatusResolver {
 
+    public static final String OK = "OK Success";
     public static final String ACCEPTED = "Registration accepted";
     public static final String PARAM_MISSING = "Required parameters are missing or invalid";
     public static final String MISSING_TOKEN = "Missing Bearer Token";
@@ -15,6 +16,7 @@ public final class IdamStatusResolver {
 
     public static String resolveStatusAndReturnMessage(HttpStatus httpStatus) {
         switch (httpStatus) {
+            case OK: return OK;
             case CREATED: return ACCEPTED;
             case BAD_REQUEST: return PARAM_MISSING;
             case UNAUTHORIZED: return MISSING_TOKEN;

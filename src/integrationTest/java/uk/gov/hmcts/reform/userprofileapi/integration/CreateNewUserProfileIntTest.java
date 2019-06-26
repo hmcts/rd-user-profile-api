@@ -9,7 +9,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
-import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.ACCEPTED;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -44,6 +43,7 @@ import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfi
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.UserProfileRepository;
+import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
@@ -116,15 +116,15 @@ public class CreateNewUserProfileIntTest extends AbstractIntegration {
         assertThat(userProfile.getCreated()).isNotNull();
         assertThat(userProfile.getLastUpdated()).isNotNull();
 
-        Optional<Audit> optional = auditRepository.findById(1L);
+        Optional<Audit> optional = auditRepository.findByUserProfile(userProfile);
         Audit audit = optional.get();
 
+        assertThat(audit).isNotNull();
         assertThat(audit.getIdamRegistrationResponse()).isEqualTo(201);
-        assertThat(audit.getStatusMessage()).isEqualTo(ACCEPTED);
+        assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.ACCEPTED);
         assertThat(audit.getSource()).isEqualTo(ResponseSource.SIDAM);
         assertThat(audit.getUserProfile().getIdamId()).isEqualTo(createdResource.getIdamId());
-
-
+        assertThat(audit.getAuditTs()).isNotNull();
 
     }
 

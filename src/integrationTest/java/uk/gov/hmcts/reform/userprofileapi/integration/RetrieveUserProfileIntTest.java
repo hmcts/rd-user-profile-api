@@ -10,6 +10,7 @@ import static uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,10 +23,15 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.userprofileapi.client.IntTestRequestHandler;
+import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfileWithRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.ResponseSource;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.AuditRepository;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.integration.util.TestUserProfileRepository;
+import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
@@ -37,6 +43,12 @@ public class RetrieveUserProfileIntTest extends AbstractIntegration {
 
     @Autowired
     private TestUserProfileRepository testUserProfileRepository;
+
+    @Autowired
+    private UserProfileRepository userProfileRepository;
+
+    @Autowired
+    private AuditRepository auditRepository;
 
     @Autowired
     private IntTestRequestHandler intTestRequestHandler;
@@ -78,7 +90,6 @@ public class RetrieveUserProfileIntTest extends AbstractIntegration {
 
         assertThat(retrievedResource).isNotNull();
         assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile, "roles");
-
     }
 
     @Test
@@ -97,6 +108,19 @@ public class RetrieveUserProfileIntTest extends AbstractIntegration {
         assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile, "roles");
         assertThat(retrievedResource.getRoles().size()).isGreaterThan(0);
 
+        Optional<UserProfile> optionalUserProfile = userProfileRepository.findByIdamId(retrievedResource.getIdamId());
+        UserProfile persistedUserProfile = optionalUserProfile.get();
+
+        Optional<Audit> optional = auditRepository.findByUserProfile(persistedUserProfile);
+        Audit audit = optional.get();
+
+        assertThat(audit).isNotNull();
+        assertThat(audit.getIdamRegistrationResponse()).isEqualTo(200);
+        assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.OK);
+        assertThat(audit.getSource()).isEqualTo(ResponseSource.SIDAM);
+        assertThat(audit.getUserProfile().getIdamId()).isEqualTo(retrievedResource.getIdamId());
+        assertThat(audit.getAuditTs()).isNotNull();
+
     }
 
     @Test
@@ -114,6 +138,19 @@ public class RetrieveUserProfileIntTest extends AbstractIntegration {
         assertThat(retrievedResource).isNotNull();
         assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile, "roles");
         assertThat(retrievedResource.getRoles().size()).isGreaterThan(0);
+
+        Optional<UserProfile> optionalUserProfile = userProfileRepository.findByIdamId(retrievedResource.getIdamId());
+        UserProfile persistedUserProfile = optionalUserProfile.get();
+
+        Optional<Audit> optional = auditRepository.findByUserProfile(persistedUserProfile);
+        Audit audit = optional.get();
+
+        assertThat(audit).isNotNull();
+        assertThat(audit.getIdamRegistrationResponse()).isEqualTo(200);
+        assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.OK);
+        assertThat(audit.getSource()).isEqualTo(ResponseSource.SIDAM);
+        assertThat(audit.getUserProfile().getIdamId()).isEqualTo(retrievedResource.getIdamId());
+        assertThat(audit.getAuditTs()).isNotNull();
 
     }
 

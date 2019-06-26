@@ -46,7 +46,7 @@ public class UserProfileRetrieverTest {
                     when(querySupplier.getRetrieveByIdQuery(identifier)).thenReturn(supplier);
                     when(supplier.get()).thenReturn(Optional.of(userProfile));
 
-                    UserProfile entity = userProfileRetriever.retrieve(identifier);
+                    UserProfile entity = userProfileRetriever.retrieve(identifier, false);
                     assertThat(entity).isEqualTo(userProfile);
                 }
             );
@@ -63,7 +63,7 @@ public class UserProfileRetrieverTest {
         when(querySupplier.getRetrieveByIdQuery(identifier)).thenReturn(supplier);
         when(supplier.get()).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> userProfileRetriever.retrieve(identifier))
+        assertThatThrownBy(() -> userProfileRetriever.retrieve(identifier, false))
             .isInstanceOf(ResourceNotFoundException.class)
             .hasMessage("Could not find resource from database with given identifier: " + identifier.getValue());
 
@@ -79,7 +79,7 @@ public class UserProfileRetrieverTest {
 
         when(querySupplier.getRetrieveByIdQuery(identifier)).thenThrow(IllegalStateException.class);
 
-        assertThatThrownBy(() -> userProfileRetriever.retrieve(identifier))
+        assertThatThrownBy(() -> userProfileRetriever.retrieve(identifier, false))
             .isInstanceOf(IllegalStateException.class);
 
     }
@@ -95,7 +95,7 @@ public class UserProfileRetrieverTest {
         when(querySupplier.getRetrieveByIdQuery(identifier)).thenReturn(supplier);
         when(supplier.get()).thenThrow(ResourceNotFoundException.class);
 
-        assertThatThrownBy(() -> userProfileRetriever.retrieve(identifier))
+        assertThatThrownBy(() -> userProfileRetriever.retrieve(identifier, false))
             .isInstanceOf(ResourceNotFoundException.class);
 
     }

@@ -25,14 +25,14 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
 
         final IdamRegistrationInfo idamRegistrationInfo = idamService.registerUser(profileData);
         HttpStatus idamStatus = idamRegistrationInfo.getIdamRegistrationResponse();
-        if (HttpStatus.CREATED == idamStatus) {
+        if (idamStatus.is2xxSuccessful()) {
             UserProfile userProfile = new UserProfile(profileData, idamRegistrationInfo);
             userProfile = userProfileRepository.save(userProfile);
             persistAudit(idamRegistrationInfo, idamStatus, userProfile);
             return userProfile;
         } else {
             persistAudit(idamRegistrationInfo, idamStatus, null);
-            throw new IdamServiceException("Idam registration failed", idamStatus);
+            throw new IdamServiceException("Idam registration failed with HttpStatus: ", idamStatus);
         }
     }
 
