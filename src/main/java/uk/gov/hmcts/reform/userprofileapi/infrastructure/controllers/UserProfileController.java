@@ -121,7 +121,6 @@ public class UserProfileController {
     @ResponseBody
     public ResponseEntity<GetUserProfileWithRolesResponse> getUserProfileWithRolesById(@PathVariable String id) {
         log.info("Getting user profile with id: {}", id);
-        requireNonNull(id, "id cannot be null");
         isUserIdValid(id);
         GetUserProfileWithRolesResponse response = userProfileService.retrieveWithRoles(new UserProfileIdentifier(UUID, id));
         IdamRolesInfo idamRolesInfo = idamService.getUserById(response.getIdamId());
@@ -166,7 +165,7 @@ public class UserProfileController {
 
         requireNonNull(email, "email cannot be null");
 
-        GetUserProfileWithRolesResponse response = userProfileService.retrieveWithRoles(new UserProfileIdentifier(EMAIL, email.toUpperCase()));
+        GetUserProfileWithRolesResponse response = userProfileService.retrieveWithRoles(new UserProfileIdentifier(EMAIL, email.toLowerCase()));
         IdamRolesInfo idamRolesInfo = idamService.getUserById(response.getIdamId());
         response.setRoles(idamRolesInfo.getRoles());
 
@@ -208,14 +207,14 @@ public class UserProfileController {
 
             return ResponseEntity.ok(
                     userProfileService.retrieve(
-                            new UserProfileIdentifier(EMAIL, email.toUpperCase())
+                            new UserProfileIdentifier(EMAIL, email.toLowerCase().trim())
                     )
             );
         } else {
             isUserIdValid(userId);
             return ResponseEntity.ok(
                     userProfileService.retrieve(
-                            new UserProfileIdentifier(UUID, userId)
+                            new UserProfileIdentifier(UUID, userId.trim())
                     )
             );
         }
