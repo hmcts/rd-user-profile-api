@@ -79,7 +79,7 @@ public class UserProfile {
 
     public UserProfile(CreateUserProfileData data, IdamRegistrationInfo idamInfo) {
 
-        this.email = data.getEmail().trim().toUpperCase();
+        this.email = data.getEmail().trim().toLowerCase();
         this.firstName = data.getFirstName().trim();
         this.lastName = data.getLastName().trim();
         this.languagePreference = LanguagePreference.valueOf(data.getLanguagePreference());

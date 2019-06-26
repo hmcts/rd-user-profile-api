@@ -10,7 +10,6 @@ import static uk.gov.hmcts.reform.userprofileapi.infrastructure.controllers.advi
 import static uk.gov.hmcts.reform.userprofileapi.infrastructure.controllers.advice.ErrorConstants.RESOURCE_NOT_FOUND;
 import static uk.gov.hmcts.reform.userprofileapi.infrastructure.controllers.advice.ErrorConstants.UNKNOWN_EXCEPTION;
 
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
