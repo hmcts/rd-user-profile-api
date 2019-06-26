@@ -71,7 +71,7 @@ public class RetrieveUserProfileInternalServerErrorIntTest {
             INTERNAL_SERVER_ERROR
         );
 
-        assertThat(result.getResponse().getContentAsString()).isEmpty();
+        assertThat(result.getResponse().getContentAsString()).isNotEmpty();
 
     }
 
@@ -90,7 +90,7 @@ public class RetrieveUserProfileInternalServerErrorIntTest {
                 INTERNAL_SERVER_ERROR
             );
 
-        assertThat(result.getResponse().getContentAsString()).isEmpty();
+        assertThat(result.getResponse().getContentAsString()).isNotEmpty();
 
     }
 
@@ -109,7 +109,7 @@ public class RetrieveUserProfileInternalServerErrorIntTest {
                 INTERNAL_SERVER_ERROR
             );
 
-        assertThat(result.getResponse().getContentAsString()).isEmpty();
+        assertThat(result.getResponse().getContentAsString()).isNotEmpty();
 
     }
 
@@ -128,7 +128,7 @@ public class RetrieveUserProfileInternalServerErrorIntTest {
                 INTERNAL_SERVER_ERROR
             );
 
-        assertThat(result.getResponse().getContentAsString()).isEmpty();
+        assertThat(result.getResponse().getContentAsString()).isNotEmpty();
 
     }
 

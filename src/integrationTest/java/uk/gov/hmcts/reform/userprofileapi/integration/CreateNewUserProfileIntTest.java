@@ -140,7 +140,7 @@ public class CreateNewUserProfileIntTest extends AbstractIntegration {
                 BAD_REQUEST
             );
 
-        assertThat(result.getResponse().getContentAsString()).isEmpty();
+        assertThat(result.getResponse().getContentAsString()).isNotEmpty();
     }
 
     @Test

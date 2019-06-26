@@ -37,7 +37,7 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
                 userProfile.setRoles(idamRolesInfo);
             } else {
                 persistAudit(idamRolesInfo, userProfile);
-                throw new IdamServiceException("Idam get user failed with HttpStatus: ", idamRolesInfo.getIdamGetResponseStatusCode());
+                throw new IdamServiceException(idamRolesInfo.getStatusMessage(), idamRolesInfo.getIdamGetResponseStatusCode());
             }
         }
         return userProfile;

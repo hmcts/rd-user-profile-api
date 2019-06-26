@@ -32,7 +32,7 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
             return userProfile;
         } else {
             persistAudit(idamRegistrationInfo, idamStatus, null);
-            throw new IdamServiceException("Idam registration failed with HttpStatus: ", idamStatus);
+            throw new IdamServiceException(idamRegistrationInfo.getStatusMessage(), idamStatus);
         }
     }
 

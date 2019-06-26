@@ -182,7 +182,7 @@ public class RetrieveUserProfileIntTest extends AbstractIntegration {
             );
 
         assertThat(result.getResponse()).isNotNull();
-        assertThat(result.getResponse().getContentAsString()).isEmpty();
+        assertThat(result.getResponse().getContentAsString()).isNotEmpty();
 
     }
 
@@ -200,7 +200,7 @@ public class RetrieveUserProfileIntTest extends AbstractIntegration {
                 NOT_FOUND
             );
         assertThat(result.getResponse()).isNotNull();
-        assertThat(result.getResponse().getContentAsString()).isEmpty();
+        assertThat(result.getResponse().getContentAsString()).isNotEmpty();
 
     }
 
@@ -215,7 +215,7 @@ public class RetrieveUserProfileIntTest extends AbstractIntegration {
             );
 
         assertThat(result.getResponse()).isNotNull();
-        assertThat(result.getResponse().getContentAsString()).isEmpty();
+        assertThat(result.getResponse().getContentAsString()).isNotEmpty();
 
     }
 
@@ -234,7 +234,7 @@ public class RetrieveUserProfileIntTest extends AbstractIntegration {
             );
 
         assertThat(result.getResponse()).isNotNull();
-        assertThat(result.getResponse().getContentAsString()).isEmpty();
+        assertThat(result.getResponse().getContentAsString()).isNotEmpty();
 
     }
 
@@ -248,7 +248,7 @@ public class RetrieveUserProfileIntTest extends AbstractIntegration {
             );
 
         assertThat(result.getResponse()).isNotNull();
-        assertThat(result.getResponse().getContentAsString()).isEmpty();
+        assertThat(result.getResponse().getContentAsString()).isNotEmpty();
 
     }
 
@@ -264,7 +264,7 @@ public class RetrieveUserProfileIntTest extends AbstractIntegration {
             );
 
         assertThat(result.getResponse()).isNotNull();
-        assertThat(result.getResponse().getContentAsString()).isEmpty();
+        assertThat(result.getResponse().getContentAsString()).isNotEmpty();
 
     }
 }

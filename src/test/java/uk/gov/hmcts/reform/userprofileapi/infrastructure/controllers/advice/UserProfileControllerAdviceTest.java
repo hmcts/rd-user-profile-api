@@ -26,13 +26,11 @@ public class UserProfileControllerAdviceTest {
         String message = "test-ex-message";
         RequiredFieldMissingException ex = mock(RequiredFieldMissingException.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
-        ResponseEntity<String> expected = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         when(ex.getMessage()).thenReturn(message);
 
         ResponseEntity response = advice.handleRequiredFieldMissingException(request, ex);
-
-        assertThat(response).isEqualToComparingFieldByField(expected);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 
     }
 
@@ -41,13 +39,11 @@ public class UserProfileControllerAdviceTest {
         String message = "test-ex-message";
         ResourceNotFoundException ex = mock(ResourceNotFoundException.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
-        ResponseEntity<String> expected = new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
         when(ex.getMessage()).thenReturn(message);
 
         ResponseEntity response = advice.handleResourceNotFoundException(request, ex);
-
-        assertThat(response).isEqualToComparingFieldByField(expected);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 
     }
 
@@ -56,13 +52,11 @@ public class UserProfileControllerAdviceTest {
         String message = "test-ex-message";
         MethodArgumentNotValidException ex = mock(MethodArgumentNotValidException.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
-        ResponseEntity<String> expected = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         when(ex.getMessage()).thenReturn(message);
 
         ResponseEntity response = advice.handleMethodArgumentNotValidException(request, ex);
-
-        assertThat(response).isEqualToComparingFieldByField(expected);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 
     }
 
@@ -71,13 +65,12 @@ public class UserProfileControllerAdviceTest {
         String message = "test-ex-message";
         DataIntegrityViolationException ex = mock(DataIntegrityViolationException.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
-        ResponseEntity<String> expected = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         when(ex.getMessage()).thenReturn(message);
 
         ResponseEntity response = advice.handleDataIntegrityViolationException(request, ex);
 
-        assertThat(response).isEqualToComparingFieldByField(expected);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 
     }
 
@@ -86,13 +79,11 @@ public class UserProfileControllerAdviceTest {
         String message = "test-ex-message";
         Exception ex = mock(Exception.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
-        ResponseEntity<String> expected = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 
         when(ex.getMessage()).thenReturn(message);
 
         ResponseEntity response =  advice.handleUnknownException(request, ex);
-
-        assertThat(response).isEqualToComparingFieldByField(expected);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 
