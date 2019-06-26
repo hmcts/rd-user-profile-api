@@ -15,7 +15,7 @@ spring:
 ### database configuration
   datasource:
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://${DB_UP_HOST:localhost}:${DB_UP_PORT:5432}/${DB_UP_NAME:dbuserprofile}${DB_UP_CONNECTION_OPTIONS:?}
+    url: jdbc:postgresql://${DB_UP_POSTGRES_HOST:localhost}:${DB_UP_POSTGRES_PORT:5432}/${DB_UP_USERNAME:dbuserprofile}${DB_UP_CONNECTION_OPTIONS:?}
     username: ${DB_UP_USERNAME:dbuserprofile}
     password: ${DB_UP_PASSWORD:dbuserprofile}
     properties:
@@ -60,8 +60,8 @@ security:
 auth.idam.client.baseUrl: ${IDAM_URL:http://127.0.0.1:4501}
 auth.idam.client.detailsUri: "/details"
 auth.provider.service.client.baseUrl: ${S2S_URL:http://127.0.0.1:4502}
-idam.s2s-auth.totp_secret: ${IA_S2S_SECRET:AAAAAAAAAAAAAAAC}
-idam.s2s-auth.microservice: ${IA_S2S_MICROSERVICE:iac}
+idam.s2s-auth.totp_secret: ${UP_S2S_SECRET:AAAAAAAAAAAAAAAC}
+idam.s2s-auth.microservice: ${UP_S2S_MICROSERVICE:iac}
 idam.s2s-auth.url: ${S2S_URL:http://127.0.0.1:4502}
 
 idamUrl: ${IDAM_SERVICE_URL:localhost:8888}
