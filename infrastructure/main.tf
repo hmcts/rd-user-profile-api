@@ -55,31 +55,31 @@ data "azurerm_key_vault_secret" "s2s_url" {
 }
 
 resource "azurerm_key_vault_secret" "DB_UP_USERNAME" {
-  name      = "${var.component}-DB-UP-USERNAME"
+  name      = "${var.component}-USERNAME"
   value     = "${module.db-user-profile.user_name}"
   key_vault_id = "${data.azurerm_key_vault.rd_key_vault.id}"
 }
 
 resource "azurerm_key_vault_secret" "DB_UP_PASSWORD" {
-  name      = "${var.component}-DB-UP-PASSWORD"
+  name      = "${var.component}-PASSWORD"
   value     = "${module.db-user-profile.postgresql_password}"
   key_vault_id = "${data.azurerm_key_vault.rd_key_vault.id}"
 }
 
 resource "azurerm_key_vault_secret" "DB_UP_POSTGRES_HOST" {
-  name      = "${var.component}-DB-UP-POSTGRES-HOST"
+  name      = "${var.component}-POSTGRES-HOST"
   value     = "${module.db-user-profile.host_name}"
   key_vault_id = "${data.azurerm_key_vault.rd_key_vault.id}"
 }
 
 resource "azurerm_key_vault_secret" "DB_UP_POSTGRES_PORT" {
-  name      = "${var.component}-DB-UP-POSTGRES-PORT"
+  name      = "${var.component}-POSTGRES-PORT"
   value     = "5432"
   key_vault_id = "${data.azurerm_key_vault.rd_key_vault.id}"
 }
 
 resource "azurerm_key_vault_secret" "DB_UP_POSTGRES_DATABASE" {
-  name      = "${var.component}-DB-UP-POSTGRES-DATABASE"
+  name      = "${var.component}-POSTGRES-DATABASE"
   value     = "${module.db-user-profile.postgresql_database}"
   key_vault_id = "${data.azurerm_key_vault.rd_key_vault.id}"
 }
