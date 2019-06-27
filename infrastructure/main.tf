@@ -55,13 +55,13 @@ data "azurerm_key_vault_secret" "s2s_url" {
 }
 
 resource "azurerm_key_vault_secret" "DB_UP_USERNAME" {
-  name      = "${var.component}-USERNAME"
+  name      = "${var.component}-POSTGRES-USER"
   value     = "${module.db-user-profile.user_name}"
   key_vault_id = "${data.azurerm_key_vault.rd_key_vault.id}"
 }
 
 resource "azurerm_key_vault_secret" "DB_UP_PASSWORD" {
-  name      = "${var.component}-PASSWORD"
+  name      = "${var.component}-POSTGRES-PASS"
   value     = "${module.db-user-profile.postgresql_password}"
   key_vault_id = "${data.azurerm_key_vault.rd_key_vault.id}"
 }
