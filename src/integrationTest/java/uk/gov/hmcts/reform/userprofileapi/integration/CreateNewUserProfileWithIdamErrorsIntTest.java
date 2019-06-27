@@ -10,7 +10,12 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,6 +27,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.userprofileapi.client.IntTestRequestHandler;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
@@ -95,13 +101,18 @@ public class CreateNewUserProfileWithIdamErrorsIntTest {
         UserProfile userProfile = optionalUserProfile.orElse(null);
         assertThat(userProfile).isNull();
 
-        Optional<Audit> optionalAudit = auditRepository.findById(1L);
-        Audit audit = optionalAudit.orElse(null);
+        List<Audit> audits = auditRepository.findAll();
+        if (!CollectionUtils.isEmpty(audits)) {
+            audits = audits.stream().sorted((Comparator.comparing(Audit::getAuditTs)).reversed()).collect(Collectors.toList());
+            Optional<Audit> optionalAudit = auditRepository.findById(audits.get(0).getId());
+            Audit audit = optionalAudit.orElse(null);
 
-        assertThat(audit).isNotNull();
-        assertThat(audit.getIdamRegistrationResponse()).isEqualTo(400);
-        assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.PARAM_MISSING);
-        assertThat(audit.getSource()).isEqualTo(ResponseSource.SIDAM);
-        assertThat(audit.getUserProfile()).isNull();
+
+            assertThat(audit).isNotNull();
+            assertThat(audit.getIdamRegistrationResponse()).isEqualTo(400);
+            assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.PARAM_MISSING);
+            assertThat(audit.getSource()).isEqualTo(ResponseSource.SIDAM);
+            assertThat(audit.getUserProfile()).isNull();
+        }
     }
 }
