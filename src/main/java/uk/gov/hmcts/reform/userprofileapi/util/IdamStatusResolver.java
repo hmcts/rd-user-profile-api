@@ -5,14 +5,14 @@ import org.springframework.http.HttpStatus;
 @SuppressWarnings("HideUtilityClassConstructor")
 public final class IdamStatusResolver {
 
-    public static final String OK = "OK Success";
-    public static final String ACCEPTED = "Registration accepted";
-    public static final String PARAM_MISSING = "Required parameters are missing or invalid";
-    public static final String MISSING_TOKEN = "Missing Bearer Token";
-    public static final String TOKEN_EXPIRED = "Bearer token is expired, or it doesn’t have the ‘create-user’ scope";
-    public static final String NOT_FOUND = "Not found";
-    public static final String USER_EXISTS = "User with this email already exists";
-    public static final String UNKNOWN = "Unknown error";
+    public static final String OK = "11:IDAM: OK Success";
+    public static final String ACCEPTED = "12:IDAM: Registration accepted";
+    public static final String PARAM_MISSING = "13:IDAM: Required parameters are missing or invalid";
+    public static final String MISSING_TOKEN = "14:IDAM: Missing Bearer Token";
+    public static final String TOKEN_EXPIRED = "15:IDAM: Bearer token is expired, or it doesn’t have the ‘create-user’ scope";
+    public static final String NOT_FOUND = "16:IDAM: Not found";
+    public static final String USER_EXISTS = "17:IDAM: User with this email already exists";
+    public static final String UNKNOWN = "18:IDAM: Unknown error";
 
     public static String resolveStatusAndReturnMessage(HttpStatus httpStatus) {
         switch (httpStatus) {

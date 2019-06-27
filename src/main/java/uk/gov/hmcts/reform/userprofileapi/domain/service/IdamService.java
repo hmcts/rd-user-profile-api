@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.domain.service;
 
+import feign.FeignException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +25,14 @@ public class IdamService implements IdentityManagerService {
 
     @Override
     public IdamRegistrationInfo registerUser(CreateUserProfileData requestData) {
-        ResponseEntity response = idamClient.createUserProfile(requestData);
+        HttpStatus httpStatus;
+        ResponseEntity response = null;
+        try {
+            response = idamClient.createUserProfile(requestData);
+        } catch (FeignException ex) {
+            httpStatus = HttpStatus.valueOf(ex.status());
+            return new IdamRegistrationInfo(httpStatus);
+        }
         return new IdamRegistrationInfo(response.getStatusCode());
     }
 
@@ -32,12 +40,15 @@ public class IdamService implements IdentityManagerService {
     public IdamRolesInfo getUserById(UserProfile userProfile) {
         log.info("Getting Idam roles by id for user id:" + userProfile.getIdamId());
         List<String> roles = new ArrayList<String>();
+        ResponseEntity<IdamUserResponse> response;
+        HttpStatus httpStatus;
 
-        ResponseEntity<IdamUserResponse> response = idamClient.getUserById(userProfile.getIdamId().toString());
-        HttpStatus idamResponseStatus = response.getStatusCode();
-        if (idamResponseStatus.is2xxSuccessful()) {
-            roles = response.getBody().getRoles();
+        try {
+            response = idamClient.getUserById(userProfile.getIdamId().toString());
+        } catch (FeignException ex) {
+            httpStatus = HttpStatus.valueOf(ex.status());
+            return new IdamRolesInfo(null, httpStatus);
         }
-        return new IdamRolesInfo(roles, idamResponseStatus);
+        return new IdamRolesInfo(response.getBody().getRoles(), response.getStatusCode());
     }
 }

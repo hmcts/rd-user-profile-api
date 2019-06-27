@@ -69,7 +69,7 @@ public class UserProfile {
     private LocalDateTime lastUpdated;
 
     @OneToMany(mappedBy = "userProfile")
-    private List<Audit> users = new ArrayList<>();
+    private List<Audit> responses = new ArrayList<>();
 
     @Transient
     private List<String> roles = new ArrayList<String>();
