@@ -1,0 +1,28 @@
+java:
+  applicationPort: 8091
+  environment:
+    DB_UP_POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
+    DB_UP_USERNAME: "{{ .Values.postgresql.postgresqlDatabase}}"
+    DB_UP_USER: "{{ .Values.postgresql.postgresqlUsername}}"
+    DB_UP_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
+    DB_UP_POSTGRES_PORT: 5432
+    LOGBACK_REQUIRE_ALERT_LEVEL: 'false'
+    LOGBACK_REQUIRE_ERROR_CODE: 'false'
+  image: 'https://hmcts.azurecr.io/hmcts/draft-store-service:latest'
+  postgresql:
+    image:
+      tag: 10.7.0-r68
+    postgresqlUsername: dbuserprofile
+    postgresqlPassword: dbuserprofile
+    postgresqlDatabase: dbuserprofile
+    service:
+      port: 5432
+  keyVaults:
+    "s2s":
+      resourceGroup: rpe-service-auth-provider
+      secrets:
+        - microservicekey-rd-user-profile-api
+    "rd":
+      resourceGroup: rd
+      secrets:
+        - s2s-url

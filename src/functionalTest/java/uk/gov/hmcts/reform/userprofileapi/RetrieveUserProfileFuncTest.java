@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfileResponse;
@@ -19,7 +18,6 @@ import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfileW
 @Ignore
 @RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest
-@ActiveProfiles("functional")
 public class RetrieveUserProfileFuncTest extends AbstractFunctional {
 
     private static final Logger LOG = LoggerFactory.getLogger(RetrieveUserProfileFuncTest.class);

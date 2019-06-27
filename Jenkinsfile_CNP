@@ -1,8 +1,4 @@
 #!groovy
-properties([
-    [$class: 'GithubProjectProperty', projectUrlStr: 'https://github.com/hmcts/rd-user-profile-api.git'],
-    pipelineTriggers([[$class: 'GitHubPushTrigger']])
-])
 
 @Library("Infrastructure")
 
@@ -10,12 +6,10 @@ def type = "java"
 def product = "rd"
 def component = "user-profile-api"
 
-List<LinkedHashMap<String, Object>> secrets = [
-    secret('s2s-url', 'S2S_URL'),
-    secret('s2s-secret', 'IA_S2S_SECRET'),
-    secret('s2s-microservice', 'IA_S2S_MICROSERVICE'),
-    secret('db-up-password', 'DB_UP_PASSWORD'),
-    secret('db-up-username', 'DB_UP_USERNAME'),
+def secrets = [
+        's2s-${env}': [
+                secret('microservicekey-rd-user-profile-api', 'UP_S2S_SECRET')
+        ]
 ]
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
@@ -27,18 +21,25 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
     ]
 }
 
+
+def vaultOverrides = [
+        'preview' : 'aat',
+        'spreview': 'saat'
+]
+
 withPipeline(type, product, component) {
 
-    before('buildinfra:prod') {
-        currentBuild.result = 'Success'
-        currentBuild.description = "Success"
-        error 'Reference Data projects are not authorised to be in production environments yet.'
+    after('smoketest:aat') {
+        sh "rm -rf infrastructure/"
     }
 
-    enableDockerBuild()
-
-    setVaultName('rd')
+    overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)
+
+    enableDbMigration()
+    enableDockerBuild()
+    installCharts()
+
 
     after('functionalTest:preview') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'

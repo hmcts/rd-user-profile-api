@@ -14,14 +14,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ActiveProfiles;
+
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileResponse;
 
 @Ignore
 @RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest
-@ActiveProfiles("functional")
 public class CreateUserProfileFuncTest extends AbstractFunctional {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateUserProfileFuncTest.class);
