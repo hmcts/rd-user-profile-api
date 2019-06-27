@@ -15,7 +15,6 @@ create table user_profile(
 	user_type varchar(255) not null,
 	extended_attributes json,
 	idam_status varchar(255),
-	idam_registration_response integer,
 	created timestamp not null,
 	last_updated timestamp not null,
 	constraint user_profile_pk primary key (id),

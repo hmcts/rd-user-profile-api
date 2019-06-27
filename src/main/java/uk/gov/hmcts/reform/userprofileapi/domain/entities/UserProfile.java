@@ -59,6 +59,7 @@ public class UserProfile {
     @Column (name = "idam_status")
     @Enumerated(EnumType.STRING)
     private IdamStatus status;
+    @Transient
     private Integer idamRegistrationResponse;
 
     @CreationTimestamp
