@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.userprofileapi.domain.service;
 
 import feign.FeignException;
+import feign.RetryableException;
 import java.util.ArrayList;
 import java.util.List;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,7 +30,7 @@ public class IdamService implements IdentityManagerService {
         try {
             response = idamClient.createUserProfile(requestData);
         } catch (FeignException ex) {
-            httpStatus = HttpStatus.valueOf(ex.status());
+            httpStatus = gethttpStatusFromIdam(ex);
             return new IdamRegistrationInfo(httpStatus);
         }
         return new IdamRegistrationInfo(response.getStatusCode());
@@ -46,9 +46,21 @@ public class IdamService implements IdentityManagerService {
         try {
             response = idamClient.getUserById(userProfile.getIdamId().toString());
         } catch (FeignException ex) {
-            httpStatus = HttpStatus.valueOf(ex.status());
+            httpStatus = gethttpStatusFromIdam(ex);
             return new IdamRolesInfo(null, httpStatus);
         }
         return new IdamRolesInfo(response.getBody().getRoles(), response.getStatusCode());
+    }
+
+    private HttpStatus gethttpStatusFromIdam(FeignException ex) {
+        HttpStatus httpStatus;
+        log.error("Idam returned status : " + ex.status());
+        if (ex instanceof RetryableException) {
+            log.error("Converted Feign exception to 500:UNKNOWN because connection timed out");
+            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        } else {
+            httpStatus = HttpStatus.valueOf(ex.status());
+        }
+        return httpStatus;
     }
 }
