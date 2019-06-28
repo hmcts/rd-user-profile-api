@@ -101,5 +101,15 @@ public class UserProfileControllerAdviceTest {
 
     }
 
+    @Test
+    public void should_return_throwable_when_getRootCause() {
+
+        Throwable throwableMock = mock(Throwable.class);
+        when(throwableMock.getCause()).thenReturn(new Throwable());
+
+        Throwable result = UserProfileControllerAdvice.getRootException(throwableMock);
+        assertThat(result).isNotNull();
+
+    }
 
 }
