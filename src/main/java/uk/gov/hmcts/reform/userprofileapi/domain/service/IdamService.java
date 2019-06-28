@@ -52,7 +52,7 @@ public class IdamService implements IdentityManagerService {
         return new IdamRolesInfo(response.getBody().getRoles(), response.getStatusCode());
     }
 
-    private HttpStatus gethttpStatusFromIdam(FeignException ex) {
+    public HttpStatus gethttpStatusFromIdam(FeignException ex) {
         HttpStatus httpStatus;
         log.error("Idam returned status : " + ex.status());
         if (ex instanceof RetryableException) {

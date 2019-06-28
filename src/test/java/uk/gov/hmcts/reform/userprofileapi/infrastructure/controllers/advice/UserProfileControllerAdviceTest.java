@@ -11,6 +11,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.domain.service.ResourceNotFoundException;
@@ -84,6 +85,20 @@ public class UserProfileControllerAdviceTest {
 
         ResponseEntity response =  advice.handleUnknownException(request, ex);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Test
+    public void should_return_400_when_httpMessageConversionException() {
+        String message = "test-ex-message";
+        HttpMessageConversionException ex = mock(HttpMessageConversionException.class);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+
+        when(ex.getMessage()).thenReturn(message);
+
+        ResponseEntity response = advice.handleHttpMessageConversionException(request, ex);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+
     }
 
 
