@@ -11,6 +11,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Transient;
 
@@ -58,6 +59,7 @@ public class UserProfile {
     @Column (name = "idam_status")
     @Enumerated(EnumType.STRING)
     private IdamStatus status;
+    @Transient
     private Integer idamRegistrationResponse;
 
     @CreationTimestamp
@@ -65,6 +67,9 @@ public class UserProfile {
 
     @UpdateTimestamp
     private LocalDateTime lastUpdated;
+
+    @OneToMany(mappedBy = "userProfile")
+    private List<Audit> responses = new ArrayList<>();
 
     @Transient
     private List<String> roles = new ArrayList<String>();

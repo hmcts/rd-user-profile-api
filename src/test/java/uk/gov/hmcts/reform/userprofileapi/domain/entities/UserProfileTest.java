@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
 
 import java.lang.reflect.Field;
-import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
 import org.junit.Ignore;
@@ -14,15 +13,16 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
+import uk.gov.hmcts.reform.userprofileapi.domain.service.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
 
-@Ignore
 @RunWith(MockitoJUnitRunner.class)
 public class UserProfileTest {
 
-    private final IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.ACCEPTED);
+    private final IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.CREATED);
 
     @Test
+    @Ignore
     public void should_represent_same_number_of_fields_as_in_db() {
         long numberOfFieldsInDb = 19;
         long fieldCount = Stream.of(UserProfile.class.getDeclaredFields())
@@ -61,6 +61,7 @@ public class UserProfileTest {
 
         assertThat(userProfile.getCreated()).isNull();
         assertThat(userProfile.getLastUpdated()).isNull();
+        assertThat(userProfile.getResponses()).isEmpty();
 
     }
 
@@ -69,44 +70,41 @@ public class UserProfileTest {
 
         CreateUserProfileData data = buildCreateUserProfileData();
         UserProfile userProfile = new UserProfile(data,
-            new IdamRegistrationInfo(HttpStatus.ACCEPTED));
+            new IdamRegistrationInfo(HttpStatus.CREATED));
 
         assertThat(userProfile.getId()).isNull();
-        assertThat(userProfile.getEmail()).isEqualTo(data.getEmail());
+        assertThat(userProfile.getEmail()).isEqualTo(data.getEmail().toLowerCase());
         assertThat(userProfile.getFirstName()).isEqualTo(data.getFirstName());
         assertThat(userProfile.getLastName()).isEqualTo(data.getLastName());
 
-        assertThat(userProfile.getEmailCommsConsentTs())
-            .isBetween(LocalDateTime.now().minusSeconds(10), LocalDateTime.now());
-        assertThat(userProfile.getPostalCommsConsentTs())
-            .isBetween(LocalDateTime.now().minusSeconds(10), LocalDateTime.now());
+        assertThat(userProfile.getEmailCommsConsentTs()).isNull();
+        assertThat(userProfile.getPostalCommsConsentTs()).isNull();
 
         assertThat(userProfile.getUserCategory().toString()).isEqualTo(data.getUserCategory());
         assertThat(userProfile.getUserType().toString()).isEqualTo(data.getUserType());
 
-        assertThat(userProfile.getStatus()).isNull();
+        assertThat(userProfile.getStatus()).isEqualTo(IdamStatus.PENDING);
         assertThat(userProfile.getIdamRegistrationResponse())
             .isEqualTo(idamRegistrationInfo.getIdamRegistrationResponse().value());
 
         //Timestamps set by hibernate at insertion time
         assertThat(userProfile.getCreated()).isNull();
         assertThat(userProfile.getLastUpdated()).isNull();
+        assertThat(userProfile.getResponses()).isEmpty();
     }
 
     @Test
     public void should_set_defaults_when_optional_field_is_not_provided() {
 
         UserProfile userProfile = new UserProfile(buildCreateUserProfileData(),
-            new IdamRegistrationInfo(HttpStatus.ACCEPTED)
+            new IdamRegistrationInfo(HttpStatus.CREATED)
         );
 
         assertThat(userProfile.getLanguagePreference()).isEqualTo(LanguagePreference.EN);
         assertThat(userProfile.isEmailCommsConsent()).isFalse();
-        assertThat(userProfile.getEmailCommsConsentTs())
-            .isBetween(LocalDateTime.now().minusSeconds(10), LocalDateTime.now());
+        assertThat(userProfile.getEmailCommsConsentTs()).isNull();
         assertThat(userProfile.isPostalCommsConsent()).isFalse();
-        assertThat(userProfile.getPostalCommsConsentTs())
-            .isBetween(LocalDateTime.now().minusSeconds(10), LocalDateTime.now());
+        assertThat(userProfile.getPostalCommsConsentTs()).isNull();
     }
 
 

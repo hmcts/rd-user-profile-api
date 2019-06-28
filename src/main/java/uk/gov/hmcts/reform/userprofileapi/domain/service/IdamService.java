@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.userprofileapi.domain.service;
 
-import java.util.UUID;
-
+import feign.FeignException;
+import feign.RetryableException;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
+import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.IdamUserResponse;
@@ -22,18 +25,42 @@ public class IdamService implements IdentityManagerService {
 
     @Override
     public IdamRegistrationInfo registerUser(CreateUserProfileData requestData) {
-        ResponseEntity response = idamClient.createUserProfile(requestData);
+        HttpStatus httpStatus;
+        ResponseEntity response = null;
+        try {
+            response = idamClient.createUserProfile(requestData);
+        } catch (FeignException ex) {
+            httpStatus = gethttpStatusFromIdam(ex);
+            return new IdamRegistrationInfo(httpStatus);
+        }
         return new IdamRegistrationInfo(response.getStatusCode());
     }
 
     @Override
-    public IdamRolesInfo getUserById(UUID userId) {
-        log.info("Getting Idam roles by id for user id:" + userId);
-        ResponseEntity<IdamUserResponse> response = idamClient.getUserById(userId.toString());
-        if (HttpStatus.OK == response.getStatusCode()) {
-            return new IdamRolesInfo(response.getBody().getRoles());
-        } else {
-            throw new ResourceNotFoundException("Get Idam user info failed");
+    public IdamRolesInfo getUserById(UserProfile userProfile) {
+        log.info("Getting Idam roles by id for user id:" + userProfile.getIdamId());
+        List<String> roles = new ArrayList<String>();
+        ResponseEntity<IdamUserResponse> response;
+        HttpStatus httpStatus;
+
+        try {
+            response = idamClient.getUserById(userProfile.getIdamId().toString());
+        } catch (FeignException ex) {
+            httpStatus = gethttpStatusFromIdam(ex);
+            return new IdamRolesInfo(null, httpStatus);
         }
+        return new IdamRolesInfo(response.getBody().getRoles(), response.getStatusCode());
+    }
+
+    public HttpStatus gethttpStatusFromIdam(FeignException ex) {
+        HttpStatus httpStatus;
+        log.error("Idam returned status : " + ex.status());
+        if (ex instanceof RetryableException) {
+            log.error("Converted Feign exception to 500:UNKNOWN because connection timed out");
+            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        } else {
+            httpStatus = HttpStatus.valueOf(ex.status());
+        }
+        return httpStatus;
     }
 }

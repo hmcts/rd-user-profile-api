@@ -5,6 +5,6 @@ import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.RequestData;
 
 public interface ResourceRetriever<T extends RequestData> {
 
-    UserProfile retrieve(T identifier);
+    UserProfile retrieve(T identifier, boolean fetchRoles);
 
 }

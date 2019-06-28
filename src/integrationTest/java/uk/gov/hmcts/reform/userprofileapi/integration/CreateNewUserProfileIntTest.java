@@ -35,11 +35,15 @@ import uk.gov.hmcts.reform.userprofileapi.client.IntTestRequestHandler;
 import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
+import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.service.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.ResponseSource;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.UserProfileRepository;
+import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
@@ -61,6 +65,9 @@ public class CreateNewUserProfileIntTest extends AbstractIntegration {
 
     @Autowired
     private UserProfileRepository userProfileRepository;
+
+    @Autowired
+    private AuditRepository auditRepository;
 
     @Before
     public void setUp() {
@@ -109,6 +116,15 @@ public class CreateNewUserProfileIntTest extends AbstractIntegration {
         assertThat(userProfile.getCreated()).isNotNull();
         assertThat(userProfile.getLastUpdated()).isNotNull();
 
+        Optional<Audit> optional = auditRepository.findByUserProfile(userProfile);
+        Audit audit = optional.get();
+
+        assertThat(audit).isNotNull();
+        assertThat(audit.getIdamRegistrationResponse()).isEqualTo(201);
+        assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.ACCEPTED);
+        assertThat(audit.getSource()).isEqualTo(ResponseSource.SIDAM);
+        assertThat(audit.getUserProfile().getIdamId()).isEqualTo(createdResource.getIdamId());
+        assertThat(audit.getAuditTs()).isNotNull();
 
     }
 
@@ -124,7 +140,7 @@ public class CreateNewUserProfileIntTest extends AbstractIntegration {
                 BAD_REQUEST
             );
 
-        assertThat(result.getResponse().getContentAsString()).isEmpty();
+        assertThat(result.getResponse().getContentAsString()).isNotEmpty();
     }
 
     @Test

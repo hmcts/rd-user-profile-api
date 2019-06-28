@@ -11,6 +11,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.domain.service.ResourceNotFoundException;
@@ -26,13 +27,11 @@ public class UserProfileControllerAdviceTest {
         String message = "test-ex-message";
         RequiredFieldMissingException ex = mock(RequiredFieldMissingException.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
-        ResponseEntity<String> expected = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         when(ex.getMessage()).thenReturn(message);
 
         ResponseEntity response = advice.handleRequiredFieldMissingException(request, ex);
-
-        assertThat(response).isEqualToComparingFieldByField(expected);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 
     }
 
@@ -41,13 +40,11 @@ public class UserProfileControllerAdviceTest {
         String message = "test-ex-message";
         ResourceNotFoundException ex = mock(ResourceNotFoundException.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
-        ResponseEntity<String> expected = new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
         when(ex.getMessage()).thenReturn(message);
 
         ResponseEntity response = advice.handleResourceNotFoundException(request, ex);
-
-        assertThat(response).isEqualToComparingFieldByField(expected);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 
     }
 
@@ -56,13 +53,11 @@ public class UserProfileControllerAdviceTest {
         String message = "test-ex-message";
         MethodArgumentNotValidException ex = mock(MethodArgumentNotValidException.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
-        ResponseEntity<String> expected = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         when(ex.getMessage()).thenReturn(message);
 
         ResponseEntity response = advice.handleMethodArgumentNotValidException(request, ex);
-
-        assertThat(response).isEqualToComparingFieldByField(expected);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 
     }
 
@@ -71,13 +66,12 @@ public class UserProfileControllerAdviceTest {
         String message = "test-ex-message";
         DataIntegrityViolationException ex = mock(DataIntegrityViolationException.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
-        ResponseEntity<String> expected = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         when(ex.getMessage()).thenReturn(message);
 
         ResponseEntity response = advice.handleDataIntegrityViolationException(request, ex);
 
-        assertThat(response).isEqualToComparingFieldByField(expected);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 
     }
 
@@ -86,14 +80,36 @@ public class UserProfileControllerAdviceTest {
         String message = "test-ex-message";
         Exception ex = mock(Exception.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
-        ResponseEntity<String> expected = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 
         when(ex.getMessage()).thenReturn(message);
 
         ResponseEntity response =  advice.handleUnknownException(request, ex);
-
-        assertThat(response).isEqualToComparingFieldByField(expected);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @Test
+    public void should_return_400_when_httpMessageConversionException() {
+        String message = "test-ex-message";
+        HttpMessageConversionException ex = mock(HttpMessageConversionException.class);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+
+        when(ex.getMessage()).thenReturn(message);
+
+        ResponseEntity response = advice.handleHttpMessageConversionException(request, ex);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+
+    }
+
+    @Test
+    public void should_return_throwable_when_getRootCause() {
+
+        Throwable throwableMock = mock(Throwable.class);
+        when(throwableMock.getCause()).thenReturn(new Throwable());
+
+        Throwable result = UserProfileControllerAdvice.getRootException(throwableMock);
+        assertThat(result).isNotNull();
+
+    }
 
 }
