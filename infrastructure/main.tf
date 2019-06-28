@@ -25,8 +25,8 @@ resource "azurerm_resource_group" "rg" {
 }
 
 data "azurerm_key_vault" "rd_key_vault" {
-  name = "${local.vaultName}"
-  resource_group_name = "${local.vaultName}"
+  name = "${local.key_vault_name}"
+  resource_group_name = "${local.key_vault_name}"
 }
 
 data "azurerm_key_vault" "s2s_key_vault" {
@@ -54,7 +54,7 @@ data "azurerm_key_vault_secret" "s2s_url" {
   vault_uri = "${data.azurerm_key_vault.rd_key_vault.vault_uri}"
 }
 
-resource "azurerm_key_vault_secret" "POSTGRES-USER" {
+resource "azurerm_key_vault_secret" "DB_UP_USERNAME" {
   name      = "${var.component}-POSTGRES-USER"
   value     = "${module.db-user-profile.user_name}"
   key_vault_id = "${data.azurerm_key_vault.rd_key_vault.id}"

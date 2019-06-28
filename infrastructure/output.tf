@@ -11,7 +11,7 @@ output "appServicePlan" {
 }
 
 output "vaultName" {
-  value = "${local.vaultName}"
+  value = "${local.key_vault_name}"
 }
 
 output "vaultUri" {
