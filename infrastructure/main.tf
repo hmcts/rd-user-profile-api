@@ -25,8 +25,8 @@ resource "azurerm_resource_group" "rg" {
 }
 
 data "azurerm_key_vault" "rd_key_vault" {
-  name = "${local.key_vault_name}"
-  resource_group_name = "${local.key_vault_name}"
+  name = "${local.vaultName}"
+  resource_group_name = "${local.vaultName}"
 }
 
 data "azurerm_key_vault" "s2s_key_vault" {
@@ -60,25 +60,25 @@ resource "azurerm_key_vault_secret" "POSTGRES-USER" {
   key_vault_id = "${data.azurerm_key_vault.rd_key_vault.id}"
 }
 
-resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
+resource "azurerm_key_vault_secret" "DB_UP_PASSWORD" {
   name      = "${var.component}-POSTGRES-PASS"
   value     = "${module.db-user-profile.postgresql_password}"
   key_vault_id = "${data.azurerm_key_vault.rd_key_vault.id}"
 }
 
-resource "azurerm_key_vault_secret" "POSTGRES_HOST" {
+resource "azurerm_key_vault_secret" "DB_UP_POSTGRES_HOST" {
   name      = "${var.component}-POSTGRES-HOST"
   value     = "${module.db-user-profile.host_name}"
   key_vault_id = "${data.azurerm_key_vault.rd_key_vault.id}"
 }
 
-resource "azurerm_key_vault_secret" "POSTGRES_PORT" {
+resource "azurerm_key_vault_secret" "DB_UP_POSTGRES_PORT" {
   name      = "${var.component}-POSTGRES-PORT"
   value     = "5432"
   key_vault_id = "${data.azurerm_key_vault.rd_key_vault.id}"
 }
 
-resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
+resource "azurerm_key_vault_secret" "DB_UP_POSTGRES_DATABASE" {
   name      = "${var.component}-POSTGRES-DATABASE"
   value     = "${module.db-user-profile.postgresql_database}"
   key_vault_id = "${data.azurerm_key_vault.rd_key_vault.id}"
