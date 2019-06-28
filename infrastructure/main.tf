@@ -110,13 +110,13 @@ module "rd-user-profile-api" {
     LOGBACK_REQUIRE_ALERT_LEVEL = false
     LOGBACK_REQUIRE_ERROR_CODE = false
 
-    DB_UP_POSTGRES_HOST = "${module.db-user-profile.host_name}"
-    DB_UP_POSTGRES_PORT = "${module.db-user-profile.postgresql_listen_port}"
-    DB_UP_POSTGRES_DATABASE = "${module.db-user-profile.postgresql_database}"
-    DB_UP_USER = "${module.db-user-profile.user_name}"
-    DB_UP_USERNAME = "${module.db-user-profile.user_name}"
-    DB_UP_PASSWORD = "${module.db-user-profile.postgresql_password}"
-    DB_UP_CONNECTION_OPTIONS = "?"
+    POSTGRES_HOST = "${module.db-user-profile.host_name}"
+    POSTGRES_PORT = "${module.db-user-profile.postgresql_listen_port}"
+    POSTGRES_DATABASE = "${module.db-user-profile.postgresql_database}"
+    POSTGRES_USER = "${module.db-user-profile.user_name}"
+    POSTGRES_USERNAME = "${module.db-user-profile.user_name}"
+    POSTGRES_PASSWORD = "${module.db-user-profile.postgresql_password}"
+    POSTGRES_CONNECTION_OPTIONS = "?"
 
     IDAM_URL = "${local.idam_url}"
     S2S_URL = "${local.s2s_url}"
