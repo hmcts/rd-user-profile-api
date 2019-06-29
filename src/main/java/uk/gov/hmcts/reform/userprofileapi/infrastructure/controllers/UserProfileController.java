@@ -5,7 +5,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.IdentifierName.EMAIL;
 import static uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.IdentifierName.UUID;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
-import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateUpdateUserProfile;
+import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateCreateUserProfileRequest;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -85,7 +85,7 @@ public class UserProfileController {
     public ResponseEntity<CreateUserProfileResponse> createUserProfile(@Valid @RequestBody CreateUserProfileData createUserProfileData) {
         log.info("Creating new User Profile");
 
-        requireNonNull(createUserProfileData, "createUserProfileData cannot be null");
+        validateCreateUserProfileRequest(createUserProfileData);
 
         CreateUserProfileResponse resource = userProfileService.create(createUserProfileData);
         log.info("idamid:" + resource.getIdamId() + "idamRegistrationResponse:" + resource.getIdamRegistrationResponse());
@@ -123,7 +123,7 @@ public class UserProfileController {
     @ResponseBody
     public ResponseEntity<GetUserProfileWithRolesResponse> getUserProfileWithRolesById(@PathVariable String id) {
         log.info("Getting user profile with id: {}", id);
-        isUserIdValid(id);
+        isUserIdValid(id, true);
         GetUserProfileWithRolesResponse response = userProfileService.retrieveWithRoles(new UserProfileIdentifier(UUID, id));
         return ResponseEntity.ok(response);
     }
@@ -206,7 +206,7 @@ public class UserProfileController {
                     )
             );
         } else {
-            isUserIdValid(userId);
+            isUserIdValid(userId, true);
             return ResponseEntity.ok(
                     userProfileService.retrieve(
                             new UserProfileIdentifier(UUID, userId.trim())
@@ -240,9 +240,8 @@ public class UserProfileController {
             produces = APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseBody
-    public ResponseEntity<CreateUserProfileResponse> createUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData, @PathVariable String userId) {
+    public ResponseEntity<CreateUserProfileResponse> updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData, @PathVariable String userId) {
         log.info("Updating user profile");
-        validateUpdateUserProfile(updateUserProfileData, userId);
 
         userProfileService.update(updateUserProfileData, userId);
         return ResponseEntity.status(HttpStatus.OK).build();

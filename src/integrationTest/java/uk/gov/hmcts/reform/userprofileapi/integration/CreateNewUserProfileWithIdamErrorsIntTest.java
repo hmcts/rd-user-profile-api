@@ -110,7 +110,7 @@ public class CreateNewUserProfileWithIdamErrorsIntTest {
 
             assertThat(audit).isNotNull();
             assertThat(audit.getIdamRegistrationResponse()).isEqualTo(400);
-            assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.PARAM_MISSING);
+            assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.INVALID_REQUEST);
             assertThat(audit.getSource()).isEqualTo(ResponseSource.SIDAM);
             assertThat(audit.getUserProfile()).isNull();
         }

@@ -46,6 +46,22 @@ public class FuncTestRequestHandler {
                 .statusCode(expectedStatus.value()).extract().response();
     }
 
+    public void sendPut(Object data, HttpStatus expectedStatus, String path) throws JsonProcessingException {
+        sendPut(objectMapper.writeValueAsString(data),
+                expectedStatus,
+                path);
+    }
+
+    public Response sendPut(String jsonBody, HttpStatus expectedStatus, String path) {
+
+        return withUnauthenticatedRequest()
+                .body(jsonBody)
+                .put(path)
+                .then()
+                .log().all(true)
+                .statusCode(expectedStatus.value()).extract().response();
+    }
+
     public <T> T sendGet(String urlPath, Class<T> clazz) {
         return sendGet(HttpStatus.OK, urlPath).as(clazz);
     }

@@ -1,10 +1,15 @@
 package uk.gov.hmcts.reform.userprofileapi.domain.service;
 
+import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.resolveStatusAndReturnMessage;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isSameAsExistingUserProfile;
+import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUpdateUserProfileRequestValid;
+import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
 
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.ResponseSource;
@@ -26,11 +31,21 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
     public UserProfile update(UpdateUserProfileData updateUserProfileData, ResourceRetriever resourceRetriever, String userId) {
 
         HttpStatus status = HttpStatus.OK;
-        UserProfile userProfile = (userProfileRepository.findByIdamId(java.util.UUID.fromString(userId))).orElseGet(null);
-        if(userProfile == null) {
-            status = HttpStatus.NOT_FOUND;
-            persistAudit(status, null);
-            throw new ResourceNotFoundException("could not find resource from database with given identifier: " + userId);
+        UserProfile userProfile = null;
+        if (!isUserIdValid(userId, false)) {
+            persistAudit(HttpStatus.NOT_FOUND, null);
+            throw new ResourceNotFoundException("userId provided is malformed");
+        }
+
+        Optional<UserProfile> userProfileOptional = userProfileRepository.findByIdamId(java.util.UUID.fromString(userId));
+        userProfile =  userProfileOptional.orElse(null);
+
+        if (userProfile == null) {
+            persistAudit(HttpStatus.NOT_FOUND, null);
+            throw new ResourceNotFoundException("could not find user profile for userId: " + userId);
+        } else if (!isUpdateUserProfileRequestValid(updateUserProfileData)) {
+            persistAudit(HttpStatus.BAD_REQUEST, null);
+            throw new RequiredFieldMissingException("Update user profile request is not valid for userId: " + userId);
         } else if (!isSameAsExistingUserProfile(updateUserProfileData, userProfile)) {
             userProfile.setEmail(updateUserProfileData.getEmail().trim());
             userProfile.setFirstName(updateUserProfileData.getFirstName().trim());
@@ -47,7 +62,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
     }
 
     private void persistAudit(HttpStatus idamStatus, UserProfile userProfile) {
-        Audit audit = new Audit(idamStatus.value(), idamStatus.getReasonPhrase(), ResponseSource.QUARTZ, userProfile);
+        Audit audit = new Audit(idamStatus.value(), resolveStatusAndReturnMessage(idamStatus), ResponseSource.QUARTZ, userProfile);
         auditRepository.save(audit);
     }
 }
