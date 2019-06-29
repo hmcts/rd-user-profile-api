@@ -104,7 +104,9 @@ public class UserProfileControllerAdvice {
 
     private ResponseEntity<Object> errorDetailsResponseEntity(Exception ex, HttpStatus httpStatus, String errorMsg) {
 
-        log.error(LOG_STRING, ex.getMessage());
+        log.error(LOG_STRING, ex.getMessage(), ex);
+        log.error(ex.getMessage(), ex);
+        ex.printStackTrace();
         ErrorResponse errorDetails = ErrorResponse.builder()
                 .errorMessage(errorMsg)
                 .errorDescription(getRootException(ex).getLocalizedMessage())
