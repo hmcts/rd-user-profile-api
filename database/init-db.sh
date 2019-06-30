@@ -8,14 +8,14 @@ if [ -z "$POSTGRES_PASSWORD" ]; then
   exit 1
 fi
 
-echo "Creating dbuserprofile Database . . ."
+echo "Creating dbuserprofile Database . . . "
 
-psql -v ON_ERROR_STOP=1 --username postgres --set USERNAME=dbuserprofile --set UP_PASSWORD=${POSTGRES_PASSWORD} <<-EOSQL
-  CREATE ROLE :USERNAME WITH LOGIN PASSWORD ':UP_PASSWORD';
-  CREATE DATABASE dbuserprofile
-    WITH OWNER = :USERNAME
-    ENCODING = 'UTF-8'
-    CONNECTION LIMIT = -1;
+psql -v ON_ERROR_STOP=1 --username postgres --dbname postgres <<-EOSQL
+  CREATE ROLE dbuserprofile WITH PASSWORD 'dbuserprofile';
+  CREATE DATABASE dbuserprofile ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+  GRANT ALL PRIVILEGES ON DATABASE dbuserprofile TO dbuserprofile;
+  ALTER ROLE dbuserprofile WITH LOGIN;
 EOSQL
+
 
 echo "Done creating Database dbuserprofile."
