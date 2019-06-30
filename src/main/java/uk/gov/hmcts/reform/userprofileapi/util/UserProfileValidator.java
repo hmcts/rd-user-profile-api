@@ -88,7 +88,7 @@ public interface UserProfileValidator {
             && userProfile.getFirstName().equals(updateUserProfileData.getFirstName().trim())
             && userProfile.getLastName().equals(updateUserProfileData.getLastName().trim())
             && userProfile.getStatus().toString().equals(updateUserProfileData.getIdamStatus().trim())) {
-                isSame = true;
+            isSame = true;
         }
         return isSame;
     }
