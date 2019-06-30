@@ -56,41 +56,41 @@ public interface UserProfileValidator {
     }
 
     static boolean validateUpdateUserProfileRequestFields(UpdateUserProfileData updateUserProfileData) {
+
+        boolean isValid = true;
         if (updateUserProfileData == null) {
-            return false;
+            isValid = false;
         } else if (isBlankOrSizeInvalid(updateUserProfileData.getEmail(), 255)
                 || isBlankOrSizeInvalid(updateUserProfileData.getFirstName(), 255)
                 || isBlankOrSizeInvalid(updateUserProfileData.getLastName(), 255)
                 || isBlankOrSizeInvalid(updateUserProfileData.getIdamStatus(), 255)) {
 
-            return false;
+            isValid = false;
         } else if (!updateUserProfileData.getEmail().matches("\\A(?=[a-zA-Z0-9@.!#$%&'*+/=?^_`{|}~-]{6,254}\\z)(?=[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]{1,64}@)[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:(?=[a-zA-Z0-9-]{1,63}\\.)[a-zA-Z0-9](?:[a-z0-9-]*[a-zA-Z0-9])?\\.)+(?=[a-zA-Z0-9-]{1,63}\\z)[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\z")) {
-            return false;
+            isValid = false;
         }
-        return true;
+        return isValid;
     }
 
     static boolean isBlankOrSizeInvalid(String fieldValue, int validSize) {
 
+        boolean isInvalid = false;
         if (StringUtils.isBlank(fieldValue) || fieldValue.trim().length() > validSize) {
-            return true;
+            isInvalid = true;
         }
-        return false;
+        return isInvalid;
     }
 
     static boolean isSameAsExistingUserProfile(UpdateUserProfileData updateUserProfileData, UserProfile userProfile) {
 
-        if (!userProfile.getEmail().equals(updateUserProfileData.getEmail().trim()))  {
-            return false;
-        } else if (!userProfile.getFirstName().equals(updateUserProfileData.getFirstName().trim())) {
-            return false;
-        } else if (!userProfile.getLastName().equals(updateUserProfileData.getLastName().trim())) {
-            return false;
-        } else if (!userProfile.getStatus().equals(updateUserProfileData.getIdamStatus().trim())) {
-            return false;
-        } else {
-            return true;
+        boolean isSame = false;
+        if (userProfile.getEmail().equals(updateUserProfileData.getEmail().trim())
+            && userProfile.getFirstName().equals(updateUserProfileData.getFirstName().trim())
+            && userProfile.getLastName().equals(updateUserProfileData.getLastName().trim())
+            && userProfile.getStatus().toString().equals(updateUserProfileData.getIdamStatus().trim())) {
+                isSame = true;
         }
+        return isSame;
     }
 
     static void validateCreateUserProfileRequest(CreateUserProfileData request) {
