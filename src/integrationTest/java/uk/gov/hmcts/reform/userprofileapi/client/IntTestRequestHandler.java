@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -79,5 +80,23 @@ public class IntTestRequestHandler {
         return objectMapper.readValue(result.getResponse().getContentAsString(), clazz);
     }
 
+    public MvcResult sendPut(MockMvc mockMvc,
+                              String path,
+                              String jsonBody,
+                              HttpStatus expectedHttpStatus) throws Exception {
+
+        return mockMvc.perform(put(path)
+                .content(jsonBody)
+                .contentType(APPLICATION_JSON_UTF8))
+                .andExpect(status().is(expectedHttpStatus.value())).andReturn();
+    }
+
+    public void sendPut(MockMvc mockMvc,
+                              String path,
+                              Object body,
+                              HttpStatus expectedHttpStatus) throws Exception {
+
+        sendPut(mockMvc, path, objectMapper.writeValueAsString(body), expectedHttpStatus);
+    }
 
 }

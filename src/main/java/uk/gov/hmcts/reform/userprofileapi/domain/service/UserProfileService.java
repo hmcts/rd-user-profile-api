@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.domain.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfileResponse;
@@ -9,13 +10,12 @@ import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.RequestData;
 @Service
 public class UserProfileService<T extends RequestData> {
 
+    @Autowired
     private ResourceCreator<T> resourceCreator;
+    @Autowired
     private ResourceRetriever<T> resourceRetriever;
-
-    public UserProfileService(ResourceCreator<T> resourceCreator, ResourceRetriever<T> resourceRetriever) {
-        this.resourceCreator = resourceCreator;
-        this.resourceRetriever = resourceRetriever;
-    }
+    @Autowired
+    private ResourceUpdator<T> resourceUpdator;
 
     public CreateUserProfileResponse create(T requestData) {
         return new CreateUserProfileResponse(resourceCreator.create(requestData));
@@ -27,6 +27,10 @@ public class UserProfileService<T extends RequestData> {
 
     public GetUserProfileResponse retrieve(T requestData) {
         return new GetUserProfileResponse(resourceRetriever.retrieve(requestData, false));
+    }
+
+    public void update(T updateData, String userId) {
+        resourceUpdator.update(updateData, resourceRetriever, userId);
     }
 
 }

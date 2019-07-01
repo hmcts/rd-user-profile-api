@@ -2,10 +2,10 @@ package uk.gov.hmcts.reform.userprofileapi.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.ACCEPTED;
+import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.INVALID_REQUEST;
 import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.MISSING_TOKEN;
 import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.NOT_FOUND;
 import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.OK;
-import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.PARAM_MISSING;
 import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.TOKEN_EXPIRED;
 import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.UNKNOWN;
 import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.USER_EXISTS;
@@ -27,7 +27,7 @@ public class IdamStatusResolverTest {
         assertThat(httpStatusString).isEqualTo(OK);
 
         httpStatusString = IdamStatusResolver.resolveStatusAndReturnMessage(HttpStatus.BAD_REQUEST);
-        assertThat(httpStatusString).isEqualTo(PARAM_MISSING);
+        assertThat(httpStatusString).isEqualTo(INVALID_REQUEST);
 
         httpStatusString = IdamStatusResolver.resolveStatusAndReturnMessage(HttpStatus.UNAUTHORIZED);
         assertThat(httpStatusString).isEqualTo(MISSING_TOKEN);

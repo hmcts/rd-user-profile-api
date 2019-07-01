@@ -8,7 +8,9 @@ import org.apache.commons.lang.RandomStringUtils;
 import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
+import uk.gov.hmcts.reform.userprofileapi.domain.service.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UpdateUserProfileData;
 
 @Setter
 public class CreateUserProfileDataTestBuilder {
@@ -26,6 +28,14 @@ public class CreateUserProfileDataTestBuilder {
             UserCategory.PROFESSIONAL.toString(),
             UserType.EXTERNAL.toString(),
             getIdamRolesJson());
+    }
+
+    public static UpdateUserProfileData buildUpdateUserProfileData() {
+        return new UpdateUserProfileData(
+                buildRandomEmail(),
+                RandomStringUtils.randomAlphabetic(20),
+                RandomStringUtils.randomAlphabetic(20),
+                IdamStatus.ACTIVE.toString());
     }
 
     private static String buildRandomEmail() {

@@ -5,6 +5,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.IdentifierName.EMAIL;
 import static uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.IdentifierName.UUID;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
+import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateCreateUserProfileRequest;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -20,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,6 +34,7 @@ import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfi
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.RequestData;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileIdentifier;
 
 @Api(
@@ -82,7 +85,7 @@ public class UserProfileController {
     public ResponseEntity<CreateUserProfileResponse> createUserProfile(@Valid @RequestBody CreateUserProfileData createUserProfileData) {
         log.info("Creating new User Profile");
 
-        requireNonNull(createUserProfileData, "createUserProfileData cannot be null");
+        validateCreateUserProfileRequest(createUserProfileData);
 
         CreateUserProfileResponse resource = userProfileService.create(createUserProfileData);
         log.info("idamid:" + resource.getIdamId() + "idamRegistrationResponse:" + resource.getIdamRegistrationResponse());
@@ -120,7 +123,7 @@ public class UserProfileController {
     @ResponseBody
     public ResponseEntity<GetUserProfileWithRolesResponse> getUserProfileWithRolesById(@PathVariable String id) {
         log.info("Getting user profile with id: {}", id);
-        isUserIdValid(id);
+        isUserIdValid(id, true);
         GetUserProfileWithRolesResponse response = userProfileService.retrieveWithRoles(new UserProfileIdentifier(UUID, id));
         return ResponseEntity.ok(response);
     }
@@ -203,12 +206,45 @@ public class UserProfileController {
                     )
             );
         } else {
-            isUserIdValid(userId);
+            isUserIdValid(userId, true);
             return ResponseEntity.ok(
                     userProfileService.retrieve(
                             new UserProfileIdentifier(UUID, userId.trim())
                     )
             );
         }
+    }
+
+    @ApiOperation("Update user profile")
+    @ApiResponses({
+            @ApiResponse(
+                    code = 200,
+                    message = "Update User Profile using request body",
+                    response = CreateUserProfileResponse.class
+            ),
+            @ApiResponse(
+                    code = 400,
+                    message = "Bad Request",
+                    response = String.class
+            ),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error",
+                    response = String.class
+            )
+    })
+
+    @PutMapping(
+            path = "/{userId}",
+            consumes = APPLICATION_JSON_UTF8_VALUE,
+            produces = APPLICATION_JSON_UTF8_VALUE
+    )
+    @ResponseBody
+    public ResponseEntity<CreateUserProfileResponse> updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData, @PathVariable String userId) {
+        log.info("Updating user profile");
+
+        userProfileService.update(updateUserProfileData, userId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+
     }
 }
