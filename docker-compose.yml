@@ -12,10 +12,10 @@ services:
     container_name: rd-user-profile-api
     environment:
       - JAVA_OPTS
-      - DB_UP_USERNAME=dbuserprofile
-      - DB_UP_PASSWORD=dbuserprofile
-      - DB_UP_POSTGRES_HOST=rd-user-profile-db
-      - DB_UP_POSTGRES_PORT=5432
+      - POSTGRES_USERNAME=dbuserprofile
+      - POSTGRES_PASSWORD=dbuserprofile
+      - POSTGRES_HOST=rd-user-profile-db
+      - POSTGRES_PORT=5432
       # these environment variables are used by java-logging library
       - JSON_CONSOLE_PRETTY_PRINT
       - ROOT_APPENDER
@@ -39,6 +39,6 @@ services:
     image: hmcts/rd-user-profile-db
     container_name: rd-user-profile-db
     environment:
-      - DB_UP_PASSWORD="${DB_UP_PASSWORD:-dbuserprofile}"
+      - POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-dbuserprofile}"
     ports:
       - 5432:5432
