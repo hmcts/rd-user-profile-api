@@ -28,17 +28,52 @@ services:
       - LOGBACK_REQUIRE_THREAD
       - LOGBACK_REQUIRE_ALERT_LEVEL=false
       - LOGBACK_REQUIRE_ERROR_CODE=false
+      - S2S_URL=http://service-auth-provider-api:8080
+      - S2S_SECRET=${S2S_SECRET}
     ports:
       - ${SERVER_PORT:-8091}:${SERVER_PORT:-8091}
     depends_on:
       - rd-user-profile-db
+      - service-auth-provider-api
 
   rd-user-profile-db:
     build:
       context: database
     image: hmcts/rd-user-profile-db
     container_name: rd-user-profile-db
+    volumes:
+      - rd-user-profile-db-volume:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-dbuserprofile}"
     ports:
       - 5432:5432
+
+  service-auth-provider-api:
+    image: hmcts/service-auth-provider-app
+    container_name: up-service-auth-provider-api
+    healthcheck:
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    ports:
+      - 8502:8080
+    environment:
+      JAVA_OPTS: -Xmx384m
+      SERVER_PORT: 8080
+      MICROSERVICEKEYS_RD_USER_PROFILE_API: "${S2S_SECRET}"
+      TESTING_SUPPORT_ENABLED: "true"
+
+  service-token-provider:
+      image: hmcts/service-token-provider
+      container_name: user-profile-service-token-provider
+      environment:
+        - S2S_URL=http://service-auth-provider-api:8080
+        - S2S_MICROSERVICE=rd_user_profile_api
+        - S2S_SECRET=${S2S_SECRET}
+      ports:
+        - 8099:8090
+      depends_on:
+        - service-auth-provider-api
+
+volumes:
+  rd-user-profile-db-volume:

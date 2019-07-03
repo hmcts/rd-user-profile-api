@@ -4,6 +4,8 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 
 import java.util.ArrayList;
 import java.util.List;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,25 +13,33 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+
 import uk.gov.hmcts.reform.auth.checker.core.RequestAuthorizer;
 import uk.gov.hmcts.reform.auth.checker.core.service.Service;
-import uk.gov.hmcts.reform.auth.checker.spring.serviceonly.AuthCheckerServiceOnlyFilter;
+import uk.gov.hmcts.reform.auth.checker.core.user.User;
+import uk.gov.hmcts.reform.auth.checker.spring.serviceanduser.AuthCheckerServiceAndUserFilter;
 
 @Configuration
 @ConfigurationProperties(prefix = "security")
 @EnableWebSecurity
+@Slf4j
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final List<String> anonymousPaths = new ArrayList<>();
-    private final RequestAuthorizer<Service> serviceRequestAuthorizer;
-    private final AuthenticationManager authenticationManager;
+    private AuthCheckerServiceAndUserFilter authCheckerServiceAndUserFilter;
 
-    public SecurityConfiguration(
-        RequestAuthorizer<Service> serviceRequestAuthorizer,
-        AuthenticationManager authenticationManager
-    ) {
-        this.serviceRequestAuthorizer = serviceRequestAuthorizer;
-        this.authenticationManager = authenticationManager;
+    public SecurityConfiguration(RequestAuthorizer<User> userRequestAuthorizer,
+
+                                 RequestAuthorizer<Service> serviceRequestAuthorizer,
+
+                                 AuthenticationManager authenticationManager) {
+
+        log.info("inside security configuration");
+
+        authCheckerServiceAndUserFilter = new AuthCheckerServiceAndUserFilter(serviceRequestAuthorizer, userRequestAuthorizer);
+
+        authCheckerServiceAndUserFilter.setAuthenticationManager(authenticationManager);
+
     }
 
     public List<String> getAnonymousPaths() {
@@ -48,11 +58,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        AuthCheckerServiceOnlyFilter authCheckerServiceOnlyFilter = new AuthCheckerServiceOnlyFilter(
-                serviceRequestAuthorizer);
-
-        authCheckerServiceOnlyFilter.setAuthenticationManager(authenticationManager);
-
         http.authorizeRequests()
                 .antMatchers("/actuator/**")
                 .permitAll()
@@ -66,10 +71,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .disable()
                 .logout()
                 .disable()
-                /*.authorizeRequests()
+                .authorizeRequests()
                 .anyRequest()
                 .authenticated()
                 .and()
-                .addFilter(authCheckerServiceOnlyFilter)*/;
+                .addFilter(authCheckerServiceAndUserFilter);
     }
 }
