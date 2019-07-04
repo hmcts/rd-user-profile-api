@@ -39,7 +39,7 @@ import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
 @Transactional
-public class UpdateUserProfileIntTest extends AbstractIntegration {
+public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
 
     private Map<String, UserProfile> userProfileMap;
 
@@ -66,7 +66,7 @@ public class UpdateUserProfileIntTest extends AbstractIntegration {
         UUID idamId = persistedUserProfile.getIdamId();
         UpdateUserProfileData data = buildUpdateUserProfileData();
 
-        intTestRequestHandler.sendPut(
+        userProfileRequestHandlerTest.sendPut(
             mockMvc,
             APP_BASE_PATH + SLASH + idamId.toString(),
             data,
@@ -116,7 +116,7 @@ public class UpdateUserProfileIntTest extends AbstractIntegration {
         UserProfile persistedUserProfile = userProfileMap.get("user");
         UUID idamId = persistedUserProfile.getIdamId();
         MvcResult result =
-            intTestRequestHandler.sendPut(
+            userProfileRequestHandlerTest.sendPut(
                 mockMvc,
                 APP_BASE_PATH + SLASH + idamId.toString(),
                 "{}",
@@ -128,7 +128,7 @@ public class UpdateUserProfileIntTest extends AbstractIntegration {
     public void should_return_404_while_create_user_profile_when_userId_invalid() throws Exception {
 
         MvcResult result =
-                intTestRequestHandler.sendPut(
+                userProfileRequestHandlerTest.sendPut(
                         mockMvc,
                         APP_BASE_PATH + SLASH + "invalid",
                         "{}",
@@ -140,7 +140,7 @@ public class UpdateUserProfileIntTest extends AbstractIntegration {
     public void should_return_404_while_create_user_profile_when_userId_not_in_db() throws Exception {
 
         MvcResult result =
-                intTestRequestHandler.sendPut(
+                userProfileRequestHandlerTest.sendPut(
                         mockMvc,
                         APP_BASE_PATH + SLASH + UUID.randomUUID(),
                         "{}",
