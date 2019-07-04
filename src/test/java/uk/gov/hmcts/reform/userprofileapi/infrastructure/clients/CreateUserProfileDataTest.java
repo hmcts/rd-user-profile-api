@@ -30,5 +30,8 @@ public class CreateUserProfileDataTest {
         assertThat(userProfileData.getUserType()).isEqualTo(UserType.EXTERNAL.toString());
         assertThat(userProfileData.getRoles()).isEqualTo(getIdamRolesJson());
 
+        CreateUserProfileData userProfileData1 = new CreateUserProfileData();
+        assertThat(userProfileData1).isNotNull();
+
     }
 }

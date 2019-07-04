@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
@@ -76,8 +77,9 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
         URI userIdUri;
         String userId;
         UserProfile userProfile = null;
+        ResponseEntity responseEntity = idamRegistrationInfo.getResponse();
 
-        if (idamRegistrationInfo.getResponse().getHeaders() != null) {
+        if (responseEntity != null && responseEntity.getHeaders() != null) {
             //get userId from location header
             userIdUri = idamRegistrationInfo.getResponse().getHeaders().getLocation();
             userId = userIdUri != null ? userIdUri.toString() : null;
