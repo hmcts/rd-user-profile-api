@@ -2,5 +2,13 @@ spring:
   datasource:
     driverClassName: org.h2.Driver
     url: jdbc:h2:mem:dbuserprofile;INIT=create domain if not exists json as text
-    username: ${DB_UP_USERNAME:dbuserprofile}
-    password: ${DB_UP_PASSWORD:dbuserprofile}
+    username: ${POSTGRES_USERNAME:dbuserprofile}
+    password: ${POSTGRES_PASSWORD:dbuserprofile}
+
+security:
+
+  authorisedServices:
+    - "it"
+
+auth.idam.client.baseUrl: ${IDAM_URL:http://127.0.0.1:5000}
+auth.provider.service.client.baseUrl: ${S2S_URL:http://127.0.0.1:8099}

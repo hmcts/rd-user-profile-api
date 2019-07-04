@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.userprofileapi;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
+import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildUpdateUserProfileData;
 
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfi
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfileWithRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UpdateUserProfileData;
 
 
 @TestPropertySource("classpath:application-functional.yaml")
@@ -37,8 +39,20 @@ public class AbstractFunctional {
         return resource;
     }
 
+    protected void updateUserProfile(UpdateUserProfileData updateUserProfileData, UUID userId, HttpStatus expectedStatus) throws Exception {
+
+        testRequestHandler.sendPut(
+                updateUserProfileData,
+                expectedStatus,
+                requestUri + "/" + userId.toString());
+    }
+
     protected CreateUserProfileData createUserProfileData() {
         return buildCreateUserProfileData();
+    }
+
+    protected UpdateUserProfileData updateUserProfileData() {
+        return buildUpdateUserProfileData();
     }
 
     protected void verifyCreateUserProfile(CreateUserProfileResponse resource) {
