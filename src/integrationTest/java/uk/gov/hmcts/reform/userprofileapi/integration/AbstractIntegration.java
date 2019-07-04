@@ -57,9 +57,9 @@ public class AbstractIntegration {
                         .withStatus(200)
                         .withBody("{"
                                 + "  \"active\": \"true\","
-                                + "  \"forename\": \"Super\","
-                                + "  \"surname\": \"User\","
-                                + "  \"email\": \"super.user@hmcts.net\","
+                                + "  \"forename\": \"fname\","
+                                + "  \"surname\": \"lname\","
+                                + "  \"email\": \"user@hmcts.net\","
                                 + "  \"locked\": \"false\","
                                 + "  \"roles\": ["
                                 + "    \"pui-organisation-manager\""

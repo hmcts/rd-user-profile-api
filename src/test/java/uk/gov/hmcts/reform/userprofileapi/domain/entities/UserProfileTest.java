@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfi
 @RunWith(MockitoJUnitRunner.class)
 public class UserProfileTest {
 
-    private final IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.CREATED);
+    private final IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.CREATED, null);
 
     @Test
     @Ignore
@@ -69,8 +69,7 @@ public class UserProfileTest {
     public void should_create_and_get_successfully() {
 
         CreateUserProfileData data = buildCreateUserProfileData();
-        UserProfile userProfile = new UserProfile(data,
-            new IdamRegistrationInfo(HttpStatus.CREATED));
+        UserProfile userProfile = new UserProfile(data, HttpStatus.CREATED);
 
         assertThat(userProfile.getId()).isNull();
         assertThat(userProfile.getEmail()).isEqualTo(data.getEmail().toLowerCase());
@@ -96,9 +95,7 @@ public class UserProfileTest {
     @Test
     public void should_set_defaults_when_optional_field_is_not_provided() {
 
-        UserProfile userProfile = new UserProfile(buildCreateUserProfileData(),
-            new IdamRegistrationInfo(HttpStatus.CREATED)
-        );
+        UserProfile userProfile = new UserProfile(buildCreateUserProfileData(), HttpStatus.CREATED);
 
         assertThat(userProfile.getLanguagePreference()).isEqualTo(LanguagePreference.EN);
         assertThat(userProfile.isEmailCommsConsent()).isFalse();

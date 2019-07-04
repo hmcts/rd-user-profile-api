@@ -1,3 +1,10 @@
 targetInstance: ${TEST_URL:http://localhost:8091}
 spring.flyway.enabled: false
-idamUrl: ${IDAM_SERVICE_URL:172.29.14.129:8888}
+idamUrl: ${IDAM_SERVICE_URL:localhost:8888}
+
+#idam.api.url: ${IDAM_API_URL:https://idam-api.aat.platform.hmcts.net}
+idam.api.url: ${IDAM_API_URL:https://idam-api.preview.platform.hmcts.net}
+
+generated.user.email.pattern: ${GENERATED_USER_EMAIL_PATTERN:freg-test-user-%s@feemail.com}
+test.url: ${TEST_URL:http://localhost:8000}
+test.user.password: ${TEST_USER_PASSWORD:Hmcts123}

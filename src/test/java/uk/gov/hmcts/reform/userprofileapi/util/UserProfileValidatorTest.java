@@ -80,8 +80,8 @@ public class UserProfileValidatorTest {
                         UserCategory.CITIZEN.toString(),
                         UserType.EXTERNAL.toString(),
                         getIdamRolesJson());
-        IdamRegistrationInfo idamInfo = new IdamRegistrationInfo(HttpStatus.CREATED);
-        UserProfile userProfile = new UserProfile(userProfileData, idamInfo);
+        IdamRegistrationInfo idamInfo = new IdamRegistrationInfo(HttpStatus.CREATED, null);
+        UserProfile userProfile = new UserProfile(userProfileData, idamInfo.getIdamRegistrationResponse());
 
         UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("test-email-@somewhere.com", "test-first-name", "test-last-name", "PENDING");
 

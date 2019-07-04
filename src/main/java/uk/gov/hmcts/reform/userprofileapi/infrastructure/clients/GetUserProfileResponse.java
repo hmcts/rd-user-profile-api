@@ -16,7 +16,7 @@ public class GetUserProfileResponse {
     private String email;
     private String firstName;
     private String lastName;
-    private IdamStatus status;
+    private IdamStatus idamStatus;
 
     public GetUserProfileResponse(UserProfile userProfile) {
 
@@ -25,7 +25,7 @@ public class GetUserProfileResponse {
         this.email = userProfile.getEmail();
         this.firstName = userProfile.getFirstName();
         this.lastName = userProfile.getLastName();
-        this.status = userProfile.getStatus();
+        this.idamStatus = userProfile.getStatus();
     }
 
 }
