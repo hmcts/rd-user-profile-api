@@ -23,7 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
-import uk.gov.hmcts.reform.userprofileapi.client.IntTestRequestHandler;
+import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRequestHandlerTest;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
@@ -32,19 +32,18 @@ import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.UserProfileR
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
 @Transactional
-public class RetrieveUserProfileInternalServerErrorIntTest {
+public class RetrieveUserProfileInternalServerErrorIntTest extends AuthorizationEnabledIntegrationTest {
 
     private static final String APP_BASE_PATH = "/v1/userprofile";
     private static final String SLASH = "/";
+    @MockBean
+    protected IdamService idamService;
 
     @MockBean
     private UserProfileRepository userProfileRepository;
 
-    @MockBean
-    private IdamService idamService;
-
     @Autowired
-    private IntTestRequestHandler intTestRequestHandler;
+    private UserProfileRequestHandlerTest userProfileRequestHandlerTest;
 
     private MockMvc mockMvc;
 
@@ -64,7 +63,7 @@ public class RetrieveUserProfileInternalServerErrorIntTest {
 
         CreateUserProfileData data = buildCreateUserProfileData();
 
-        MvcResult result = intTestRequestHandler.sendPost(
+        MvcResult result = userProfileRequestHandlerTest.sendPost(
             mockMvc,
             APP_BASE_PATH,
             data,
@@ -84,7 +83,7 @@ public class RetrieveUserProfileInternalServerErrorIntTest {
             .thenThrow(new RuntimeException("This is a test exception"));
 
         MvcResult result =
-            intTestRequestHandler.sendGet(
+            userProfileRequestHandlerTest.sendGet(
                 mockMvc,
                 APP_BASE_PATH + "?" + "userId=" + UUID.randomUUID(),
                 INTERNAL_SERVER_ERROR
@@ -103,7 +102,7 @@ public class RetrieveUserProfileInternalServerErrorIntTest {
             .thenThrow(new RuntimeException("This is a test exception"));
 
         MvcResult result =
-            intTestRequestHandler.sendGet(
+            userProfileRequestHandlerTest.sendGet(
                 mockMvc,
                 APP_BASE_PATH + "?email=" + "randomemail@somewhere.com",
                 INTERNAL_SERVER_ERROR
@@ -122,7 +121,7 @@ public class RetrieveUserProfileInternalServerErrorIntTest {
             .thenThrow(new RuntimeException("This is a test exception"));
 
         MvcResult result =
-            intTestRequestHandler.sendGet(
+            userProfileRequestHandlerTest.sendGet(
                 mockMvc,
                 APP_BASE_PATH + "?userId=" + UUID.randomUUID(),
                 INTERNAL_SERVER_ERROR

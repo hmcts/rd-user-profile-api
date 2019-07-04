@@ -33,7 +33,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
-import uk.gov.hmcts.reform.userprofileapi.client.IntTestRequestHandler;
+import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRequestHandlerTest;
 import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
@@ -58,13 +58,13 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
     private static final String APP_BASE_PATH = "/v1/userprofile";
 
     @Autowired
+    protected UserProfileRequestHandlerTest userProfileRequestHandlerTest;
+
+    @Autowired
     protected UserProfileRepository userProfileRepository;
 
     @Autowired
     protected AuditRepository auditRepository;
-
-    @Autowired
-    protected IntTestRequestHandler intTestRequestHandler;
 
     @Autowired
     protected WebApplicationContext webApplicationContext;
@@ -142,7 +142,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
         CreateUserProfileData data = buildCreateUserProfileData();
 
         CreateUserProfileResponse createdResource =
-            intTestRequestHandler.sendPost(
+                userProfileRequestHandlerTest.sendPost(
                 mockMvc,
                 APP_BASE_PATH,
                 data,
@@ -164,7 +164,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
         CreateUserProfileData data = buildCreateUserProfileData();
 
         CreateUserProfileResponse createdResource =
-                intTestRequestHandler.sendPost(
+                userProfileRequestHandlerTest.sendPost(
                         mockMvc,
                         APP_BASE_PATH,
                         data,
@@ -186,7 +186,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
         CreateUserProfileData data = buildCreateUserProfileData();
 
         CreateUserProfileResponse createdResource =
-                intTestRequestHandler.sendPost(
+                userProfileRequestHandlerTest.sendPost(
                         mockMvc,
                         APP_BASE_PATH,
                         data,

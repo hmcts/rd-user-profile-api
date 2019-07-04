@@ -18,44 +18,22 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
-import uk.gov.hmcts.reform.userprofileapi.client.IntTestRequestHandler;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.ResponseSource;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.AuditRepository;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.UserProfileRepository;
-import uk.gov.hmcts.reform.userprofileapi.integration.util.TestUserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
 @Transactional
-public class RetrieveUserProfileIntTest extends AbstractIntegration {
-
-    private static final String APP_BASE_PATH = "/v1/userprofile";
-    private static final String SLASH = "/";
-
-    @Autowired
-    private TestUserProfileRepository testUserProfileRepository;
-
-    @Autowired
-    private UserProfileRepository userProfileRepository;
-
-    @Autowired
-    private AuditRepository auditRepository;
-
-    @Autowired
-    private IntTestRequestHandler intTestRequestHandler;
+public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
 
     private Map<String, UserProfile> userProfileMap;
-
-    private MockMvc mockMvc;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -81,7 +59,7 @@ public class RetrieveUserProfileIntTest extends AbstractIntegration {
         UserProfile userProfile = userProfileMap.get("user");
 
         GetUserProfileResponse retrievedResource =
-            intTestRequestHandler.sendGet(
+            userProfileRequestHandlerTest.sendGet(
                 mockMvc,
                 APP_BASE_PATH + "?" + "userId=" + userProfile.getIdamId(),
                 OK,
@@ -97,7 +75,7 @@ public class RetrieveUserProfileIntTest extends AbstractIntegration {
         UserProfile userProfile = userProfileMap.get("user");
 
         GetUserProfileWithRolesResponse retrievedResource =
-                intTestRequestHandler.sendGet(
+                userProfileRequestHandlerTest.sendGet(
                         mockMvc,
                         APP_BASE_PATH + SLASH + userProfile.getIdamId() + "/roles",
                         OK,
@@ -128,7 +106,7 @@ public class RetrieveUserProfileIntTest extends AbstractIntegration {
         UserProfile userProfile = userProfileMap.get("user");
 
         GetUserProfileWithRolesResponse retrievedResource =
-                intTestRequestHandler.sendGet(
+                userProfileRequestHandlerTest.sendGet(
                         mockMvc,
                         APP_BASE_PATH + SLASH + "roles" + "?" + "email=" + userProfile.getEmail(),
                         OK,
@@ -159,7 +137,7 @@ public class RetrieveUserProfileIntTest extends AbstractIntegration {
         UserProfile userProfile = userProfileMap.get("user");
 
         GetUserProfileResponse retrievedResource =
-                intTestRequestHandler.sendGet(
+                userProfileRequestHandlerTest.sendGet(
                         mockMvc,
                         APP_BASE_PATH + "?" + "email=" + userProfile.getEmail(),
                         OK,
@@ -175,7 +153,7 @@ public class RetrieveUserProfileIntTest extends AbstractIntegration {
     public void should_return_404_when_user_profile_id_not_in_the_db() throws Exception {
 
         MvcResult result =
-            intTestRequestHandler.sendGet(
+            userProfileRequestHandlerTest.sendGet(
                 mockMvc,
                 APP_BASE_PATH + "?userId=" + UUID.randomUUID().toString(),
                 NOT_FOUND
@@ -194,7 +172,7 @@ public class RetrieveUserProfileIntTest extends AbstractIntegration {
         assertThat(userProfiles).isEmpty();
 
         MvcResult result =
-            intTestRequestHandler.sendGet(
+            userProfileRequestHandlerTest.sendGet(
                 mockMvc,
                 APP_BASE_PATH + "?userId=" + UUID.randomUUID().toString(),
                 NOT_FOUND
@@ -208,7 +186,7 @@ public class RetrieveUserProfileIntTest extends AbstractIntegration {
     public void should_return_404_when_user_profile_email_not_in_the_db() throws Exception {
 
         MvcResult result =
-            intTestRequestHandler.sendGet(
+            userProfileRequestHandlerTest.sendGet(
                 mockMvc,
                 APP_BASE_PATH + "?email=" + "randomemail@somewhere.com",
                 NOT_FOUND
@@ -227,7 +205,7 @@ public class RetrieveUserProfileIntTest extends AbstractIntegration {
         assertThat(userProfiles).isEmpty();
 
         MvcResult result =
-            intTestRequestHandler.sendGet(
+            userProfileRequestHandlerTest.sendGet(
                 mockMvc,
                 APP_BASE_PATH + "?email=" + "randomemail@somewhere.com",
                 NOT_FOUND
@@ -241,7 +219,7 @@ public class RetrieveUserProfileIntTest extends AbstractIntegration {
     @Test
     public void should_return_404_when_query_by_email_is_empty() throws Exception {
         MvcResult result =
-            intTestRequestHandler.sendGet(
+            userProfileRequestHandlerTest.sendGet(
                 mockMvc,
                 APP_BASE_PATH + "?email=",
                 NOT_FOUND
@@ -257,7 +235,7 @@ public class RetrieveUserProfileIntTest extends AbstractIntegration {
     public void should_return_404_when_query_by_userId_is_empty() throws Exception {
 
         MvcResult result =
-            intTestRequestHandler.sendGet(
+            userProfileRequestHandlerTest.sendGet(
                 mockMvc,
                 APP_BASE_PATH + "?userId=",
                 NOT_FOUND
