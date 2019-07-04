@@ -12,10 +12,9 @@ import org.junit.Rule;
 
 public class AbstractIntegration {
 
+
     @Rule
     public WireMockRule idamService = new WireMockRule(8888);
-
-
 
     @Before
     public void setUpWireMock() {
