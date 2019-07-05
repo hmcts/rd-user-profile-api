@@ -33,10 +33,10 @@ public class UserProfileCreatorTest {
     @Ignore
     public void should_create_user_profile_successfully() {
 
-        IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.ACCEPTED);
+        IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.ACCEPTED, null);
         CreateUserProfileData createUserProfileData =
             CreateUserProfileDataTestBuilder.buildCreateUserProfileData();
-        UserProfile userProfile = new UserProfile(createUserProfileData, idamRegistrationInfo);
+        UserProfile userProfile = new UserProfile(createUserProfileData, idamRegistrationInfo.getIdamRegistrationResponse());
 
         when(idamService.registerUser(any())).thenReturn(idamRegistrationInfo);
         when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);

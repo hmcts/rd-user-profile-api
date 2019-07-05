@@ -31,7 +31,7 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
                         "Could not find resource from database with given identifier: "
                         + identifier.getValue()));
         if (fetchRoles) {
-            IdamRolesInfo idamRolesInfo = idamService.getUserById(userProfile);
+            IdamRolesInfo idamRolesInfo = idamService.getUserById(userProfile.getIdamId().toString());
             if (idamRolesInfo.getIdamGetResponseStatusCode().is2xxSuccessful()) {
                 persistAudit(idamRolesInfo, userProfile);
                 userProfile.setRoles(idamRolesInfo);

@@ -78,7 +78,7 @@ public class RetrieveUserProfileInternalServerErrorIntTest extends Authorization
     public void should_return_500_when_repository_throws_an_unknown_exception() throws Exception {
 
         when(idamService.registerUser(any(CreateUserProfileData.class)))
-            .thenReturn(new IdamRegistrationInfo(CREATED));
+            .thenReturn(new IdamRegistrationInfo(CREATED, null));
         when(userProfileRepository.findByIdamId(any(UUID.class)))
             .thenThrow(new RuntimeException("This is a test exception"));
 
@@ -97,7 +97,7 @@ public class RetrieveUserProfileInternalServerErrorIntTest extends Authorization
     public void should_return_500_when_query_by_email_and_repository_throws_an_unknown_exception() throws Exception {
 
         when(idamService.registerUser(any(CreateUserProfileData.class)))
-            .thenReturn(new IdamRegistrationInfo(ACCEPTED));
+            .thenReturn(new IdamRegistrationInfo(ACCEPTED, null));
         when(userProfileRepository.findByEmail(anyString()))
             .thenThrow(new RuntimeException("This is a test exception"));
 
@@ -116,7 +116,7 @@ public class RetrieveUserProfileInternalServerErrorIntTest extends Authorization
     public void should_return_500_when_query_by_userId_and_repository_throws_an_unknown_exception() throws Exception {
 
         when(idamService.registerUser(any(CreateUserProfileData.class)))
-            .thenReturn(new IdamRegistrationInfo(ACCEPTED));
+            .thenReturn(new IdamRegistrationInfo(ACCEPTED, null));
         when(userProfileRepository.findByIdamId(any(UUID.class)))
             .thenThrow(new RuntimeException("This is a test exception"));
 
