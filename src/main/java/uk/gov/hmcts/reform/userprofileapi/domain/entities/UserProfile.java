@@ -19,7 +19,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
+import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
@@ -78,7 +78,7 @@ public class UserProfile {
         //noop
     }
 
-    public UserProfile(CreateUserProfileData data, IdamRegistrationInfo idamInfo) {
+    public UserProfile(CreateUserProfileData data, HttpStatus idamStatus) {
 
         this.email = data.getEmail().trim().toLowerCase();
         this.firstName = data.getFirstName().trim();
@@ -86,9 +86,8 @@ public class UserProfile {
         this.languagePreference = LanguagePreference.valueOf(data.getLanguagePreference());
         this.userCategory = UserCategory.valueOf(data.getUserCategory());
         this.userType = UserType.valueOf(data.getUserType());
-        this.idamRegistrationResponse = idamInfo.getIdamRegistrationResponse().value();
+        this.idamRegistrationResponse = idamStatus.value();
         this.status = IdamStatus.PENDING;
-        this.idamId = UUID.randomUUID();
 
     }
 

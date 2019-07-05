@@ -67,7 +67,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
             );
 
         assertThat(retrievedResource).isNotNull();
-        assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile, "roles");
+        assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile, "roles", "idamStatus");
     }
 
     @Test
@@ -83,7 +83,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
                 );
 
         assertThat(retrievedResource).isNotNull();
-        assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile, "roles");
+        assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile, "roles", "idamStatus");
         assertThat(retrievedResource.getRoles().size()).isGreaterThan(0);
 
         Optional<UserProfile> optionalUserProfile = userProfileRepository.findByIdamId(retrievedResource.getIdamId());
@@ -114,7 +114,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
                 );
 
         assertThat(retrievedResource).isNotNull();
-        assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile, "roles");
+        assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile, "roles", "idamStatus");
         assertThat(retrievedResource.getRoles().size()).isGreaterThan(0);
 
         Optional<UserProfile> optionalUserProfile = userProfileRepository.findByIdamId(retrievedResource.getIdamId());
@@ -145,7 +145,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
                 );
 
         assertThat(retrievedResource).isNotNull();
-        assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile, "roles");
+        assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile, "roles", "idamStatus");
 
     }
 

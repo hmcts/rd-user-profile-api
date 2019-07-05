@@ -52,7 +52,7 @@ public class UserProfileResourceTest {
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfileWithAllFields();
         CreateUserProfileResponse userProfileResource = new CreateUserProfileResponse(userProfile);
 
-        assertThat(userProfileResource.getIdamId()).isNotNull();
+        assertThat(userProfileResource.getIdamId()).isNull();
         assertThat(userProfileResource.getIdamRegistrationResponse()).isEqualTo(userProfile.getIdamRegistrationResponse());
     }
 

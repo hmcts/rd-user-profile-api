@@ -70,7 +70,7 @@ public class AbstractFunctional {
         assertThat(resource.getFirstName()).isEqualTo(expectedResource.getFirstName());
         assertThat(resource.getLastName()).isEqualTo(expectedResource.getLastName());
         assertThat(resource.getEmail()).isEqualTo(expectedResource.getEmail().toLowerCase());
-        assertThat(resource.getStatus()).isNotNull();
+        assertThat(resource.getIdamStatus()).isNotNull();
     }
 
     protected void verifyGetUserProfileWithRoles(GetUserProfileWithRolesResponse resource, CreateUserProfileData expectedResource) {
