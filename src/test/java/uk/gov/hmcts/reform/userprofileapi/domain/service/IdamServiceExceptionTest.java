@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamServiceException;
 
 
 @RunWith(MockitoJUnitRunner.class)

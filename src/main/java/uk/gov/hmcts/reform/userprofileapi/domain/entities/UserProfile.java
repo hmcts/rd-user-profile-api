@@ -20,13 +20,12 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.http.HttpStatus;
+import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
-import uk.gov.hmcts.reform.userprofileapi.domain.service.IdamStatus;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
-
+import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 
 @Getter
 @Setter

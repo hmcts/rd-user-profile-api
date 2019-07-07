@@ -15,11 +15,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-
+import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
 import uk.gov.hmcts.reform.userprofileapi.idam.IdamServiceForFunctional;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileResponse;
 
 @Ignore
 @RunWith(SpringIntegrationSerenityRunner.class)

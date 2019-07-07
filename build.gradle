@@ -165,7 +165,7 @@ pitest {
     excludedClasses = [
         'uk.gov.hmcts.reform.userprofileapi.infrastructure.config.*',
         'uk.gov.hmcts.reform.userprofileapi.Application',
-        'uk.gov.hmcts.reform.userprofileapi.infrastructure.controllers.*'
+        'uk.gov.hmcts.reform.userprofileapi.infrastructure.controller.*'
     ]
     threads = 10
     outputFormats = ['XML', 'HTML']
