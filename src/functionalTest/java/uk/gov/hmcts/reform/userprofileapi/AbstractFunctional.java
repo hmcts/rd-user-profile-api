@@ -10,11 +10,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.reform.userprofileapi.client.FuncTestRequestHandler;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfileWithRolesResponse;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UpdateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.clients.CreateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.clients.CreateUserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.clients.GetUserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.clients.GetUserProfileWithRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.clients.UpdateUserProfileData;
 
 
 @TestPropertySource("classpath:application-functional.yaml")

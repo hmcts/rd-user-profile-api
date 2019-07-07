@@ -3,15 +3,15 @@ package uk.gov.hmcts.reform.userprofileapi.util;
 import static java.util.Objects.requireNonNull;
 
 import org.apache.commons.lang.StringUtils;
+import uk.gov.hmcts.reform.userprofileapi.clients.CreateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.clients.UpdateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.controllers.ResourceNotFoundException;
+import uk.gov.hmcts.reform.userprofileapi.domain.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.domain.service.IdamStatus;
-import uk.gov.hmcts.reform.userprofileapi.domain.service.ResourceNotFoundException;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UpdateUserProfileData;
 
 public interface UserProfileValidator {
 

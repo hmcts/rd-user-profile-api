@@ -9,22 +9,25 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.userprofileapi.clients.CreateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.clients.CreateUserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.clients.GetUserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.clients.RequestData;
+import uk.gov.hmcts.reform.userprofileapi.clients.UserProfileIdentifier;
 import uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.RequestData;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileIdentifier;
+import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileCreatorImpl;
+import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileRetrieverImpl;
+import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserProfileServiceTest {
 
     @Mock
-    private UserProfileCreator userProfileCreator;
+    private UserProfileCreatorImpl userProfileCreatorImpl;
 
     @Mock
-    private UserProfileRetriever userProfileRetriever;
+    private UserProfileRetrieverImpl userProfileRetrieverImpl;
 
     @InjectMocks
     private UserProfileService<RequestData> userProfileService;
@@ -37,12 +40,12 @@ public class UserProfileServiceTest {
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         CreateUserProfileResponse expected = new CreateUserProfileResponse(userProfile);
 
-        when(userProfileCreator.create(userProfileData)).thenReturn(userProfile);
+        when(userProfileCreatorImpl.create(userProfileData)).thenReturn(userProfile);
 
         CreateUserProfileResponse resource = userProfileService.create(userProfileData);
 
         assertThat(resource).isEqualToComparingFieldByField(expected);
-        verify(userProfileCreator).create(any(CreateUserProfileData.class));
+        verify(userProfileCreatorImpl).create(any(CreateUserProfileData.class));
 
     }
 
@@ -53,12 +56,12 @@ public class UserProfileServiceTest {
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         GetUserProfileResponse expected = new GetUserProfileResponse(userProfile);
 
-        when(userProfileRetriever.retrieve(identifier, false)).thenReturn(userProfile);
+        when(userProfileRetrieverImpl.retrieve(identifier, false)).thenReturn(userProfile);
 
         GetUserProfileResponse resource = userProfileService.retrieve(identifier);
 
         assertThat(resource).isEqualToComparingFieldByField(expected);
-        //verify(userProfileRetriever).retrieve(any(UserProfileIdentifier.class),false);
+        //verify(userProfileRetrieverImpl).retrieve(any(UserProfileIdentifier.class),false);
 
     }
 
