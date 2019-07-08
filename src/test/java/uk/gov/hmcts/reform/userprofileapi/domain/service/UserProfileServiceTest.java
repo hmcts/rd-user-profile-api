@@ -9,13 +9,16 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.client.RequestData;
+import uk.gov.hmcts.reform.userprofileapi.client.UserProfileIdentifier;
 import uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.RequestData;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileIdentifier;
+import uk.gov.hmcts.reform.userprofileapi.service.UserProfileCreator;
+import uk.gov.hmcts.reform.userprofileapi.service.UserProfileRetriever;
+import uk.gov.hmcts.reform.userprofileapi.service.UserProfileService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserProfileServiceTest {

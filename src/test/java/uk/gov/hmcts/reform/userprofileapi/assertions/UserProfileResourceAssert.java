@@ -3,8 +3,9 @@ package uk.gov.hmcts.reform.userprofileapi.assertions;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
 import org.junit.Ignore;
+import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileResponse;
+
 
 @Ignore
 public class UserProfileResourceAssert extends AbstractAssert<UserProfileResourceAssert, CreateUserProfileResponse> {

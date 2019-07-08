@@ -14,11 +14,13 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.userprofileapi.client.IdentifierName;
+import uk.gov.hmcts.reform.userprofileapi.client.UserProfileIdentifier;
 import uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.IdentifierName;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileIdentifier;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.UserProfileQueryProvider;
+import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileQueryProvider;
+import uk.gov.hmcts.reform.userprofileapi.service.ResourceNotFoundException;
+import uk.gov.hmcts.reform.userprofileapi.service.UserProfileRetriever;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserProfileRetrieverTest {
