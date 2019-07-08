@@ -38,9 +38,7 @@ import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UpdateUserProfi
 import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UserProfileIdentifier;
 
 @Api(
-    value = "/v1/userprofile",
-    consumes = APPLICATION_JSON_UTF8_VALUE,
-    produces = APPLICATION_JSON_UTF8_VALUE
+    value = "/v1/userprofile"
 )
 
 @RequestMapping(

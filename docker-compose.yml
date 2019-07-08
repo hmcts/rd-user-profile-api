@@ -11,7 +11,7 @@ services:
     image: hmcts/rd-user-profile-api
     container_name: rd-user-profile-api
     environment:
-      - JAVA_OPTS
+      - JAVA_OPTS=-Dhttps.proxyHost=proxyout.reform.hmcts.net -Dhttps.proxyPort=8080
       - POSTGRES_USERNAME=dbuserprofile
       - POSTGRES_PASSWORD=dbuserprofile
       - POSTGRES_HOST=rd-user-profile-db
