@@ -40,7 +40,7 @@ execute_script() {
 
   cd $(dirname "$0")/..
 
-  ./gradlew clean assemble
+  ./gradlew clean build
 
   export SERVER_PORT="${SERVER_PORT:-8091}"
 
