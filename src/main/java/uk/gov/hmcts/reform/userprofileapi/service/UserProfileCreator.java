@@ -1,7 +1,14 @@
 package uk.gov.hmcts.reform.userprofileapi.service;
 
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +24,6 @@ import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-
 import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
@@ -81,7 +87,7 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
         if (responseEntity != null && responseEntity.getHeaders() != null) {
             //get userId from location header
             userIdUri = idamRegistrationInfo.getResponse().getHeaders().getLocation();
-            userId = userIdUri != null ? userIdUri.toString().substring(sidamGetUri.length()): null;
+            userId = userIdUri != null ? userIdUri.toString().substring(sidamGetUri.length()) : null;
             log.error("Received existing idam userId : " + userId);
             // search with id to get roles
             IdamRolesInfo idamRolesInfo = idamService.getUserById(userId);
@@ -147,7 +153,10 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
 
     private IdamRolesInfo updateIdamRoles(List<String> rolesToUpdate, String userId) {
         List<Map> roles = rolesToUpdate.stream().map(role ->
-            new HashMap<String, String>(){{put("name", role);}}).collect(Collectors.toList());
+            new HashMap<String, String>() { {
+                put("name", role);
+            } 
+        }).collect(Collectors.toList());
         return idamService.updateUserRoles(roles, userId);
     }
 
