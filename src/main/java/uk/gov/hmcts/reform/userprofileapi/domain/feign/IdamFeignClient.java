@@ -32,5 +32,5 @@ public interface IdamFeignClient {
     @RequestMapping(method = RequestMethod.PUT, value = "/api/v1/users/{userId}/roles")
     @RequestLine("PUT /api/v1/users/{userId}/roles")
     @Headers("Content-Type: application/json")
-    public Response updateUserRoles(@RequestBody Object rolesRequest, @PathVariable String userId);
+    public Response updateUserRoles(@RequestBody Object rolesRequest, @PathVariable("userId") String userId);
 }

@@ -2,11 +2,12 @@ package uk.gov.hmcts.reform.userprofileapi.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Response;
+
+import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.zip.GZIPInputStream;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
@@ -22,6 +23,12 @@ public class JsonFeignResponseHelper {
     public static <T> Optional<T> decode(Response response, Class<T> clazz) {
         if (response.status() >= 200 && response.status() < 300 && clazz != null) {
             try {
+
+                Optional<Collection<String>> encodings = Optional.ofNullable(response.headers().get("content-encoding"));
+                if (encodings.isPresent() && encodings.get().contains("gzip")) {
+                    return Optional.of(json.readValue(new GZIPInputStream(new BufferedInputStream(response.body().asInputStream())), clazz));
+                }
+
                 return Optional.of(json.readValue(response.body().asReader(), clazz));
             } catch (IOException e) {
                 return Optional.empty();

@@ -1,22 +1,17 @@
 package uk.gov.hmcts.reform.userprofileapi.service;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
-import uk.gov.hmcts.reform.userprofileapi.client.RoleName;
-import uk.gov.hmcts.reform.userprofileapi.client.RoleRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
@@ -30,6 +25,9 @@ import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 @Service
 @Slf4j
 public class UserProfileCreator implements ResourceCreator<CreateUserProfileData> {
+
+    @Value("${auth.idam.client.userid.baseUri:/api/v1/users/}")
+    private String sidamGetUri;
 
     @Autowired
     private IdamService idamService;
@@ -83,7 +81,7 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
         if (responseEntity != null && responseEntity.getHeaders() != null) {
             //get userId from location header
             userIdUri = idamRegistrationInfo.getResponse().getHeaders().getLocation();
-            userId = userIdUri != null ? userIdUri.toString() : null;
+            userId = userIdUri != null ? userIdUri.toString().substring(sidamGetUri.length()): null;
             log.error("Received existing idam userId : " + userId);
             // search with id to get roles
             IdamRolesInfo idamRolesInfo = idamService.getUserById(userId);
@@ -140,18 +138,17 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
     }
 
     private List<String> consolidateRolesFromXuiAndIdam(CreateUserProfileData profileData, IdamRolesInfo idamRolesInfo) {
-        List<String> rolesToUpdate = idamRolesInfo.getRoles();
+        Optional<List<String>> roles = Optional.ofNullable(idamRolesInfo.getRoles());
+        List<String> rolesToUpdate = roles.isPresent() ? roles.get() : new ArrayList<>();
         rolesToUpdate.addAll(profileData.getRoles());
         Set<String> rolesSet = new HashSet<String>(rolesToUpdate);
         return new ArrayList<String>(rolesSet);
     }
 
     private IdamRolesInfo updateIdamRoles(List<String> rolesToUpdate, String userId) {
-        RoleRequest roleRequest = new RoleRequest();
-        List<RoleName> roles = rolesToUpdate.stream().map(role ->
-            new RoleName(role)).collect(Collectors.toList());
-        roleRequest.setRoles(roles);
-        return idamService.updateUserRoles(roleRequest, userId);
+        List<Map> roles = rolesToUpdate.stream().map(role ->
+            new HashMap<String, String>(){{put("name", role);}}).collect(Collectors.toList());
+        return idamService.updateUserRoles(roles, userId);
     }
 
 }

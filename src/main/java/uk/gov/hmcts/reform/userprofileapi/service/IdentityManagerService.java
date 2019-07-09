@@ -6,6 +6,8 @@ import uk.gov.hmcts.reform.userprofileapi.client.RoleRequest;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 
+import java.util.List;
+
 @Component
 public interface IdentityManagerService {
 
@@ -15,6 +17,6 @@ public interface IdentityManagerService {
 
     IdamRolesInfo searchUserByEmail(String email);
 
-    IdamRolesInfo updateUserRoles(RoleRequest roleRequest, String userId);
+    IdamRolesInfo updateUserRoles(List roleRequest, String userId);
 
 }

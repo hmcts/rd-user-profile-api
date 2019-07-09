@@ -16,6 +16,8 @@ import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.util.JsonFeignResponseHelper;
 
+import java.util.List;
+
 @Slf4j
 @Component
 public class IdamService implements IdentityManagerService {
@@ -51,7 +53,7 @@ public class IdamService implements IdentityManagerService {
     }
 
     @Override
-    public IdamRolesInfo updateUserRoles(RoleRequest roleRequest, String userId) {
+    public IdamRolesInfo updateUserRoles(List roleRequest, String userId) {
         log.info("Update idam roles for userId :" + userId);
         HttpStatus httpStatus;
         Response response = null;
