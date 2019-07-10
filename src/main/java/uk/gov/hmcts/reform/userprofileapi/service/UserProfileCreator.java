@@ -32,7 +32,7 @@ import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 @Slf4j
 public class UserProfileCreator implements ResourceCreator<CreateUserProfileData> {
 
-    @Value("${auth.idam.client.userid.baseUri:/api/v1/users/}")
+    @Value("${auth.idam.client.baseUrl:/api/v1/users/}")
     private String sidamGetUri;
 
     @Autowired
@@ -155,7 +155,7 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
         List<Map> roles = rolesToUpdate.stream().map(role ->
             new HashMap<String, String>() { {
                 put("name", role);
-            } 
+            }
         }).collect(Collectors.toList());
         return idamService.updateUserRoles(roles, userId);
     }
