@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -152,11 +151,12 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
     }
 
     private IdamRolesInfo updateIdamRoles(List<String> rolesToUpdate, String userId) {
-        List<Map> roles = rolesToUpdate.stream().map(role ->
-            new HashMap<String, String>() { {
-                put("name", role);
-            }
-        }).collect(Collectors.toList());
+        List<Map<String,String>> roles = new ArrayList<>();
+        rolesToUpdate.forEach(role -> {
+            Map<String, String> rolesMap = new HashMap<String, String>();
+            rolesMap.put("name", role);
+            roles.add(rolesMap);
+        });
         return idamService.updateUserRoles(roles, userId);
     }
 
