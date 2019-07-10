@@ -46,7 +46,9 @@ spring:
 security:
   anonymousPaths:
     - "/"
+    - "/csrf"
     - "/health"
+    - "/health/liveness"
     - "/loggers/**"
     - "/swagger-ui.html"
     - "/swagger-resources/**"
@@ -55,6 +57,7 @@ security:
     - "/favicon.ico"
   authorisedServices:
     - rd_user_profile_api
+    - rd_professional_api
 
 ### dependency configuration
 auth.idam.client.baseUrl: ${IDAM_URL:https://idam-api.preview.platform.hmcts.net}
