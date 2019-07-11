@@ -61,6 +61,7 @@ security:
     - "/v2/api-docs"
     - "/webjars/springfox-swagger-ui/**"
     - "/favicon.ico"
+    - "/error"
   authorisedServices:
     - rd_user_profile_api
     - rd_professional_api
