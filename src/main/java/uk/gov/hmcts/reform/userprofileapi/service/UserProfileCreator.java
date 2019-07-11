@@ -1,15 +1,24 @@
 package uk.gov.hmcts.reform.userprofileapi.service;
 
 import java.net.URI;
-import java.util.*;
-import java.util.stream.Collectors;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
 import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants;
@@ -81,7 +90,7 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
         if (responseEntity != null && responseEntity.getHeaders() != null) {
             //get userId from location header
             userIdUri = idamRegistrationInfo.getResponse().getHeaders().getLocation();
-            userId = userIdUri != null ? userIdUri.toString().substring(sidamGetUri.length()): null;
+            userId = userIdUri != null ? userIdUri.toString().substring(sidamGetUri.length()) : null;
             log.error("Received existing idam userId : " + userId);
             // search with id to get roles
             IdamRolesInfo idamRolesInfo = idamService.getUserById(userId);
@@ -146,8 +155,12 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
     }
 
     private IdamRolesInfo updateIdamRoles(List<String> rolesToUpdate, String userId) {
-        List<Map> roles = rolesToUpdate.stream().map(role ->
-            new HashMap<String, String>(){{put("name", role);}}).collect(Collectors.toList());
+        List<Map<String,String>> roles = new ArrayList<>();
+        rolesToUpdate.forEach(role -> {
+            Map<String, String> rolesMap = new HashMap<String, String>();
+            rolesMap.put("name", role);
+            roles.add(rolesMap);
+        });
         return idamService.updateUserRoles(roles, userId);
     }
 

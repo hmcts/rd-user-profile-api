@@ -3,7 +3,14 @@ package uk.gov.hmcts.reform.userprofileapi.config;
 import feign.RequestInterceptor;
 import feign.codec.Encoder;
 import feign.form.spring.SpringFormEncoder;
+
+import java.util.Enumeration;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.cloud.openfeign.support.SpringEncoder;
@@ -13,9 +20,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import java.util.Enumeration;
+
 
 @Configuration
 @Slf4j

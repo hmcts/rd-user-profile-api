@@ -22,7 +22,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContexts;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -60,7 +59,7 @@ public class AuthCheckerConfiguration {
 
     @Bean
     @ConditionalOnProperty(
-            value="ssl.verification.enable",
+            value = "ssl.verification.enable",
             havingValue = "false",
             matchIfMissing = true)
     public HttpClient userTokenParserHttpClient()
@@ -81,11 +80,11 @@ public class AuthCheckerConfiguration {
             sslContextWithoutValidation,
             allowAllHostnameVerifier);
 
-            httpClientBuilder.setSSLSocketFactory(allowAllSslSocketFactory);
+        httpClientBuilder.setSSLSocketFactory(allowAllSslSocketFactory);
 
         // also disable SSL valiation for plain java httpurlconnection
-                HttpsURLConnection.setDefaultHostnameVerifier(allowAllHostnameVerifier);
-            HttpsURLConnection.setDefaultSSLSocketFactory(sslContextWithoutValidation.getSocketFactory());
+        HttpsURLConnection.setDefaultHostnameVerifier(allowAllHostnameVerifier);
+        HttpsURLConnection.setDefaultSSLSocketFactory(sslContextWithoutValidation.getSocketFactory());
 
         CloseableHttpClient client = httpClientBuilder.build();
         return client;
