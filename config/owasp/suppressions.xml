@@ -1325,5 +1325,200 @@
         <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty\.websocket/websocket-client@.*$</packageUrl>
         <cve>CVE-2019-10247</cve>
     </suppress>
-
+    <suppress>
+        <notes><![CDATA[
+   file name: jackson-databind-2.9.9.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson-databind@.*$</packageUrl>
+        <cpe>cpe:/a:fasterxml:jackson</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: jackson-databind-2.9.9.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson-databind@.*$</packageUrl>
+        <cpe>cpe:/a:fasterxml:jackson-databind</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: jackson-databind-2.9.9.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson-databind@.*$</packageUrl>
+        <cve>CVE-2019-12814</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: jetty-servlets-9.4.15.v20190215.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty/jetty-servlets@.*$</packageUrl>
+        <cpe>cpe:/a:eclipse:jetty</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: jetty-servlets-9.4.15.v20190215.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty/jetty-servlets@.*$</packageUrl>
+        <cpe>cpe:/a:jetty:jetty</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: jetty-servlets-9.4.15.v20190215.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty/jetty-servlets@.*$</packageUrl>
+        <cpe>cpe:/a:mortbay_jetty:jetty</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: jetty-servlets-9.4.15.v20190215.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty/jetty-servlets@.*$</packageUrl>
+        <cve>CVE-2019-10241</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: jetty-servlets-9.4.15.v20190215.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty/jetty-servlets@.*$</packageUrl>
+        <cve>CVE-2019-10247</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: jetty-util-9.4.15.v20190215.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty/jetty-util@.*$</packageUrl>
+        <cpe>cpe:/a:eclipse:eclipse_ide</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: jetty-util-9.4.15.v20190215.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.eclipse\.jetty/jetty-util@.*$</packageUrl>
+        <cve>CVE-2008-7271</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: filters-2.0.235.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.jhlabs/filters@.*$</packageUrl>
+        <cpe>cpe:/a:processing:processing</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: filters-2.0.235.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.jhlabs/filters@.*$</packageUrl>
+        <cve>CVE-2018-1000840</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: kotlin-stdlib-jdk8-1.2.71.jar
+   ]]></notes>
+        <sha1>5470d1f752cd342edb77e1062bac07e838d2cea4</sha1>
+        <cpe>cpe:/a:jetbrains:kotlin</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: kotlin-stdlib-jdk8-1.2.71.jar
+   ]]></notes>
+        <sha1>5470d1f752cd342edb77e1062bac07e838d2cea4</sha1>
+        <cve>CVE-2019-10101</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: kotlin-stdlib-jdk8-1.2.71.jar
+   ]]></notes>
+        <sha1>5470d1f752cd342edb77e1062bac07e838d2cea4</sha1>
+        <cve>CVE-2019-10102</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: kotlin-stdlib-jdk8-1.2.71.jar
+   ]]></notes>
+        <sha1>5470d1f752cd342edb77e1062bac07e838d2cea4</sha1>
+        <cve>CVE-2019-10103</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: kotlin-stdlib-jdk7-1.2.71.jar
+   ]]></notes>
+        <sha1>4ce93f539e2133f172f1167291a911f83400a5d0</sha1>
+        <cpe>cpe:/a:jetbrains:kotlin</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: kotlin-stdlib-jdk7-1.2.71.jar
+   ]]></notes>
+        <sha1>4ce93f539e2133f172f1167291a911f83400a5d0</sha1>
+        <cve>CVE-2019-10101</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: kotlin-stdlib-jdk7-1.2.71.jar
+   ]]></notes>
+        <sha1>4ce93f539e2133f172f1167291a911f83400a5d0</sha1>
+        <cve>CVE-2019-10102</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: kotlin-stdlib-jdk7-1.2.71.jar
+   ]]></notes>
+        <sha1>4ce93f539e2133f172f1167291a911f83400a5d0</sha1>
+        <cve>CVE-2019-10103</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: kotlin-stdlib-1.2.71.jar
+   ]]></notes>
+        <sha1>d9717625bb3c731561251f8dd2c67a1011d6764c</sha1>
+        <cpe>cpe:/a:jetbrains:kotlin</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: kotlin-stdlib-1.2.71.jar
+   ]]></notes>
+        <sha1>d9717625bb3c731561251f8dd2c67a1011d6764c</sha1>
+        <cve>CVE-2019-10101</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: kotlin-stdlib-1.2.71.jar
+   ]]></notes>
+        <sha1>d9717625bb3c731561251f8dd2c67a1011d6764c</sha1>
+        <cve>CVE-2019-10102</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: kotlin-stdlib-1.2.71.jar
+   ]]></notes>
+        <sha1>d9717625bb3c731561251f8dd2c67a1011d6764c</sha1>
+        <cve>CVE-2019-10103</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: kotlin-stdlib-common-1.2.71.jar
+   ]]></notes>
+        <sha1>ba18ca1aa0e40eb6f1865b324af2f4cbb691c1ec</sha1>
+        <cpe>cpe:/a:jetbrains:kotlin</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: kotlin-stdlib-common-1.2.71.jar
+   ]]></notes>
+        <sha1>ba18ca1aa0e40eb6f1865b324af2f4cbb691c1ec</sha1>
+        <cve>CVE-2019-10101</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: kotlin-stdlib-common-1.2.71.jar
+   ]]></notes>
+        <sha1>ba18ca1aa0e40eb6f1865b324af2f4cbb691c1ec</sha1>
+        <cve>CVE-2019-10102</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: kotlin-stdlib-common-1.2.71.jar
+   ]]></notes>
+        <sha1>ba18ca1aa0e40eb6f1865b324af2f4cbb691c1ec</sha1>
+        <cve>CVE-2019-10103</cve>
+    </suppress>
 </suppressions>
