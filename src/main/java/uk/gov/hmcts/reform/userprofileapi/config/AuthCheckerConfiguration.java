@@ -15,7 +15,6 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -57,12 +56,12 @@ public class AuthCheckerConfiguration {
         return any -> Optional.empty();
     }
 
-    @Bean
+    @Bean(name = {"serviceTokenParserHttpClient", "userTokenParserHttpClient"})
     @ConditionalOnProperty(
             value = "ssl.verification.enable",
             havingValue = "false",
             matchIfMissing = true)
-    public HttpClient userTokenParserHttpClient()
+    public CloseableHttpClient tokenParserHttpClient()
             throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
         HttpClientBuilder httpClientBuilder = HttpClients.custom()
                 .disableCookieManagement()
