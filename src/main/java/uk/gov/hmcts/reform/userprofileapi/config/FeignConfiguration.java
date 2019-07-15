@@ -35,7 +35,6 @@ public class FeignConfiguration {
     }
 
 
-    @Bean
     public RequestInterceptor requestInterceptor() {
         return requestTemplate -> {
             ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
