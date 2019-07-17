@@ -3,8 +3,14 @@ server:
 
 management:
   endpoints:
+    jmx:
+      exposure:
+        include: 'health'
     web:
-      base-path: /
+      base-path: "/"
+  endpoint:
+    health:
+      show-details: "always"
 
 spring:
   application:
@@ -15,7 +21,7 @@ spring:
 ### database configuration
   datasource:
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://${POSTGRES_HOST:rd-user-profile-db}:${POSTGRES_PORT:5432}/${POSTGRES_NAME:dbuserprofile}${POSTGRES_CONNECTION_OPTIONS:?}
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_NAME:dbuserprofile}${POSTGRES_CONNECTION_OPTIONS:?}
     username: ${POSTGRES_USERNAME:dbuserprofile}
     password: ${POSTGRES_PASSWORD:dbuserprofile}
     properties:
@@ -46,22 +52,32 @@ spring:
 security:
   anonymousPaths:
     - "/"
+    - "/csrf"
     - "/health"
+    - "/health/liveness"
     - "/loggers/**"
     - "/swagger-ui.html"
     - "/swagger-resources/**"
     - "/v2/api-docs"
     - "/webjars/springfox-swagger-ui/**"
     - "/favicon.ico"
+    - "/error"
   authorisedServices:
     - rd_user_profile_api
+    - rd_professional_api
+
+feign:
+  allow:
+    headers:
+      - authorization
+      - serviceauthorization
 
 ### dependency configuration
-auth.idam.client.baseUrl: ${IDAM_URL:http://23.101.50.80:5000}
+auth.idam.client.baseUrl: ${IDAM_URL:https://idam-api.preview.platform.hmcts.net}
 auth.idam.client.detailsUri: "/details"
-auth.provider.service.client.baseUrl: ${S2S_URL:http://127.0.0.1:8099}
-idam.s2s-auth.totp_secret: ${S2S_SECRET:AAAAAAAAAAAAAAAC}
+auth.provider.service.client.baseUrl: ${S2S_URL:http://127.0.0.1:8502}
+idam.s2s-auth.totp_secret: ${S2S_SECRET:SZDUA3L7N32PE2IS}
 idam.s2s-auth.microservice: rd_user_profile_api
-idam.s2s-auth.url: ${S2S_URL:http://127.0.0.1:8099}
+idam.s2s-auth.url: ${S2S_URL:http://127.0.0.1:8502}
 
-idamUrl: ${IDAM_SERVICE_URL:http://localhost:8888}
+#idamUrl: ${IDAM_URL:https://idam-api.preview.platform.hmcts.net}

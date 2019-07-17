@@ -53,7 +53,7 @@ public class AuthorizationEnabledIntegrationTest {
     public WireMockRule s2sService = new WireMockRule(8990);
 
     @Rule
-    public WireMockRule idamService = new WireMockRule(8888);
+    public WireMockRule idamService = new WireMockRule(5000);
 
     @Before
     public void setUpWireMock() {

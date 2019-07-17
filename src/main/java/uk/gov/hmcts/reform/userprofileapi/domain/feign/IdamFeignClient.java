@@ -10,8 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import uk.gov.hmcts.reform.userprofileapi.config.FeignInterceptorConfiguration;
 
-@FeignClient(name = "IdamFeignClient", url = "${idamUrl}")
+@FeignClient(name = "IdamFeignClient", url = "${auth.idam.client.baseUrl}", configuration = FeignInterceptorConfiguration.class)
 public interface IdamFeignClient {
 
     @RequestMapping(method = RequestMethod.POST, value = "/user/registration")
@@ -32,5 +33,5 @@ public interface IdamFeignClient {
     @RequestMapping(method = RequestMethod.PUT, value = "/api/v1/users/{userId}/roles")
     @RequestLine("PUT /api/v1/users/{userId}/roles")
     @Headers("Content-Type: application/json")
-    public Response updateUserRoles(@RequestBody Object rolesRequest, @PathVariable String userId);
+    public Response updateUserRoles(@RequestBody Object rolesRequest, @PathVariable("userId") String userId);
 }

@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.userprofileapi.client;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import feign.Request;
 import feign.RetryableException;
 import java.util.Date;
 import org.junit.Ignore;
@@ -35,9 +36,8 @@ public class IdamServiceTest {
 
         IdamService idamService = new IdamService();
 
-        HttpStatus status = idamService.gethttpStatusFromIdam(new RetryableException("test Exception", new Throwable(), new Date()));
+        HttpStatus status = idamService.gethttpStatusFromIdam(new RetryableException(500, "test Exception", Request.HttpMethod.GET, new Throwable(), new Date()));
         assertThat(status).isNotNull().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-
 
 
     }
