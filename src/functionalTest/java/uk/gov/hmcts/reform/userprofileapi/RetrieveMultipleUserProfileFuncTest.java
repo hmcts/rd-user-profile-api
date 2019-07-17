@@ -22,7 +22,7 @@ import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesResponse;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 
 
-//@Ignore
+@Ignore
 @RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest
 public class RetrieveMultipleUserProfileFuncTest extends AbstractFunctional {
@@ -53,7 +53,7 @@ public class RetrieveMultipleUserProfileFuncTest extends AbstractFunctional {
         GetUserProfilesResponse response = testRequestHandler.sendPost(
                 request,
                 HttpStatus.OK,
-                requestUri + "/users?showdeleted?false",
+                requestUri + "/users?showdeleted=false",
                 GetUserProfilesResponse.class
         );
 
@@ -61,13 +61,13 @@ public class RetrieveMultipleUserProfileFuncTest extends AbstractFunctional {
         GetUserProfileWithRolesResponse getUserProfileWithRolesResponse1 = response.getUserProfiles().get(0);
         GetUserProfileWithRolesResponse getUserProfileWithRolesResponse2 = response.getUserProfiles().get(1);
 
-        assertThat(getUserProfileWithRolesResponse1.getEmail()).isEqualTo(createUserProfileData1.getEmail());
+        assertThat(getUserProfileWithRolesResponse1.getEmail()).isEqualTo(createUserProfileData1.getEmail().toLowerCase());
         assertThat(getUserProfileWithRolesResponse1.getFirstName()).isEqualTo(createUserProfileData1.getFirstName());
         assertThat(getUserProfileWithRolesResponse1.getLastName()).isEqualTo(createUserProfileData1.getLastName());
         assertThat(getUserProfileWithRolesResponse1.getIdamStatus()).isEqualTo(IdamStatus.PENDING);
         assertThat(getUserProfileWithRolesResponse1.getRoles()).isNotEmpty();
 
-        assertThat(getUserProfileWithRolesResponse2.getEmail()).isEqualTo(createUserProfileData2.getEmail());
+        assertThat(getUserProfileWithRolesResponse2.getEmail()).isEqualTo(createUserProfileData2.getEmail().toLowerCase());
         assertThat(getUserProfileWithRolesResponse2.getFirstName()).isEqualTo(createUserProfileData2.getFirstName());
         assertThat(getUserProfileWithRolesResponse2.getLastName()).isEqualTo(createUserProfileData2.getLastName());
         assertThat(getUserProfileWithRolesResponse2.getIdamStatus()).isEqualTo(IdamStatus.PENDING);
@@ -88,11 +88,14 @@ public class RetrieveMultipleUserProfileFuncTest extends AbstractFunctional {
 
         GetUserProfilesRequest request = new GetUserProfilesRequest(userIds);
 
-        testRequestHandler.sendPost(
+        GetUserProfilesResponse response = testRequestHandler.sendPost(
                 request,
-                HttpStatus.NOT_FOUND,
-                requestUri + "/users?showdeleted?false"
+                HttpStatus.OK,
+                requestUri + "/users?showdeleted=true",
+                GetUserProfilesResponse.class
         );
+
+        assertThat(response.getUserProfiles().size()).isEqualTo(2);
     }
 
     @Test
@@ -107,7 +110,7 @@ public class RetrieveMultipleUserProfileFuncTest extends AbstractFunctional {
         testRequestHandler.sendPost(
                 request,
                 HttpStatus.NOT_FOUND,
-                requestUri + "/users?showdeleted?false"
+                requestUri + "/users?showdeleted=false"
         );
     }
 
@@ -122,8 +125,8 @@ public class RetrieveMultipleUserProfileFuncTest extends AbstractFunctional {
 
         testRequestHandler.sendPost(
                 request,
-                HttpStatus.NOT_FOUND,
-                requestUri + "/users?showdeleted?fal"
+                HttpStatus.BAD_REQUEST,
+                requestUri + "/users?showdeleted=fal"
         );
     }
 }

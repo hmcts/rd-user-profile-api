@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
 import uk.gov.hmcts.reform.userprofileapi.idam.IdamServiceForFunctional;
 
-//@Ignore
+@Ignore
 @RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest
 public class CreateUserProfileFuncTest extends AbstractFunctional {
