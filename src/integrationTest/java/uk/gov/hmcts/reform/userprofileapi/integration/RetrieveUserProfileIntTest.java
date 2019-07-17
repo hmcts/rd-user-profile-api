@@ -83,7 +83,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
                 );
 
         assertThat(retrievedResource).isNotNull();
-        assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile, "roles", "idamStatus");
+        assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile, "roles", "idamStatus", "idamErrorStatusCode", "idamErrorMessage");
         assertThat(retrievedResource.getRoles().size()).isGreaterThan(0);
 
         Optional<UserProfile> optionalUserProfile = userProfileRepository.findByIdamId(retrievedResource.getIdamId());
