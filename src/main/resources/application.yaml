@@ -66,6 +66,12 @@ security:
     - rd_user_profile_api
     - rd_professional_api
 
+feign:
+  allow:
+    headers:
+      - authorization
+      - serviceauthorization
+
 ### dependency configuration
 auth.idam.client.baseUrl: ${IDAM_URL:https://idam-api.preview.platform.hmcts.net}
 auth.idam.client.detailsUri: "/details"
