@@ -27,13 +27,10 @@ public class CreateUserProfileData implements RequestData {
     @NotBlank (message = "lastName must not be null or blank")
     private String lastName;
 
-    @NotBlank (message = "languagePreference must not be null or blank")
     private String languagePreference;
 
-    @NotBlank (message = "userCategory must not be null or blank")
     private String userCategory;
 
-    @NotBlank(message = "userType must not be null or blank")
     private String userType;
 
     @NotEmpty(message = "at least one role is required")

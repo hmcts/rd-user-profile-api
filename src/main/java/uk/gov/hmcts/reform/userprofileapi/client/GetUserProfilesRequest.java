@@ -13,7 +13,7 @@ public class GetUserProfilesRequest {
     private List<String> userIds;
 
     @JsonCreator
-    public GetUserProfilesRequest(@JsonProperty(value = "userIds") List<String> userIds) {
+    public GetUserProfilesRequest(@JsonProperty(value = "userId") List<String> userIds) {
         this.userIds = userIds;
     }
 }

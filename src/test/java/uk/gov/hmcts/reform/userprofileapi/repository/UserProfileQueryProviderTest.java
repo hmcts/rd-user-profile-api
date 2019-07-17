@@ -2,8 +2,9 @@ package uk.gov.hmcts.reform.userprofileapi.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
@@ -14,12 +15,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.userprofileapi.client.IdentifierName;
 import uk.gov.hmcts.reform.userprofileapi.client.UserProfileIdentifier;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 
-@Ignore
 @RunWith(MockitoJUnitRunner.class)
 public class UserProfileQueryProviderTest {
 
@@ -30,12 +32,13 @@ public class UserProfileQueryProviderTest {
     private UserProfileRepository userProfileRepository;
 
     @Test
+    @Ignore
     public void should_query_by_uuid_successfully() {
 
-        UserProfile userProfile = mock(UserProfile.class);
+        UserProfile userProfile = Mockito.mock(UserProfile.class);
         Long id = 1L;
         UUID uuid = UUID.randomUUID();
-        when(userProfileRepository.findById(id)).thenReturn(Optional.of(userProfile));
+        Mockito.when(userProfileRepository.findById(id)).thenReturn(Optional.of(userProfile));
 
         Supplier<Optional<UserProfile>> querySupplier =
             queryProvider.getRetrieveByIdQuery(new UserProfileIdentifier(IdentifierName.UUID, uuid.toString()));
@@ -45,8 +48,8 @@ public class UserProfileQueryProviderTest {
         assertThat(optionalProfile.isPresent()).isTrue();
         assertThat(optionalProfile.get()).isEqualTo(userProfile);
 
-        verify(userProfileRepository).findById(id);
-        verifyNoMoreInteractions(userProfileRepository);
+        Mockito.verify(userProfileRepository).findById(id);
+        Mockito.verifyNoMoreInteractions(userProfileRepository);
 
     }
 
@@ -54,9 +57,9 @@ public class UserProfileQueryProviderTest {
     @Test
     public void should_query_by_email_successfully() {
 
-        UserProfile userProfile = mock(UserProfile.class);
+        UserProfile userProfile = Mockito.mock(UserProfile.class);
         String id = String.valueOf(new Random().nextInt());
-        when(userProfileRepository.findByEmail(id)).thenReturn(Optional.of(userProfile));
+        Mockito.when(userProfileRepository.findByEmail(id)).thenReturn(Optional.of(userProfile));
 
         Supplier<Optional<UserProfile>> querySupplier =
             queryProvider.getRetrieveByIdQuery(new UserProfileIdentifier(IdentifierName.EMAIL, id));
@@ -66,18 +69,18 @@ public class UserProfileQueryProviderTest {
         assertThat(optionalProfile.isPresent()).isTrue();
         assertThat(optionalProfile.get()).isEqualTo(userProfile);
 
-        verify(userProfileRepository).findByEmail(id);
-        verifyNoMoreInteractions(userProfileRepository);
+        Mockito.verify(userProfileRepository).findByEmail(id);
+        Mockito.verifyNoMoreInteractions(userProfileRepository);
 
     }
 
     @Test
     public void should_query_by_idamId_successfully() {
 
-        UserProfile userProfile = mock(UserProfile.class);
+        UserProfile userProfile = Mockito.mock(UserProfile.class);
         UUID id = UUID.randomUUID();//String.valueOf(new Random().nextInt());
 
-        when(userProfileRepository.findByIdamId(id)).thenReturn(Optional.of(userProfile));
+        Mockito.when(userProfileRepository.findByIdamId(id)).thenReturn(Optional.of(userProfile));
 
         Supplier<Optional<UserProfile>> querySupplier =
             queryProvider.getRetrieveByIdQuery(new UserProfileIdentifier(IdentifierName.UUID, id.toString()));
@@ -87,21 +90,71 @@ public class UserProfileQueryProviderTest {
         assertThat(optionalProfile.isPresent()).isTrue();
         assertThat(optionalProfile.get()).isEqualTo(userProfile);
 
-        /*verify(userProfileRepository).findById(id);
-        verifyNoMoreInteractions(userProfileRepository);*/
-
     }
 
     @Test
     public void should_thow_exception_if_no_query_found() {
 
-        UserProfileIdentifier identifier = mock(UserProfileIdentifier.class);
+        UserProfileIdentifier identifier = Mockito.mock(UserProfileIdentifier.class);
 
-        when(identifier.getName()).thenReturn(null);
+        Mockito.when(identifier.getName()).thenReturn(null);
 
         assertThatThrownBy(() -> queryProvider.getRetrieveByIdQuery(identifier))
             .isInstanceOf(IllegalStateException.class);
 
+    }
+
+    @Test
+    public void should_query_by_multiple_idamId_with_showDeleted_true_successfully() {
+
+        UserProfile userProfile1 = Mockito.mock(UserProfile.class);
+        UserProfile userProfile2 = Mockito.mock(UserProfile.class);
+        List<UserProfile> profiles = new ArrayList<UserProfile>();
+        profiles.add(userProfile1);
+        profiles.add(userProfile2);
+
+        List<String> stringUserIds = new ArrayList<>();
+        stringUserIds.add(UUID.randomUUID().toString());
+        stringUserIds.add(UUID.randomUUID().toString());
+
+        Mockito.when(userProfileRepository.findByIdamIdIn(Mockito.any())).thenReturn(Optional.of(profiles));
+
+        Optional<List<UserProfile>> querySupplier =
+                queryProvider.getProfilesByIds(new UserProfileIdentifier(IdentifierName.UUID_LIST, stringUserIds), true);
+
+        List<UserProfile> optionalProfile = querySupplier.get();
+
+        assertThat(optionalProfile.size()).isEqualTo(2);
+    }
+
+    @Test
+    public void should_query_by_multiple_idamId_with_showDeleted_false_successfully() {
+
+        UserProfile userProfile1 = Mockito.mock(UserProfile.class);
+        UserProfile userProfile2 = Mockito.mock(UserProfile.class);
+        List<UserProfile> profiles = new ArrayList<UserProfile>();
+        profiles.add(userProfile1);
+        profiles.add(userProfile2);
+
+        UUID id1 = UUID.randomUUID();
+        UUID id2 = UUID.randomUUID();
+
+        List<String> stringUserIds = new ArrayList<>();
+        stringUserIds.add(id1.toString());
+        stringUserIds.add(id2.toString());
+
+        List<UUID> ids = new ArrayList<>();
+        ids.add(id1);
+        ids.add(id2);
+
+        Mockito.when(userProfileRepository.findByIdamIdInAndStatusNot(ids, IdamStatus.DELETED)).thenReturn(Optional.of(profiles));
+
+        Optional<List<UserProfile>> querySupplier =
+                queryProvider.getProfilesByIds(new UserProfileIdentifier(IdentifierName.UUID_LIST, stringUserIds), false);
+
+        List<UserProfile> optionalProfile = querySupplier.get();
+
+        assertThat(optionalProfile.size()).isEqualTo(2);
     }
 
 }

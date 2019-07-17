@@ -67,7 +67,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
             );
 
         assertThat(retrievedResource).isNotNull();
-        assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile, "roles", "idamStatus");
+        assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile, "roles", "idamStatus", "idamErrorStatusCode", "idamErrorMessage");
     }
 
     @Test
@@ -95,7 +95,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
         assertThat(audit).isNotNull();
         assertThat(audit.getIdamRegistrationResponse()).isEqualTo(200);
         assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.OK);
-        assertThat(audit.getSource()).isEqualTo(ResponseSource.SIDAM);
+        assertThat(audit.getSource()).isEqualTo(ResponseSource.API);
         assertThat(audit.getUserProfile().getIdamId()).isEqualTo(retrievedResource.getIdamId());
         assertThat(audit.getAuditTs()).isNotNull();
 
@@ -114,7 +114,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
                 );
 
         assertThat(retrievedResource).isNotNull();
-        assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile, "roles", "idamStatus");
+        assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile, "roles", "idamStatus", "idamErrorStatusCode", "idamErrorMessage");
         assertThat(retrievedResource.getRoles().size()).isGreaterThan(0);
 
         Optional<UserProfile> optionalUserProfile = userProfileRepository.findByIdamId(retrievedResource.getIdamId());
@@ -126,7 +126,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
         assertThat(audit).isNotNull();
         assertThat(audit.getIdamRegistrationResponse()).isEqualTo(200);
         assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.OK);
-        assertThat(audit.getSource()).isEqualTo(ResponseSource.SIDAM);
+        assertThat(audit.getSource()).isEqualTo(ResponseSource.API);
         assertThat(audit.getUserProfile().getIdamId()).isEqualTo(retrievedResource.getIdamId());
         assertThat(audit.getAuditTs()).isNotNull();
 

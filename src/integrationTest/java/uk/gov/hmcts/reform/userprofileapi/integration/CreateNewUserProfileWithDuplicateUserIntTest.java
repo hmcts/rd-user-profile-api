@@ -228,7 +228,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
         assertThat(audit).isNotNull();
         assertThat(audit.getIdamRegistrationResponse()).isEqualTo(201);
         assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.ACCEPTED);
-        assertThat(audit.getSource()).isEqualTo(ResponseSource.SIDAM);
+        assertThat(audit.getSource()).isEqualTo(ResponseSource.API);
         assertThat(audit.getUserProfile().getIdamId()).isEqualTo(createdResource.getIdamId());
         assertThat(audit.getAuditTs()).isNotNull();
 
@@ -246,7 +246,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
         assertThat(audit).isNotNull();
         assertThat(audit.getIdamRegistrationResponse()).isEqualTo(idamStatus.value());
         assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.resolveStatusAndReturnMessage(idamStatus));
-        assertThat(audit.getSource()).isEqualTo(ResponseSource.SIDAM);
+        assertThat(audit.getSource()).isEqualTo(ResponseSource.API);
         assertThat(audit.getUserProfile()).isNull();
         assertThat(audit.getAuditTs()).isNotNull();
 
