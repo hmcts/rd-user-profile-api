@@ -4,11 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.getIdamRolesJson;
 
+import java.util.ArrayList;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
-import java.util.ArrayList;
 import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesRequest;
 import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
@@ -121,8 +121,8 @@ public class UserProfileValidatorTest {
     @Test
     public void test_validateAndReturnBooleanForParam() {
 
-        assertThat( UserProfileValidator.validateAndReturnBooleanForParam("true")).isTrue();
-        assertThat( UserProfileValidator.validateAndReturnBooleanForParam("false")).isFalse();
+        assertThat(UserProfileValidator.validateAndReturnBooleanForParam("true")).isTrue();
+        assertThat(UserProfileValidator.validateAndReturnBooleanForParam("false")).isFalse();
 
         assertThatThrownBy(() -> UserProfileValidator.validateAndReturnBooleanForParam(null))
                 .isInstanceOf(RequiredFieldMissingException.class);

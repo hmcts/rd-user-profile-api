@@ -1,8 +1,11 @@
 package uk.gov.hmcts.reform.userprofileapi.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.client.UserProfileIdentifier;
@@ -11,10 +14,6 @@ import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileQueryProvider;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class UserProfileRetriever implements ResourceRetriever<UserProfileIdentifier> {
@@ -51,7 +50,7 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
         } else {
             persistAudit(idamRolesInfo, userProfile);
             // for multiple users get request , do not throw exception and continue flow
-            if(!isMultiUserGet) {
+            if (!isMultiUserGet) {
                 throw new IdamServiceException(idamRolesInfo.getStatusMessage(), idamRolesInfo.getIdamGetResponseStatusCode());
             } else {
                 // if SIDAM fails then send errorMessage and status code in response

@@ -1,5 +1,20 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+import static uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder.buildUserProfile;
+import static uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder.buildUserProfileWithDeletedStatus;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,21 +29,7 @@ import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
-import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
-import static uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder.buildUserProfile;
-import static uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder.buildUserProfileWithDeletedStatus;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
@@ -82,12 +83,15 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
         //adding 2 userprofiles with PENDING and 2 with DELETED status
         UserProfile user1 = testUserProfileRepository.save(buildUserProfile());
         UserProfile user2 = testUserProfileRepository.save(buildUserProfile());
-        UserProfile user3 = testUserProfileRepository.save(buildUserProfileWithDeletedStatus());
-        UserProfile user4 = testUserProfileRepository.save(buildUserProfileWithDeletedStatus());
+
 
         userProfileMap = new HashMap<>();
         userProfileMap.put("user1", user1);
         userProfileMap.put("user2", user2);
+
+        UserProfile user3 = testUserProfileRepository.save(buildUserProfileWithDeletedStatus());
+        UserProfile user4 = testUserProfileRepository.save(buildUserProfileWithDeletedStatus());
+        
         userProfileMap.put("user3", user3);
         userProfileMap.put("user4", user4);
 

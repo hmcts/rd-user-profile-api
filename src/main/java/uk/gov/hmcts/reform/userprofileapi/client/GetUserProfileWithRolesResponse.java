@@ -1,14 +1,12 @@
 package uk.gov.hmcts.reform.userprofileapi.client;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-
 
 @Getter
 @Setter

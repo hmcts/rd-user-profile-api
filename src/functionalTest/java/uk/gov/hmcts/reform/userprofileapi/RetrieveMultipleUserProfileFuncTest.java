@@ -2,13 +2,12 @@ package uk.gov.hmcts.reform.userprofileapi;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.restassured.RestAssured;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import io.restassured.RestAssured;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;

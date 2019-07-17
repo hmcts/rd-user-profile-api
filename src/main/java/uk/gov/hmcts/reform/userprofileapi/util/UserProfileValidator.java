@@ -123,11 +123,11 @@ public interface UserProfileValidator {
     static boolean validateAndReturnBooleanForParam(String showDeleted) {
 
         boolean isValid = false;
-        if(null == showDeleted) {
+        if (null == showDeleted) {
             throw new RequiredFieldMissingException("param showDeleted" + " has invalid value : " + showDeleted);
-        } else if("true".equalsIgnoreCase(showDeleted)) {
+        } else if ("true".equalsIgnoreCase(showDeleted)) {
             isValid = true;
-        } else if("false".equalsIgnoreCase(showDeleted)) {
+        } else if ("false".equalsIgnoreCase(showDeleted)) {
             isValid = false;
         } else {
             throw new RequiredFieldMissingException("param showDeleted" + " has invalid value : " + showDeleted);
