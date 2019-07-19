@@ -73,6 +73,12 @@ public class UserProfile {
     @Transient
     private List<String> roles = new ArrayList<String>();
 
+    @Transient
+    private String errorMessage;
+
+    @Transient
+    private int errorStatusCode;
+
     public UserProfile() {
         //noop
     }

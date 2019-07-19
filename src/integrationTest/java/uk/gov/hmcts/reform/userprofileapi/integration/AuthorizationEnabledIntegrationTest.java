@@ -13,9 +13,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
+import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesRequest;
+import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRequestHandlerTest;
 import uk.gov.hmcts.reform.userprofileapi.integration.util.TestUserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
@@ -100,5 +103,15 @@ public class AuthorizationEnabledIntegrationTest {
                                 + "    \"pui-organisation-manager\""
                                 + "  ]"
                                 + "}")));
+    }
+
+    public GetUserProfilesResponse getMultipleUsers(GetUserProfilesRequest request, HttpStatus expectedStatus, String showDeleted) throws Exception {
+        return userProfileRequestHandlerTest.sendPost(
+                mockMvc,
+                APP_BASE_PATH + SLASH + "users?" + "showdeleted=" + showDeleted,
+                request,
+                expectedStatus,
+                GetUserProfilesResponse.class
+        );
     }
 }

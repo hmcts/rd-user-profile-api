@@ -82,7 +82,7 @@ public class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabl
         assertThat(audit).isNotNull();
         assertThat(audit.getIdamRegistrationResponse()).isEqualTo(404);
         assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.NOT_FOUND);
-        assertThat(audit.getSource()).isEqualTo(ResponseSource.SIDAM);
+        assertThat(audit.getSource()).isEqualTo(ResponseSource.API);
         assertThat(audit.getUserProfile().getIdamId()).isNotNull();
         assertThat(audit.getAuditTs()).isNotNull();
 
@@ -104,7 +104,7 @@ public class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabl
         assertThat(audit).isNotNull();
         assertThat(audit.getIdamRegistrationResponse()).isEqualTo(404);
         assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.NOT_FOUND);
-        assertThat(audit.getSource()).isEqualTo(ResponseSource.SIDAM);
+        assertThat(audit.getSource()).isEqualTo(ResponseSource.API);
         assertThat(audit.getUserProfile().getIdamId()).isNotNull();
         assertThat(audit.getAuditTs()).isNotNull();
 

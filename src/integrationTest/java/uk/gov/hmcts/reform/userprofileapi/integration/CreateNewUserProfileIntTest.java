@@ -95,7 +95,7 @@ public class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegration
         assertThat(audit).isNotNull();
         assertThat(audit.getIdamRegistrationResponse()).isEqualTo(201);
         assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.ACCEPTED);
-        assertThat(audit.getSource()).isEqualTo(ResponseSource.SIDAM);
+        assertThat(audit.getSource()).isEqualTo(ResponseSource.API);
         assertThat(audit.getUserProfile().getIdamId()).isEqualTo(createdResource.getIdamId());
         assertThat(audit.getAuditTs()).isNotNull();
 
@@ -125,9 +125,6 @@ public class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegration
                 "email",
                 "firstName",
                 "lastName",
-                "languagePreference",
-                "userCategory",
-                "userType",
                 "roles"
             );
 
