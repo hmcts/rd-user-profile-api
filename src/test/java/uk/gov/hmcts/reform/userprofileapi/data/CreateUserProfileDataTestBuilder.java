@@ -25,6 +25,8 @@ public class CreateUserProfileDataTestBuilder {
             RandomStringUtils.randomAlphabetic(20),
             RandomStringUtils.randomAlphabetic(20),
             LanguagePreference.EN.toString(),
+            false,
+            false,
             UserCategory.PROFESSIONAL.toString(),
             UserType.EXTERNAL.toString(),
             getIdamRolesJson());

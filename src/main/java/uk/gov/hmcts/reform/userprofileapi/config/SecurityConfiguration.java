@@ -68,10 +68,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .disable()
                 .logout()
                 .disable()
-                /*.authorizeRequests()
+                .authorizeRequests()
                 .anyRequest()
                 .authenticated()
                 .and()
-                .addFilter(authCheckerServiceAndUserFilter)*/;
+                .addFilter(authCheckerServiceAndUserFilter);
     }
 }

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.userprofileapi.domain.entities;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -36,28 +37,37 @@ public class UserProfile {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_profile_id_seq")
     private Long id;
+
     private UUID idamId;
+
     @Column(name = "email_address")
     private String email;
+
     private String firstName;
+
     private String lastName;
 
     @Enumerated(EnumType.STRING)
     private LanguagePreference languagePreference;
 
     private boolean emailCommsConsent;
+
     private LocalDateTime emailCommsConsentTs;
+
     private boolean postalCommsConsent;
+
     private LocalDateTime postalCommsConsentTs;
 
     @Enumerated(EnumType.STRING)
     private UserCategory userCategory;
+
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
-    @Column (name = "idam_status")
+    @Column (name = "idam_status", columnDefinition = "PENDING")
     @Enumerated(EnumType.STRING)
-    private IdamStatus status;
+    private IdamStatus status = IdamStatus.PENDING;
+
     @Transient
     private Integer idamRegistrationResponse;
 
@@ -88,12 +98,12 @@ public class UserProfile {
         this.email = data.getEmail().trim().toLowerCase();
         this.firstName = data.getFirstName().trim();
         this.lastName = data.getLastName().trim();
-        this.languagePreference = LanguagePreference.valueOf(data.getLanguagePreference());
+        this.languagePreference = data.getLanguagePreference() != null ? LanguagePreference.valueOf(data.getLanguagePreference()): LanguagePreference.EN;
+        this.emailCommsConsent = data.isEmailCommsConsent();
+        this.postalCommsConsent = data.isPostalCommsConsent();
         this.userCategory = UserCategory.valueOf(data.getUserCategory());
         this.userType = UserType.valueOf(data.getUserType());
         this.idamRegistrationResponse = idamStatus.value();
-        this.status = IdamStatus.PENDING;
-
     }
 
     public void setRoles(IdamRolesInfo idamrolesInfo) {

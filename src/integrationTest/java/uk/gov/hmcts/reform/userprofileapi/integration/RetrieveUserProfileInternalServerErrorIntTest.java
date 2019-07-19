@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.client.IdamRegisterUserRequest;
 import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRequestHandlerTest;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
@@ -58,7 +59,7 @@ public class RetrieveUserProfileInternalServerErrorIntTest extends Authorization
     @Test
     public void should_return_500_and_not_create_user_profile_when_idam_service_throws_exception() throws Exception {
 
-        when(idamService.registerUser(any(CreateUserProfileData.class)))
+        when(idamService.registerUser(any(IdamRegisterUserRequest.class)))
             .thenThrow(new RuntimeException("This is a test exception"));
 
         CreateUserProfileData data = buildCreateUserProfileData();
@@ -77,7 +78,7 @@ public class RetrieveUserProfileInternalServerErrorIntTest extends Authorization
     @Test
     public void should_return_500_when_repository_throws_an_unknown_exception() throws Exception {
 
-        when(idamService.registerUser(any(CreateUserProfileData.class)))
+        when(idamService.registerUser(any(IdamRegisterUserRequest.class)))
             .thenReturn(new IdamRegistrationInfo(CREATED, null));
         when(userProfileRepository.findByIdamId(any(UUID.class)))
             .thenThrow(new RuntimeException("This is a test exception"));
@@ -96,7 +97,7 @@ public class RetrieveUserProfileInternalServerErrorIntTest extends Authorization
     @Test
     public void should_return_500_when_query_by_email_and_repository_throws_an_unknown_exception() throws Exception {
 
-        when(idamService.registerUser(any(CreateUserProfileData.class)))
+        when(idamService.registerUser(any(IdamRegisterUserRequest.class)))
             .thenReturn(new IdamRegistrationInfo(ACCEPTED, null));
         when(userProfileRepository.findByEmail(anyString()))
             .thenThrow(new RuntimeException("This is a test exception"));
@@ -115,7 +116,7 @@ public class RetrieveUserProfileInternalServerErrorIntTest extends Authorization
     @Test
     public void should_return_500_when_query_by_userId_and_repository_throws_an_unknown_exception() throws Exception {
 
-        when(idamService.registerUser(any(CreateUserProfileData.class)))
+        when(idamService.registerUser(any(IdamRegisterUserRequest.class)))
             .thenReturn(new IdamRegistrationInfo(ACCEPTED, null));
         when(userProfileRepository.findByIdamId(any(UUID.class)))
             .thenThrow(new RuntimeException("This is a test exception"));

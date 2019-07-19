@@ -33,6 +33,10 @@ public class CreateUserProfileData implements RequestData {
 
     private String userType;
 
+    private boolean emailCommsConsent;
+
+    private boolean postalCommsConsent;
+
     @NotEmpty(message = "at least one role is required")
     private List<String> roles;
 
@@ -44,6 +48,8 @@ public class CreateUserProfileData implements RequestData {
                                  @JsonProperty(value = "firstName") String firstName,
                                  @JsonProperty(value = "lastName") String lastName,
                                  @JsonProperty(value = "languagePreference") String languagePreference,
+                                 @JsonProperty(value = "emailCommsConsent") boolean emailCommsConsent,
+                                 @JsonProperty(value = "postalCommsConsent") boolean postalCommsConsent,
                                  @JsonProperty(value = "userCategory") String userCategory,
                                  @JsonProperty(value = "userType") String userType,
                                  @JsonProperty(value = "roles") List<String> roles) {
@@ -52,6 +58,8 @@ public class CreateUserProfileData implements RequestData {
         this.firstName = firstName;
         this.lastName = lastName;
         this.languagePreference = languagePreference;
+        this.emailCommsConsent = emailCommsConsent;
+        this.postalCommsConsent = postalCommsConsent;
         this.userCategory = userCategory;
         this.userType = userType;
         this.roles = roles;

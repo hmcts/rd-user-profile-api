@@ -37,7 +37,7 @@ public class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabl
     @Before
     public void setUpWireMock() {
 
-        idamService.stubFor(post(urlEqualTo("/user/registration"))
+        idamService.stubFor(post(urlEqualTo("/api/v1/users/registration"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(201)
