@@ -73,7 +73,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
     protected ObjectMapper objectMapper;
 
     @Rule
-    public WireMockRule idamService = new WireMockRule(8888);
+    public WireMockRule idamService = new WireMockRule(5000);
 
     private Map<String, UserProfile> userProfileMap;
 
@@ -81,10 +81,10 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
     public void setUpWireMock() {
 
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
-        idamService.stubFor(WireMock.post(urlEqualTo("/user/registration"))
+        idamService.stubFor(WireMock.post(urlEqualTo("/api/v1/users/registration"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
-                        .withHeader("Location", UUID.randomUUID().toString())
+                        .withHeader("Location", "/api/v1/users/" + UUID.randomUUID().toString())
                         .withStatus(409)
                 ));
     }

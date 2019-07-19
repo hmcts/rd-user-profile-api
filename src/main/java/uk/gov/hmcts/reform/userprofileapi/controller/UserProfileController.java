@@ -10,11 +10,11 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Authorization;
 import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,15 +40,11 @@ import uk.gov.hmcts.reform.userprofileapi.service.UserProfileService;
 import uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator;
 
 @Api(
-    value = "/v1/userprofile",
-    consumes = APPLICATION_JSON_UTF8_VALUE,
-    produces = APPLICATION_JSON_UTF8_VALUE
+    value = "/v1/userprofile"
 )
 
 @RequestMapping(
-    path = "/v1/userprofile",
-    consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
-    produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    path = "/v1/userprofile"
 )
 
 @Slf4j
@@ -60,7 +56,11 @@ public class UserProfileController {
     @Autowired
     private IdamService idamService;
 
-    @ApiOperation("Create a User Profile")
+    @ApiOperation(value = "Create a User Profile",
+                  authorizations = {
+                    @Authorization(value = "ServiceAuthorization"),
+                    @Authorization(value = "Authorization") 
+                  })
     @ApiResponses({
         @ApiResponse(
             code = 201,
@@ -95,7 +95,12 @@ public class UserProfileController {
 
     }
 
-    @ApiOperation("Retrieves user profile with roles by id")
+    @ApiOperation(value = "Retrieves user profile with roles by id",
+                  authorizations = {
+                    @Authorization(value = "ServiceAuthorization"),
+                    @Authorization(value = "Authorization")
+                  }
+    )
     @ApiResponses({
         @ApiResponse(
             code = 200,
@@ -130,9 +135,13 @@ public class UserProfileController {
         return ResponseEntity.ok(response);
     }
 
-    @ApiOperation("Retrieves user profile with roles by email")
+    @ApiOperation(value = "Retrieves user profile with roles by email",
+                  authorizations = {
+                    @Authorization(value = "ServiceAuthorization"),
+                    @Authorization(value = "Authorization")
+                  }
+    )
     @ApiParam(name = "email", required = true)
-
     @ApiResponses({
         @ApiResponse(
             code = 200,
@@ -169,7 +178,11 @@ public class UserProfileController {
         return ResponseEntity.ok(response);
     }
 
-    @ApiOperation("Retrieves user profile queried by email or userId. If both provided email is preferred")
+    @ApiOperation(value = "Retrieves user profile queried by email or userId. If both provided email is preferred", 
+                  authorizations = {
+                    @Authorization(value = "ServiceAuthorization"),
+                    @Authorization(value = "Authorization")
+                  })
     @ApiResponses({
             @ApiResponse(
                     code = 200,
@@ -217,7 +230,11 @@ public class UserProfileController {
         }
     }
 
-    @ApiOperation("Update user profile")
+    @ApiOperation(value = "Update user profile", 
+                  authorizations = {
+                    @Authorization(value = "ServiceAuthorization"),
+                    @Authorization(value = "Authorization")
+                  })
     @ApiResponses({
             @ApiResponse(
                     code = 200,
@@ -259,7 +276,7 @@ public class UserProfileController {
             @ApiResponse(
                     code = 200,
                     message = "Retrieving multiple user profiles",
-                    response = CreateUserProfileResponse.class
+                    response = GetUserProfilesResponse.class
             ),
             @ApiResponse(
                     code = 400,

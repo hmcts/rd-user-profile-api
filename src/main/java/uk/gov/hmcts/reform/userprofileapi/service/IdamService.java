@@ -3,18 +3,24 @@ package uk.gov.hmcts.reform.userprofileapi.service;
 import feign.FeignException;
 import feign.Response;
 import feign.RetryableException;
+
+import java.util.List;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
+
+import uk.gov.hmcts.reform.userprofileapi.client.IdamRegisterUserRequest;
 import uk.gov.hmcts.reform.userprofileapi.client.IdamUserResponse;
-import uk.gov.hmcts.reform.userprofileapi.client.RoleRequest;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.util.JsonFeignResponseHelper;
+
+
 
 @Slf4j
 @Component
@@ -24,7 +30,7 @@ public class IdamService implements IdentityManagerService {
     IdamFeignClient idamClient;
 
     @Override
-    public IdamRegistrationInfo registerUser(CreateUserProfileData requestData) {
+    public IdamRegistrationInfo registerUser(IdamRegisterUserRequest requestData) {
         HttpStatus httpStatus;
         Response response = null;
         try {
@@ -51,7 +57,7 @@ public class IdamService implements IdentityManagerService {
     }
 
     @Override
-    public IdamRolesInfo updateUserRoles(RoleRequest roleRequest, String userId) {
+    public IdamRolesInfo updateUserRoles(List roleRequest, String userId) {
         log.info("Update idam roles for userId :" + userId);
         HttpStatus httpStatus;
         Response response = null;

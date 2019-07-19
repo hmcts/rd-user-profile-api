@@ -48,11 +48,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) {
-        web.ignoring().antMatchers(
-            anonymousPaths
-                .stream()
-                .toArray(String[]::new)
-        );
+        web.ignoring()
+                .antMatchers(anonymousPaths.toArray(new String[0]));
     }
 
     @Override
@@ -71,10 +68,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .disable()
                 .logout()
                 .disable()
-                .authorizeRequests()
+                /*.authorizeRequests()
                 .anyRequest()
                 .authenticated()
                 .and()
-                .addFilter(authCheckerServiceAndUserFilter);
+                .addFilter(authCheckerServiceAndUserFilter)*/;
     }
 }

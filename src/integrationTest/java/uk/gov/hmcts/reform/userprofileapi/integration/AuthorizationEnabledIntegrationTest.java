@@ -56,7 +56,7 @@ public class AuthorizationEnabledIntegrationTest {
     public WireMockRule s2sService = new WireMockRule(8990);
 
     @Rule
-    public WireMockRule idamService = new WireMockRule(8888);
+    public WireMockRule idamService = new WireMockRule(5000);
 
     @Before
     public void setUpWireMock() {
@@ -83,7 +83,7 @@ public class AuthorizationEnabledIntegrationTest {
                                 +  "  ]"
                                 +  "}")));
 
-        idamService.stubFor(post(urlEqualTo("/user/registration"))
+        idamService.stubFor(post(urlEqualTo("/api/v1/users/registration"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(201)
