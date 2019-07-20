@@ -45,7 +45,7 @@ public class UserProfileTest {
         assertThat(userProfile.getEmail()).isNull();
         assertThat(userProfile.getFirstName()).isNull();
         assertThat(userProfile.getLastName()).isNull();
-        assertThat(userProfile.getLanguagePreference()).isNull();
+        assertThat(userProfile.getLanguagePreference()).isEqualTo(LanguagePreference.EN);
 
         assertThat(userProfile.isEmailCommsConsent()).isFalse();
         assertThat(userProfile.getEmailCommsConsentTs()).isNull();

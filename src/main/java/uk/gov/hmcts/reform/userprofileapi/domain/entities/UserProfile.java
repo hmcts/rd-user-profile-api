@@ -17,6 +17,7 @@ import javax.persistence.Transient;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.http.HttpStatus;
@@ -47,7 +48,7 @@ public class UserProfile {
     private String lastName;
 
     @Enumerated(EnumType.STRING)
-    private LanguagePreference languagePreference;
+    private LanguagePreference languagePreference = LanguagePreference.EN;
 
     private boolean emailCommsConsent;
 
@@ -63,7 +64,7 @@ public class UserProfile {
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
-    @Column (name = "idam_status", columnDefinition = "PENDING")
+    @Column (name = "idam_status")
     @Enumerated(EnumType.STRING)
     private IdamStatus status = IdamStatus.PENDING;
 
@@ -97,7 +98,9 @@ public class UserProfile {
         this.email = data.getEmail().trim().toLowerCase();
         this.firstName = data.getFirstName().trim();
         this.lastName = data.getLastName().trim();
-        this.languagePreference = data.getLanguagePreference() != null ? LanguagePreference.valueOf(data.getLanguagePreference()) : LanguagePreference.EN;
+        if (StringUtils.isNotBlank(data.getLanguagePreference())) {
+            this.languagePreference = LanguagePreference.valueOf(data.getLanguagePreference());
+        }
         this.emailCommsConsent = data.isEmailCommsConsent();
         this.postalCommsConsent = data.isPostalCommsConsent();
         this.userCategory = UserCategory.valueOf(data.getUserCategory());

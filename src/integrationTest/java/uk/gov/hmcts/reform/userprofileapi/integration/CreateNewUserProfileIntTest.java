@@ -165,7 +165,6 @@ public class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegration
                         "email",
                         "firstName",
                         "lastName",
-                        "languagePreference",
                         "userCategory",
                         "userType"
                 );
