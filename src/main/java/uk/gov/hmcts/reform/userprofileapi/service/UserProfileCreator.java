@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
-
 @Service
 @Slf4j
 public class UserProfileCreator implements ResourceCreator<CreateUserProfileData> {
@@ -147,7 +146,7 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
         List<Map<String,String>> roles = new ArrayList<>();
         rolesToUpdate.forEach(role -> {
             Map<String, String> rolesMap = new HashMap<String, String>();
-            rolesMap.put("name", role); //TODO refactor this!?
+            rolesMap.put("name", role);
             roles.add(rolesMap);
         });
         return idamService.updateUserRoles(roles, userId);

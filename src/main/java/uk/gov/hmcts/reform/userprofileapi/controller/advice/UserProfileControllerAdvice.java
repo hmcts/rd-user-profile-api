@@ -30,7 +30,7 @@ import uk.gov.hmcts.reform.userprofileapi.service.ResourceNotFoundException;
 @Slf4j
 @ControllerAdvice(basePackages = "uk.gov.hmcts.reform.userprofileapi.controller")
 @RequestMapping(produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-public class  UserProfileControllerAdvice<T> {
+public class UserProfileControllerAdvice {
 
     private static final String LOG_STRING = "handling exception: {}";
 

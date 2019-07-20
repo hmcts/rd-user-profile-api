@@ -2,52 +2,59 @@ package uk.gov.hmcts.reform.userprofileapi.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Response;
-
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
 import java.util.zip.GZIPInputStream;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+
+@Slf4j
 public class JsonFeignResponseHelper {
     private static final ObjectMapper json = new ObjectMapper();
 
-    private JsonFeignResponseHelper() {
+    private JsonFeignResponseHelper() { }
 
+    public static <U> ResponseEntity<U> toResponseEntity(Response response, Optional<Class<U>> classOpt) {
+        Optional<U> payload = decode(response, classOpt);
+        MultiValueMap<String, String> headers = convertHeaders(response.headers());
+        HttpStatus httpStatus = HttpStatus.valueOf(response.status());
+        return (payload.isPresent()) // figured it out, we need not be passing nulls!
+                ? new ResponseEntity<U>(payload.orElse(null), headers, httpStatus)
+                : new ResponseEntity<U>(headers, httpStatus);
     }
 
-    public static <T> Optional<T> decode(Response response, Class<T> clazz) {
-        Optional<T> result = Optional.empty();
-        if (response.status() >= 200 && response.status() < 300 && clazz != null) {
-            try {
-                Optional<Collection<String>> encodings = Optional.ofNullable(response.headers().get("content-encoding"));
-                result = (encodings.isPresent() && encodings.get().contains("gzip"))
-                        ? Optional.of(json.readValue(new GZIPInputStream(new BufferedInputStream(response.body().asInputStream())), clazz))
-                        : Optional.of(json.readValue(response.body().asReader(), clazz));
-            } catch (IOException e) {
-                System.err.println("Failed to decode, e:" + e);
-            }
-        }
-        return result;
-    }
-
-
-    public static <U> ResponseEntity<U> toResponseEntity(Response response, Class<U> clazz) {
-        Optional<U> payload = decode(response, clazz);
-
-        return new ResponseEntity<U>(
-                payload.orElse(null),//didn't find a way to feed body with original content if payload is empty
-                convertHeaders(response.headers()),
-                HttpStatus.valueOf(response.status()));
-    }
-
-    public static MultiValueMap<String, String> convertHeaders(Map<String, Collection<String>> responseHeaders) {
+    private static MultiValueMap<String, String> convertHeaders(Map<String, Collection<String>> responseHeaders) {
         MultiValueMap<String, String> responseEntityHeaders = new LinkedMultiValueMap<>();
         responseHeaders.entrySet().stream().forEach(e ->
                 responseEntityHeaders.put(e.getKey(), new ArrayList<>(e.getValue())));
         return responseEntityHeaders;
     }
+
+    private static <T> Optional<T> decode(Response response, Optional<Class<T>> clazz) {
+        Optional<T> result = Optional.empty();
+        if (isStatusCodeSuccessful(response.status()) && clazz.isPresent()) {
+            try {
+                Optional<Collection<String>> encodings = Optional.ofNullable(response.headers().get("content-encoding"));
+                result = Optional.of((encodings.isPresent() && encodings.get().contains("gzip"))
+                        ? json.readValue(new GZIPInputStream(new BufferedInputStream(response.body().asInputStream())), clazz.get())
+                        : json.readValue(response.body().asReader(), clazz.get()));
+            } catch (IOException e) {
+                log.warn("Error could not decode!");
+            }
+        }
+        return result;
+    }
+
+    private static boolean isStatusCodeSuccessful(int statusCode) {
+        return statusCode >= 200 && statusCode < 300;
+    }
+
 }
