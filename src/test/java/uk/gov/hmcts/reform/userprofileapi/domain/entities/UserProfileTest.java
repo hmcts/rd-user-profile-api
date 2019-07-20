@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 @RunWith(MockitoJUnitRunner.class)
 public class UserProfileTest {
 
-    private final IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.CREATED, null);
+    private final IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.CREATED);
 
     @Test
     @Ignore

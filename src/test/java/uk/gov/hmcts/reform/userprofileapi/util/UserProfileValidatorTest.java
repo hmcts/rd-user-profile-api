@@ -82,7 +82,7 @@ public class UserProfileValidatorTest {
     @Test
     public void test_isSameAsExistingUserProfile() {
 
-        IdamRegistrationInfo idamInfo = new IdamRegistrationInfo(HttpStatus.CREATED, null);
+        IdamRegistrationInfo idamInfo = new IdamRegistrationInfo(HttpStatus.CREATED);
         UserProfile userProfile = new UserProfile(userProfileData, idamInfo.getIdamRegistrationResponse());
 
         UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("test-email-@somewhere.com", "test-first-name", "test-last-name", "PENDING");

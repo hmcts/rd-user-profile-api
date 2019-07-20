@@ -1,24 +1,13 @@
 package uk.gov.hmcts.reform.userprofileapi.service;
 
 import java.net.URI;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-
+import java.util.*;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants;
@@ -26,7 +15,6 @@ import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-
 import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
@@ -93,8 +81,8 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
             userId = userIdUri != null ? userIdUri.toString().substring(sidamGetUri.length()) : null;
             log.error("Received existing idam userId : " + userId);
             // search with id to get roles
-            IdamRolesInfo idamRolesInfo = idamService.getUserById(userId);
-            idamStatus = idamRolesInfo.getIdamGetResponseStatusCode();
+            IdamRolesInfo idamRolesInfo = idamService.fetchUserById(userId);
+            idamStatus = idamRolesInfo.getResponseStatusCode();
             idamStatusMessage = idamRolesInfo.getStatusMessage();
 
             if (idamRolesInfo.isSuccessFromIdam()) {
@@ -107,7 +95,7 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
                 //update roles in Idam
                 idamRolesInfo = updateIdamRoles(rolesToUpdate, userId);
 
-                idamStatus = idamRolesInfo.getIdamGetResponseStatusCode();
+                idamStatus = idamRolesInfo.getResponseStatusCode();
                 idamStatusMessage = idamRolesInfo.getStatusMessage();
                 if (!idamRolesInfo.isSuccessFromIdam()) {
                     log.error("failed sidam PUT call for userId : " + userId);
