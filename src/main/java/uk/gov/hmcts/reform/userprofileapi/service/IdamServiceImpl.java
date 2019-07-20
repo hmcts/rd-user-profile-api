@@ -33,7 +33,7 @@ public class IdamServiceImpl implements IdamService {
     @Override
     public IdamRegistrationInfo registerUser(CreateUserProfileData requestData) {
         IdamRegistrationInfo result;
-        try(Response response = idamClient.createUserProfile(requestData)) {
+        try (Response response = idamClient.createUserProfile(requestData)) {
             ResponseEntity entity = JsonFeignResponseHelper.toResponseEntity(response, Optional.ofNullable(null));
             result = new IdamRegistrationInfo(entity.getStatusCode(), Optional.ofNullable(entity));
         } catch (FeignException ex) {
