@@ -27,8 +27,8 @@ import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileQueryProvider;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamServiceImpl;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamServiceException;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamServiceImpl;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceNotFoundException;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileRetriever;
 

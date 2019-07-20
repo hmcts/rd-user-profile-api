@@ -1,9 +1,13 @@
 package uk.gov.hmcts.reform.userprofileapi.client;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
+
 import feign.FeignException;
 import feign.Request;
 import feign.Response;
 import feign.RetryableException;
+import java.util.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -16,19 +20,15 @@ import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamServiceImpl;
 
-import java.util.*;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IdamServiceTest {
     private final String userId = "test796-d05e-480d-bf3d-7cbfacb3ca29";
     private final String email = "test.user@test.com";
+    private final  Map<String, Collection<String>> headerData = new HashMap<>();
 
     private IdamFeignClient idamFeignClientMock = Mockito.mock(IdamFeignClient.class);
-
-   private final  Map<String, Collection<String>> headerData = new HashMap<>();
 
     @InjectMocks
     private IdamService sut = new IdamServiceImpl();
@@ -107,8 +107,7 @@ public class IdamServiceTest {
         IdamServiceImpl idamService = new IdamServiceImpl();
 
         HttpStatus status = idamService.gethttpStatusFromFeignException(
-                new RetryableException(StatusCode.INTERNAL_SERVER_ERROR.getStatus(), "test Exception"
-                        ,Request.HttpMethod.GET, new Throwable(), new Date()));
+                new RetryableException(StatusCode.INTERNAL_SERVER_ERROR.getStatus(), "test Exception",Request.HttpMethod.GET, new Throwable(), new Date()));
         assertThat(status).isNotNull().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -157,11 +156,11 @@ public class IdamServiceTest {
 
         final int content;
 
-        StatusCode(int content){
+        StatusCode(int content) {
             this.content = content;
         }
 
-        int getStatus(){
+        int getStatus() {
             return content;
         }
     }

@@ -22,7 +22,7 @@ import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData> {
 
     @Autowired
-    private IdamServiceImpl idamService;
+    private IdamService idamService;
     @Autowired
     private UserProfileRepository userProfileRepository;
     @Autowired

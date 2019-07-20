@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.userprofileapi.service;
 import feign.FeignException;
 import feign.Response;
 import feign.RetryableException;
+import java.util.List;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,9 +16,6 @@ import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.util.JsonFeignResponseHelper;
-
-import java.util.List;
-import java.util.Optional;
 
 
 @Slf4j
@@ -79,13 +78,13 @@ public class IdamServiceImpl implements IdamService {
     }
 
     @SuppressWarnings("unchecked")
-    private IdamRolesInfo handleIdamClientException(Command command, String queryParam){
+    private IdamRolesInfo handleIdamClientException(Command command, String queryParam) {
         IdamRolesInfo result;
         Optional<ResponseEntity<IdamUserResponse>> entity;
         try {
             entity = ((Optional<ResponseEntity<IdamUserResponse>> ) command.execute(queryParam));
             result = new IdamRolesInfo(entity, entity.get().getStatusCode());
-        } catch(FeignException ex) {
+        } catch (FeignException ex) {
             HttpStatus httpStatus = gethttpStatusFromFeignException(ex);
             result = new IdamRolesInfo(Optional.empty(), httpStatus);
         }

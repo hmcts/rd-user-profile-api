@@ -21,7 +21,7 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
     @Autowired
     private UserProfileQueryProvider querySupplier;
     @Autowired
-    private IdamServiceImpl idamService;
+    private IdamService idamService;
     @Autowired
     private AuditRepository auditRepository;
 

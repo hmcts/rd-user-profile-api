@@ -7,7 +7,6 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.zip.GZIPInputStream;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
@@ -25,9 +24,9 @@ public class JsonFeignResponseHelper {
         if (response.status() >= 200 && response.status() < 300 && clazz != null) {
             try {
                 Optional<Collection<String>> encodings = Optional.ofNullable(response.headers().get("content-encoding"));
-                result = (encodings.isPresent() && encodings.get().contains("gzip")) ?
-                    Optional.of(json.readValue(new GZIPInputStream(new BufferedInputStream(response.body().asInputStream())), clazz)) :
-                    Optional.of(json.readValue(response.body().asReader(), clazz));
+                result = (encodings.isPresent() && encodings.get().contains("gzip"))
+                        ? Optional.of(json.readValue(new GZIPInputStream(new BufferedInputStream(response.body().asInputStream())), clazz))
+                        : Optional.of(json.readValue(response.body().asReader(), clazz));
             } catch (IOException e) {
                 System.err.println("Failed to decode, e:" + e);
             }
