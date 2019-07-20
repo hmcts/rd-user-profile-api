@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.userprofileapi.domain.entities;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -98,7 +97,7 @@ public class UserProfile {
         this.email = data.getEmail().trim().toLowerCase();
         this.firstName = data.getFirstName().trim();
         this.lastName = data.getLastName().trim();
-        this.languagePreference = data.getLanguagePreference() != null ? LanguagePreference.valueOf(data.getLanguagePreference()): LanguagePreference.EN;
+        this.languagePreference = data.getLanguagePreference() != null ? LanguagePreference.valueOf(data.getLanguagePreference()) : LanguagePreference.EN;
         this.emailCommsConsent = data.isEmailCommsConsent();
         this.postalCommsConsent = data.isPostalCommsConsent();
         this.userCategory = UserCategory.valueOf(data.getUserCategory());
