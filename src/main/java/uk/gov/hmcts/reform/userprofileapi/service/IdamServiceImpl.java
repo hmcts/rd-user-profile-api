@@ -32,9 +32,8 @@ public class IdamServiceImpl implements IdamService {
 
     @Override
     public IdamRegistrationInfo registerUser(CreateUserProfileData requestData) {
-        IdamRegistrationInfo result = null;
-        try {
-            Response response = idamClient.createUserProfile(requestData);
+        IdamRegistrationInfo result;
+        try(Response response = idamClient.createUserProfile(requestData)) {
             ResponseEntity entity = JsonFeignResponseHelper.toResponseEntity(response, Optional.ofNullable(null));
             result = new IdamRegistrationInfo(entity.getStatusCode(), Optional.ofNullable(entity));
         } catch (FeignException ex) {
@@ -47,8 +46,7 @@ public class IdamServiceImpl implements IdamService {
     public IdamRolesInfo fetchUserById(String id) {
         log.info("Getting Idam roles by id for user id:" + id);
         IdamRolesInfo result;
-        try {
-            Response response = idamClient.getUserById(id);
+        try (Response response = idamClient.getUserById(id)) {
             result = buildIdamResponseResult(response);
         } catch (FeignException ex) {
             result = buildIdamResponseFromFeignException(ex);
@@ -60,8 +58,7 @@ public class IdamServiceImpl implements IdamService {
     public IdamRolesInfo fetchUserByEmail(String email) {
         log.info("Getting Idam roles by id for user email:" + email);
         IdamRolesInfo result;
-        try {
-            Response response = idamClient.getUserByEmail(email);
+        try (Response response = idamClient.getUserByEmail(email)) {
             result = buildIdamResponseResult(response);
         } catch (FeignException ex) {
             result = buildIdamResponseFromFeignException(ex);
@@ -85,15 +82,9 @@ public class IdamServiceImpl implements IdamService {
     }
 
     public HttpStatus gethttpStatusFromFeignException(FeignException ex) {
-        HttpStatus httpStatus;
-        log.error("Idam returned status : " + ex.status());
-        if (ex instanceof RetryableException) {
-            log.error("Converted Feign exception to 500:UNKNOWN because connection timed out");
-            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-        } else {
-            httpStatus = HttpStatus.valueOf(ex.status());
-        }
-        return httpStatus;
+        return (ex instanceof RetryableException)
+                ? HttpStatus.INTERNAL_SERVER_ERROR
+                : HttpStatus.valueOf(ex.status());
     }
 
     private IdamRolesInfo buildIdamResponseResult(Response response) {
