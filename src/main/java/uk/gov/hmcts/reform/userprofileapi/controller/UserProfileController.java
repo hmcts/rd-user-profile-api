@@ -35,7 +35,7 @@ import uk.gov.hmcts.reform.userprofileapi.client.IdentifierName;
 import uk.gov.hmcts.reform.userprofileapi.client.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.client.UserProfileIdentifier;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamServiceImpl;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileService;
 import uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator;
 
@@ -54,7 +54,7 @@ public class UserProfileController {
     @Autowired
     private UserProfileService<RequestData> userProfileService;
     @Autowired
-    private IdamService idamService;
+    private IdamServiceImpl idamService;
 
     @ApiOperation(value = "Create a User Profile",
                   authorizations = {

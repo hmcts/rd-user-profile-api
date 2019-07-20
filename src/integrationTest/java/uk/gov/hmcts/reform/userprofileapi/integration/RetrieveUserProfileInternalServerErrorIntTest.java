@@ -27,7 +27,7 @@ import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRequestHandlerTest;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamServiceImpl;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
@@ -37,7 +37,7 @@ public class RetrieveUserProfileInternalServerErrorIntTest extends Authorization
     private static final String APP_BASE_PATH = "/v1/userprofile";
     private static final String SLASH = "/";
     @MockBean
-    protected IdamService idamService;
+    protected IdamServiceImpl idamService;
 
     @MockBean
     private UserProfileRepository userProfileRepository;

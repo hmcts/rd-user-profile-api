@@ -39,7 +39,7 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
     private String sidamGetUri;
 
     @Autowired
-    private IdamService idamService;
+    private IdamServiceImpl idamService;
     @Autowired
     private UserProfileRepository userProfileRepository;
     @Autowired
@@ -93,8 +93,8 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
             userId = userIdUri != null ? userIdUri.toString().substring(sidamGetUri.length()) : null;
             log.error("Received existing idam userId : " + userId);
             // search with id to get roles
-            IdamRolesInfo idamRolesInfo = idamService.getUserById(userId);
-            idamStatus = idamRolesInfo.getIdamGetResponseStatusCode();
+            IdamRolesInfo idamRolesInfo = idamService.fetchUserById(userId);
+            idamStatus = idamRolesInfo.getResponseStatusCode();
             idamStatusMessage = idamRolesInfo.getStatusMessage();
 
             if (idamRolesInfo.isSuccessFromIdam()) {
@@ -107,7 +107,7 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
                 //update roles in Idam
                 idamRolesInfo = updateIdamRoles(rolesToUpdate, userId);
 
-                idamStatus = idamRolesInfo.getIdamGetResponseStatusCode();
+                idamStatus = idamRolesInfo.getResponseStatusCode();
                 idamStatusMessage = idamRolesInfo.getStatusMessage();
                 if (!idamRolesInfo.isSuccessFromIdam()) {
                     log.error("failed sidam PUT call for userId : " + userId);
@@ -158,7 +158,7 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
         List<Map<String,String>> roles = new ArrayList<>();
         rolesToUpdate.forEach(role -> {
             Map<String, String> rolesMap = new HashMap<String, String>();
-            rolesMap.put("name", role);
+            rolesMap.put("name", role); //TODO refactor this!?
             roles.add(rolesMap);
         });
         return idamService.updateUserRoles(roles, userId);

@@ -21,7 +21,7 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
     @Autowired
     private UserProfileQueryProvider querySupplier;
     @Autowired
-    private IdamService idamService;
+    private IdamServiceImpl idamService;
     @Autowired
     private AuditRepository auditRepository;
 
@@ -43,19 +43,19 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
 
     public UserProfile getRolesFromIdam(UserProfile userProfile, boolean isMultiUserGet) {
 
-        IdamRolesInfo idamRolesInfo = idamService.getUserById(userProfile.getIdamId().toString());
-        if (idamRolesInfo.getIdamGetResponseStatusCode().is2xxSuccessful()) {
+        IdamRolesInfo idamRolesInfo = idamService.fetchUserById(userProfile.getIdamId().toString());
+        if (idamRolesInfo.getResponseStatusCode().is2xxSuccessful()) {
             persistAudit(idamRolesInfo, userProfile);
             userProfile.setRoles(idamRolesInfo);
         } else {
             persistAudit(idamRolesInfo, userProfile);
             // for multiple users get request , do not throw exception and continue flow
             if (!isMultiUserGet) {
-                throw new IdamServiceException(idamRolesInfo.getStatusMessage(), idamRolesInfo.getIdamGetResponseStatusCode());
+                throw new IdamServiceException(idamRolesInfo.getStatusMessage(), idamRolesInfo.getResponseStatusCode());
             } else {
                 // if SIDAM fails then send errorMessage and status code in response
                 userProfile.setErrorMessage(idamRolesInfo.getStatusMessage());
-                userProfile.setErrorStatusCode(idamRolesInfo.getIdamGetResponseStatusCode().value());
+                userProfile.setErrorStatusCode(idamRolesInfo.getResponseStatusCode().value());
             }
         }
         return userProfile;
@@ -72,7 +72,7 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
     }
 
     private void persistAudit(IdamRolesInfo idamRolesInfo, UserProfile userProfile) {
-        Audit audit = new Audit(idamRolesInfo.getIdamGetResponseStatusCode().value(), idamRolesInfo.getStatusMessage(), ResponseSource.API, userProfile);
+        Audit audit = new Audit(idamRolesInfo.getResponseStatusCode().value(), idamRolesInfo.getStatusMessage(), ResponseSource.API, userProfile);
         auditRepository.save(audit);
     }
 

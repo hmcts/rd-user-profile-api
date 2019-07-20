@@ -21,22 +21,20 @@ public class JsonFeignResponseHelper {
     }
 
     public static <T> Optional<T> decode(Response response, Class<T> clazz) {
+        Optional<T> result = Optional.empty();
         if (response.status() >= 200 && response.status() < 300 && clazz != null) {
             try {
-
                 Optional<Collection<String>> encodings = Optional.ofNullable(response.headers().get("content-encoding"));
-                if (encodings.isPresent() && encodings.get().contains("gzip")) {
-                    return Optional.of(json.readValue(new GZIPInputStream(new BufferedInputStream(response.body().asInputStream())), clazz));
-                }
-
-                return Optional.of(json.readValue(response.body().asReader(), clazz));
+                result = (encodings.isPresent() && encodings.get().contains("gzip")) ?
+                    Optional.of(json.readValue(new GZIPInputStream(new BufferedInputStream(response.body().asInputStream())), clazz)) :
+                    Optional.of(json.readValue(response.body().asReader(), clazz));
             } catch (IOException e) {
-                return Optional.empty();
+                System.err.println("Failed to decode, e:" + e);
             }
-        } else {
-            return Optional.empty();
         }
+        return result;
     }
+
 
     public static <U> ResponseEntity<U> toResponseEntity(Response response, Class<U> clazz) {
         Optional<U> payload = decode(response, clazz);
