@@ -21,8 +21,14 @@ locals {
 
 resource "azurerm_resource_group" "rg" {
   name = "${var.product}-${var.component}-${var.env}"
-  location = "${var.location}"
-  tags = "${merge(var.common_tags, map("lastUpdated", "${timestamp()}"))}"
+    location = "${var.location}"
+    tags {
+      "Deployment Environment" = "${var.env}"
+      "Team Name" = "${var.team_name}"
+      "Team Contact" = "${var.team_contact}"
+      "Destroy Me" = "${var.destroy_me}"
+      "lastUpdated" = "${timestamp()}"
+    }
 }
 
 data "azurerm_key_vault" "rd_key_vault" {

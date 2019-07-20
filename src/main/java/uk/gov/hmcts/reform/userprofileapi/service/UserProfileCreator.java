@@ -130,7 +130,7 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
     }
 
     private void persistAudit(String message, HttpStatus idamStatus, UserProfile userProfile) {
-        Audit audit = new Audit(idamStatus.value(), message, ResponseSource.SIDAM, userProfile);
+        Audit audit = new Audit(idamStatus.value(), message, ResponseSource.API, userProfile);
         auditRepository.save(audit);
     }
 

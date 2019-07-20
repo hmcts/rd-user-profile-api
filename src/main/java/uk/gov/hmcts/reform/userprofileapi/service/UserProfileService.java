@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileWithRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.RequestData;
 
 @Service
@@ -23,6 +24,10 @@ public class UserProfileService<T extends RequestData> {
 
     public GetUserProfileWithRolesResponse retrieveWithRoles(T requestData) {
         return new GetUserProfileWithRolesResponse(resourceRetriever.retrieve(requestData, true));
+    }
+
+    public GetUserProfilesResponse retrieveWithRoles(T requestData, boolean showDeleted) {
+        return new GetUserProfilesResponse(resourceRetriever.retrieveMultipleProfiles(requestData, showDeleted));
     }
 
     public GetUserProfileResponse retrieve(T requestData) {

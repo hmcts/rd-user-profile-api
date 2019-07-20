@@ -29,12 +29,15 @@ import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileWithRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesRequest;
+import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.IdentifierName;
 import uk.gov.hmcts.reform.userprofileapi.client.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.client.UserProfileIdentifier;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileService;
+import uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator;
 
 @Api(
     value = "/v1/userprofile"
@@ -261,6 +264,53 @@ public class UserProfileController {
 
         userProfileService.update(updateUserProfileData, userId);
         return ResponseEntity.status(HttpStatus.OK).build();
+
+    }
+
+    @ApiOperation("Retrieving multiple user profiles")
+    @ApiParam(
+            name = "showdeleted",
+            required = true
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    code = 200,
+                    message = "Retrieving multiple user profiles",
+                    response = CreateUserProfileResponse.class
+            ),
+            @ApiResponse(
+                    code = 400,
+                    message = "Bad Request",
+                    response = String.class
+            ),
+            @ApiResponse(
+                    code = 404,
+                    message = "Resource not found",
+                    response = String.class
+            ),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error",
+                    response = String.class
+            )
+    })
+
+    @PostMapping(
+            path = "/users",
+            params = "showdeleted",
+            consumes = APPLICATION_JSON_UTF8_VALUE,
+            produces = APPLICATION_JSON_UTF8_VALUE
+    )
+    @ResponseBody
+    public ResponseEntity<GetUserProfilesResponse> retrieveUserProfiles(@RequestParam (value = "showdeleted", required = true) String showDeleted,
+                                                                          @RequestBody GetUserProfilesRequest getUserProfilesRequest) {
+        log.info("Retrieving multiple user profiles");
+
+        boolean showDeletedBoolean = UserProfileValidator.validateAndReturnBooleanForParam(showDeleted);
+        UserProfileValidator.validateUserIds(getUserProfilesRequest);
+        GetUserProfilesResponse getUserProfilesResponse =
+                userProfileService.retrieveWithRoles(new UserProfileIdentifier(IdentifierName.UUID_LIST, getUserProfilesRequest.getUserIds()), showDeletedBoolean);
+        return ResponseEntity.status(HttpStatus.OK).body(getUserProfilesResponse);
 
     }
 }

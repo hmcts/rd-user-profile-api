@@ -36,6 +36,13 @@ public class FuncTestRequestHandler {
                 .as(clazz);
     }
 
+    public void sendPost(Object data, HttpStatus expectedStatus, String path) throws JsonProcessingException {
+
+        sendPost(objectMapper.writeValueAsString(data),
+                expectedStatus,
+                path);
+    }
+
     public Response sendPost(String jsonBody, HttpStatus expectedStatus, String path) {
 
         return withUnauthenticatedRequest()
