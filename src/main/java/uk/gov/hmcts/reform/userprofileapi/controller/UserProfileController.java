@@ -75,6 +75,11 @@ public class UserProfileController {
             response = String.class
         ),
         @ApiResponse(
+            code = 409,
+            message = "User already exists",
+            response = String.class
+        ),
+        @ApiResponse(
             code = 500,
             message = "Internal Server Error",
             response = String.class
