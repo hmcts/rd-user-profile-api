@@ -13,7 +13,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 
-//@Ignore
+@Ignore
 @RunWith(MockitoJUnitRunner.class)
 public class UserProfileResourceTest {
 

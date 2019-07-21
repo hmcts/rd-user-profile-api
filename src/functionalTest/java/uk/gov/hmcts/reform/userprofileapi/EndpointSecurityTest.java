@@ -7,7 +7,6 @@ import io.restassured.RestAssured;
 import java.util.List;
 import net.serenitybdd.rest.SerenityRest;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.userprofileapi.util.AuthorizationHeadersProvider;
 
-@Ignore
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("functional")
