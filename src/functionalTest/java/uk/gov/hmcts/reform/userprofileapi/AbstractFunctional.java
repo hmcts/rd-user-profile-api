@@ -6,8 +6,6 @@ import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestB
 
 import java.util.UUID;
 
-import org.junit.Before;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
