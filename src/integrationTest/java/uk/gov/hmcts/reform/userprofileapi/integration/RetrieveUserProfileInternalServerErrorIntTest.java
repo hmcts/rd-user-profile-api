@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
-import static org.springframework.http.HttpStatus.ACCEPTED;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
@@ -15,6 +14,7 @@ import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -28,7 +28,7 @@ import uk.gov.hmcts.reform.userprofileapi.client.IdamRegisterUserRequest;
 import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRequestHandlerTest;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamServiceImpl;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
@@ -38,7 +38,7 @@ public class RetrieveUserProfileInternalServerErrorIntTest extends Authorization
     private static final String APP_BASE_PATH = "/v1/userprofile";
     private static final String SLASH = "/";
     @MockBean
-    protected IdamService idamService;
+    protected IdamServiceImpl idamService;
 
     @MockBean
     private UserProfileRepository userProfileRepository;
@@ -78,8 +78,10 @@ public class RetrieveUserProfileInternalServerErrorIntTest extends Authorization
     @Test
     public void should_return_500_when_repository_throws_an_unknown_exception() throws Exception {
 
-        when(idamService.registerUser(any(IdamRegisterUserRequest.class)))
-            .thenReturn(new IdamRegistrationInfo(CREATED, null));
+        IdamRegisterUserRequest request = Mockito.mock(IdamRegisterUserRequest.class);
+        IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(CREATED);
+        when(idamService.registerUser(request))
+            .thenReturn(idamRegistrationInfo);
         when(userProfileRepository.findByIdamId(any(UUID.class)))
             .thenThrow(new RuntimeException("This is a test exception"));
 
@@ -97,8 +99,12 @@ public class RetrieveUserProfileInternalServerErrorIntTest extends Authorization
     @Test
     public void should_return_500_when_query_by_email_and_repository_throws_an_unknown_exception() throws Exception {
 
-        when(idamService.registerUser(any(IdamRegisterUserRequest.class)))
-            .thenReturn(new IdamRegistrationInfo(ACCEPTED, null));
+        IdamRegisterUserRequest request = Mockito.mock(IdamRegisterUserRequest.class);
+        IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(CREATED);
+
+        when(idamService.registerUser(request))
+            .thenReturn(idamRegistrationInfo);
+
         when(userProfileRepository.findByEmail(anyString()))
             .thenThrow(new RuntimeException("This is a test exception"));
 
@@ -116,8 +122,10 @@ public class RetrieveUserProfileInternalServerErrorIntTest extends Authorization
     @Test
     public void should_return_500_when_query_by_userId_and_repository_throws_an_unknown_exception() throws Exception {
 
-        when(idamService.registerUser(any(IdamRegisterUserRequest.class)))
-            .thenReturn(new IdamRegistrationInfo(ACCEPTED, null));
+        IdamRegisterUserRequest request = Mockito.mock(IdamRegisterUserRequest.class);
+        IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(CREATED);
+        when(idamService.registerUser(request))
+            .thenReturn(idamRegistrationInfo);
         when(userProfileRepository.findByIdamId(any(UUID.class)))
             .thenThrow(new RuntimeException("This is a test exception"));
 

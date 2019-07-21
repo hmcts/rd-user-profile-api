@@ -105,8 +105,8 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
             userId = userIdUri != null ? userIdUri.toString().substring(sidamGetUri.length()) : null;
             log.error("Received existing idam userId : " + userId);
             // search with id to get roles
-            IdamRolesInfo idamRolesInfo = idamService.getUserById(userId);
-            idamStatus = idamRolesInfo.getIdamGetResponseStatusCode();
+            IdamRolesInfo idamRolesInfo = idamService.fetchUserById(userId);
+            idamStatus = idamRolesInfo.getResponseStatusCode();
             idamStatusMessage = idamRolesInfo.getStatusMessage();
 
             if (idamRolesInfo.isSuccessFromIdam()) {
@@ -119,7 +119,7 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
                 if (!(new HashSet<String>(rolesToUpdate).equals(new HashSet<String>(profileData.getRoles())))) {
                     //update roles in Idam
                     idamRolesInfo = updateIdamRoles(rolesToUpdate, userId);
-                    idamStatus = idamRolesInfo.getIdamGetResponseStatusCode();
+                    idamStatus = idamRolesInfo.getResponseStatusCode();
                     idamStatusMessage = idamRolesInfo.getStatusMessage();
                     if (!idamRolesInfo.isSuccessFromIdam()) {
                         log.error("failed sidam PUT call for userId : " + userId);

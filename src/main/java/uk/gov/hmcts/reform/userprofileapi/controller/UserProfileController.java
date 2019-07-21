@@ -5,13 +5,14 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateCreateUserProfileRequest;
 
+import javax.validation.Valid;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
-import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,6 +40,7 @@ import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileService;
 import uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator;
 
+
 @Api(
     value = "/v1/userprofile"
 )
@@ -53,6 +55,7 @@ public class UserProfileController {
 
     @Autowired
     private UserProfileService<RequestData> userProfileService;
+
     @Autowired
     private IdamService idamService;
 

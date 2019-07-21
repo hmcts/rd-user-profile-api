@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamServiceImpl;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileCreator;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -27,7 +27,7 @@ public class UserProfileCreatorTest {
     private UserProfileCreator userProfileCreator;
 
     @Mock
-    private IdamService idamService;
+    private IdamServiceImpl idamService;
 
     @Mock
     private UserProfileRepository userProfileRepository;
