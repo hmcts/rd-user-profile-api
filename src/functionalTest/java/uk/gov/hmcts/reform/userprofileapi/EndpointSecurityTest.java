@@ -39,8 +39,8 @@ public class EndpointSecurityTest {
         RestAssured.baseURI = targetInstance;
         RestAssured.useRelaxedHTTPSValidation();
         // TO enable for local testing
-        RestAssured.proxy("proxyout.reform.hmcts.net",8080);
-        SerenityRest.proxy("proxyout.reform.hmcts.net", 8080);
+        //RestAssured.proxy("proxyout.reform.hmcts.net",8080);
+        //SerenityRest.proxy("proxyout.reform.hmcts.net", 8080);
     }
 
     @Test
