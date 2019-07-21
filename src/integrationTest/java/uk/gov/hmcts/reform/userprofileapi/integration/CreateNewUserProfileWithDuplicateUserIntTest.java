@@ -81,7 +81,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
     public void setUpWireMock() {
 
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
-        idamService.stubFor(WireMock.post(urlEqualTo("/user/registration"))
+        idamService.stubFor(WireMock.post(urlEqualTo("/api/v1/users/registration"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withHeader("Location", "/api/v1/users/" + UUID.randomUUID().toString())

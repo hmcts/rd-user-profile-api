@@ -19,6 +19,8 @@ public class CreateUserProfileDataTest {
                 "test-first-name",
                 "test-last-name",
                 LanguagePreference.EN.toString(),
+                false,
+                false,
                 UserCategory.CITIZEN.toString(),
                 UserType.EXTERNAL.toString(),
                 getIdamRolesJson());
