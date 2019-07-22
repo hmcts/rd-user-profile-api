@@ -124,7 +124,8 @@ module "rd-user-profile-api" {
     POSTGRES_PASSWORD = "${module.db-user-profile.postgresql_password}"
     POSTGRES_CONNECTION_OPTIONS = "?"
 
-    IDAM_URL = "${local.idam_url}"
+    #IDAM_URL = "${local.idam_url}"
+    IDAM_URL = "https://idam-api.preview.platform.hmcts.net"
     S2S_URL = "${local.s2s_url}"
 
     ROOT_LOGGING_LEVEL = "${var.root_logging_level}"
