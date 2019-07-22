@@ -22,8 +22,7 @@ public class FuncTestRequestHandler {
     @Autowired
     private TestConfigProperties testConfig;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @Value("${targetInstance}")
     protected String baseUrl;

@@ -11,6 +11,7 @@ import io.restassured.response.Response;
 
 import java.util.List;
 
+import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import net.serenitybdd.rest.SerenityRest;
 import org.junit.Before;
 
@@ -18,15 +19,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
+
 import org.springframework.http.HttpStatus;
 
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@ActiveProfiles("functional")
+import org.springframework.test.context.TestPropertySource;
+
+
+@RunWith(SpringIntegrationSerenityRunner.class)
+@TestPropertySource("classpath:application-functional.yaml")
 public class EndpointSecurityTest {
 
     @Value("${targetInstance}") private String targetInstance;
@@ -63,7 +64,9 @@ public class EndpointSecurityTest {
     public void should_allow_unauthenticated_requests_to_health_check_and_return_200_response_code() {
 
         String response =
-            SerenityRest
+            SerenityRest.given()
+                    .relaxedHTTPSValidation()
+                .baseUri(targetInstance)
                 .when()
                 .get("/health")
                 .then()
@@ -80,8 +83,9 @@ public class EndpointSecurityTest {
 
         endpoints.forEach(callbackEndpoint ->
 
-            SerenityRest
-                .given()
+                SerenityRest.given()
+                        .relaxedHTTPSValidation()
+                        .baseUri(targetInstance)
                 .when()
                 .get(callbackEndpoint)
                 .then()
@@ -96,8 +100,9 @@ public class EndpointSecurityTest {
 
         endpoints.forEach(endpoint ->
 
-            SerenityRest
-                .given()
+                SerenityRest.given()
+                        .relaxedHTTPSValidation()
+                        .baseUri(targetInstance)
                 .header("ServiceAuthorization", invalidServiceToken)
                 .when()
                 .get(endpoint)

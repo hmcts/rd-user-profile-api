@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.userprofileapi.client.IdamClient;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
 
 @RunWith(SpringIntegrationSerenityRunner.class)
-@SpringBootTest
 public class CreateUserProfileFuncTest extends AbstractFunctional {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateUserProfileFuncTest.class);
