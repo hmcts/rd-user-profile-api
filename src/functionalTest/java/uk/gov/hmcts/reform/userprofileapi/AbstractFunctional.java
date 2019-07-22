@@ -6,7 +6,6 @@ import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestB
 
 import java.util.UUID;
 
-
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 
 import org.junit.runner.RunWith;
