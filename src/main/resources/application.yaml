@@ -73,11 +73,12 @@ feign:
       - serviceauthorization
 
 ### dependency configuration
-auth.idam.client.baseUrl: ${IDAM_URL:https://idam-api.preview.platform.hmcts.net}
+#auth.idam.client.baseUrl: ${IDAM_URL:https://idam-api.preview.platform.hmcts.net}
+auth.idam.client.baseUrl: ${IDAM_URL:http://23.101.50.80:5000/}
 auth.idam.client.detailsUri: "/details"
 auth.provider.service.client.baseUrl: ${S2S_URL:http://127.0.0.1:8502}
 idam.s2s-auth.totp_secret: ${S2S_SECRET:SZDUA3L7N32PE2IS}
 idam.s2s-auth.microservice: rd_user_profile_api
 idam.s2s-auth.url: ${S2S_URL:http://127.0.0.1:8502}
 
-#idamUrl: ${IDAM_URL:https://idam-api.preview.platform.hmcts.net}
+idamUrl: ${IDAM_URL:http://172.31.28.145:4000}
