@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +24,7 @@ import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileWithRolesResponse
 import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
 
+@Ignore
 @RunWith(SpringIntegrationSerenityRunner.class)
 @ContextConfiguration(classes = {TestConfigProperties.class, FuncTestRequestHandler.class})
 @ComponentScan("uk.gov.hmcts.reform.userprofileapi")
