@@ -3,10 +3,6 @@ package uk.gov.hmcts.reform.userprofileapi.domain.entities;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
 
-import java.lang.reflect.Field;
-import java.util.stream.Stream;
-
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -20,20 +16,6 @@ import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 public class UserProfileTest {
 
     private final IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.CREATED);
-
-    @Test
-    @Ignore
-    public void should_represent_same_number_of_fields_as_in_db() {
-        long numberOfFieldsInDb = 19;
-        long fieldCount = Stream.of(UserProfile.class.getDeclaredFields())
-            .filter(field -> !field.getName().startsWith("$"))
-            .map(Field::getName)
-            .count();
-
-        assertThat(fieldCount).isEqualTo(numberOfFieldsInDb);
-
-    }
-
 
     @Test
     public void should_create_successfully_with_no_args_constructor() {
