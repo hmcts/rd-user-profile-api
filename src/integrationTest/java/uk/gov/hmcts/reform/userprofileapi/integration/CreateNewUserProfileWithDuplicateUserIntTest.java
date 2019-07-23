@@ -208,9 +208,6 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
         UserProfile userProfile = persistedUserProfile.get();
         assertThat(userProfile.getId()).isNotNull().isExactlyInstanceOf(Long.class);
         assertThat(userProfile.getIdamRegistrationResponse()).isEqualTo(201);
-        assertThat(userProfile.getEmail()).isEqualTo("user@hmcts.net");
-        assertThat(userProfile.getFirstName()).isNotEmpty().isEqualTo("fname");
-        assertThat(userProfile.getLastName()).isNotEmpty().isEqualTo("lname");
         assertThat(userProfile.getLanguagePreference()).isEqualTo(LanguagePreference.EN);
         assertThat(userProfile.getUserCategory()).isEqualTo(UserCategory.PROFESSIONAL);
         assertThat(userProfile.getUserType()).isEqualTo(UserType.EXTERNAL);
