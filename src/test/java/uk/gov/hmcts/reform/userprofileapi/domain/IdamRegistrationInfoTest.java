@@ -1,17 +1,17 @@
 package uk.gov.hmcts.reform.userprofileapi.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.*;
+import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.resolveStatusAndReturnMessage;
+
+import java.util.Optional;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpStatus.*;
-import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.resolveStatusAndReturnMessage;
 
 public class IdamRegistrationInfoTest {
 
@@ -33,7 +33,7 @@ public class IdamRegistrationInfoTest {
     }
 
     @Test
-    public void testOneArgConstructor(){
+    public void testOneArgConstructor() {
         final HttpStatus inputMessage = UNAUTHORIZED;
         final String expectMessage = resolveStatusAndReturnMessage(inputMessage);
 
