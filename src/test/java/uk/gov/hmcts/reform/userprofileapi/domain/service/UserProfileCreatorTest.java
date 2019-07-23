@@ -12,11 +12,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.client.IdamRegisterUserRequest;
 import uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamServiceImpl;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileCreator;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -26,7 +27,7 @@ public class UserProfileCreatorTest {
     private UserProfileCreator userProfileCreator;
 
     @Mock
-    private IdamService idamService;
+    private IdamServiceImpl idamService;
 
     @Mock
     private UserProfileRepository userProfileRepository;
@@ -48,7 +49,7 @@ public class UserProfileCreatorTest {
         assertThat(response).isEqualToComparingFieldByField(userProfile);
 
         InOrder inOrder = inOrder(idamService, userProfileRepository);
-        inOrder.verify(idamService).registerUser(any(CreateUserProfileData.class));
+        inOrder.verify(idamService).registerUser(any(IdamRegisterUserRequest.class));
         inOrder.verify(userProfileRepository).save(any(UserProfile.class));
         verifyNoMoreInteractions(idamService, userProfileRepository);
 

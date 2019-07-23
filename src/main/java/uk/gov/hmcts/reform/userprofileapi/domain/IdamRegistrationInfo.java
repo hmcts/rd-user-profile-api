@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.userprofileapi.domain;
 
 import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.resolveStatusAndReturnMessage;
 
+import java.util.Optional;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,11 +14,17 @@ public class IdamRegistrationInfo {
     private String statusMessage;
     private ResponseEntity response;
 
-    public IdamRegistrationInfo(HttpStatus httpStatus, ResponseEntity response) {
-        this.idamRegistrationResponse = httpStatus;
-        this.statusMessage = resolveStatusAndReturnMessage(httpStatus);
-        this.response = response;
+    public IdamRegistrationInfo(HttpStatus httpStatus, Optional<ResponseEntity> response) {
+        if (response.isPresent()) {
+            this.response = response.get();
+        }
+        populate(httpStatus);
     }
+
+    public IdamRegistrationInfo(HttpStatus httpStatus) {
+        populate(httpStatus);
+    }
+
 
     public boolean isSuccessFromIdam() {
         return idamRegistrationResponse.is2xxSuccessful();
@@ -25,5 +32,10 @@ public class IdamRegistrationInfo {
 
     public boolean isDuplicateUser() {
         return HttpStatus.CONFLICT == idamRegistrationResponse;
+    }
+
+    private void populate(HttpStatus httpStatus) {
+        this.idamRegistrationResponse = httpStatus;
+        this.statusMessage = resolveStatusAndReturnMessage(httpStatus);
     }
 }

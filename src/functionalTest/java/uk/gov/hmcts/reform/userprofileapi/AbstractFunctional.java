@@ -5,9 +5,16 @@ import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestB
 import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildUpdateUserProfileData;
 
 import java.util.UUID;
+
+import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
+
+import org.junit.Ignore;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileResponse;
@@ -15,8 +22,12 @@ import uk.gov.hmcts.reform.userprofileapi.client.FuncTestRequestHandler;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
 
-
+@Ignore
+@RunWith(SpringIntegrationSerenityRunner.class)
+@ContextConfiguration(classes = {TestConfigProperties.class, FuncTestRequestHandler.class})
+@ComponentScan("uk.gov.hmcts.reform.userprofileapi")
 @TestPropertySource("classpath:application-functional.yaml")
 public class AbstractFunctional {
 
@@ -27,14 +38,21 @@ public class AbstractFunctional {
 
     protected String requestUri = "/v1/userprofile";
 
+    /*@Before
+    public void setupProxy() {
+        //TO enable for local testing
+        RestAssured.proxy("proxyout.reform.hmcts.net",8080);
+        SerenityRest.proxy("proxyout.reform.hmcts.net", 8080);
+    }*/
+
     protected CreateUserProfileResponse createUserProfile(CreateUserProfileData createUserProfileData,HttpStatus expectedStatus) throws Exception {
 
         CreateUserProfileResponse resource = testRequestHandler.sendPost(
-                        createUserProfileData,
-                        expectedStatus,
-                        requestUri,
-                        CreateUserProfileResponse.class
-                );
+                createUserProfileData,
+                expectedStatus,
+                requestUri,
+                CreateUserProfileResponse.class
+        );
         verifyCreateUserProfile(resource);
         return resource;
     }
@@ -60,7 +78,8 @@ public class AbstractFunctional {
         assertThat(resource).isNotNull();
         assertThat(resource.getIdamId()).isNotNull();
         assertThat(resource.getIdamId()).isInstanceOf(UUID.class);
-        assertThat(resource.getIdamRegistrationResponse()).isEqualTo(HttpStatus.CREATED.value());
+        //Do we need to verify Idam status ?
+        // assertThat(resource.getIdamRegistrationResponse()).isEqualTo(HttpStatus.CREATED.value());
     }
 
     protected void verifyGetUserProfile(GetUserProfileResponse resource, CreateUserProfileData expectedResource) {

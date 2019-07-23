@@ -55,6 +55,7 @@ public class RetrieveUserProfileFuncTest extends AbstractFunctional {
         verifyGetUserProfile(resource, createUserProfileData);
     }
 
+    @Ignore
     @Test
     public void should_get_user_profile_with_roles_by_userId() throws Exception {
 
@@ -68,6 +69,7 @@ public class RetrieveUserProfileFuncTest extends AbstractFunctional {
         verifyGetUserProfileWithRoles(resource, createUserProfileData);
     }
 
+    @Ignore
     @Test
     public void should_get_user_profile_with_roles_by_email() throws Exception {
 

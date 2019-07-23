@@ -83,7 +83,7 @@ public class AuthorizationEnabledIntegrationTest {
                                 +  "  ]"
                                 +  "}")));
 
-        idamService.stubFor(post(urlEqualTo("/user/registration"))
+        idamService.stubFor(post(urlEqualTo("/api/v1/users/registration"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(201)

@@ -22,4 +22,13 @@ public class TestConfigProperties {
     @Value("${idam.api.url}")
     public String idamApiUrl;
 
+    @Value("${idam.auth.tokenAuth}")
+    public String tokenAuthorization;
+
+    @Value("${idam.auth.redirectUrl}")
+    public String oauthRedirectUrl;
+
+    @Value("${idam.auth.clientId:rd-professional-api}")
+    public String clientId;
+
 }

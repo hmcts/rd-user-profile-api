@@ -3,28 +3,25 @@ package uk.gov.hmcts.reform.userprofileapi;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
+import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import net.serenitybdd.rest.SerenityRest;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.hmcts.reform.userprofileapi.util.AuthorizationHeadersProvider;
+
+import org.springframework.test.context.TestPropertySource;
 
 @Ignore
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@ActiveProfiles("functional")
+@RunWith(SpringIntegrationSerenityRunner.class)
+@TestPropertySource("classpath:application-functional.yaml")
 public class WelcomeTest {
 
     @Value("${targetInstance}") private String targetInstance;
-
-    @Autowired private AuthorizationHeadersProvider authorizationHeadersProvider;
 
     private static final String MESSAGE = "Welcome to the User Profile API";
 
@@ -35,7 +32,9 @@ public class WelcomeTest {
         RestAssured.useRelaxedHTTPSValidation();
 
         String response =
-            SerenityRest
+                SerenityRest.given()
+                .relaxedHTTPSValidation()
+                .baseUri(targetInstance)
                 .given()
                 .when()
                 .get("/")

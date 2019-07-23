@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import uk.gov.hmcts.reform.userprofileapi.config.FeignInterceptorConfiguration;
 
-@FeignClient(name = "IdamFeignClient", url = "${idamUrl}", configuration = FeignInterceptorConfiguration.class)
+@FeignClient(name = "IdamFeignClient", url = "${auth.idam.client.baseUrl}", configuration = FeignInterceptorConfiguration.class)
 public interface IdamFeignClient {
 
-    @RequestMapping(method = RequestMethod.POST, value = "/user/registration")
-    @RequestLine("POST /user/registration")
+    @RequestMapping(method = RequestMethod.POST, value = "/api/v1/users/registration")
+    @RequestLine("POST /api/v1/users/registration")
     @Headers("Content-Type: application/json")
     public Response createUserProfile(@Valid @RequestBody Object createUserProfileData);
 

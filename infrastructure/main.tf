@@ -51,6 +51,11 @@ data "azurerm_key_vault_secret" "s2s_url" {
   key_vault_id = "${data.azurerm_key_vault.rd_key_vault.id}"
 }
 
+data "azurerm_key_vault_secret" "idam_url" {
+  name = "idam-url"
+  key_vault_id = "${data.azurerm_key_vault.rd_key_vault.id}"
+}
+
 data "azurerm_key_vault_secret" "up_s2s_secret" {
   name = "microservicekey-rd-user-profile-api"
   key_vault_id = "${data.azurerm_key_vault.s2s_key_vault.id}"
@@ -124,8 +129,7 @@ module "rd-user-profile-api" {
     POSTGRES_PASSWORD = "${module.db-user-profile.postgresql_password}"
     POSTGRES_CONNECTION_OPTIONS = "?"
 
-    #IDAM_URL = "${local.idam_url}"
-    IDAM_URL = "https://idam-api.preview.platform.hmcts.net"
+    IDAM_URL = "${data.azurerm_key_vault_secret.idam_url.value}"
     S2S_URL = "${local.s2s_url}"
 
     ROOT_LOGGING_LEVEL = "${var.root_logging_level}"

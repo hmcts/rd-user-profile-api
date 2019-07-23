@@ -13,20 +13,31 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.userprofileapi.util.AuthorizationHeadersProvider;
+import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
 
 @Slf4j
 @Service
 public class FuncTestRequestHandler {
 
     @Autowired
-    private AuthorizationHeadersProvider authorizationHeadersProvider;
+    private TestConfigProperties testConfig;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @Value("${targetInstance}")
     protected String baseUrl;
+
+    @Value("${s2s.auth.secret}")
+    protected String s2sSecret;
+
+    @Value("${s2s.auth.url}")
+    protected String s2sBaseUrl;
+
+    @Value("${s2s.auth.microservice:rd_user_profile_api}")
+    protected String s2sMicroservice;
+
+    public static final String BEARER = "Bearer ";
+
 
     public <T> T sendPost(Object data, HttpStatus expectedStatus, String path, Class<T> clazz) throws JsonProcessingException {
         return
@@ -44,8 +55,8 @@ public class FuncTestRequestHandler {
     }
 
     public Response sendPost(String jsonBody, HttpStatus expectedStatus, String path) {
-
-        return withUnauthenticatedRequest()
+        log.info("User object to be created : {}", jsonBody);
+        return withAuthenticatedRequest()
                 .body(jsonBody)
                 .post(path)
                 .then()
@@ -61,7 +72,7 @@ public class FuncTestRequestHandler {
 
     public Response sendPut(String jsonBody, HttpStatus expectedStatus, String path) {
 
-        return withUnauthenticatedRequest()
+        return withAuthenticatedRequest()
                 .body(jsonBody)
                 .put(path)
                 .then()
@@ -74,12 +85,18 @@ public class FuncTestRequestHandler {
     }
 
     public Response sendGet(HttpStatus httpStatus, String urlPath) {
+        String s2sToken = getS2sToken();
+        String bearerToken = getBearerToken();
+
+        log.info("S2S Token : {}, Bearer Token : {}", s2sToken, bearerToken);
 
         return SerenityRest
             .given()
             //.headers(authorizationHeadersProvider.getServiceAuthorization())
             .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
             .baseUri(baseUrl)
+            .header("ServiceAuthorization", BEARER + s2sToken)
+            .header("Authorization", BEARER + bearerToken)
             .when()
             .get(urlPath)
             .then()
@@ -91,13 +108,29 @@ public class FuncTestRequestHandler {
         return objectMapper.writeValueAsString(source);
     }
 
-    private RequestSpecification withUnauthenticatedRequest() {
+    private RequestSpecification withAuthenticatedRequest() {
+        String s2sToken = getS2sToken();
+        String bearerToken = getBearerToken();
+
+        log.info("S2S Token : {}, Bearer Token : {}", s2sToken, bearerToken);
+
         return SerenityRest.given()
                 .relaxedHTTPSValidation()
                 .baseUri(baseUrl)
+                .header("ServiceAuthorization", BEARER + s2sToken)
+                .header("Authorization", BEARER + bearerToken)
                 .header("Content-Type", APPLICATION_JSON_UTF8_VALUE)
                 .header("Accepts", APPLICATION_JSON_UTF8_VALUE);
     }
 
+    private String getBearerToken() {
+        IdamClient idamClient = new IdamClient(testConfig);
+        return idamClient.getBearerToken();
+    }
+
+    private String getS2sToken() {
+        S2sClient client = new S2sClient(s2sBaseUrl, s2sMicroservice, s2sSecret);
+        return client.getS2sToken();
+    }
 
 }

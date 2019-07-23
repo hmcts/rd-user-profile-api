@@ -36,7 +36,7 @@ public class UserProfileTestDataBuilder {
     public static UserProfile buildUserProfileWithAllFields() {
 
         List<String> unInitFields =
-            Lists.newArrayList("id", "idamId", "idamStatus", "createdTs", "lastUpdatedTs");
+            Lists.newArrayList("id", "idamId", "status", "created", "lastUpdated");
 
         UserProfile userProfile = new UserProfile(buildCreateUserProfileData(), HttpStatus.CREATED);
 
@@ -54,8 +54,6 @@ public class UserProfileTestDataBuilder {
                 } else if ((field.getType().equals(LocalDateTime.class))) {
                     field.set(userProfile, LocalDateTime.now());
                 }
-
-
             } catch (Exception e) {
                 throw new IllegalStateException("could not set field value ", e);
             }
