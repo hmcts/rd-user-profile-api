@@ -97,6 +97,7 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
         URI userIdUri;
         String userId;
         UserProfile userProfile = null;
+        IdamRolesInfo idamRolesInfo;
         ResponseEntity responseEntity = idamRegistrationInfo.getResponse();
 
         if (responseEntity != null && responseEntity.getHeaders() != null) {
@@ -105,7 +106,7 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
             userId = userIdUri != null ? userIdUri.toString().substring(sidamGetUri.length()) : null;
             log.error("Received existing idam userId : " + userId);
             // search with id to get roles
-            IdamRolesInfo idamRolesInfo = idamService.fetchUserById(userId);
+            idamRolesInfo = idamService.fetchUserById(userId);
             idamStatus = idamRolesInfo.getResponseStatusCode();
             idamStatusMessage = idamRolesInfo.getStatusMessage();
 
@@ -154,7 +155,7 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
         throw new IdamServiceException(message, idamStatus);
     }
 
-    private void updateInputRequestWithLatestSidamUserInfo(CreateUserProfileData profileData, IdamRolesInfo idamRolesInfo) {
+    public void updateInputRequestWithLatestSidamUserInfo(CreateUserProfileData profileData, IdamRolesInfo idamRolesInfo) {
         profileData.setEmail(idamRolesInfo.getEmail());
         profileData.setFirstName(idamRolesInfo.getForename());
         profileData.setLastName(idamRolesInfo.getSurname());

@@ -14,15 +14,15 @@ public class IdamRegistrationInfo {
     private String statusMessage;
     private ResponseEntity response;
 
-    public IdamRegistrationInfo(HttpStatus httpStatus, Optional<ResponseEntity> response) {
+    public IdamRegistrationInfo(HttpStatus httpStatusResponse, Optional<ResponseEntity> response) {
         if (response.isPresent()) {
             this.response = response.get();
         }
-        populate(httpStatus);
+        init(httpStatusResponse);
     }
 
     public IdamRegistrationInfo(HttpStatus httpStatus) {
-        populate(httpStatus);
+        init(httpStatus);
     }
 
 
@@ -34,7 +34,7 @@ public class IdamRegistrationInfo {
         return HttpStatus.CONFLICT == idamRegistrationResponse;
     }
 
-    private void populate(HttpStatus httpStatus) {
+    private void init(HttpStatus httpStatus) {
         this.idamRegistrationResponse = httpStatus;
         this.statusMessage = resolveStatusAndReturnMessage(httpStatus);
     }

@@ -1,0 +1,81 @@
+package uk.gov.hmcts.reform.userprofileapi.domain;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.resolveStatusAndReturnMessage;
+
+import java.util.Optional;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mockito;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+
+public class IdamRegistrationInfoTest {
+
+    private IdamRegistrationInfo sut;
+
+    private Optional<ResponseEntity> responseEntityMockOptional;
+
+    private HttpStatus httpStatusMock;
+
+
+
+    @Before
+    public void setUp() throws Exception {
+        httpStatusMock =  Mockito.mock(HttpStatus.class);
+        responseEntityMockOptional = Optional.ofNullable(Mockito.mock(ResponseEntity.class));
+
+
+        sut = new IdamRegistrationInfo(httpStatusMock, responseEntityMockOptional);
+    }
+
+    @Test
+    public void testOneArgConstructor() {
+        final HttpStatus inputMessage = HttpStatus.UNAUTHORIZED;
+        final String expectMessage = resolveStatusAndReturnMessage(inputMessage);
+
+        when(httpStatusMock.toString()).thenReturn(expectMessage);
+
+        IdamRegistrationInfo sut = new IdamRegistrationInfo(inputMessage);
+        String actualMessage = sut.getStatusMessage();
+
+        assertThat(actualMessage).isNotNull();
+        assertThat(actualMessage).isEqualTo(expectMessage);
+    }
+
+    @Test
+    public void isSuccessFromIdam() {
+
+        when(httpStatusMock.is2xxSuccessful()).thenReturn(true);
+
+        IdamRegistrationInfo sut = new IdamRegistrationInfo(httpStatusMock);
+        Boolean actual = sut.isSuccessFromIdam();
+
+        assertThat(actual).isTrue();
+
+
+    }
+
+    @Test
+    public void isDuplicateUser() {
+        IdamRegistrationInfo sut = new IdamRegistrationInfo(HttpStatus.CONFLICT);
+
+        assertThat(sut.isDuplicateUser()).isTrue();
+
+        sut = new IdamRegistrationInfo(HttpStatus.ACCEPTED);
+
+        assertThat(sut.isDuplicateUser()).isFalse();
+    }
+
+    @Test
+    public void getIdamRegistrationResponse() {
+        assertThat(sut.getIdamRegistrationResponse()).isEqualTo(httpStatusMock);
+    }
+
+    @Test
+    public void getResponse() {
+        assertThat(sut.getResponse()).isEqualTo(responseEntityMockOptional.get());
+    }
+}
