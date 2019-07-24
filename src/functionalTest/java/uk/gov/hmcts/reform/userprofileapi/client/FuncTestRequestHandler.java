@@ -129,6 +129,7 @@ public class FuncTestRequestHandler {
     }
 
     private String getS2sToken() {
+        log.info("S2s Base url : {}, Microservice : {}, Secret : {}", s2sBaseUrl, s2sMicroservice, s2sSecret);
         S2sClient client = new S2sClient(s2sBaseUrl, s2sMicroservice, s2sSecret);
         return client.getS2sToken();
     }

@@ -2,15 +2,16 @@ package uk.gov.hmcts.reform.userprofileapi.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.*;
 import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.resolveStatusAndReturnMessage;
 
 import java.util.Optional;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 
 public class IdamRegistrationInfoTest {
 
@@ -33,7 +34,7 @@ public class IdamRegistrationInfoTest {
 
     @Test
     public void testOneArgConstructor() {
-        final HttpStatus inputMessage = HttpStatus.UNAUTHORIZED;
+        final HttpStatus inputMessage = UNAUTHORIZED;
         final String expectMessage = resolveStatusAndReturnMessage(inputMessage);
 
         when(httpStatusMock.toString()).thenReturn(expectMessage);
@@ -60,11 +61,11 @@ public class IdamRegistrationInfoTest {
 
     @Test
     public void isDuplicateUser() {
-        IdamRegistrationInfo sut = new IdamRegistrationInfo(HttpStatus.CONFLICT);
+        IdamRegistrationInfo sut = new IdamRegistrationInfo(CONFLICT);
 
         assertThat(sut.isDuplicateUser()).isTrue();
 
-        sut = new IdamRegistrationInfo(HttpStatus.ACCEPTED);
+        sut = new IdamRegistrationInfo(ACCEPTED);
 
         assertThat(sut.isDuplicateUser()).isFalse();
     }
@@ -73,7 +74,7 @@ public class IdamRegistrationInfoTest {
     public void getIdamRegistrationResponse() {
         assertThat(sut.getIdamRegistrationResponse()).isEqualTo(httpStatusMock);
     }
-
+    
     @Test
     public void getResponse() {
         assertThat(sut.getResponse()).isEqualTo(responseEntityMockOptional.get());

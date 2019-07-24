@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import net.serenitybdd.rest.SerenityRest;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -16,7 +15,6 @@ import org.springframework.http.MediaType;
 
 import org.springframework.test.context.TestPropertySource;
 
-@Ignore
 @RunWith(SpringIntegrationSerenityRunner.class)
 @TestPropertySource("classpath:application-functional.yaml")
 public class WelcomeTest {
