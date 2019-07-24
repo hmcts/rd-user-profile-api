@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.userprofileapi.domain.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,7 +37,7 @@ public class UserProfileServiceTest {
     @Test
     public void should_call_creator_create_method_successfully() {
 
-        CreateUserProfileData userProfileData = Mockito.mock(CreateUserProfileData.class);
+        CreateUserProfileData userProfileData = mock(CreateUserProfileData.class);
 
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         CreateUserProfileResponse expected = new CreateUserProfileResponse(userProfile);
@@ -52,7 +53,7 @@ public class UserProfileServiceTest {
 
     @Test
     public void should_call_retriever_retrieve_method_successfully() {
-        UserProfileIdentifier identifier = Mockito.mock(UserProfileIdentifier.class);
+        UserProfileIdentifier identifier = mock(UserProfileIdentifier.class);
 
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         GetUserProfileResponse expected = new GetUserProfileResponse(userProfile);
@@ -67,7 +68,7 @@ public class UserProfileServiceTest {
 
     @Test
     public void should_call_retriever_retrieve_with_roles_method_successfully() {
-        UserProfileIdentifier identifier = Mockito.mock(UserProfileIdentifier.class);
+        UserProfileIdentifier identifier = mock(UserProfileIdentifier.class);
 
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         GetUserProfileWithRolesResponse expected = new GetUserProfileWithRolesResponse(userProfile);

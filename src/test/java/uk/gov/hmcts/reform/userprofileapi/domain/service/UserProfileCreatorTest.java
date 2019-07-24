@@ -109,7 +109,6 @@ public class UserProfileCreatorTest {
         Mockito.when(userProfileRepository.findByEmail(Mockito.any(String.class))).thenReturn(Optional.ofNullable(null));
         Mockito.when(userProfileRepository.save(Mockito.any(UserProfile.class))).thenReturn(userProfile);
         Mockito.when(idamService.registerUser(Mockito.any(IdamRegisterUserRequest.class))).thenReturn(idamRegistrationInfo);
-        //when(entity.getStatusCode()).thenReturn(HttpStatus.OK);
         Mockito.when(entity.getHeaders()).thenReturn(headers);
         Mockito.when(idamRolesInfo.getRoles()).thenReturn(roles);
         Mockito.when(idamRolesInfo.getResponseStatusCode()).thenReturn(HttpStatus.OK);
