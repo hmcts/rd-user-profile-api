@@ -38,7 +38,7 @@ public class UserProfileService<T extends RequestData> {
     }
 
     public void update(T updateData, String userId) {
-        resourceUpdator.update(updateData, resourceRetriever, userId);
+        resourceUpdator.update(updateData, userId);
     }
 
 }
