@@ -6,7 +6,6 @@ import static org.mockito.Mockito.*;
 
 import java.util.UUID;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
@@ -17,7 +16,6 @@ import uk.gov.hmcts.reform.userprofileapi.client.*;
 import uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder;
 import uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileService;
 
 
@@ -119,7 +117,7 @@ public class UserProfileControllerTest {
     }
 
     @Test
-    public void testGetUserProfileWithRolesById(){
+    public void testGetUserProfileWithRolesById() {
         String id = "a833c2e2-2c73-4900-96ca-74b1efb37928";
         GetUserProfileWithRolesResponse responseMock = Mockito.mock(GetUserProfileWithRolesResponse.class);
 
