@@ -271,7 +271,6 @@ public class UserProfileController {
 
         userProfileService.update(updateUserProfileData, userId);
         return ResponseEntity.status(HttpStatus.OK).build();
-
     }
 
     @ApiOperation("Retrieving multiple user profiles")
