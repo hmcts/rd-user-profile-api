@@ -198,7 +198,7 @@ sonarqube {
         property "sonar.projectName", "RD :: User Profile API"
         property "sonar.projectKey", "RDUSERPROFILEAPI"
         property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
-        property "sonar.jacoco.itReportPath", "${project.buildDir}/jacoco/integration.exec"
+        property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/jacoco/integration.exec"
         property "sonar.pitest.mode", "reuseReport"
         property "sonar.pitest.reportsDirectory", "build/reports/pitest"
         property "sonar.exclusions", "src/main/java/uk/gov/hmcts/reform/userprofileapi/config/**," +
