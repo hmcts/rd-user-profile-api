@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesRequest;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesResponse;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 
-
 @Ignore
 @RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest
@@ -127,7 +126,7 @@ public class RetrieveMultipleUserProfileFuncTest extends AbstractFunctional {
         testRequestHandler.sendPost(
                 request,
                 HttpStatus.BAD_REQUEST,
-                requestUri + "/users?showdeleted=fal"
+                requestUri + "/users?showdeleted=false"
         );
     }
 }

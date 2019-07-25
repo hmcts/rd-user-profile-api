@@ -39,6 +39,7 @@ import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileService;
 import uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator;
 
+
 @Api(
     value = "/v1/userprofile"
 )
@@ -53,6 +54,7 @@ public class UserProfileController {
 
     @Autowired
     private UserProfileService<RequestData> userProfileService;
+
     @Autowired
     private IdamService idamService;
 
@@ -70,6 +72,11 @@ public class UserProfileController {
         @ApiResponse(
             code = 400,
             message = "Bad Request",
+            response = String.class
+        ),
+        @ApiResponse(
+            code = 409,
+            message = "User already exists",
             response = String.class
         ),
         @ApiResponse(
@@ -264,7 +271,6 @@ public class UserProfileController {
 
         userProfileService.update(updateUserProfileData, userId);
         return ResponseEntity.status(HttpStatus.OK).build();
-
     }
 
     @ApiOperation("Retrieving multiple user profiles")
@@ -276,7 +282,7 @@ public class UserProfileController {
             @ApiResponse(
                     code = 200,
                     message = "Retrieving multiple user profiles",
-                    response = CreateUserProfileResponse.class
+                    response = GetUserProfilesResponse.class
             ),
             @ApiResponse(
                     code = 400,

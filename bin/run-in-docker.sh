@@ -8,20 +8,12 @@ export S2S_SECRET=SZDUA3L7N32PE2IS
 export S2S_MICROSERVICE=rd_user_profile_api
 
 build_s2s_image() {
-    git clone https://github.com/hmcts/s2s-test-tool.git
+    git clone git@github.com:hmcts/s2s-test-tool.git
     cd s2s-test-tool
     git checkout allow-all-microservices
-    ./gradlew clean assemble
+    ./gradlew build
     docker build -t hmcts/service-token-provider .
-    cd .. && rm -rf s2s-test-tool
-}
-
-build_auth_provider_image() {
-    git clone https://github.com/hmcts/service-auth-provider-app.git
-    cd service-auth-provider-app 
-    ./gradlew clean assemble
-    docker build -t hmcts/service-auth-provider .
-    cd .. && rm -rf service-auth-provider-app
+    #cd .. && rm -rf s2s-test-tool
 }
 
 clean_old_docker_artifacts() {
@@ -43,8 +35,6 @@ clean_old_docker_artifacts() {
 execute_script() {
 
   clean_old_docker_artifacts
- 
-  build_auth_provider_image
 
   build_s2s_image
 

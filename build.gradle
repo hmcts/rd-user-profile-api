@@ -50,6 +50,18 @@ version = '0.0.1'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.75
+            }
+        }
+    }
+}
+
 compileJava {
     options.compilerArgs << '-parameters' << '-Xlint:deprecation' << "-Xlint:unchecked" << "-Werror"
 }
@@ -176,6 +188,7 @@ pitest {
     outputFormats = ['XML', 'HTML']
     timestampedReports = false
     mutationThreshold = 90
+    useClasspathFile = true
 }
 
 project.tasks['pitest'].group = "Verification"

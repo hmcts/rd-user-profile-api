@@ -29,7 +29,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
     private AuditRepository auditRepository;
 
     @Override
-    public UserProfile update(UpdateUserProfileData updateUserProfileData, ResourceRetriever resourceRetriever, String userId) {
+    public UserProfile update(UpdateUserProfileData updateUserProfileData, String userId) {
 
         HttpStatus status = HttpStatus.OK;
         UserProfile userProfile = null;

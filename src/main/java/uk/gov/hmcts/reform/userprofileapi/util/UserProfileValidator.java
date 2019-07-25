@@ -97,7 +97,6 @@ public interface UserProfileValidator {
     static void validateCreateUserProfileRequest(CreateUserProfileData request) {
         requireNonNull(request, "createUserProfileData cannot be null");
 
-        validateEnumField(LANGUAGEPREFERENCE, request.getLanguagePreference());
         validateEnumField(USERTYPE, request.getUserType());
         validateEnumField(USERCATEGORY, request.getUserCategory());
     }

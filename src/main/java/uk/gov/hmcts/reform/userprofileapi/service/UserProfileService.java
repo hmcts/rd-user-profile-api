@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.RequestData;
+import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 
 @Service
 public class UserProfileService<T extends RequestData> {
@@ -17,6 +18,8 @@ public class UserProfileService<T extends RequestData> {
     private ResourceRetriever<T> resourceRetriever;
     @Autowired
     private ResourceUpdator<T> resourceUpdator;
+    @Autowired
+    private UserProfileRepository userProfileRepository;
 
     public CreateUserProfileResponse create(T requestData) {
         return new CreateUserProfileResponse(resourceCreator.create(requestData));
@@ -35,7 +38,7 @@ public class UserProfileService<T extends RequestData> {
     }
 
     public void update(T updateData, String userId) {
-        resourceUpdator.update(updateData, resourceRetriever, userId);
+        resourceUpdator.update(updateData, userId);
     }
 
 }

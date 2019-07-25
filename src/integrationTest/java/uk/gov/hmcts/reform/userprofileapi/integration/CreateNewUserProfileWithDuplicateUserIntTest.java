@@ -81,7 +81,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
     public void setUpWireMock() {
 
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
-        idamService.stubFor(WireMock.post(urlEqualTo("/user/registration"))
+        idamService.stubFor(WireMock.post(urlEqualTo("/api/v1/users/registration"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withHeader("Location", "/api/v1/users/" + UUID.randomUUID().toString())
@@ -208,9 +208,6 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
         UserProfile userProfile = persistedUserProfile.get();
         assertThat(userProfile.getId()).isNotNull().isExactlyInstanceOf(Long.class);
         assertThat(userProfile.getIdamRegistrationResponse()).isEqualTo(201);
-        assertThat(userProfile.getEmail()).isEqualTo("user@hmcts.net");
-        assertThat(userProfile.getFirstName()).isNotEmpty().isEqualTo("fname");
-        assertThat(userProfile.getLastName()).isNotEmpty().isEqualTo("lname");
         assertThat(userProfile.getLanguagePreference()).isEqualTo(LanguagePreference.EN);
         assertThat(userProfile.getUserCategory()).isEqualTo(UserCategory.PROFESSIONAL);
         assertThat(userProfile.getUserType()).isEqualTo(UserType.EXTERNAL);
