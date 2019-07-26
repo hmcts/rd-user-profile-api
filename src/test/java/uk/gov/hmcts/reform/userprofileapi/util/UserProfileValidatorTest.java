@@ -104,6 +104,11 @@ public class UserProfileValidatorTest {
                 .isInstanceOf(NullPointerException.class);
     }
 
+    @Test(expected = Test.None.class)
+    public void test_validateCreateUserProfileRequest_no_exception_thrown() {
+        UserProfileValidator.validateCreateUserProfileRequest(userProfileData);
+    }
+
     @Test
     public void test_validateEnumField() {
 

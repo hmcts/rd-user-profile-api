@@ -53,4 +53,4 @@ alter table response add constraint user_profile_id_fk1 foreign key (user_profil
 alter table user_profile add constraint language_preference_ck check (language_preference in ('CY', 'EN'));
 alter table user_profile add constraint user_category_ck check (user_category in ('PROFESSIONAL', 'CASEWORKER', 'JUDICIAL', 'CITIZEN'));
 alter table user_profile add constraint user_type_ck check (user_type in ('INTERNAL', 'EXTERNAL', 'EXTERNAL_APP'));
-alter table user_profile add constraint idam_status_ck check (idam_status in ('PENDING', 'ACTIVE', 'BLOCKED' , 'DELETED'));
+alter table user_profile add constraint idam_status_ck check (idam_status in ('PENDING', 'ACTIVE', 'SUSPENDED' , 'ACTIVE_AND_LOCKED' , 'SUSPENDED_AND_LOCKED', 'DELETED'));
