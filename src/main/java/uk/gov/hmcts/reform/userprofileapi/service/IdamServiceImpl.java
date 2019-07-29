@@ -28,7 +28,7 @@ public class IdamServiceImpl implements IdamService {
     public IdamRegistrationInfo registerUser(IdamRegisterUserRequest requestData) {
         IdamRegistrationInfo result;
         try (Response response = idamClient.createUserProfile(requestData)) {
-            ResponseEntity entity = JsonFeignResponseHelper.toResponseEntity(response, Optional.ofNullable(null));
+            ResponseEntity entity = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty());
             result = new IdamRegistrationInfo(entity.getStatusCode(), Optional.ofNullable(entity));
         } catch (FeignException ex) {
             result = new IdamRegistrationInfo(gethttpStatusFromFeignException(ex));
@@ -67,7 +67,7 @@ public class IdamServiceImpl implements IdamService {
         Response response;
         try {
             response = idamClient.updateUserRoles(roleRequest, userId);
-            httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.of(Response.class)).getStatusCode();
+            httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode();
         } catch (FeignException ex) {
             httpStatus = gethttpStatusFromFeignException(ex);
         }

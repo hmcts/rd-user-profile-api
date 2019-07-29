@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.userprofileapi.client;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
-import javax.validation.constraints.NotNull;
 import lombok.Getter;
 
 @Getter
@@ -13,15 +12,17 @@ public class IdamUserResponse {
     private String forename;
     private String id;
     private Boolean locked;
+    private Boolean pending;
     private List<String> roles;
     private String surname;
 
     @JsonCreator
     public IdamUserResponse(@JsonProperty(value = "active") Boolean active,
-                               @NotNull @JsonProperty(value = "email") String email,
+                               @JsonProperty(value = "email") String email,
                                @JsonProperty(value = "forename") String forename,
                                @JsonProperty(value = "id") String id,
                                @JsonProperty(value = "locked") Boolean locked,
+                               @JsonProperty(value = "pending") Boolean pending,
                                @JsonProperty(value = "roles") List<String> roles,
                                @JsonProperty(value = "surname") String surname) {
         this.active = active;
@@ -29,6 +30,7 @@ public class IdamUserResponse {
         this.forename = forename;
         this.id = id;
         this.locked = locked;
+        this.pending = pending;
         this.roles = roles;
         this.surname = surname;
     }

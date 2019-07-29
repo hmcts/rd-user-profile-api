@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.client.IdamRegisterUserRequest;
 import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
@@ -45,6 +46,8 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
     private UserProfileRepository userProfileRepository;
     @Autowired
     private AuditRepository auditRepository;
+    @Autowired
+    Map<Map<String, Boolean>, IdamStatus> idamStatusResolverMap;
 
     public UserProfile create(CreateUserProfileData profileData) {
 
@@ -79,6 +82,10 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
         if (idamStatus.is2xxSuccessful()) {
             userProfile = new UserProfile(profileData, idamStatus);
             userProfile.setIdamId(userId);
+            if (profileData.getStatus() != null) {
+                userProfile.setStatus(profileData.getStatus());
+            }
+
             try {
                 userProfile = userProfileRepository.save(userProfile);
             } catch (Exception ex) {
@@ -117,7 +124,7 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
                 //consolidate XUI + SIDAM roles having unique roles
                 List<String> rolesToUpdate = consolidateRolesFromXuiAndIdam(profileData, idamRolesInfo);
                 //if roles are same what SIDAM has and XUI sent then skip SIDAM update call
-                if (!(new HashSet<String>(rolesToUpdate).equals(new HashSet<String>(profileData.getRoles())))) {
+                if ((CollectionUtils.isEmpty(idamRolesInfo.getRoles())) || !(new HashSet<String>(rolesToUpdate).equals(new HashSet<String>(profileData.getRoles())))) {
                     //update roles in Idam
                     idamRolesInfo = updateIdamRoles(rolesToUpdate, userId);
                     idamStatus = idamRolesInfo.getResponseStatusCode();
@@ -156,9 +163,16 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
     }
 
     public void updateInputRequestWithLatestSidamUserInfo(CreateUserProfileData profileData, IdamRolesInfo idamRolesInfo) {
-        profileData.setEmail(idamRolesInfo.getEmail());
-        profileData.setFirstName(idamRolesInfo.getForename());
-        profileData.setLastName(idamRolesInfo.getSurname());
+        profileData.setStatus(IdamStatusResolver.resolveIdamStatus(idamStatusResolverMap, idamRolesInfo));
+        if (idamRolesInfo.getEmail() != null) {
+            profileData.setEmail(idamRolesInfo.getEmail());
+        }
+        if (idamRolesInfo.getForename() != null) {
+            profileData.setFirstName(idamRolesInfo.getForename());
+        }
+        if (idamRolesInfo.getSurname() != null) {
+            profileData.setLastName(idamRolesInfo.getSurname());
+        }
     }
 
     private List<String> consolidateRolesFromXuiAndIdam(CreateUserProfileData profileData, IdamRolesInfo idamRolesInfo) {
