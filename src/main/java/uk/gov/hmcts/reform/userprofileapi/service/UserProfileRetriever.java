@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.client.UserProfileIdentifier;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
@@ -68,7 +70,12 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
             throw new ResourceNotFoundException("Could not find resource");
         }
         //get roles from sidam for each user
-        return userProfiles.stream().map(profile -> getRolesFromIdam(profile, true)).collect(Collectors.toList());
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        return userProfiles.stream().map(profile -> {
+            RequestContextHolder.setRequestAttributes(attributes);
+            return getRolesFromIdam(profile, true);
+        }).collect(Collectors.toList());
+
     }
 
     private void persistAudit(IdamRolesInfo idamRolesInfo, UserProfile userProfile) {

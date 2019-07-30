@@ -282,7 +282,7 @@ public class UserProfileController {
             @ApiResponse(
                     code = 200,
                     message = "Retrieving multiple user profiles",
-                    response = GetUserProfilesResponse.class
+                    response = GetUserProfilesRequest.class
             ),
             @ApiResponse(
                     code = 400,
