@@ -72,7 +72,6 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
         //get roles from sidam for each user
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         return userProfiles.stream().map(profile -> {
-            RequestContextHolder.setRequestAttributes(attributes);
             return getRolesFromIdam(profile, true);
         }).collect(Collectors.toList());
 
