@@ -271,10 +271,13 @@ public class UserProfileController {
 
         userProfileService.update(updateUserProfileData, userId);
         return ResponseEntity.status(HttpStatus.OK).build();
-
     }
 
-    @ApiOperation("Retrieving multiple user profiles")
+    @ApiOperation(value = "Retrieving multiple user profiles",
+            authorizations = {
+                    @Authorization(value = "ServiceAuthorization"),
+                    @Authorization(value = "Authorization")
+            })
     @ApiParam(
             name = "showdeleted",
             required = true

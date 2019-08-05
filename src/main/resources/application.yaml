@@ -65,6 +65,7 @@ security:
   authorisedServices:
     - rd_user_profile_api
     - rd_professional_api
+    - xui_webapp
 
 feign:
   allow:

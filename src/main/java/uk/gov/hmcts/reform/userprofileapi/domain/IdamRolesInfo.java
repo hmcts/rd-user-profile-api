@@ -16,6 +16,9 @@ public class IdamRolesInfo {
     private String forename;
     private String surname;
     private List<String> roles;
+    private Boolean active;
+    private Boolean pending;
+    private Boolean locked;
     private HttpStatus responseStatusCode;
     private String statusMessage;
 
@@ -26,6 +29,9 @@ public class IdamRolesInfo {
             this.email = entity.getBody().getEmail();
             this.forename = entity.getBody().getForename();
             this.surname = entity.getBody().getSurname();
+            this.active = entity.getBody().getActive();
+            this.pending = entity.getBody().getPending();
+            this.locked = entity.getBody().getLocked();
         }
         loadStatusCodes(idamGetResponseStatusCode);
     }

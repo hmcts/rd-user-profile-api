@@ -29,8 +29,6 @@ import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 
-
-
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
 @Transactional
@@ -177,8 +175,8 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
             assertThat(getUserProfilesResponse.getLastName()).isEqualTo(up.getLastName());
             assertThat(getUserProfilesResponse.getIdamStatus()).isEqualTo(up.getStatus());
             assertThat(getUserProfilesResponse.getRoles().size()).isEqualTo(0);
-            assertThat(getUserProfilesResponse.getIdamErrorMessage()).isNotEmpty();
-            assertThat(getUserProfilesResponse.getIdamErrorStatusCode()).isEqualTo(404);
+            assertThat(getUserProfilesResponse.getIdamMessage()).isNotEmpty();
+            assertThat(getUserProfilesResponse.getIdamStatusCode()).isEqualTo(404);
         });
 
         Audit audit1 = auditRepository.findByUserProfile(userProfileMap.get("user1")).orElse(null);

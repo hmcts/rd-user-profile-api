@@ -11,6 +11,7 @@ import javax.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 
 @Setter
 @Getter
@@ -43,6 +44,9 @@ public class CreateUserProfileData implements RequestData {
     @JsonIgnore
     private String id;
 
+    @JsonIgnore
+    private IdamStatus status;
+
     @JsonCreator
     public CreateUserProfileData(@JsonProperty(value = "email") String email,
                                  @JsonProperty(value = "firstName") String firstName,
@@ -63,5 +67,11 @@ public class CreateUserProfileData implements RequestData {
         this.userCategory = userCategory;
         this.userType = userType;
         this.roles = roles;
+    }
+
+    public void setStatus(IdamStatus status) {
+        if (null != status) {
+            this.status = status;
+        }
     }
 }
