@@ -21,7 +21,7 @@ public class GetUserProfileWithRolesResponse extends GetUserProfileResponse {
     @JsonProperty
     private Integer idamStatusCode;
     @JsonProperty
-    private String idamMessage = "";
+    private String idamMessage;
 
     public GetUserProfileWithRolesResponse(UserProfile userProfile) {
         super(userProfile);

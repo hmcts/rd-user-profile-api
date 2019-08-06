@@ -47,6 +47,8 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
         if (idamRolesInfo.getResponseStatusCode().is2xxSuccessful()) {
             persistAudit(idamRolesInfo, userProfile);
             userProfile.setRoles(idamRolesInfo);
+            userProfile.setErrorMessage(idamRolesInfo.getStatusMessage());
+            userProfile.setErrorStatusCode(idamRolesInfo.getResponseStatusCode().value());
         } else {
             persistAudit(idamRolesInfo, userProfile);
             // for multiple users get request , do not throw exception and continue flow
