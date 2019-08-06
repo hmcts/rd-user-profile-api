@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
@@ -22,14 +21,14 @@ public class GetUserProfileWithRolesResponse extends GetUserProfileResponse {
     @JsonProperty
     private Integer idamStatusCode;
     @JsonProperty
-    private String idamMessage;
+    private String idamMessage = "";
 
     public GetUserProfileWithRolesResponse(UserProfile userProfile) {
         super(userProfile);
         roles = userProfile.getRoles();
         if (CollectionUtils.isEmpty(roles)) {
             idamStatusCode = userProfile.getErrorStatusCode();
-            idamMessage = StringUtils.isBlank(userProfile.getErrorMessage()) ? "" : userProfile.getErrorMessage();
+            idamMessage = userProfile.getErrorMessage();
         }
     }
 }
