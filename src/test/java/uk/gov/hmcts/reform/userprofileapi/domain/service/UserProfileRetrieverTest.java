@@ -29,8 +29,10 @@ import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileQueryProvider;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamServiceException;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamServiceImpl;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceNotFoundException;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileRetriever;
+import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserProfileRetrieverTest {
@@ -136,17 +138,17 @@ public class UserProfileRetrieverTest {
         List<String> userIds = new ArrayList<>();
         userIds.add(UUID.randomUUID().toString());
         userIds.add(UUID.randomUUID().toString());
+        List<UserProfile> userProfiles = new ArrayList<>();
+        UserProfile up1 = UserProfileTestDataBuilder.buildUserProfile();
+        up1.setStatus(IdamStatus.ACTIVE);
+        UserProfile up2 = UserProfileTestDataBuilder.buildUserProfile();
+        userProfiles.add(up1);
+        up2.setStatus(IdamStatus.ACTIVE);
+        userProfiles.add(up2);
         UserProfileIdentifier identifier =
                 new UserProfileIdentifier(
                         IdentifierName.UUID_LIST,
                         userIds);
-
-        List<UserProfile> userProfiles = new ArrayList<>();
-        UserProfile up1 = UserProfileTestDataBuilder.buildUserProfile();
-        UserProfile up2 = UserProfileTestDataBuilder.buildUserProfile();
-        userProfiles.add(up1);
-        userProfiles.add(up2);
-
         when(querySupplier.getProfilesByIds(identifier, true)).thenReturn(Optional.of(userProfiles));
         when(idamServiceMock.fetchUserById(any(String.class))).thenReturn(idamRolesInfoMock);
         when(idamRolesInfoMock.getResponseStatusCode()).thenReturn(HttpStatus.OK);
@@ -184,7 +186,7 @@ public class UserProfileRetrieverTest {
     public void should_retrieve_user_multiple_profiles_without_roles_when_idam_fails() {
 
         UserProfile up = UserProfileTestDataBuilder.buildUserProfile();
-
+        up.setStatus(IdamStatus.ACTIVE);
         when(idamServiceMock.fetchUserById(any(String.class))).thenReturn(idamRolesInfoMock);
         when(auditRepository.save(any())).thenReturn(audit);
         when(idamRolesInfoMock.getResponseStatusCode()).thenReturn(HttpStatus.NOT_FOUND);
@@ -198,13 +200,14 @@ public class UserProfileRetrieverTest {
         assertThat(profile.getLastName()).isEqualTo(up.getLastName());
         assertThat(profile.getRoles().size()).isEqualTo(0);
         assertThat(profile.getErrorMessage()).isNotEmpty();
-        assertThat(profile.getErrorStatusCode()).isEqualTo(404);
+        assertThat(profile.getErrorStatusCode()).isEqualTo("404");
     }
 
     @Test
     public void should_throw_404_single_user_profile_without_roles_when_idam_fails() {
 
         UserProfile up = UserProfileTestDataBuilder.buildUserProfile();
+        up.setStatus(IdamStatus.ACTIVE);
 
         when(idamServiceMock.fetchUserById(any(String.class))).thenReturn(idamRolesInfoMock);
         when(idamRolesInfoMock.getResponseStatusCode()).thenReturn(HttpStatus.NOT_FOUND);
@@ -214,4 +217,19 @@ public class UserProfileRetrieverTest {
         assertThatThrownBy(() -> userProfileRetriever.getRolesFromIdam(up, false))
                 .isInstanceOf(IdamServiceException.class);
     }
+
+    @Test
+    public void should_not_call_idam_when_status_is_pending() {
+
+        UserProfile up = UserProfileTestDataBuilder.buildUserProfile();
+        UserProfile profile = userProfileRetriever.getRolesFromIdam(up, true);
+        assertThat(profile).isNotNull();
+        assertThat(profile.getEmail()).isEqualTo(up.getEmail());
+        assertThat(profile.getFirstName()).isEqualTo(up.getFirstName());
+        assertThat(profile.getLastName()).isEqualTo(up.getLastName());
+        assertThat(profile.getRoles().size()).isEqualTo(0);
+        assertThat(profile.getErrorMessage()).isEqualTo(IdamStatusResolver.NO_IDAM_CALL);
+        assertThat(profile.getErrorStatusCode()).isEqualTo(" ");
+    }
+
 }

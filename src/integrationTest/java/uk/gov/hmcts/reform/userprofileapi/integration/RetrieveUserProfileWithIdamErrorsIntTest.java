@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 @RunWith(SpringRunner.class)
@@ -54,7 +55,10 @@ public class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabl
         Iterable<UserProfile> userProfiles = testUserProfileRepository.findAll();
         assertThat(userProfiles).isEmpty();
 
-        UserProfile user1 = testUserProfileRepository.save(buildUserProfile());
+        UserProfile user1 = buildUserProfile();
+        user1.setStatus(IdamStatus.ACTIVE);
+        user1 = testUserProfileRepository.save(user1);
+
 
         assertTrue(testUserProfileRepository.existsById(user1.getId()));
 
