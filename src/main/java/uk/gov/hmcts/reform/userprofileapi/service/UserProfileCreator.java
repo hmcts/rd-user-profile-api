@@ -19,7 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.client.IdamRegisterUserRequest;
 import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
@@ -124,17 +123,12 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
                 //consolidate XUI + SIDAM roles having unique roles
                 List<String> rolesToUpdate = consolidateRolesFromXuiAndIdam(profileData, idamRolesInfo);
                 //if roles are same what SIDAM has and XUI sent then skip SIDAM update call
-                if ((CollectionUtils.isEmpty(idamRolesInfo.getRoles())) || !(new HashSet<String>(rolesToUpdate).equals(new HashSet<String>(profileData.getRoles())))) {
-                    //update roles in Idam
-                    idamRolesInfo = updateIdamRoles(rolesToUpdate, userId);
-                    idamStatus = idamRolesInfo.getResponseStatusCode();
-                    idamStatusMessage = idamRolesInfo.getStatusMessage();
-                    if (!idamRolesInfo.isSuccessFromIdam()) {
-                        log.error("failed sidam PUT call for userId : " + userId);
-                        persistAuditAndThrowIdamException(idamStatusMessage, idamStatus, null);
-                    }
-                } else {
-                    log.info("SIDAM and XUI roles are same. Not updating roles!!");
+                idamRolesInfo = updateIdamRoles(rolesToUpdate, userId);
+                idamStatus = idamRolesInfo.getResponseStatusCode();
+                idamStatusMessage = idamRolesInfo.getStatusMessage();
+                if (!idamRolesInfo.isSuccessFromIdam()) {
+                    log.error("failed sidam PUT call for userId : " + userId);
+                    persistAuditAndThrowIdamException(idamStatusMessage, idamStatus, null);
                 }
                 // for success make status = 201
                 idamStatus = HttpStatus.CREATED;
