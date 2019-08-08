@@ -51,7 +51,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
             userProfile.setEmail(updateUserProfileData.getEmail().trim());
             userProfile.setFirstName(updateUserProfileData.getFirstName().trim());
             userProfile.setLastName(updateUserProfileData.getLastName().trim());
-            userProfile.setStatus(IdamStatus.valueOf(updateUserProfileData.getIdamStatus()));
+            userProfile.setStatus(IdamStatus.valueOf(updateUserProfileData.getIdamStatus().toUpperCase()));
             try {
                 userProfile = userProfileRepository.save(userProfile);
             } catch (Exception ex) {

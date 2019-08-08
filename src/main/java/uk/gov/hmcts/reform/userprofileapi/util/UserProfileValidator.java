@@ -48,7 +48,7 @@ public interface UserProfileValidator {
             isValid = false;
         } else {
             try {
-                validateEnumField(STATUS, updateUserProfileData.getIdamStatus());
+                validateEnumField(STATUS, updateUserProfileData.getIdamStatus().toUpperCase());
             } catch (Exception ex) {
                 isValid = false;
             }
