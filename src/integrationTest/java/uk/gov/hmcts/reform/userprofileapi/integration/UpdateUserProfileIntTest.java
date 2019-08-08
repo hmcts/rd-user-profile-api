@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 @RunWith(SpringRunner.class)
@@ -67,13 +68,34 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
         UpdateUserProfileData data = buildUpdateUserProfileData();
 
         userProfileRequestHandlerTest.sendPut(
-            mockMvc,
-            APP_BASE_PATH + SLASH + idamId.toString(),
-            data,
-            OK
+                mockMvc,
+                APP_BASE_PATH + SLASH + idamId.toString(),
+                data,
+                OK
         );
 
         verifyUserProfileCreation(data, persistedUserProfile);
+
+    }
+
+    @Test
+    public void should_return_200_and_when_IdamStatus_is_updated() throws Exception {
+
+        UserProfile persistedUserProfile = userProfileMap.get("user");
+        UUID idamId = persistedUserProfile.getIdamId();
+        UpdateUserProfileData data = buildUpdateUserProfileData();
+        data.setIdamStatus("Active");
+
+        userProfileRequestHandlerTest.sendPut(
+                mockMvc,
+                APP_BASE_PATH + SLASH + idamId.toString(),
+                data,
+                OK
+        );
+
+        Optional<UserProfile> optionalUp = userProfileRepository.findByIdamId(persistedUserProfile.getIdamId());
+        UserProfile updatedUserProfile = optionalUp.orElse(null);
+        assertThat(updatedUserProfile.getStatus()).isEqualTo(IdamStatus.ACTIVE);
 
     }
 
