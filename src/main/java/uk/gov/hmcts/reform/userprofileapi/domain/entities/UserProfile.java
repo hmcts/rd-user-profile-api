@@ -87,7 +87,7 @@ public class UserProfile {
     private String errorMessage;
 
     @Transient
-    private int errorStatusCode;
+    private String errorStatusCode;
 
     public UserProfile() {
         //noop

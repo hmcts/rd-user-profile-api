@@ -18,7 +18,7 @@ public class UpdateUserProfileData implements RequestData {
     private String idamStatus;
 
     @JsonCreator
-    public UpdateUserProfileData(@JsonProperty(value = "emailAddress") String email,
+    public UpdateUserProfileData(@JsonProperty(value = "email") String email,
                                  @JsonProperty(value = "firstName") String firstName,
                                  @JsonProperty(value = "lastName") String lastName,
                                  @JsonProperty(value = "idamStatus") String idamStatus) {
