@@ -114,6 +114,8 @@ public class FuncTestRequestHandler {
 
         log.info("S2S Token : {}, Bearer Token : {}", s2sToken, bearerToken);
 
+        log.info("Base Url : {}", baseUrl);
+
         return SerenityRest.given()
                 .relaxedHTTPSValidation()
                 .baseUri(baseUrl)
