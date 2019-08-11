@@ -45,6 +45,7 @@ public class AbstractFunctional {
         SerenityRest.proxy("proxyout.reform.hmcts.net", 8080);
     }*/
 
+
     protected CreateUserProfileResponse createUserProfile(CreateUserProfileData createUserProfileData,HttpStatus expectedStatus) throws Exception {
 
         CreateUserProfileResponse resource = testRequestHandler.sendPost(
@@ -78,8 +79,7 @@ public class AbstractFunctional {
         assertThat(resource).isNotNull();
         assertThat(resource.getIdamId()).isNotNull();
         assertThat(resource.getIdamId()).isInstanceOf(UUID.class);
-        //Do we need to verify Idam status ?
-        // assertThat(resource.getIdamRegistrationResponse()).isEqualTo(HttpStatus.CREATED.value());
+
     }
 
     protected void verifyGetUserProfile(GetUserProfileResponse resource, CreateUserProfileData expectedResource) {
