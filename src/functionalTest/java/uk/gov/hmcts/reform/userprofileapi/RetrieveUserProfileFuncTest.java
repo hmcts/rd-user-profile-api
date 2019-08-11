@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.userprofileapi;
 import io.restassured.RestAssured;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -54,7 +53,6 @@ public class RetrieveUserProfileFuncTest extends AbstractFunctional {
         verifyGetUserProfile(resource, createUserProfileData);
     }
 
-    @Ignore
     @Test
     public void should_get_user_profile_with_roles_by_userId() throws Exception {
 
@@ -68,7 +66,6 @@ public class RetrieveUserProfileFuncTest extends AbstractFunctional {
         verifyGetUserProfileWithRoles(resource, createUserProfileData);
     }
 
-    @Ignore
     @Test
     public void should_get_user_profile_with_roles_by_email() throws Exception {
 
