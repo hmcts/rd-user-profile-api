@@ -5,6 +5,7 @@ import java.util.UUID;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileResponse;
 
 @RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest
+@Ignore
 public class UpdateUserProfileFuncTest extends AbstractFunctional {
 
     private static final Logger LOG = LoggerFactory.getLogger(UpdateUserProfileFuncTest.class);
