@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +24,7 @@ import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileWithRolesResponse
 import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
 
-
+@Ignore
 @RunWith(SpringIntegrationSerenityRunner.class)
 @ContextConfiguration(classes = {TestConfigProperties.class, FuncTestRequestHandler.class})
 @ComponentScan("uk.gov.hmcts.reform.userprofileapi")
@@ -37,7 +38,7 @@ public class AbstractFunctional {
 
     protected String requestUri = "/v1/userprofile";
 
-    /*@Before
+   /* @Before
     public void setupProxy() {
         //TO enable for local testing
         RestAssured.proxy("proxyout.reform.hmcts.net",8080);
@@ -77,8 +78,7 @@ public class AbstractFunctional {
         assertThat(resource).isNotNull();
         assertThat(resource.getIdamId()).isNotNull();
         assertThat(resource.getIdamId()).isInstanceOf(UUID.class);
-        //Do we need to verify Idam status ?
-        // assertThat(resource.getIdamRegistrationResponse()).isEqualTo(HttpStatus.CREATED.value());
+
     }
 
     protected void verifyGetUserProfile(GetUserProfileResponse resource, CreateUserProfileData expectedResource) {
