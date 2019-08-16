@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileWithRolesResponse
 
 @RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest
+@Ignore
 public class RetrieveUserProfileFuncTest extends AbstractFunctional {
 
     private static final Logger LOG = LoggerFactory.getLogger(RetrieveUserProfileFuncTest.class);
