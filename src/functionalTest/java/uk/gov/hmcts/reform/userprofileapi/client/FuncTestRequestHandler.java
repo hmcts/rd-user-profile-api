@@ -33,7 +33,7 @@ public class FuncTestRequestHandler {
     @Value("${s2s.auth.url}")
     protected String s2sBaseUrl;
 
-    @Value("${s2s.auth.microservice:rd_user_profile_api}")
+    @Value("${s2s.auth.microservice:rd_professional_api}")
     protected String s2sMicroservice;
 
     public static final String BEARER = "Bearer ";
