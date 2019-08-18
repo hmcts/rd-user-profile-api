@@ -46,7 +46,6 @@ public class IdamClient {
         String userEmail = nextUserEmail();
         String firstName = "First";
         String lastName = "Last";
-        String userGroup = "";
         String password = "Hmcts1234";
 
         String id = UUID.randomUUID().toString();
@@ -56,9 +55,7 @@ public class IdamClient {
         List<Role> roles = new ArrayList<>();
         roles.add(role);
 
-        Group group = new Group(userGroup);
-
-        User user = new User(userEmail, firstName, id, lastName, password, roles, group);
+        User user = new User(userEmail, firstName, id, lastName, password, roles);
 
         String serializedUser = gson.toJson(user);
 
@@ -141,7 +138,6 @@ public class IdamClient {
         private String surname;
         private String password;
         private List<Role> roles;
-        private Group group;
     }
 
     @AllArgsConstructor
