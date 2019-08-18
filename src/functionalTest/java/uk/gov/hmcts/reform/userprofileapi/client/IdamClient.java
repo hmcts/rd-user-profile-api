@@ -46,7 +46,6 @@ public class IdamClient {
         String userEmail = nextUserEmail();
         String firstName = "First";
         String lastName = "Last";
-        String userGroup = "";
         String password = "Hmcts1234";
 
         String id = UUID.randomUUID().toString();
@@ -56,9 +55,7 @@ public class IdamClient {
         List<Role> roles = new ArrayList<>();
         roles.add(role);
 
-        Group group = new Group(userGroup);
-
-        User user = new User(userEmail, firstName, id, lastName, password, roles, group);
+        User user = new User(userEmail, firstName, id, lastName, password, roles);
 
         String serializedUser = gson.toJson(user);
 
@@ -87,7 +84,7 @@ public class IdamClient {
         authorizeParams.put("client_id", testConfig.getClientId());
         authorizeParams.put("redirect_uri", testConfig.getOauthRedirectUrl());
         authorizeParams.put("response_type", "code");
-        authorizeParams.put("scope", "openid profile roles openid profile roles manage-user create-user search-user");
+        authorizeParams.put("scope", "openid profile roles manage-user create-user search-user");
 
         Response authorizeResponse = RestAssured
                 .given()
@@ -141,7 +138,6 @@ public class IdamClient {
         private String surname;
         private String password;
         private List<Role> roles;
-        private Group group;
     }
 
     @AllArgsConstructor
