@@ -8,8 +8,8 @@ idam.api.url: ${IDAM_API_URL:https://idam-api.preview.platform.hmcts.net}
 generated.user.email.pattern: ${GENERATED_USER_EMAIL_PATTERN:freg-test-user-%s@feemail.com}
 test.url: ${TEST_URL:http://rd-user-profile-api-preview.service.core-compute-preview.internal}
 test.user.password: ${TEST_USER_PASSWORD:Hmcts123}
-#K6KA6PRLRFWQLSD6
-s2s.auth.secret: ${S2S_SECRET:K6KA6PRLRFWQLSD6}
+
+s2s.auth.secret: ${S2S_SECRET:OLMEJQA7UHU6EZKG}
 s2s.auth.url: ${S2S_URL_TO_TEST:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
 
 idam.auth.tokenAuth: ${IDAM_TOKEN_ATUH:eHVpd2ViYXBwOnlCNzFtblBleXBQM0hsY04=}
