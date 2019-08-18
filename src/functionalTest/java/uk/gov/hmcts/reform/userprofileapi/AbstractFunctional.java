@@ -6,10 +6,7 @@ import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestB
 
 import java.util.UUID;
 
-import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
-
 import org.junit.Ignore;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
@@ -25,7 +22,6 @@ import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
 
 @Ignore
-@RunWith(SpringIntegrationSerenityRunner.class)
 @ContextConfiguration(classes = {TestConfigProperties.class, FuncTestRequestHandler.class})
 @ComponentScan("uk.gov.hmcts.reform.userprofileapi")
 @TestPropertySource("classpath:application-functional.yaml")
@@ -44,6 +40,7 @@ public class AbstractFunctional {
         RestAssured.proxy("proxyout.reform.hmcts.net",8080);
         SerenityRest.proxy("proxyout.reform.hmcts.net", 8080);
     }*/
+
 
     protected CreateUserProfileResponse createUserProfile(CreateUserProfileData createUserProfileData,HttpStatus expectedStatus) throws Exception {
 
@@ -94,6 +91,7 @@ public class AbstractFunctional {
     protected void verifyGetUserProfileWithRoles(GetUserProfileWithRolesResponse resource, CreateUserProfileData expectedResource) {
 
         verifyGetUserProfile(resource, expectedResource);
+        //assertThat(resource.getRoles()).isNotEmpty();
 
     }
 
