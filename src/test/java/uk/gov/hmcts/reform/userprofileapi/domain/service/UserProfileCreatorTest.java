@@ -4,7 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.Test;
@@ -29,6 +31,7 @@ import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamServiceException;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileCreator;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -109,7 +112,6 @@ public class UserProfileCreatorTest {
         Mockito.when(userProfileRepository.findByEmail(Mockito.any(String.class))).thenReturn(Optional.ofNullable(null));
         Mockito.when(userProfileRepository.save(Mockito.any(UserProfile.class))).thenReturn(userProfile);
         Mockito.when(idamService.registerUser(Mockito.any(IdamRegisterUserRequest.class))).thenReturn(idamRegistrationInfo);
-        //when(entity.getStatusCode()).thenReturn(HttpStatus.OK);
         Mockito.when(entity.getHeaders()).thenReturn(headers);
         Mockito.when(idamRolesInfo.getRoles()).thenReturn(roles);
         Mockito.when(idamRolesInfo.getResponseStatusCode()).thenReturn(HttpStatus.OK);
@@ -122,6 +124,8 @@ public class UserProfileCreatorTest {
         Mockito.when(idamService.fetchUserById(Mockito.any(String.class))).thenReturn(idamRolesInfo);
         Mockito.when(idamService.updateUserRoles(Mockito.any(), Mockito.anyString())).thenReturn(idamRolesInfo);
 
+        Map<Map<String, Boolean>, IdamStatus> idamStatusMap = createDecisionMap();
+        ReflectionTestUtils.setField(userProfileCreator, "idamStatusResolverMap", idamStatusMap);
         ReflectionTestUtils.setField(userProfileCreator, "sidamGetUri", "/api/v1/users/");
 
         UserProfile responseUserProfile = userProfileCreator.create(createUserProfileData);
@@ -130,17 +134,42 @@ public class UserProfileCreatorTest {
     }
 
     @Test
-    public void should_set_CreateUSerProfileDate_fileds() {
+    public void should_set_CreateUserProfileData_fields() {
 
+        Map<Map<String, Boolean>, IdamStatus> idamStatusMap = createDecisionMap();
+
+        ReflectionTestUtils.setField(userProfileCreator, "idamStatusResolverMap", idamStatusMap);
         Mockito.when(idamRolesInfo.getEmail()).thenReturn("any@emai");
         Mockito.when(idamRolesInfo.getForename()).thenReturn("fname");
         Mockito.when(idamRolesInfo.getSurname()).thenReturn("lastName");
+        Mockito.when(idamRolesInfo.getActive()).thenReturn(true);
+        Mockito.when(idamRolesInfo.getPending()).thenReturn(false);
+        Mockito.when(idamRolesInfo.getLocked()).thenReturn(false);
+
         CreateUserProfileData createUserProfileData = Mockito.mock(CreateUserProfileData.class);
         userProfileCreator.updateInputRequestWithLatestSidamUserInfo(createUserProfileData, idamRolesInfo);
         Mockito.verify(createUserProfileData, Mockito.times(1)).setEmail("any@emai");
         Mockito.verify(createUserProfileData, Mockito.times(1)).setFirstName("fname");
         Mockito.verify(createUserProfileData, Mockito.times(1)).setLastName("lastName");
 
+    }
+
+    public Map<String, Boolean> addRule(boolean activeFlag, boolean pendingFlag, boolean lockedFlag) {
+        Map<String, Boolean> pendingMapWithRules = new HashMap<>();
+        pendingMapWithRules.put("ACTIVE", activeFlag);
+        pendingMapWithRules.put("PENDING", pendingFlag);
+        pendingMapWithRules.put("LOCKED", lockedFlag);
+        return pendingMapWithRules;
+    }
+
+    public Map<Map<String, Boolean>, IdamStatus> createDecisionMap() {
+        Map<Map<String, Boolean>, IdamStatus> idamStatusMap = new HashMap<Map<String, Boolean>, IdamStatus>();
+        idamStatusMap.put(addRule(false,true, false), IdamStatus.PENDING);
+        idamStatusMap.put(addRule(true, false,false), IdamStatus.ACTIVE);
+        idamStatusMap.put(addRule(true, false,true), IdamStatus.ACTIVE_AND_LOCKED);
+        idamStatusMap.put(addRule(false,false,false), IdamStatus.SUSPENDED);
+        idamStatusMap.put(addRule(false,false,true), IdamStatus.SUSPENDED_AND_LOCKED);
+        return idamStatusMap;
     }
 
 }

@@ -28,8 +28,7 @@ import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesRequest;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-
-
+import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
@@ -81,9 +80,13 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
         assertThat(userProfiles).isEmpty();
 
         //adding 2 userprofiles with PENDING and 2 with DELETED status
-        UserProfile user1 = testUserProfileRepository.save(buildUserProfile());
-        UserProfile user2 = testUserProfileRepository.save(buildUserProfile());
+        UserProfile user1 = buildUserProfile();
+        user1.setStatus(IdamStatus.ACTIVE);
+        user1 = testUserProfileRepository.save(user1);
 
+        UserProfile user2 = buildUserProfile();
+        user2.setStatus(IdamStatus.ACTIVE);
+        user2 = testUserProfileRepository.save(user2);
 
         userProfileMap = new HashMap<>();
         userProfileMap.put("user1", user1);
@@ -126,8 +129,10 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
             assertThat(getUserProfilesResponse.getFirstName()).isEqualTo(up.getFirstName());
             assertThat(getUserProfilesResponse.getLastName()).isEqualTo(up.getLastName());
             assertThat(getUserProfilesResponse.getIdamStatus()).isEqualTo(up.getStatus());
-            assertThat(getUserProfilesResponse.getRoles().size()).isEqualTo(1);
-            assertThat(getUserProfilesResponse.getRoles().get(0)).isEqualTo("pui-case-manager");
+            if (getUserProfilesResponse.getIdamStatus().equals(IdamStatus.ACTIVE)) {
+                assertThat(getUserProfilesResponse.getRoles().size()).isEqualTo(1);
+                assertThat(getUserProfilesResponse.getRoles().get(0)).isEqualTo("pui-case-manager");
+            }
         });
 
         Audit audit1 = auditRepository.findByUserProfile(userProfileMap.get("user1")).orElse(null);
@@ -139,12 +144,10 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
         assertThat(audit2.getIdamRegistrationResponse()).isEqualTo(200);
 
         Audit audit3 = auditRepository.findByUserProfile(userProfileMap.get("user3")).orElse(null);
-        assertThat(audit3).isNotNull();
-        assertThat(audit3.getIdamRegistrationResponse()).isEqualTo(200);
+        assertThat(audit3).isNull();
 
         Audit audit4 = auditRepository.findByUserProfile(userProfileMap.get("user4")).orElse(null);
-        assertThat(audit4).isNotNull();
-        assertThat(audit4.getIdamRegistrationResponse()).isEqualTo(200);
+        assertThat(audit4).isNull();
     }
 
     @Test
@@ -176,9 +179,13 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
             assertThat(getUserProfilesResponse.getFirstName()).isEqualTo(up.getFirstName());
             assertThat(getUserProfilesResponse.getLastName()).isEqualTo(up.getLastName());
             assertThat(getUserProfilesResponse.getIdamStatus()).isEqualTo(up.getStatus());
-            assertThat(getUserProfilesResponse.getRoles().size()).isEqualTo(0);
-            assertThat(getUserProfilesResponse.getIdamErrorMessage()).isNotEmpty();
-            assertThat(getUserProfilesResponse.getIdamErrorStatusCode()).isEqualTo(404);
+            assertThat(getUserProfilesResponse.getRoles()).isNull();
+            assertThat(getUserProfilesResponse.getIdamMessage()).isNotEmpty();
+            if (IdamStatus.ACTIVE == up.getStatus()) {
+                assertThat(getUserProfilesResponse.getIdamStatusCode()).isEqualTo("404");
+            } else {
+                assertThat(getUserProfilesResponse.getIdamStatusCode()).isEqualTo(" ");
+            }
         });
 
         Audit audit1 = auditRepository.findByUserProfile(userProfileMap.get("user1")).orElse(null);
@@ -190,12 +197,10 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
         assertThat(audit2.getIdamRegistrationResponse()).isEqualTo(404);
 
         Audit audit3 = auditRepository.findByUserProfile(userProfileMap.get("user3")).orElse(null);
-        assertThat(audit3).isNotNull();
-        assertThat(audit3.getIdamRegistrationResponse()).isEqualTo(404);
+        assertThat(audit3).isNull();
 
         Audit audit4 = auditRepository.findByUserProfile(userProfileMap.get("user4")).orElse(null);
-        assertThat(audit4).isNotNull();
-        assertThat(audit4.getIdamRegistrationResponse()).isEqualTo(404);
+        assertThat(audit4).isNull();
     }
 
     @Test

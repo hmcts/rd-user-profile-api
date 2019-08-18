@@ -18,6 +18,7 @@ public class IdamUserResponseTest {
                         "forename",
                         "id",
                         false,
+                        false,
                         new ArrayList<String>(),
                         "lastname");
 

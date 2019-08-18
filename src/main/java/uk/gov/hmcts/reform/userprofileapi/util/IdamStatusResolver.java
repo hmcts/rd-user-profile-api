@@ -1,6 +1,10 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.http.HttpStatus;
+import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 
 @SuppressWarnings("HideUtilityClassConstructor")
 public final class IdamStatusResolver {
@@ -13,6 +17,12 @@ public final class IdamStatusResolver {
     public static final String NOT_FOUND = "16 Resource not found";
     public static final String USER_EXISTS = "17 User with this email already exists";
     public static final String UNKNOWN = "18 Unknown error from Idam";
+    public static final String NO_IDAM_CALL = "19 No call made to SIDAM to get the user roles as user status is ‘Pending’";
+
+    public static final String ACTIVE = "ACTIVE";
+    public static final String PENDING = "PENDING";
+    public static final String LOCKED = "LOCKED";
+
 
     public static String resolveStatusAndReturnMessage(HttpStatus httpStatus) {
         switch (httpStatus) {
@@ -26,5 +36,15 @@ public final class IdamStatusResolver {
             default:
                 return UNKNOWN;
         }
+    }
+
+    public static IdamStatus resolveIdamStatus(Map<Map<String, Boolean>, IdamStatus> statusResolver, IdamRolesInfo idamRolesInfo) {
+
+        Map<String, Boolean> statusMap = new HashMap<String, Boolean>();
+        statusMap.put(ACTIVE, idamRolesInfo.getActive());
+        statusMap.put(PENDING, idamRolesInfo.getPending());
+        statusMap.put(LOCKED, idamRolesInfo.getLocked());
+
+        return statusResolver.get(statusMap) != null ? statusResolver.get(statusMap) : null;
     }
 }

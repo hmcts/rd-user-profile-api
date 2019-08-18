@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileQueryProvider;
+import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 @Service
 public class UserProfileRetriever implements ResourceRetriever<UserProfileIdentifier> {
@@ -43,20 +44,27 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
 
     public UserProfile getRolesFromIdam(UserProfile userProfile, boolean isMultiUserGet) {
 
-        IdamRolesInfo idamRolesInfo = idamService.fetchUserById(userProfile.getIdamId().toString());
-        if (idamRolesInfo.getResponseStatusCode().is2xxSuccessful()) {
-            persistAudit(idamRolesInfo, userProfile);
-            userProfile.setRoles(idamRolesInfo);
-        } else {
-            persistAudit(idamRolesInfo, userProfile);
-            // for multiple users get request , do not throw exception and continue flow
-            if (!isMultiUserGet) {
-                throw new IdamServiceException(idamRolesInfo.getStatusMessage(), idamRolesInfo.getResponseStatusCode());
-            } else {
-                // if SIDAM fails then send errorMessage and status code in response
+        if (IdamStatus.ACTIVE == userProfile.getStatus()) {
+            IdamRolesInfo idamRolesInfo = idamService.fetchUserById(userProfile.getIdamId().toString());
+            if (idamRolesInfo.getResponseStatusCode().is2xxSuccessful()) {
+                persistAudit(idamRolesInfo, userProfile);
+                userProfile.setRoles(idamRolesInfo);
                 userProfile.setErrorMessage(idamRolesInfo.getStatusMessage());
-                userProfile.setErrorStatusCode(idamRolesInfo.getResponseStatusCode().value());
+                userProfile.setErrorStatusCode(String.valueOf(idamRolesInfo.getResponseStatusCode().value()));
+            } else {
+                persistAudit(idamRolesInfo, userProfile);
+                // for multiple users get request , do not throw exception and continue flow
+                if (!isMultiUserGet) {
+                    throw new IdamServiceException(idamRolesInfo.getStatusMessage(), idamRolesInfo.getResponseStatusCode());
+                } else {
+                    // if SIDAM fails then send errorMessage and status code in response
+                    userProfile.setErrorMessage(idamRolesInfo.getStatusMessage());
+                    userProfile.setErrorStatusCode(String.valueOf(idamRolesInfo.getResponseStatusCode().value()));
+                }
             }
+        } else {
+            userProfile.setErrorMessage(IdamStatusResolver.NO_IDAM_CALL);
+            userProfile.setErrorStatusCode(" ");
         }
         return userProfile;
     }

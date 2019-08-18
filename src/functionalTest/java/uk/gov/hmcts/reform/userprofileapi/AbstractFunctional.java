@@ -38,7 +38,7 @@ public class AbstractFunctional {
 
     protected String requestUri = "/v1/userprofile";
 
-    /*@Before
+    /* @Before
     public void setupProxy() {
         //TO enable for local testing
         RestAssured.proxy("proxyout.reform.hmcts.net",8080);
@@ -78,8 +78,7 @@ public class AbstractFunctional {
         assertThat(resource).isNotNull();
         assertThat(resource.getIdamId()).isNotNull();
         assertThat(resource.getIdamId()).isInstanceOf(UUID.class);
-        //Do we need to verify Idam status ?
-        // assertThat(resource.getIdamRegistrationResponse()).isEqualTo(HttpStatus.CREATED.value());
+
     }
 
     protected void verifyGetUserProfile(GetUserProfileResponse resource, CreateUserProfileData expectedResource) {
@@ -95,7 +94,7 @@ public class AbstractFunctional {
     protected void verifyGetUserProfileWithRoles(GetUserProfileWithRolesResponse resource, CreateUserProfileData expectedResource) {
 
         verifyGetUserProfile(resource, expectedResource);
-        assertThat(resource.getRoles()).isNotEmpty();
+
     }
 
 }

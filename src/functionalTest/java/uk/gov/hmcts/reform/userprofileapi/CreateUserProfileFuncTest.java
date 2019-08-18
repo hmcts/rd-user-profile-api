@@ -42,6 +42,7 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
 
         verifyCreateUserProfile(createdResource);
 
+
     }
 
     @Test
