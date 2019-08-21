@@ -119,6 +119,8 @@ configurations {
     functionalTestRuntime.extendsFrom testRuntime
 }
 
+check.dependsOn jacocoTestCoverageVerification
+
 checkstyle {
     maxWarnings = 0
     toolVersion = '8.10.1'
