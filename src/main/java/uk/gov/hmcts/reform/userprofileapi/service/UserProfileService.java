@@ -26,11 +26,11 @@ public class UserProfileService<T extends RequestData> {
     }
 
     public GetUserProfileWithRolesResponse retrieveWithRoles(T requestData) {
-        return new GetUserProfileWithRolesResponse(resourceRetriever.retrieve(requestData, true));
+        return new GetUserProfileWithRolesResponse(resourceRetriever.retrieve(requestData, true), true);
     }
 
-    public GetUserProfilesResponse retrieveWithRoles(T requestData, boolean showDeleted) {
-        return new GetUserProfilesResponse(resourceRetriever.retrieveMultipleProfiles(requestData, showDeleted));
+    public GetUserProfilesResponse retrieveWithRoles(T requestData, boolean showDeleted, boolean rolesRequired) {
+        return new GetUserProfilesResponse(resourceRetriever.retrieveMultipleProfiles(requestData, showDeleted, rolesRequired), rolesRequired);
     }
 
     public GetUserProfileResponse retrieve(T requestData) {

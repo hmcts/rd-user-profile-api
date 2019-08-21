@@ -313,13 +313,15 @@ public class UserProfileController {
     )
     @ResponseBody
     public ResponseEntity<GetUserProfilesResponse> retrieveUserProfiles(@RequestParam (value = "showdeleted", required = true) String showDeleted,
+                                                                        @RequestParam (value = "rolesRequired", required = true) String rolesRequired,
                                                                           @RequestBody GetUserProfilesRequest getUserProfilesRequest) {
         log.info("Retrieving multiple user profiles");
 
         boolean showDeletedBoolean = UserProfileValidator.validateAndReturnBooleanForParam(showDeleted);
+        boolean rolesRequiredBoolean = UserProfileValidator.validateAndReturnBooleanForParam(rolesRequired);
         UserProfileValidator.validateUserIds(getUserProfilesRequest);
         GetUserProfilesResponse getUserProfilesResponse =
-                userProfileService.retrieveWithRoles(new UserProfileIdentifier(IdentifierName.UUID_LIST, getUserProfilesRequest.getUserIds()), showDeletedBoolean);
+                userProfileService.retrieveWithRoles(new UserProfileIdentifier(IdentifierName.UUID_LIST, getUserProfilesRequest.getUserIds()), showDeletedBoolean, rolesRequiredBoolean);
         return ResponseEntity.status(HttpStatus.OK).body(getUserProfilesResponse);
 
     }

@@ -154,7 +154,7 @@ public class UserProfileRetrieverTest {
         when(idamRolesInfoMock.getResponseStatusCode()).thenReturn(HttpStatus.OK);
         when(auditRepository.save(any())).thenReturn(audit);
 
-        List<UserProfile> userProfilesWithRoles = userProfileRetriever.retrieveMultipleProfiles(identifier, true);
+        List<UserProfile> userProfilesWithRoles = userProfileRetriever.retrieveMultipleProfiles(identifier, true, true);
         assertThat(userProfilesWithRoles.size()).isEqualTo(2);
 
         UserProfile getUserProfile1 = userProfilesWithRoles.get(0);
@@ -178,7 +178,7 @@ public class UserProfileRetrieverTest {
 
         when(querySupplier.getProfilesByIds(identifier, true)).thenThrow(ResourceNotFoundException.class);
 
-        assertThatThrownBy(() -> userProfileRetriever.retrieveMultipleProfiles(identifier, true))
+        assertThatThrownBy(() -> userProfileRetriever.retrieveMultipleProfiles(identifier, true, true))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 

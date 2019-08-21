@@ -12,7 +12,7 @@ public class GetUserProfilesResponseTest {
     public void should_hold_values_after_creation() {
 
 
-        GetUserProfilesResponse getUserProfilesResponse = new GetUserProfilesResponse(new ArrayList<UserProfile>());
+        GetUserProfilesResponse getUserProfilesResponse = new GetUserProfilesResponse(new ArrayList<UserProfile>(), true);
 
         assertThat(getUserProfilesResponse.getUserProfiles()).isNotNull();
     }

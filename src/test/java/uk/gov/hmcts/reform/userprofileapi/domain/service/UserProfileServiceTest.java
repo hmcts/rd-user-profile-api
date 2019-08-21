@@ -71,7 +71,7 @@ public class UserProfileServiceTest {
         UserProfileIdentifier identifier = mock(UserProfileIdentifier.class);
 
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
-        GetUserProfileWithRolesResponse expected = new GetUserProfileWithRolesResponse(userProfile);
+        GetUserProfileWithRolesResponse expected = new GetUserProfileWithRolesResponse(userProfile, true);
 
         Mockito.when(userProfileRetriever.retrieve(identifier, true)).thenReturn(userProfile);
 
