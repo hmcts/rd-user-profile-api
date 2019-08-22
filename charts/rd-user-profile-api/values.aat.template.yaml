@@ -14,8 +14,6 @@ java:
         resourceGroup: rd
         secrets:
           - s2s-url
-          - professional-api-POSTGRES-DATABASE
-          - professional-api-POSTGRES-HOST
-          - professional-api-POSTGRES-PASS
-          - professional-api-POSTGRES-PORT
-          - professional-api-POSTGRES-USER
+          - user-profile-api-POSTGRES-DATABASE
+          - user-profile-api-POSTGRES-HOST
+
