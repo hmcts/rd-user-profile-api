@@ -13,13 +13,17 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
+import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesRequest;
+import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRequestHandlerTest;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.AuditRepository;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.integration.util.TestUserProfileRepository;
+import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
+import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
+
 
 @Configuration
 @TestPropertySource(properties = {"S2S_URL=http://127.0.0.1:8990","IDAM_URL:http://127.0.0.1:5000"})
@@ -52,7 +56,7 @@ public class AuthorizationEnabledIntegrationTest {
     public WireMockRule s2sService = new WireMockRule(8990);
 
     @Rule
-    public WireMockRule idamService = new WireMockRule(8888);
+    public WireMockRule idamService = new WireMockRule(5000);
 
     @Before
     public void setUpWireMock() {
@@ -79,7 +83,7 @@ public class AuthorizationEnabledIntegrationTest {
                                 +  "  ]"
                                 +  "}")));
 
-        idamService.stubFor(post(urlEqualTo("/user/registration"))
+        idamService.stubFor(post(urlEqualTo("/api/v1/users/registration"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(201)
@@ -99,5 +103,15 @@ public class AuthorizationEnabledIntegrationTest {
                                 + "    \"pui-organisation-manager\""
                                 + "  ]"
                                 + "}")));
+    }
+
+    public GetUserProfilesResponse getMultipleUsers(GetUserProfilesRequest request, HttpStatus expectedStatus, String showDeleted) throws Exception {
+        return userProfileRequestHandlerTest.sendPost(
+                mockMvc,
+                APP_BASE_PATH + SLASH + "users?" + "showdeleted=" + showDeleted,
+                request,
+                expectedStatus,
+                GetUserProfilesResponse.class
+        );
     }
 }

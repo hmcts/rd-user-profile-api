@@ -33,18 +33,18 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
+import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRequestHandlerTest;
 import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.domain.service.IdamStatus;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.ResponseSource;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.AuditRepository;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.repository.UserProfileRepository;
+import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
+import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 
@@ -73,7 +73,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
     protected ObjectMapper objectMapper;
 
     @Rule
-    public WireMockRule idamService = new WireMockRule(8888);
+    public WireMockRule idamService = new WireMockRule(5000);
 
     private Map<String, UserProfile> userProfileMap;
 
@@ -81,31 +81,44 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
     public void setUpWireMock() {
 
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
-        idamService.stubFor(WireMock.post(urlEqualTo("/user/registration"))
+        idamService.stubFor(WireMock.post(urlEqualTo("/api/v1/users/registration"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
-                        .withHeader("Location", UUID.randomUUID().toString())
+                        .withHeader("Location", "/api/v1/users/" + UUID.randomUUID().toString())
                         .withStatus(409)
                 ));
     }
 
-    public void mockWithGetSuccess() {
+    public void mockWithGetSuccess(boolean withoutStatusFields) {
+
+        String body;
+        if (!withoutStatusFields) {
+
+            body = "{"
+                    + "  \"active\": \"true\","
+                    + "  \"forename\": \"fname\","
+                    + "  \"surname\": \"lname\","
+                    + "  \"email\": \"user@hmcts.net\","
+                    + "  \"locked\": \"false\","
+                    + "  \"pending\": \"false\","
+                    + "  \"roles\": ["
+                    + "    \"pui-organisation-manager\","
+                    + "    \"pui-user-manager\""
+                    + "  ]"
+                    + "}";
+        } else {
+            body = "{"
+                    + "  \"id\": \"e65e5439-a8f7-4ae6-b378-cc1015b72dbb\","
+                    + "  \"active\": \"false\","
+                    + "  \"pending\": \"true\""
+                    + "}";
+        }
+
         idamService.stubFor(get(urlMatching("/api/v1/users/.*"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(200)
-                        .withBody("{"
-                                + "  \"active\": \"true\","
-                                + "  \"forename\": \"fname\","
-                                + "  \"surname\": \"lname\","
-                                + "  \"email\": \"user@hmcts.net\","
-                                + "  \"locked\": \"false\","
-                                + "  \"roles\": ["
-                                + "    \"pui-organisation-manager\","
-                                + "    \"pui-case-manager\","
-                                + "    \"pui-user-manager\""
-                                + "  ]"
-                                + "}")));
+                        .withBody(body)));
 
     }
 
@@ -137,7 +150,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
     @Test
     public void should_return_201_and_create_user_profile_when_duplicate_in_sidam() throws Exception {
 
-        mockWithGetSuccess();
+        mockWithGetSuccess(false);
         mockWithUpdateSuccess();
         CreateUserProfileData data = buildCreateUserProfileData();
 
@@ -150,7 +163,27 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
                 CreateUserProfileResponse.class
             );
 
-        verifyUserProfileCreation(createdResource, CREATED, data);
+        verifyUserProfileCreation(createdResource, CREATED, data, IdamStatus.ACTIVE);
+
+    }
+
+    @Test
+    public void should_return_201_and_create_user_profile_when_status_not_properly_returned_by_sidam() throws Exception {
+
+        mockWithGetSuccess(true);
+        mockWithUpdateSuccess();
+        CreateUserProfileData data = buildCreateUserProfileData();
+
+        CreateUserProfileResponse createdResource =
+                userProfileRequestHandlerTest.sendPost(
+                        mockMvc,
+                        APP_BASE_PATH,
+                        data,
+                        CREATED,
+                        CreateUserProfileResponse.class
+                );
+
+        verifyUserProfileCreation(createdResource, CREATED, data, IdamStatus.PENDING);
 
     }
 
@@ -179,7 +212,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
     @Test
     public void should_return_400_and_not_create_user_profile_when_duplicate_in_sidam_and_update_failed() throws Exception {
 
-        mockWithGetSuccess();
+        mockWithGetSuccess(true);
         mockWithUpdateFail();
         auditRepository.deleteAll();
         userProfileRepository.deleteAll();
@@ -198,7 +231,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
 
     }
 
-    private void verifyUserProfileCreation(CreateUserProfileResponse createdResource, HttpStatus idamStatus, CreateUserProfileData data) {
+    private void verifyUserProfileCreation(CreateUserProfileResponse createdResource, HttpStatus idamStatus, CreateUserProfileData data, IdamStatus expectedIdamStatus) {
 
         assertThat(createdResource.getIdamId()).isNotNull();
         assertThat(createdResource.getIdamId()).isInstanceOf(UUID.class);
@@ -208,13 +241,10 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
         UserProfile userProfile = persistedUserProfile.get();
         assertThat(userProfile.getId()).isNotNull().isExactlyInstanceOf(Long.class);
         assertThat(userProfile.getIdamRegistrationResponse()).isEqualTo(201);
-        assertThat(userProfile.getEmail()).isEqualTo("user@hmcts.net");
-        assertThat(userProfile.getFirstName()).isNotEmpty().isEqualTo("fname");
-        assertThat(userProfile.getLastName()).isNotEmpty().isEqualTo("lname");
         assertThat(userProfile.getLanguagePreference()).isEqualTo(LanguagePreference.EN);
         assertThat(userProfile.getUserCategory()).isEqualTo(UserCategory.PROFESSIONAL);
         assertThat(userProfile.getUserType()).isEqualTo(UserType.EXTERNAL);
-        assertThat(userProfile.getStatus()).isEqualTo(IdamStatus.PENDING);
+        assertThat(userProfile.getStatus()).isEqualTo(expectedIdamStatus);
         assertThat(userProfile.isEmailCommsConsent()).isEqualTo(false);
         assertThat(userProfile.isPostalCommsConsent()).isEqualTo(false);
         assertThat(userProfile.getEmailCommsConsentTs()).isNull();
@@ -228,7 +258,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
         assertThat(audit).isNotNull();
         assertThat(audit.getIdamRegistrationResponse()).isEqualTo(201);
         assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.ACCEPTED);
-        assertThat(audit.getSource()).isEqualTo(ResponseSource.SIDAM);
+        assertThat(audit.getSource()).isEqualTo(ResponseSource.API);
         assertThat(audit.getUserProfile().getIdamId()).isEqualTo(createdResource.getIdamId());
         assertThat(audit.getAuditTs()).isNotNull();
 
@@ -246,7 +276,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
         assertThat(audit).isNotNull();
         assertThat(audit.getIdamRegistrationResponse()).isEqualTo(idamStatus.value());
         assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.resolveStatusAndReturnMessage(idamStatus));
-        assertThat(audit.getSource()).isEqualTo(ResponseSource.SIDAM);
+        assertThat(audit.getSource()).isEqualTo(ResponseSource.API);
         assertThat(audit.getUserProfile()).isNull();
         assertThat(audit.getAuditTs()).isNotNull();
 

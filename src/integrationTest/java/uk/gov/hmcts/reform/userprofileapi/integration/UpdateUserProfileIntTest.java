@@ -30,10 +30,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
+import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.ResponseSource;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UpdateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 @RunWith(SpringRunner.class)
@@ -67,13 +68,34 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
         UpdateUserProfileData data = buildUpdateUserProfileData();
 
         userProfileRequestHandlerTest.sendPut(
-            mockMvc,
-            APP_BASE_PATH + SLASH + idamId.toString(),
-            data,
-            OK
+                mockMvc,
+                APP_BASE_PATH + SLASH + idamId.toString(),
+                data,
+                OK
         );
 
         verifyUserProfileCreation(data, persistedUserProfile);
+
+    }
+
+    @Test
+    public void should_return_200_and_when_IdamStatus_is_updated() throws Exception {
+
+        UserProfile persistedUserProfile = userProfileMap.get("user");
+        UUID idamId = persistedUserProfile.getIdamId();
+        UpdateUserProfileData data = buildUpdateUserProfileData();
+        data.setIdamStatus("Active");
+
+        userProfileRequestHandlerTest.sendPut(
+                mockMvc,
+                APP_BASE_PATH + SLASH + idamId.toString(),
+                data,
+                OK
+        );
+
+        Optional<UserProfile> optionalUp = userProfileRepository.findByIdamId(persistedUserProfile.getIdamId());
+        UserProfile updatedUserProfile = optionalUp.orElse(null);
+        assertThat(updatedUserProfile.getStatus()).isEqualTo(IdamStatus.ACTIVE);
 
     }
 
@@ -103,7 +125,7 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
         assertThat(audit).isNotNull();
         assertThat(audit.getIdamRegistrationResponse()).isEqualTo(200);
         assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.OK);
-        assertThat(audit.getSource()).isEqualTo(ResponseSource.QUARTZ);
+        assertThat(audit.getSource()).isEqualTo(ResponseSource.SYNC);
         assertThat(audit.getUserProfile().getIdamId()).isEqualTo(updatedUserProfile.getIdamId());
         assertThat(audit.getAuditTs()).isNotNull();
 

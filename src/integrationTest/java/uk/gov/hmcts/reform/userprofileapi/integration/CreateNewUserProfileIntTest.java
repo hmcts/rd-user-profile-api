@@ -26,15 +26,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.domain.service.IdamStatus;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.ResponseSource;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 @RunWith(SpringRunner.class)
@@ -95,7 +95,7 @@ public class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegration
         assertThat(audit).isNotNull();
         assertThat(audit.getIdamRegistrationResponse()).isEqualTo(201);
         assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.ACCEPTED);
-        assertThat(audit.getSource()).isEqualTo(ResponseSource.SIDAM);
+        assertThat(audit.getSource()).isEqualTo(ResponseSource.API);
         assertThat(audit.getUserProfile().getIdamId()).isEqualTo(createdResource.getIdamId());
         assertThat(audit.getAuditTs()).isNotNull();
 
@@ -116,6 +116,7 @@ public class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegration
         assertThat(result.getResponse().getContentAsString()).isNotEmpty();
     }
 
+
     @Test
     public void should_return_400_when_any_mandatory_field_missing() throws Exception {
 
@@ -124,9 +125,6 @@ public class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegration
                 "email",
                 "firstName",
                 "lastName",
-                "languagePreference",
-                "userCategory",
-                "userType",
                 "roles"
             );
 
@@ -167,7 +165,6 @@ public class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegration
                         "email",
                         "firstName",
                         "lastName",
-                        "languagePreference",
                         "userCategory",
                         "userType"
                 );

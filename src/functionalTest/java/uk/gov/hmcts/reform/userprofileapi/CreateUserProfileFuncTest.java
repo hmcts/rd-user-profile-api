@@ -13,17 +13,14 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-
+import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.client.IdamClient;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
-import uk.gov.hmcts.reform.userprofileapi.idam.IdamServiceForFunctional;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileResponse;
 
 @Ignore
 @RunWith(SpringIntegrationSerenityRunner.class)
-@SpringBootTest
 public class CreateUserProfileFuncTest extends AbstractFunctional {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateUserProfileFuncTest.class);
@@ -31,10 +28,13 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
     @Autowired
     protected TestConfigProperties configProperties;
 
+    private IdamClient idamClient;
+
     @Before
     public void setUp() {
         RestAssured.baseURI = targetInstance;
         RestAssured.useRelaxedHTTPSValidation();
+        idamClient = new IdamClient(configProperties);
     }
 
     @Test
@@ -44,14 +44,13 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
 
         verifyCreateUserProfile(createdResource);
 
+
     }
 
     @Test
     public void should_create_user_profile_for_duplicate_idam_user_and_verify_successfully() throws Exception {
 
-        IdamServiceForFunctional idamService = new IdamServiceForFunctional(configProperties);
-
-        String email = idamService.createUserWith("","");
+        String email = idamClient.createUser("pui-user-manager");
 
         CreateUserProfileData data = createUserProfileData();
         data.setEmail(email);
@@ -73,7 +72,7 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
     }
 
     @Test
-    public void should_return_400_when_attempting_to_add_duplicate_emails() throws Exception {
+    public void should_return_409_when_attempting_to_add_duplicate_emails() throws Exception {
 
         CreateUserProfileData data = createUserProfileData();
 
@@ -89,7 +88,7 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
 
         testRequestHandler.sendPost(
             testRequestHandler.asJsonString(data),
-            HttpStatus.BAD_REQUEST,
+            HttpStatus.CONFLICT,
             requestUri);
     }
 

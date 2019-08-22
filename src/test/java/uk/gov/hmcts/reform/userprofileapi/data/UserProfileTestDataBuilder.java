@@ -11,6 +11,7 @@ import org.assertj.core.util.Lists;
 import org.junit.Ignore;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 
 @Ignore
 public class UserProfileTestDataBuilder {
@@ -25,10 +26,17 @@ public class UserProfileTestDataBuilder {
         return up;
     }
 
+    public static UserProfile buildUserProfileWithDeletedStatus() {
+        UserProfile up = new UserProfile(buildCreateUserProfileData(), HttpStatus.CREATED);
+        up.setStatus(IdamStatus.DELETED);
+        up.setIdamId(UUID.randomUUID());
+        return up;
+    }
+
     public static UserProfile buildUserProfileWithAllFields() {
 
         List<String> unInitFields =
-            Lists.newArrayList("id", "idamId", "idamStatus", "createdTs", "lastUpdatedTs");
+            Lists.newArrayList("id", "idamId", "status", "created", "lastUpdated");
 
         UserProfile userProfile = new UserProfile(buildCreateUserProfileData(), HttpStatus.CREATED);
 
@@ -40,17 +48,12 @@ public class UserProfileTestDataBuilder {
                 field.setAccessible(true);
 
                 if (field.getType().equals(UUID.class)) {
-                    System.out.println("Setting UUID >>>>>> ");
                     field.set(userProfile, UUID.randomUUID());
                 } else if ((field.getType().equals(String.class))) {
-                    System.out.println("Setting " + field.getName());
                     field.set(userProfile, randomAlphanumeric(32));
                 } else if ((field.getType().equals(LocalDateTime.class))) {
-                    System.out.println("Setting " + field.getName());
                     field.set(userProfile, LocalDateTime.now());
                 }
-
-
             } catch (Exception e) {
                 throw new IllegalStateException("could not set field value ", e);
             }

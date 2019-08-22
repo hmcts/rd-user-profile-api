@@ -21,8 +21,14 @@ locals {
 
 resource "azurerm_resource_group" "rg" {
   name = "${var.product}-${var.component}-${var.env}"
-  location = "${var.location}"
-  tags = "${merge(var.common_tags, map("lastUpdated", "${timestamp()}"))}"
+    location = "${var.location}"
+    tags {
+      "Deployment Environment" = "${var.env}"
+      "Team Name" = "${var.team_name}"
+      "Team Contact" = "${var.team_contact}"
+      "Destroy Me" = "${var.destroy_me}"
+      "lastUpdated" = "${timestamp()}"
+    }
 }
 
 data "azurerm_key_vault" "rd_key_vault" {
@@ -42,6 +48,11 @@ data "azurerm_key_vault_secret" "up_s2s_microservice" {
 
 data "azurerm_key_vault_secret" "s2s_url" {
   name = "s2s-url"
+  key_vault_id = "${data.azurerm_key_vault.rd_key_vault.id}"
+}
+
+data "azurerm_key_vault_secret" "idam_url" {
+  name = "idam-url"
   key_vault_id = "${data.azurerm_key_vault.rd_key_vault.id}"
 }
 
@@ -118,7 +129,7 @@ module "rd-user-profile-api" {
     POSTGRES_PASSWORD = "${module.db-user-profile.postgresql_password}"
     POSTGRES_CONNECTION_OPTIONS = "?"
 
-    IDAM_URL = "${local.idam_url}"
+    IDAM_URL = "${data.azurerm_key_vault_secret.idam_url.value}"
     S2S_URL = "${local.s2s_url}"
 
     ROOT_LOGGING_LEVEL = "${var.root_logging_level}"

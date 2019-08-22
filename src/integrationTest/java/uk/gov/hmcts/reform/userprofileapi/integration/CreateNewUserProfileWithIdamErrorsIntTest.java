@@ -23,10 +23,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 @RunWith(SpringRunner.class)
@@ -37,7 +37,7 @@ public class CreateNewUserProfileWithIdamErrorsIntTest  extends AuthorizationEna
     @Before
     public void setUpWireMock() {
 
-        idamService.stubFor(post(urlEqualTo("/user/registration"))
+        idamService.stubFor(post(urlEqualTo("/api/v1/users/registration"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(400)
@@ -81,7 +81,7 @@ public class CreateNewUserProfileWithIdamErrorsIntTest  extends AuthorizationEna
             assertThat(audit).isNotNull();
             assertThat(audit.getIdamRegistrationResponse()).isEqualTo(400);
             assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.INVALID_REQUEST);
-            assertThat(audit.getSource()).isEqualTo(ResponseSource.SIDAM);
+            assertThat(audit.getSource()).isEqualTo(ResponseSource.API);
             assertThat(audit.getUserProfile()).isNull();
         }
     }

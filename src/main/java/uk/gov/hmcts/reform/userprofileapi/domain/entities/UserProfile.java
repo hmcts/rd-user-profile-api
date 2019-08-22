@@ -17,16 +17,16 @@ import javax.persistence.Transient;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.http.HttpStatus;
+import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
-import uk.gov.hmcts.reform.userprofileapi.domain.service.IdamStatus;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
-
+import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 
 @Getter
 @Setter
@@ -37,28 +37,37 @@ public class UserProfile {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_profile_id_seq")
     private Long id;
+
     private UUID idamId;
+
     @Column(name = "email_address")
     private String email;
+
     private String firstName;
+
     private String lastName;
 
     @Enumerated(EnumType.STRING)
-    private LanguagePreference languagePreference;
+    private LanguagePreference languagePreference = LanguagePreference.EN;
 
     private boolean emailCommsConsent;
+
     private LocalDateTime emailCommsConsentTs;
+
     private boolean postalCommsConsent;
+
     private LocalDateTime postalCommsConsentTs;
 
     @Enumerated(EnumType.STRING)
     private UserCategory userCategory;
+
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
     @Column (name = "idam_status")
     @Enumerated(EnumType.STRING)
-    private IdamStatus status;
+    private IdamStatus status = IdamStatus.PENDING;
+
     @Transient
     private Integer idamRegistrationResponse;
 
@@ -74,6 +83,12 @@ public class UserProfile {
     @Transient
     private List<String> roles = new ArrayList<String>();
 
+    @Transient
+    private String errorMessage;
+
+    @Transient
+    private String errorStatusCode;
+
     public UserProfile() {
         //noop
     }
@@ -83,12 +98,14 @@ public class UserProfile {
         this.email = data.getEmail().trim().toLowerCase();
         this.firstName = data.getFirstName().trim();
         this.lastName = data.getLastName().trim();
-        this.languagePreference = LanguagePreference.valueOf(data.getLanguagePreference());
+        if (StringUtils.isNotBlank(data.getLanguagePreference())) {
+            this.languagePreference = LanguagePreference.valueOf(data.getLanguagePreference());
+        }
+        this.emailCommsConsent = data.isEmailCommsConsent();
+        this.postalCommsConsent = data.isPostalCommsConsent();
         this.userCategory = UserCategory.valueOf(data.getUserCategory());
         this.userType = UserType.valueOf(data.getUserType());
         this.idamRegistrationResponse = idamStatus.value();
-        this.status = IdamStatus.PENDING;
-
     }
 
     public void setRoles(IdamRolesInfo idamrolesInfo) {

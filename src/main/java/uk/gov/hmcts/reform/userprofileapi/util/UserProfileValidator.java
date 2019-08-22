@@ -3,15 +3,16 @@ package uk.gov.hmcts.reform.userprofileapi.util;
 import static java.util.Objects.requireNonNull;
 
 import org.apache.commons.lang.StringUtils;
+import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesRequest;
+import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.domain.service.IdamStatus;
-import uk.gov.hmcts.reform.userprofileapi.domain.service.ResourceNotFoundException;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UpdateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
+import uk.gov.hmcts.reform.userprofileapi.service.ResourceNotFoundException;
 
 public interface UserProfileValidator {
 
@@ -47,7 +48,7 @@ public interface UserProfileValidator {
             isValid = false;
         } else {
             try {
-                validateEnumField(STATUS, updateUserProfileData.getIdamStatus());
+                validateEnumField(STATUS, updateUserProfileData.getIdamStatus().toUpperCase());
             } catch (Exception ex) {
                 isValid = false;
             }
@@ -96,25 +97,46 @@ public interface UserProfileValidator {
     static void validateCreateUserProfileRequest(CreateUserProfileData request) {
         requireNonNull(request, "createUserProfileData cannot be null");
 
-        validateEnumField(LANGUAGEPREFERENCE, request.getLanguagePreference());
         validateEnumField(USERTYPE, request.getUserType());
         validateEnumField(USERCATEGORY, request.getUserCategory());
     }
 
     static void validateEnumField(String name, String value) {
-        try {
-            if (name.equals(STATUS)) {
-                IdamStatus.valueOf(value);
-            } else if (name.equals(LANGUAGEPREFERENCE)) {
-                LanguagePreference.valueOf(value);
-            } else if (name.equals(USERTYPE)) {
-                UserType.valueOf(value);
-            } else if (name.equals(USERCATEGORY)) {
-                UserCategory.valueOf(value);
+        if (null != value) {
+            try {
+                if (name.equals(STATUS)) {
+                    IdamStatus.valueOf(value);
+                } else if (name.equals(LANGUAGEPREFERENCE)) {
+                    LanguagePreference.valueOf(value);
+                } else if (name.equals(USERTYPE)) {
+                    UserType.valueOf(value);
+                } else if (name.equals(USERCATEGORY)) {
+                    UserCategory.valueOf(value);
+                }
+            } catch (IllegalArgumentException ex) {
+                throw new RequiredFieldMissingException(name + " has invalid value : " + value);
             }
-        } catch (IllegalArgumentException ex) {
-            throw new RequiredFieldMissingException(name + " has invalid value : " + value);
         }
+    }
 
+    static boolean validateAndReturnBooleanForParam(String showDeleted) {
+
+        boolean isValid = false;
+        if (null == showDeleted) {
+            throw new RequiredFieldMissingException("param showDeleted" + " has invalid value : " + showDeleted);
+        } else if ("true".equalsIgnoreCase(showDeleted)) {
+            isValid = true;
+        } else if ("false".equalsIgnoreCase(showDeleted)) {
+            isValid = false;
+        } else {
+            throw new RequiredFieldMissingException("param showDeleted" + " has invalid value : " + showDeleted);
+        }
+        return isValid;
+    }
+
+    static void validateUserIds(GetUserProfilesRequest getUserProfilesRequest) {
+        if (getUserProfilesRequest.getUserIds().isEmpty()) {
+            throw new RequiredFieldMissingException("no user id in request");
+        }
     }
 }

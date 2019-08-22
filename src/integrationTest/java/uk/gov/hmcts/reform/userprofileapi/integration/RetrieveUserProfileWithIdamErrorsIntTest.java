@@ -22,9 +22,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.ResponseSource;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 @RunWith(SpringRunner.class)
@@ -37,7 +38,7 @@ public class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabl
     @Before
     public void setUpWireMock() {
 
-        idamService.stubFor(post(urlEqualTo("/user/registration"))
+        idamService.stubFor(post(urlEqualTo("/api/v1/users/registration"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(201)
@@ -54,7 +55,10 @@ public class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabl
         Iterable<UserProfile> userProfiles = testUserProfileRepository.findAll();
         assertThat(userProfiles).isEmpty();
 
-        UserProfile user1 = testUserProfileRepository.save(buildUserProfile());
+        UserProfile user1 = buildUserProfile();
+        user1.setStatus(IdamStatus.ACTIVE);
+        user1 = testUserProfileRepository.save(user1);
+
 
         assertTrue(testUserProfileRepository.existsById(user1.getId()));
 
@@ -82,7 +86,7 @@ public class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabl
         assertThat(audit).isNotNull();
         assertThat(audit.getIdamRegistrationResponse()).isEqualTo(404);
         assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.NOT_FOUND);
-        assertThat(audit.getSource()).isEqualTo(ResponseSource.SIDAM);
+        assertThat(audit.getSource()).isEqualTo(ResponseSource.API);
         assertThat(audit.getUserProfile().getIdamId()).isNotNull();
         assertThat(audit.getAuditTs()).isNotNull();
 
@@ -104,7 +108,7 @@ public class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabl
         assertThat(audit).isNotNull();
         assertThat(audit.getIdamRegistrationResponse()).isEqualTo(404);
         assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.NOT_FOUND);
-        assertThat(audit.getSource()).isEqualTo(ResponseSource.SIDAM);
+        assertThat(audit.getSource()).isEqualTo(ResponseSource.API);
         assertThat(audit.getUserProfile().getIdamId()).isNotNull();
         assertThat(audit.getAuditTs()).isNotNull();
 

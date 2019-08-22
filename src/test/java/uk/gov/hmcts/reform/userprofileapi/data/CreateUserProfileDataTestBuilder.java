@@ -5,12 +5,12 @@ import java.util.List;
 
 import lombok.Setter;
 import org.apache.commons.lang.RandomStringUtils;
+import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
-import uk.gov.hmcts.reform.userprofileapi.domain.service.IdamStatus;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.UpdateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 
 @Setter
 public class CreateUserProfileDataTestBuilder {
@@ -25,6 +25,8 @@ public class CreateUserProfileDataTestBuilder {
             RandomStringUtils.randomAlphabetic(20),
             RandomStringUtils.randomAlphabetic(20),
             LanguagePreference.EN.toString(),
+            false,
+            false,
             UserCategory.PROFESSIONAL.toString(),
             UserType.EXTERNAL.toString(),
             getIdamRolesJson());

@@ -21,11 +21,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
+import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileWithRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.GetUserProfileWithRolesResponse;
-import uk.gov.hmcts.reform.userprofileapi.infrastructure.clients.ResponseSource;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 @RunWith(SpringRunner.class)
@@ -45,7 +46,10 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
         Iterable<UserProfile> userProfiles = testUserProfileRepository.findAll();
         assertThat(userProfiles).isEmpty();
 
-        UserProfile user1 = testUserProfileRepository.save(buildUserProfile());
+        UserProfile user1 = buildUserProfile();
+        user1.setStatus(IdamStatus.ACTIVE);
+        user1 = testUserProfileRepository.save(user1);
+
 
         assertTrue(testUserProfileRepository.existsById(user1.getId()));
 
@@ -67,7 +71,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
             );
 
         assertThat(retrievedResource).isNotNull();
-        assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile, "roles", "idamStatus");
+        assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile, "roles", "idamStatus", "idamStatusCode", "idamMessage");
     }
 
     @Test
@@ -83,7 +87,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
                 );
 
         assertThat(retrievedResource).isNotNull();
-        assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile, "roles", "idamStatus");
+        assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile, "roles", "idamStatus", "idamStatusCode", "idamMessage");
         assertThat(retrievedResource.getRoles().size()).isGreaterThan(0);
 
         Optional<UserProfile> optionalUserProfile = userProfileRepository.findByIdamId(retrievedResource.getIdamId());
@@ -95,7 +99,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
         assertThat(audit).isNotNull();
         assertThat(audit.getIdamRegistrationResponse()).isEqualTo(200);
         assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.OK);
-        assertThat(audit.getSource()).isEqualTo(ResponseSource.SIDAM);
+        assertThat(audit.getSource()).isEqualTo(ResponseSource.API);
         assertThat(audit.getUserProfile().getIdamId()).isEqualTo(retrievedResource.getIdamId());
         assertThat(audit.getAuditTs()).isNotNull();
 
@@ -114,7 +118,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
                 );
 
         assertThat(retrievedResource).isNotNull();
-        assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile, "roles", "idamStatus");
+        assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile, "roles", "idamStatus", "idamStatusCode", "idamMessage");
         assertThat(retrievedResource.getRoles().size()).isGreaterThan(0);
 
         Optional<UserProfile> optionalUserProfile = userProfileRepository.findByIdamId(retrievedResource.getIdamId());
@@ -126,7 +130,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
         assertThat(audit).isNotNull();
         assertThat(audit.getIdamRegistrationResponse()).isEqualTo(200);
         assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.OK);
-        assertThat(audit.getSource()).isEqualTo(ResponseSource.SIDAM);
+        assertThat(audit.getSource()).isEqualTo(ResponseSource.API);
         assertThat(audit.getUserProfile().getIdamId()).isEqualTo(retrievedResource.getIdamId());
         assertThat(audit.getAuditTs()).isNotNull();
 
