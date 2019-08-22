@@ -12,14 +12,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
 
 
 
 @Getter
-@Setter
 @Entity
 @Table(name = "response")
 @SequenceGenerator(name = "response_id_seq", sequenceName = "response_id_seq", allocationSize = 1)

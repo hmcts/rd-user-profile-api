@@ -119,7 +119,7 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
         GetUserProfilesRequest request = new GetUserProfilesRequest(userIds);
         request.getUserIds().add(UUID.randomUUID().toString());
 
-        GetUserProfilesResponse response = getMultipleUsers(request, OK,"true" , "true");
+        GetUserProfilesResponse response = getMultipleUsers(request, OK,"true","true");
 
         assertThat(response).isNotNull();
         assertThat(response.getUserProfiles().size()).isEqualTo(4);
