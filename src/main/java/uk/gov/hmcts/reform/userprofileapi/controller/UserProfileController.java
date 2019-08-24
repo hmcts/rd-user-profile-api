@@ -282,6 +282,8 @@ public class UserProfileController {
             name = "showdeleted",
             required = true
     )
+
+
     @ApiResponses({
             @ApiResponse(
                     code = 200,
@@ -307,14 +309,13 @@ public class UserProfileController {
 
     @PostMapping(
             path = "/users",
-            params = "showdeleted",
             consumes = APPLICATION_JSON_UTF8_VALUE,
             produces = APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseBody
-    public ResponseEntity<GetUserProfilesResponse> retrieveUserProfiles(@RequestParam (value = "showdeleted", required = true) String showDeleted,
-                                                                        @RequestParam (value = "rolesRequired", required = true) String rolesRequired,
-                                                                          @RequestBody GetUserProfilesRequest getUserProfilesRequest) {
+    public ResponseEntity<GetUserProfilesResponse> retrieveUserProfiles(@ApiParam(name = "showdeleted", required = true)@RequestParam (value = "showdeleted", required = true) String showDeleted,
+                                                                        @ApiParam(name = "rolesRequired", required = true)@RequestParam (value = "rolesRequired", required = true) String rolesRequired,
+                                                                        @RequestBody GetUserProfilesRequest getUserProfilesRequest) {
         log.info("Retrieving multiple user profiles");
 
         boolean showDeletedBoolean = UserProfileValidator.validateAndReturnBooleanForParam(showDeleted);
