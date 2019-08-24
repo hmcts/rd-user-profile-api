@@ -79,7 +79,18 @@ public class UserProfileValidatorTest {
 
         boolean response1 = UserProfileValidator.isBlankOrSizeInvalid("lname", 2);
         assertThat(response1).isTrue();
+
+        boolean response3 = UserProfileValidator.isBlankOrSizeInvalid(null, 5);
+        assertThat(response3).isTrue();
+
+        boolean response4 = UserProfileValidator.isBlankOrSizeInvalid("lname", 2);
+        assertThat(response4).isTrue();
+
+        boolean response5 = UserProfileValidator.isBlankOrSizeInvalid("lname", 8);
+        assertThat(response5).isFalse();
     }
+
+
 
     @Test
     public void test_isSameAsExistingUserProfile() {
@@ -106,6 +117,13 @@ public class UserProfileValidatorTest {
 
     @Test(expected = Test.None.class)
     public void test_validateCreateUserProfileRequest_no_exception_thrown() {
+        UserProfileValidator.validateCreateUserProfileRequest(userProfileData);
+    }
+
+    @Test(expected = Test.None.class)
+    public void test_validateCreateUserProfileRequest_no_exception_thrown_when_values_are_null() {
+        userProfileData.setUserCategory(null);
+        userProfileData.setUserType(null);
         UserProfileValidator.validateCreateUserProfileRequest(userProfileData);
     }
 

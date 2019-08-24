@@ -69,14 +69,18 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
         return userProfile;
     }
 
-    public List<UserProfile> retrieveMultipleProfiles(UserProfileIdentifier identifier, boolean showDeleted) {
+    public List<UserProfile> retrieveMultipleProfiles(UserProfileIdentifier identifier, boolean showDeleted, boolean rolesRequired) {
         //get all users from UP DB
         List<UserProfile> userProfiles = querySupplier.getProfilesByIds(identifier, showDeleted).orElse(new ArrayList<UserProfile>());
         if (CollectionUtils.isEmpty(userProfiles)) {
             throw new ResourceNotFoundException("Could not find resource");
         }
         //get roles from sidam for each user
-        return userProfiles.stream().map(profile -> getRolesFromIdam(profile, true)).collect(Collectors.toList());
+        if (rolesRequired) {
+            return userProfiles.stream().map(profile -> getRolesFromIdam(profile, true)).collect(Collectors.toList());
+        } else {
+            return userProfiles;
+        }
     }
 
     private void persistAudit(IdamRolesInfo idamRolesInfo, UserProfile userProfile) {

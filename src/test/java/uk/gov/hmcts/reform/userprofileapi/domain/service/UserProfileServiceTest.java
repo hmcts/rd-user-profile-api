@@ -4,18 +4,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileWithRolesResponse;
-import uk.gov.hmcts.reform.userprofileapi.client.RequestData;
-import uk.gov.hmcts.reform.userprofileapi.client.UserProfileIdentifier;
+import uk.gov.hmcts.reform.userprofileapi.client.*;
 import uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileCreator;
@@ -67,11 +64,11 @@ public class UserProfileServiceTest {
     }
 
     @Test
-    public void should_call_retriever_retrieve_with_roles_method_successfully() {
+        public void should_call_retriever_retrieve_with_roles_method_successfully() {
         UserProfileIdentifier identifier = mock(UserProfileIdentifier.class);
 
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
-        GetUserProfileWithRolesResponse expected = new GetUserProfileWithRolesResponse(userProfile);
+        GetUserProfileWithRolesResponse expected = new GetUserProfileWithRolesResponse(userProfile, true);
 
         Mockito.when(userProfileRetriever.retrieve(identifier, true)).thenReturn(userProfile);
 
@@ -80,5 +77,24 @@ public class UserProfileServiceTest {
         assertThat(resource).isEqualToComparingFieldByField(expected);
 
     }
+
+    @Test
+    public void should_call_retriever_retrieve_multiple_users_with_roles_method_successfully() {
+        UserProfileIdentifier identifier = mock(UserProfileIdentifier.class);
+
+        List<UserProfile> profileList = new ArrayList<>();
+        UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
+        profileList.add(userProfile);
+        GetUserProfileWithRolesResponse expected = new GetUserProfileWithRolesResponse(userProfile, true);
+
+        Mockito.when(userProfileRetriever.retrieveMultipleProfiles(identifier, true, true)).thenReturn(profileList);
+
+        GetUserProfilesResponse resource = userProfileService.retrieveWithRoles(identifier, true, true);
+
+        assertThat(resource).isNotNull();
+
+    }
+
+
 
 }
