@@ -16,9 +16,9 @@ public class GetUserProfilesResponse {
     @JsonProperty
     private List<GetUserProfileWithRolesResponse> userProfiles;
 
-    public GetUserProfilesResponse(List<UserProfile> userProfile) {
+    public GetUserProfilesResponse(List<UserProfile> userProfile, boolean rolesRequired) {
         this.userProfiles = userProfile.stream()
-                .map(professionalUser -> new GetUserProfileWithRolesResponse(professionalUser))
+                .map(professionalUser -> new GetUserProfileWithRolesResponse(professionalUser, rolesRequired))
                 .collect(toList());
     }
 }

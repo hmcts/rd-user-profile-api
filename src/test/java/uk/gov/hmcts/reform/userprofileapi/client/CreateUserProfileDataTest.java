@@ -7,6 +7,7 @@ import org.junit.Test;
 import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 
 public class CreateUserProfileDataTest {
 
@@ -29,8 +30,17 @@ public class CreateUserProfileDataTest {
         assertThat(userProfileData.getFirstName()).isEqualTo("test-first-name");
         assertThat(userProfileData.getLastName()).isEqualTo("test-last-name");
         assertThat(userProfileData.getUserCategory()).isEqualTo(UserCategory.CITIZEN.toString());
+        assertThat(userProfileData.getLanguagePreference()).isEqualTo(LanguagePreference.EN.toString());
         assertThat(userProfileData.getUserType()).isEqualTo(UserType.EXTERNAL.toString());
         assertThat(userProfileData.getRoles()).isEqualTo(getIdamRolesJson());
+
+        userProfileData.setStatus(IdamStatus.ACTIVE);
+        assertThat(userProfileData.getStatus()).isEqualTo(IdamStatus.ACTIVE);
+
+        userProfileData.setStatus(null);
+        assertThat(userProfileData.getStatus()).isEqualTo(IdamStatus.ACTIVE);
+
+
 
         CreateUserProfileData userProfileData1 = new CreateUserProfileData();
         assertThat(userProfileData1).isNotNull();

@@ -52,7 +52,7 @@ public class RetrieveMultipleUserProfileFuncTest extends AbstractFunctional {
         GetUserProfilesResponse response = testRequestHandler.sendPost(
                 request,
                 HttpStatus.OK,
-                requestUri + "/users?showdeleted=false",
+                requestUri + "/users?showdeleted=false&rolesRequired=true",
                 GetUserProfilesResponse.class
         );
 
@@ -94,7 +94,7 @@ public class RetrieveMultipleUserProfileFuncTest extends AbstractFunctional {
         GetUserProfilesResponse response = testRequestHandler.sendPost(
                 request,
                 HttpStatus.OK,
-                requestUri + "/users?showdeleted=true",
+                requestUri + "/users?showdeleted=true&rolesRequired=true",
                 GetUserProfilesResponse.class
         );
 
@@ -113,7 +113,7 @@ public class RetrieveMultipleUserProfileFuncTest extends AbstractFunctional {
         testRequestHandler.sendPost(
                 request,
                 HttpStatus.NOT_FOUND,
-                requestUri + "/users?showdeleted=false"
+                requestUri + "/users?showdeleted=false&rolesRequired=true"
         );
     }
 
@@ -130,7 +130,7 @@ public class RetrieveMultipleUserProfileFuncTest extends AbstractFunctional {
                 request,
 
                 HttpStatus.BAD_REQUEST,
-                requestUri + "/users?showdeleted=fals"              
+                requestUri + "/users?showdeleted=fals&rolesRequired=true"
 
         );
     }

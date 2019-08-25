@@ -90,7 +90,7 @@ public class UserProfileControllerTest {
 
         UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID, UUID.randomUUID().toString());
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
-        GetUserProfileWithRolesResponse expectedResource = new GetUserProfileWithRolesResponse(userProfile);
+        GetUserProfileWithRolesResponse expectedResource = new GetUserProfileWithRolesResponse(userProfile, true);
 
         when(userProfileServiceMock.retrieve(argumentCaptorMock.capture())).thenReturn(expectedResource);
 
@@ -195,7 +195,7 @@ public class UserProfileControllerTest {
 
         UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID, "test-idam-id");
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
-        GetUserProfileWithRolesResponse expectedResource = new GetUserProfileWithRolesResponse(userProfile);
+        GetUserProfileWithRolesResponse expectedResource = new GetUserProfileWithRolesResponse(userProfile, true);
 
         when(userProfileServiceMock.retrieve(argumentCaptorMock.capture())).thenReturn(expectedResource);
 
@@ -226,10 +226,6 @@ public class UserProfileControllerTest {
 
     @Test
     public void should_throw_exception_when_get_with_idamId_null_parameters_passed_in() {
-
-        /*   assertThatThrownBy(() -> sut.getUserProfileById(null))
-            .isInstanceOf(NullPointerException.class)
-            .hasMessageContaining("idamId");*/
 
         verifyZeroInteractions(userProfileServiceMock);
 

@@ -8,6 +8,6 @@ public interface ResourceRetriever<T extends RequestData> {
 
     UserProfile retrieve(T identifier, boolean fetchRoles);
 
-    List<UserProfile> retrieveMultipleProfiles(T identifier, boolean showDeleted);
+    List<UserProfile> retrieveMultipleProfiles(T identifier, boolean showDeleted, boolean rolesRequired);
 
 }
