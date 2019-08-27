@@ -65,15 +65,11 @@ public class RetrieveMultipleUserProfileFuncTest extends AbstractFunctional {
         assertThat(getUserProfileWithRolesResponse1.getLastName()).isEqualTo(createUserProfileData1.getLastName());
         assertThat(getUserProfileWithRolesResponse1.getIdamStatus()).isEqualTo(IdamStatus.PENDING);
 
-        //assertThat(getUserProfileWithRolesResponse1.getRoles()).isNotEmpty();
-
-
         assertThat(getUserProfileWithRolesResponse2.getEmail()).isEqualTo(createUserProfileData2.getEmail().toLowerCase());
         assertThat(getUserProfileWithRolesResponse2.getFirstName()).isEqualTo(createUserProfileData2.getFirstName());
         assertThat(getUserProfileWithRolesResponse2.getLastName()).isEqualTo(createUserProfileData2.getLastName());
         assertThat(getUserProfileWithRolesResponse2.getIdamStatus()).isEqualTo(IdamStatus.PENDING);
-
-        //assertThat(getUserProfileWithRolesResponse2.getRoles()).isNotEmpty();
+        
 
     }
 
@@ -131,6 +127,7 @@ public class RetrieveMultipleUserProfileFuncTest extends AbstractFunctional {
 
                 HttpStatus.BAD_REQUEST,
                 requestUri + "/users?showdeleted=fals&rolesRequired=true"
+
 
         );
     }
