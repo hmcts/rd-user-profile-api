@@ -1,2 +1,2 @@
 capacity = "2"
-instance_size="I1"
+instance_size="I2"
