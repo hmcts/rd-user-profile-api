@@ -18,7 +18,7 @@ public class UserProfileTest {
     private final IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.CREATED);
 
     @Test
-    public void should_create_successfully_with_no_args_constructor() {
+        public void should_create_successfully_with_no_args_constructor() {
 
         UserProfile userProfile = new UserProfile();
         assertThat(userProfile).isNotNull();
@@ -72,6 +72,18 @@ public class UserProfileTest {
         assertThat(userProfile.getCreated()).isNull();
         assertThat(userProfile.getLastUpdated()).isNull();
         assertThat(userProfile.getResponses()).isEmpty();
+
+        data.setLanguagePreference(null);
+        UserProfile userProfile1 = new UserProfile(data, HttpStatus.CREATED);
+        assertThat(userProfile1.getLanguagePreference()).isEqualTo(LanguagePreference.EN);
+
+        data.setLanguagePreference("");
+        UserProfile userProfile2 = new UserProfile(data, HttpStatus.CREATED);
+        assertThat(userProfile2.getLanguagePreference()).isEqualTo(LanguagePreference.EN);
+
+        data.setLanguagePreference(" ");
+        UserProfile userProfile3 = new UserProfile(data, HttpStatus.CREATED);
+        assertThat(userProfile3.getLanguagePreference()).isEqualTo(LanguagePreference.EN);
     }
 
     @Test
@@ -84,6 +96,15 @@ public class UserProfileTest {
         assertThat(userProfile.getEmailCommsConsentTs()).isNull();
         assertThat(userProfile.isPostalCommsConsent()).isFalse();
         assertThat(userProfile.getPostalCommsConsentTs()).isNull();
+    }
+
+    @Test
+    public void should_set_defaults_when_language_pref_field_is_not_provided() {
+
+        CreateUserProfileData data = buildCreateUserProfileData();
+        data.setLanguagePreference(null);
+        UserProfile userProfile = new UserProfile(data, HttpStatus.CREATED);
+        assertThat(userProfile.getLanguagePreference()).isEqualTo(LanguagePreference.EN);
     }
 
 }

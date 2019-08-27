@@ -42,9 +42,6 @@ public class CreateUserProfileData implements RequestData {
     private List<String> roles;
 
     @JsonIgnore
-    private String id;
-
-    @JsonIgnore
     private IdamStatus status;
 
     @JsonCreator

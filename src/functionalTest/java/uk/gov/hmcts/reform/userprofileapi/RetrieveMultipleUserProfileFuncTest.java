@@ -52,7 +52,7 @@ public class RetrieveMultipleUserProfileFuncTest extends AbstractFunctional {
         GetUserProfilesResponse response = testRequestHandler.sendPost(
                 request,
                 HttpStatus.OK,
-                requestUri + "/users?showdeleted=false",
+                requestUri + "/users?showdeleted=false&rolesRequired=true",
                 GetUserProfilesResponse.class
         );
 
@@ -64,14 +64,12 @@ public class RetrieveMultipleUserProfileFuncTest extends AbstractFunctional {
         assertThat(getUserProfileWithRolesResponse1.getFirstName()).isEqualTo(createUserProfileData1.getFirstName());
         assertThat(getUserProfileWithRolesResponse1.getLastName()).isEqualTo(createUserProfileData1.getLastName());
         assertThat(getUserProfileWithRolesResponse1.getIdamStatus()).isEqualTo(IdamStatus.PENDING);
-        //assertThat(getUserProfileWithRolesResponse1.getRoles()).isNotEmpty();
 
         assertThat(getUserProfileWithRolesResponse2.getEmail()).isEqualTo(createUserProfileData2.getEmail().toLowerCase());
         assertThat(getUserProfileWithRolesResponse2.getFirstName()).isEqualTo(createUserProfileData2.getFirstName());
         assertThat(getUserProfileWithRolesResponse2.getLastName()).isEqualTo(createUserProfileData2.getLastName());
         assertThat(getUserProfileWithRolesResponse2.getIdamStatus()).isEqualTo(IdamStatus.PENDING);
-
-        //assertThat(getUserProfileWithRolesResponse2.getRoles()).isNotEmpty();
+        
 
     }
 
@@ -92,7 +90,7 @@ public class RetrieveMultipleUserProfileFuncTest extends AbstractFunctional {
         GetUserProfilesResponse response = testRequestHandler.sendPost(
                 request,
                 HttpStatus.OK,
-                requestUri + "/users?showdeleted=true",
+                requestUri + "/users?showdeleted=true&rolesRequired=true",
                 GetUserProfilesResponse.class
         );
 
@@ -111,7 +109,7 @@ public class RetrieveMultipleUserProfileFuncTest extends AbstractFunctional {
         testRequestHandler.sendPost(
                 request,
                 HttpStatus.NOT_FOUND,
-                requestUri + "/users?showdeleted=false"
+                requestUri + "/users?showdeleted=false&rolesRequired=true"
         );
     }
 
@@ -126,8 +124,10 @@ public class RetrieveMultipleUserProfileFuncTest extends AbstractFunctional {
 
         testRequestHandler.sendPost(
                 request,
+
                 HttpStatus.BAD_REQUEST,
-                requestUri + "/users?showdeleted=fals"
+                requestUri + "/users?showdeleted=fals&rolesRequired=true"
+
 
         );
     }

@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileWithRolesResponse;
 
+
 @RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest
 public class RetrieveUserProfileFuncTest extends AbstractFunctional {
@@ -52,7 +53,6 @@ public class RetrieveUserProfileFuncTest extends AbstractFunctional {
 
         verifyGetUserProfile(resource, createUserProfileData);
     }
-
 
     @Test
     public void should_get_user_profile_with_roles_by_userId() throws Exception {
