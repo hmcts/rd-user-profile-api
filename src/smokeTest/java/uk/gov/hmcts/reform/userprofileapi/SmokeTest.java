@@ -29,6 +29,9 @@ public class SmokeTest {
         RestAssured.useRelaxedHTTPSValidation();
 
         String response = SerenityRest
+            .given()
+            .relaxedHTTPSValidation()
+            .baseUri(targetInstance)
             .when()
             .get("/health")
             .then()
