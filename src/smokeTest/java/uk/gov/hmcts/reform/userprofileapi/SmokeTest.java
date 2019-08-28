@@ -6,9 +6,13 @@ import io.restassured.RestAssured;
 import net.serenitybdd.rest.SerenityRest;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 
 public class SmokeTest {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SmokeTest.class);
 
     private final String targetInstance =
         StringUtils.defaultIfBlank(
@@ -18,6 +22,8 @@ public class SmokeTest {
 
     @Test
     public void should_prove_app_is_running_and_healthy() {
+
+        LOG.info("Smoke test executing on " + targetInstance);
 
         RestAssured.baseURI = targetInstance;
         RestAssured.useRelaxedHTTPSValidation();
