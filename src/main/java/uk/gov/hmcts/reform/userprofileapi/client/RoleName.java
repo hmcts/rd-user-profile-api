@@ -7,10 +7,13 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 @Getter
-public class RoleName {
+public class RoleName extends UpdateUserProfileData{
+
+    private String name;
+
     public RoleName(String name) {
         this.name = name;
     }
 
-    private String name;
+
 }

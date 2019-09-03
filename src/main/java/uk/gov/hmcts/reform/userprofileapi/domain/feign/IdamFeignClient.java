@@ -34,4 +34,14 @@ public interface IdamFeignClient {
     @RequestLine("PUT /api/v1/users/{userId}/roles")
     @Headers("Content-Type: application/json")
     public Response updateUserRoles(@RequestBody Object rolesRequest, @PathVariable("userId") String userId);
+
+    @RequestMapping(method = RequestMethod.POST, value = "/api/v1/users/{userId}/roles")
+    @RequestLine("POST /api/v1/users/{userId}/roles")
+    @Headers("Content-Type: application/json")
+    public Response addUserRoles(@RequestBody Object rolesRequest, @PathVariable("userId") String userId);
+
+    @RequestMapping(method = RequestMethod.DELETE, value = "/api/v1/users/{userId}/roles/{roleName}")
+    @RequestLine("DELETE /api/v1/users/{userId}/roles/{roleName}")
+    @Headers("Content-Type: application/json")
+    public Response deleteUserRole(@PathVariable("userId") String userId, @PathVariable("roleName") String roleName);
 }

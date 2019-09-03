@@ -5,20 +5,30 @@ import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isSam
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUpdateUserProfileRequestValid;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
 
+import feign.FeignException;
+import feign.Response;
+import feign.RetryableException;
+
 import java.util.Optional;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
+import uk.gov.hmcts.reform.userprofileapi.util.JsonFeignResponseHelper;
 
 
 @Service
+@Slf4j
 public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData> {
 
     @Autowired
@@ -28,13 +38,16 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
     @Autowired
     private AuditRepository auditRepository;
 
+    @Autowired
+    private IdamFeignClient idamClient;
+
     @Override
     public UserProfile update(UpdateUserProfileData updateUserProfileData, String userId) {
 
         HttpStatus status = HttpStatus.OK;
         UserProfile userProfile = null;
         if (!isUserIdValid(userId, false)) {
-            persistAudit(HttpStatus.NOT_FOUND, null);
+            persistAudit(HttpStatus.NOT_FOUND, null, ResponseSource.SYNC);
             throw new ResourceNotFoundException("userId provided is malformed");
         }
 
@@ -42,10 +55,10 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         userProfile =  userProfileOptional.orElse(null);
 
         if (userProfile == null) {
-            persistAudit(HttpStatus.NOT_FOUND, null);
+            persistAudit(HttpStatus.NOT_FOUND, null, ResponseSource.SYNC);
             throw new ResourceNotFoundException("could not find user profile for userId: " + userId);
         } else if (!isUpdateUserProfileRequestValid(updateUserProfileData)) {
-            persistAudit(HttpStatus.BAD_REQUEST, null);
+            persistAudit(HttpStatus.BAD_REQUEST, null,ResponseSource.SYNC);
             throw new RequiredFieldMissingException("Update user profile request is not valid for userId: " + userId);
         } else if (!isSameAsExistingUserProfile(updateUserProfileData, userProfile)) {
             userProfile.setEmail(updateUserProfileData.getEmail().trim());
@@ -58,12 +71,83 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
                 status = HttpStatus.INTERNAL_SERVER_ERROR;
             }
         }
-        persistAudit(status, userProfile);
+        persistAudit(status, userProfile, ResponseSource.SYNC);
         return userProfile;
     }
 
-    public void persistAudit(HttpStatus idamStatus, UserProfile userProfile) {
-        Audit audit = new Audit(idamStatus.value(), resolveStatusAndReturnMessage(idamStatus), ResponseSource.SYNC, userProfile);
+    @Override
+    public void addRoles(UpdateUserProfileData profileData, String userId, String addOrDelete) {
+        UserProfile userProfile = null;
+        HttpStatus httpStatus = null;
+        Response response;
+
+        userProfile = validateUserStatus(userId);
+        if ("add".equalsIgnoreCase(addOrDelete)) {
+            log.info("Add idam roles for userId :" + userId);
+
+            try {
+                response = idamClient.addUserRoles(profileData.getRoles(), userId);
+                httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode();
+            } catch (FeignException ex) {
+                httpStatus = getHttpStatusFromFeignException(ex);
+                persistAudit(httpStatus, userProfile,ResponseSource.API);
+                throw new IdamServiceException("Idam deleteUserRole call failed",httpStatus);
+            }
+
+        } else  {
+
+            log.info("Delete idam roles for userId :" + userId);
+
+            UserProfile finalUserProfile = userProfile;
+            profileData.getRoles().forEach(role -> {
+
+                deleteRolesInIdam(userId, role.getName(), finalUserProfile);
+
+            });
+
+        }
+
+    }
+
+    public HttpStatus getHttpStatusFromFeignException(FeignException ex) {
+        return (ex instanceof RetryableException)
+                ? HttpStatus.INTERNAL_SERVER_ERROR
+                : HttpStatus.valueOf(ex.status());
+    }
+
+    public void persistAudit(HttpStatus idamStatus, UserProfile userProfile, ResponseSource responseSource) {
+        Audit audit = new Audit(idamStatus.value(), resolveStatusAndReturnMessage(idamStatus), responseSource.SYNC, userProfile);
         auditRepository.save(audit);
     }
+
+    private void deleteRolesInIdam(String userId, String roleName,UserProfile userProfile) {
+        HttpStatus httpStatus = null;
+        Response response;
+        try {
+
+            response = idamClient.deleteUserRole(userId, roleName);
+            httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode();
+
+
+        } catch (FeignException ex) {
+            httpStatus = getHttpStatusFromFeignException(ex);
+            persistAudit(httpStatus,userProfile,ResponseSource.API);
+            throw new IdamServiceException("Idam deleteUserRole call failed",httpStatus);
+
+        }
+    }
+
+    private UserProfile validateUserStatus(String userId) {
+        UserProfile userProfile = null;
+        Optional<UserProfile> userProfileOptional = userProfileRepository.findByIdamId(java.util.UUID.fromString(userId));
+        userProfile = userProfileOptional.orElse(null);
+        if (userProfile == null) {
+            throw new ResourceNotFoundException("could not find user profile for userId: or status is not active " + userId);
+        } else if (!IdamStatus.ACTIVE.equals(userProfileOptional.get().getStatus())) {
+            throw new InvalidRequest("UserId status is not active");
+        }
+        return userProfileOptional.get();
+    }
+
+
 }

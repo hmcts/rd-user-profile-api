@@ -19,9 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.client.IdamRegisterUserRequest;
-import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
+import uk.gov.hmcts.reform.userprofileapi.client.*;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
@@ -71,6 +69,7 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
             throw new IdamServiceException(idamRegistrationInfo.getStatusMessage(), idamStatus);
         }
     }
+
 
     public IdamRegisterUserRequest createIdamRegistrationRequest(CreateUserProfileData profileData, UUID id) {
         return new IdamRegisterUserRequest(profileData.getEmail(), profileData.getFirstName(), profileData.getLastName(), id.toString(), profileData.getRoles());
@@ -178,7 +177,7 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
     }
 
     private IdamRolesInfo updateIdamRoles(List<String> rolesToUpdate, String userId) {
-        List<Map<String,String>> roles = new ArrayList<>();
+        List<Map<String, String>> roles = new ArrayList<>();
         rolesToUpdate.forEach(role -> {
             Map<String, String> rolesMap = new HashMap<String, String>();
             rolesMap.put("name", role);
@@ -186,5 +185,4 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
         });
         return idamService.updateUserRoles(roles, userId);
     }
-
 }

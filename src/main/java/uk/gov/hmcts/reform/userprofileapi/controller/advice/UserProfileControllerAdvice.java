@@ -42,6 +42,13 @@ public class UserProfileControllerAdvice {
         return errorDetailsResponseEntity(e, BAD_REQUEST, INVALID_REQUEST.getErrorMessage());
     }
 
+    @ExceptionHandler(InvalidRequest.class)
+    public ResponseEntity<Object> customValidationError(
+            InvalidRequest ex) {
+        return errorDetailsResponseEntity(ex, BAD_REQUEST, INVALID_REQUEST.getErrorMessage());
+    }
+
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     protected ResponseEntity<Object> handleMethodArgumentNotValidException(
         HttpServletRequest request,

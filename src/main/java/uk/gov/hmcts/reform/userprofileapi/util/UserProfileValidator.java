@@ -2,9 +2,15 @@ package uk.gov.hmcts.reform.userprofileapi.util;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.util.CollectionUtils;
+
 import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesRequest;
+import uk.gov.hmcts.reform.userprofileapi.client.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
@@ -13,6 +19,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceNotFoundException;
+
 
 public interface UserProfileValidator {
 
@@ -137,6 +144,13 @@ public interface UserProfileValidator {
     static void validateUserIds(GetUserProfilesRequest getUserProfilesRequest) {
         if (getUserProfilesRequest.getUserIds().isEmpty()) {
             throw new RequiredFieldMissingException("no user id in request");
+        }
+    }
+
+    static void validateRolesAnduserId(List<RoleName> roleNames, String userId) {
+
+        if (null == userId && null == roleNames || CollectionUtils.isEmpty(roleNames)) {
+            throw new EmptyResultDataAccessException(1);
         }
     }
 }

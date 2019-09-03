@@ -41,4 +41,7 @@ public class UserProfileService<T extends RequestData> {
         resourceUpdator.update(updateData, userId);
     }
 
+    public void addRoles(T updateData, String userId, String isAddOrdelete) {
+        resourceUpdator.addRoles(updateData, userId, isAddOrdelete);
+    }
 }

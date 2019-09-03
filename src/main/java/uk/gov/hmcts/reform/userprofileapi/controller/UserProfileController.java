@@ -25,16 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileWithRolesResponse;
-import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesRequest;
-import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesResponse;
-import uk.gov.hmcts.reform.userprofileapi.client.IdentifierName;
-import uk.gov.hmcts.reform.userprofileapi.client.RequestData;
-import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.client.UserProfileIdentifier;
+import uk.gov.hmcts.reform.userprofileapi.client.*;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileService;
 import uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator;
@@ -57,6 +48,7 @@ public class UserProfileController {
 
     @Autowired
     private IdamService idamService;
+
 
     @ApiOperation(value = "Create a User Profile",
                   authorizations = {
@@ -325,5 +317,55 @@ public class UserProfileController {
                 userProfileService.retrieveWithRoles(new UserProfileIdentifier(IdentifierName.UUID_LIST, getUserProfilesRequest.getUserIds()), showDeletedBoolean, rolesRequiredBoolean);
         return ResponseEntity.status(HttpStatus.OK).body(getUserProfilesResponse);
 
+    }
+
+    @ApiOperation(value = "Adding roles to user profiles",
+            authorizations = {
+                    @Authorization(value = "ServiceAuthorization"),
+                    @Authorization(value = "Authorization")
+            })
+    @ApiParam(
+            name = "userId",
+            required = true
+    )
+
+
+    @ApiResponses({
+            @ApiResponse(
+                    code = 200,
+                    message = "Adding roles to user profiles",
+                    response = GetUserProfilesResponse.class
+            ),
+            @ApiResponse(
+                    code = 400,
+                    message = "Bad Request",
+                    response = String.class
+            ),
+            @ApiResponse(
+                    code = 404,
+                    message = "Resource not found",
+                    response = String.class
+            ),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error",
+                    response = String.class
+            )
+    })
+    @PostMapping(
+            path="/roles",
+            consumes = APPLICATION_JSON_UTF8_VALUE,
+            produces = APPLICATION_JSON_UTF8_VALUE
+    )
+    @ResponseBody
+    public ResponseEntity modifyRoles(@RequestBody UpdateUserProfileData userProfileData,
+                                      @RequestParam("userId") String userId, @RequestParam("isDelete") String isAddOrDelete) {
+
+        log.info("modifyRoles in user profiles");
+        UserProfileValidator.validateRolesAnduserId(userProfileData.getRoles(), userId);
+
+        userProfileService.addRoles(userProfileData, userId, isAddOrDelete);
+
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
