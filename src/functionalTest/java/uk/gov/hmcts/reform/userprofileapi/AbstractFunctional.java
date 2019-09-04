@@ -54,12 +54,12 @@ public class AbstractFunctional {
         return resource;
     }
 
-    protected void updateUserProfile(UpdateUserProfileData updateUserProfileData, UUID userId, HttpStatus expectedStatus) throws Exception {
+    protected void updateUserProfile(UpdateUserProfileData updateUserProfileData, String userId, HttpStatus expectedStatus) throws Exception {
 
         testRequestHandler.sendPut(
                 updateUserProfileData,
                 expectedStatus,
-                requestUri + "/" + userId.toString());
+                requestUri + "/" + userId);
     }
 
     protected CreateUserProfileData createUserProfileData() {
@@ -74,14 +74,14 @@ public class AbstractFunctional {
 
         assertThat(resource).isNotNull();
         assertThat(resource.getIdamId()).isNotNull();
-        assertThat(resource.getIdamId()).isInstanceOf(UUID.class);
+        assertThat(resource.getIdamId()).isInstanceOf(String.class);
 
     }
 
     protected void verifyGetUserProfile(GetUserProfileResponse resource, CreateUserProfileData expectedResource) {
 
         assertThat(resource).isNotNull();
-        assertThat(resource.getIdamId()).isNotNull().isExactlyInstanceOf(UUID.class);
+        assertThat(resource.getIdamId()).isNotNull().isExactlyInstanceOf(String.class);
         assertThat(resource.getFirstName()).isEqualTo(expectedResource.getFirstName());
         assertThat(resource.getLastName()).isEqualTo(expectedResource.getLastName());
         assertThat(resource.getEmail()).isEqualTo(expectedResource.getEmail().toLowerCase());

@@ -78,7 +78,7 @@ public class UserProfileQueryProviderTest {
     public void should_query_by_idamId_successfully() {
 
         UserProfile userProfile = Mockito.mock(UserProfile.class);
-        UUID id = UUID.randomUUID();//String.valueOf(new Random().nextInt());
+        String id = UUID.randomUUID().toString();
 
         Mockito.when(userProfileRepository.findByIdamId(id)).thenReturn(Optional.of(userProfile));
 
@@ -136,14 +136,14 @@ public class UserProfileQueryProviderTest {
         profiles.add(userProfile1);
         profiles.add(userProfile2);
 
-        UUID id1 = UUID.randomUUID();
-        UUID id2 = UUID.randomUUID();
+        String id1 = UUID.randomUUID().toString();
+        String id2 = UUID.randomUUID().toString();
 
         List<String> stringUserIds = new ArrayList<>();
         stringUserIds.add(id1.toString());
         stringUserIds.add(id2.toString());
 
-        List<UUID> ids = new ArrayList<>();
+        List<String> ids = new ArrayList<>();
         ids.add(id1);
         ids.add(id2);
 

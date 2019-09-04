@@ -14,7 +14,7 @@ public class GetUserProfileWithRolesResponseTest {
     public void should_hold_values_after_creation_when_user_roles_required() {
 
 
-        UUID idamId = UUID.randomUUID();
+        String idamId = UUID.randomUUID().toString();
 
         UserProfile userProfile = new UserProfile();
         userProfile.setIdamId(idamId);
@@ -45,7 +45,7 @@ public class GetUserProfileWithRolesResponseTest {
     public void should_hold_values_after_creation_when_user_roles_not_required() {
 
 
-        UUID idamId = UUID.randomUUID();
+        String idamId = UUID.randomUUID().toString();
 
         UserProfile userProfile = new UserProfile();
         userProfile.setIdamId(idamId);
@@ -71,7 +71,7 @@ public class GetUserProfileWithRolesResponseTest {
     public void should_hold_values_after_creation_when_user_roles_required_and_status_pending() {
 
 
-        UUID idamId = UUID.randomUUID();
+        String idamId = UUID.randomUUID().toString();
 
         UserProfile userProfile = new UserProfile();
         userProfile.setIdamId(idamId);

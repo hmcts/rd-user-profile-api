@@ -234,7 +234,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
     private void verifyUserProfileCreation(CreateUserProfileResponse createdResource, HttpStatus idamStatus, CreateUserProfileData data, IdamStatus expectedIdamStatus) {
 
         assertThat(createdResource.getIdamId()).isNotNull();
-        assertThat(createdResource.getIdamId()).isInstanceOf(UUID.class);
+        assertThat(createdResource.getIdamId()).isInstanceOf(String.class);
         assertThat(createdResource.getIdamRegistrationResponse()).isEqualTo(idamStatus.value());
 
         Optional<UserProfile> persistedUserProfile = userProfileRepository.findByIdamId(createdResource.getIdamId());
