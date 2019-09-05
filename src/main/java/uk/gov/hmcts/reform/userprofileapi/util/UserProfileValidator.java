@@ -24,16 +24,7 @@ public interface UserProfileValidator {
     static boolean isUserIdValid(String userId, boolean throwException) {
         if (StringUtils.isBlank(userId)) {
             if (throwException) {
-                throw new ResourceNotFoundException("userId is null or blank.Should have UUID format");
-            }
-            return false;
-        }
-
-        try {
-            java.util.UUID.fromString(userId);
-        } catch (IllegalArgumentException ex) {
-            if (throwException) {
-                throw new ResourceNotFoundException("Malformed userId.Should have UUID format");
+                throw new ResourceNotFoundException("userId is null or blank.");
             }
             return false;
         }

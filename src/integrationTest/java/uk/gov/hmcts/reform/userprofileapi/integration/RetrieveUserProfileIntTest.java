@@ -75,6 +75,26 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
     }
 
     @Test
+    public void should_retrieve_user_profile_resource_with_tidam_id() throws Exception {
+        UserProfile user = buildUserProfile();
+        user.setIdamId("1234567");
+        user.setStatus(IdamStatus.ACTIVE);
+        testUserProfileRepository.save(user);
+
+
+        GetUserProfileResponse retrievedResource =
+                userProfileRequestHandlerTest.sendGet(
+                        mockMvc,
+                        APP_BASE_PATH + "?" + "userId=" + "1234567",
+                        OK,
+                        GetUserProfileResponse.class
+                );
+
+        assertThat(retrievedResource).isNotNull();
+        assertThat(retrievedResource).isEqualToIgnoringGivenFields(user, "roles", "idamStatus", "idamStatusCode", "idamMessage");
+    }
+
+    @Test
     public void should_retrieve_user_profile_resource_with_roles_by_id() throws Exception {
         UserProfile userProfile = userProfileMap.get("user");
 
