@@ -1,18 +1,17 @@
-targetInstance: ${TEST_URL:http://rd-user-profile-api-demo.service.core-compute-demo.internal}
+targetInstance: ${TEST_URL:http://rd-user-profile-api-aat.service.core-compute-aat.internal}
 spring.flyway.enabled: false
-idamUrl: ${IDAM_URL_TO_TEST:https://idam-api.demo.platform.hmcts.net}
+idamUrl: ${IDAM_URL_TO_TEST:https://idam-api.aat.platform.hmcts.net}
 
-idam.api.url: ${IDAM_URL_TO_TEST:https://idam-api.demo.platform.hmcts.net}
+idam.api.url: ${IDAM_URL_TO_TEST:https://idam-api.aat.platform.hmcts.net}
 
 generated.user.email.pattern: ${GENERATED_USER_EMAIL_PATTERN:freg-test-user-%s@feemail.com}
+test.url: ${TEST_URL:http://rd-user-profile-api-aat.service.core-compute-aat.internal}
 test.user.password: ${TEST_USER_PASSWORD:Hmcts123}
-#preview K6KA6PRLRFWQLSD6
-#demo 4QKOKOOTZN7KOHYG
-#aat OLMEJQA7UHU6EZKG
+#K6KA6PRLRFWQLSD6
 s2s.auth.secret: ${S2S_SECRET:OLMEJQA7UHU6EZKG}
 s2s.auth.url: ${S2S_URL_TO_TEST:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
 
 idam.auth.tokenAuth: ${IDAM_TOKEN_ATUH:cmQtcHJvZmVzc2lvbmFsLWFwaTpjYzVmMmE2LTk2OTAtMTFlOS1iYzQyLTUyNmFmNzc2NGY2NA==}
-idam.auth.redirectUrl: ${IDAM_REDIRECT_URL:https://rd-professional-api-demo.service.core-compute-demo.internal/oauth2redirect}
+idam.auth.redirectUrl: ${IDAM_REDIRECT_URL:https://rd-professional-api-aat.service.core-compute-aat.internal/oauth2redirect}
 idam.auth.clientId: rd-professional-api
 
