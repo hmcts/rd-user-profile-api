@@ -43,8 +43,8 @@ public class RetrieveMultipleUserProfileFuncTest extends AbstractFunctional {
         CreateUserProfileResponse createdResource2 = createUserProfile(createUserProfileData2, HttpStatus.CREATED);
 
         List<String> userIds = new ArrayList<String>();
-        userIds.add(createdResource1.getIdamId().toString());
-        userIds.add(createdResource2.getIdamId().toString());
+        userIds.add(createdResource1.getIdamId());
+        userIds.add(createdResource2.getIdamId());
 
         GetUserProfilesRequest request = new GetUserProfilesRequest(userIds);
 
@@ -86,8 +86,8 @@ public class RetrieveMultipleUserProfileFuncTest extends AbstractFunctional {
         CreateUserProfileResponse createdResource2 = createUserProfile(createUserProfileData2, HttpStatus.CREATED);
 
         List<String> userIds = new ArrayList<String>();
-        userIds.add(createdResource1.getIdamId().toString());
-        userIds.add(createdResource2.getIdamId().toString());
+        userIds.add(createdResource1.getIdamId());
+        userIds.add(createdResource2.getIdamId());
 
         GetUserProfilesRequest request = new GetUserProfilesRequest(userIds);
 

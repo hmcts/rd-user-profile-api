@@ -22,14 +22,14 @@ public class UserProfileTestDataBuilder {
 
     public static UserProfile buildUserProfile() {
         UserProfile up = new UserProfile(buildCreateUserProfileData(), HttpStatus.CREATED);
-        up.setIdamId(UUID.randomUUID());
+        up.setIdamId(UUID.randomUUID().toString());
         return up;
     }
 
     public static UserProfile buildUserProfileWithDeletedStatus() {
         UserProfile up = new UserProfile(buildCreateUserProfileData(), HttpStatus.CREATED);
         up.setStatus(IdamStatus.DELETED);
-        up.setIdamId(UUID.randomUUID());
+        up.setIdamId(UUID.randomUUID().toString());
         return up;
     }
 

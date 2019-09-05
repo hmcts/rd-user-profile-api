@@ -52,7 +52,7 @@ public class UserProfileUpdatorTest {
     @Test
     public void should_update_user_profile_successfully() {
 
-        UUID userId = UUID.randomUUID();
+        String userId = UUID.randomUUID().toString();
 
         when(userProfileRepository.findByIdamId(userId)).thenReturn(Optional.ofNullable(userProfile));
         when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);
@@ -80,7 +80,7 @@ public class UserProfileUpdatorTest {
     @Test
     public void should_throw_IdamServiceException_when_user_user_profile_not_found_in_db() {
 
-        UUID userId = UUID.randomUUID();
+        String userId = UUID.randomUUID().toString();
         when(userProfileRepository.findByIdamId(userId)).thenReturn(Optional.ofNullable(null));
         assertThatThrownBy(() -> userProfileUpdator.update(updateUserProfileData,userId.toString())).isExactlyInstanceOf(ResourceNotFoundException.class);
     }
@@ -88,7 +88,7 @@ public class UserProfileUpdatorTest {
     @Test
     public void should_throw_IdamServiceException_when_request_invalid() {
 
-        UUID userId = UUID.randomUUID();
+        String userId = UUID.randomUUID().toString();
         updateUserProfileData = new UpdateUserProfileData("", "", "", "ACTIV");
         when(userProfileRepository.findByIdamId(userId)).thenReturn(Optional.ofNullable(userProfile));
         assertThatThrownBy(() -> userProfileUpdator.update(updateUserProfileData,userId.toString())).isExactlyInstanceOf(RequiredFieldMissingException.class);

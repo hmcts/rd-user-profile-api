@@ -17,7 +17,7 @@ public class GetUserProfilesResponseTest {
     public void should_hold_values_after_creation() {
 
         UserProfile up1 = mock(UserProfile.class);
-        UUID idamId = UUID.randomUUID();
+        String idamId = UUID.randomUUID().toString();
         UserProfile userProfile = new UserProfile();
         userProfile.setIdamId(idamId);
         userProfile.setIdamRegistrationResponse(201);

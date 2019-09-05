@@ -12,7 +12,6 @@ import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestB
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.assertj.core.api.Assertions;
 import org.assertj.core.util.Lists;
@@ -68,7 +67,7 @@ public class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegration
     private void verifyUserProfileCreation(CreateUserProfileResponse createdResource, HttpStatus idamStatus, CreateUserProfileData data) {
 
         assertThat(createdResource.getIdamId()).isNotNull();
-        assertThat(createdResource.getIdamId()).isInstanceOf(UUID.class);
+        assertThat(createdResource.getIdamId()).isInstanceOf(String.class);
         assertThat(createdResource.getIdamRegistrationResponse()).isEqualTo(idamStatus.value());
 
         Optional<UserProfile> persistedUserProfile = userProfileRepository.findByIdamId(createdResource.getIdamId());
