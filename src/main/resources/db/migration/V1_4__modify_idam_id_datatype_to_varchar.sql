@@ -1,3 +1,1 @@
-alter table user_profile drop column idam_id;
-
-alter table user_profile add column idam_id varchar(50);
+ALTER TABLE user_profile ALTER COLUMN idam_id TYPE VARCHAR(50);
