@@ -44,8 +44,8 @@ public class UserProfileValidatorTest {
         boolean response = UserProfileValidator.isUserIdValid("", false);
         assertThat(response).isFalse();
 
-        assertThatThrownBy(() -> UserProfileValidator.isUserIdValid("INVALID", true))
-                .isInstanceOf(ResourceNotFoundException.class);
+        boolean response2 = UserProfileValidator.isUserIdValid("INVALID", true);
+        assertThat(response2).isTrue();
 
         boolean response1 = UserProfileValidator.isUserIdValid("", false);
         assertThat(response1).isFalse();
