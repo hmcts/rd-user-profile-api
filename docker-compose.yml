@@ -1,6 +1,41 @@
 version: '2.1'
 
 services:
+  rd-user-profile-api:
+    build:
+      context: .
+      args:
+        - http_proxy
+        - https_proxy
+        - no_proxy
+    image: hmcts/rd-user-profile-api
+    container_name: rd-user-profile-api
+    environment:
+      - JAVA_OPTS=-Dhttps.proxyHost=proxyout.reform.hmcts.net -Dhttps.proxyPort=8080
+      - POSTGRES_USERNAME=dbuserprofile
+      - POSTGRES_PASSWORD=dbuserprofile
+      - POSTGRES_HOST=rd-user-profile-db
+      - POSTGRES_PORT=5432
+      # these environment variables are used by java-logging library
+      - JSON_CONSOLE_PRETTY_PRINT
+      - ROOT_APPENDER
+      - ROOT_LOGGING_LEVEL
+      - REFORM_SERVICE_TYPE
+      - REFORM_SERVICE_NAME
+      - REFORM_TEAM
+      - REFORM_ENVIRONMENT
+      - LOGBACK_DATE_FORMAT
+      - LOGBACK_REQUIRE_THREAD
+      - LOGBACK_REQUIRE_ALERT_LEVEL=false
+      - LOGBACK_REQUIRE_ERROR_CODE=false
+      - S2S_URL=http://service-auth-provider-api:8080
+      - S2S_SECRET=${S2S_SECRET}
+    ports:
+      - ${SERVER_PORT:-8091}:${SERVER_PORT:-8091}
+    depends_on:
+      - rd-user-profile-db
+      - service-auth-provider-api
+
   rd-user-profile-db:
     build:
       context: database
@@ -12,5 +47,34 @@ services:
       - POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-dbuserprofile}"
     ports:
       - 5432:5432
+
+  service-auth-provider-api:
+    image: hmcts/service-auth-provider-app
+    container_name: up-service-auth-provider-api
+    healthcheck:
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    ports:
+      - 8502:8080
+    environment:
+      JAVA_OPTS: -Xmx384m
+      SERVER_PORT: 8080
+      MICROSERVICEKEYS_RD_USER_PROFILE_API: "${S2S_SECRET}"
+      MICROSERVICEKEYS_RD_PROFESSIONAL_API: "${S2S_SECRET}"
+      TESTING_SUPPORT_ENABLED: "true"
+
+  service-token-provider:
+      image: hmcts/service-token-provider
+      container_name: user-profile-service-token-provider
+      environment:
+        - S2S_URL=http://service-auth-provider-api:8080
+        - S2S_MICROSERVICE=rd_user_profile_api
+        - S2S_SECRET=${S2S_SECRET}
+      ports:
+        - 8099:8090
+      depends_on:
+        - service-auth-provider-api
+
 volumes:
   rd-user-profile-db-volume:
