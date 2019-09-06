@@ -56,7 +56,7 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
             persistAuditAndThrowIdamException(IdamStatusResolver.resolveStatusAndReturnMessage(HttpStatus.CONFLICT), HttpStatus.CONFLICT, userProfile);
         }
 
-        UUID userId = UUID.randomUUID();
+        String  userId = UUID.randomUUID().toString();
         final IdamRegistrationInfo idamRegistrationInfo = idamService.registerUser(createIdamRegistrationRequest(profileData, userId));
         HttpStatus idamStatus = idamRegistrationInfo.getIdamRegistrationResponse();
         if (idamRegistrationInfo.isSuccessFromIdam()) {
@@ -70,12 +70,11 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
         }
     }
 
-
-    public IdamRegisterUserRequest createIdamRegistrationRequest(CreateUserProfileData profileData, UUID id) {
-        return new IdamRegisterUserRequest(profileData.getEmail(), profileData.getFirstName(), profileData.getLastName(), id.toString(), profileData.getRoles());
+    public IdamRegisterUserRequest createIdamRegistrationRequest(CreateUserProfileData profileData, String id) {
+        return new IdamRegisterUserRequest(profileData.getEmail(), profileData.getFirstName(), profileData.getLastName(), id, profileData.getRoles());
     }
 
-    private UserProfile persistUserProfileWithAudit(CreateUserProfileData profileData, UUID userId, String stausMessage, HttpStatus idamStatus) {
+    private UserProfile persistUserProfileWithAudit(CreateUserProfileData profileData, String userId, String stausMessage, HttpStatus idamStatus) {
         UserProfile userProfile = null;
         if (idamStatus.is2xxSuccessful()) {
             userProfile = new UserProfile(profileData, idamStatus);
@@ -132,7 +131,7 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
                 // for success make status = 201
                 idamStatus = HttpStatus.CREATED;
                 idamStatusMessage = IdamStatusResolver.resolveStatusAndReturnMessage(idamStatus);
-                userProfile = persistUserProfileWithAudit(profileData, UUID.fromString(userId), idamStatusMessage, idamStatus);
+                userProfile = persistUserProfileWithAudit(profileData, userId, idamStatusMessage, idamStatus);
             } else {
                 log.error("failed sidam GET call for userId : " + userId);
                 persistAuditAndThrowIdamException(idamStatusMessage, idamStatus, null);

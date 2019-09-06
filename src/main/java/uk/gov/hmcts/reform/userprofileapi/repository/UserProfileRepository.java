@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.userprofileapi.repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,11 +14,11 @@ public interface UserProfileRepository extends CrudRepository<UserProfile, Long>
     Optional<UserProfile> findByEmail(String email);
 
     @Transactional(readOnly = true)
-    Optional<UserProfile> findByIdamId(UUID id);
+    Optional<UserProfile> findByIdamId(String id);
 
     @Transactional(readOnly = true)
-    Optional<List<UserProfile>> findByIdamIdInAndStatusNot(List<UUID> userIds, IdamStatus idamStatus);
+    Optional<List<UserProfile>> findByIdamIdInAndStatusNot(List<String> userIds, IdamStatus idamStatus);
 
     @Transactional(readOnly = true)
-    Optional<List<UserProfile>> findByIdamIdIn(List<UUID> userIds);
+    Optional<List<UserProfile>> findByIdamIdIn(List<String> userIds);
 }

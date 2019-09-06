@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.userprofileapi.client;
 import static java.util.Objects.requireNonNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
@@ -14,7 +13,7 @@ import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 public class GetUserProfileResponse {
 
     @JsonProperty ("userIdentifier")
-    private UUID idamId;
+    private String idamId;
     private String email;
     private String firstName;
     private String lastName;
