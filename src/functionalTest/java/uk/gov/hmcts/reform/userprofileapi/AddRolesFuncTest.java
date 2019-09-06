@@ -30,7 +30,6 @@ public class AddRolesFuncTest extends AbstractFunctional {
     protected TestConfigProperties configProperties;
 
     private IdamClient idamClient;
-    private AddRoles addRoles;
 
     @Before
     public void setUp() {

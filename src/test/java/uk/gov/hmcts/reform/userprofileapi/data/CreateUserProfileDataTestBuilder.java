@@ -6,6 +6,7 @@ import java.util.List;
 import lombok.Setter;
 import org.apache.commons.lang.RandomStringUtils;
 import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.client.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
@@ -37,7 +38,9 @@ public class CreateUserProfileDataTestBuilder {
                 buildRandomEmail(),
                 RandomStringUtils.randomAlphabetic(20),
                 RandomStringUtils.randomAlphabetic(20),
-                IdamStatus.ACTIVE.toString());
+                IdamStatus.ACTIVE.toString(),
+                new ArrayList<>()
+                );
     }
 
     private static String buildRandomEmail() {

@@ -57,7 +57,6 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
 
         userProfileMap = new HashMap<>();
         userProfileMap.put("user", user);
-
     }
 
     @Test

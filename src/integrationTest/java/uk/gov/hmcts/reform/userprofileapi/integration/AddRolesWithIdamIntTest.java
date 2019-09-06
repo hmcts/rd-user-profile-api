@@ -1,32 +1,34 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MvcResult;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
+import uk.gov.hmcts.reform.userprofileapi.client.*;
+import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.*;
 import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
-import static uk.gov.hmcts.reform.userprofileapi.integration.AuthorizationEnabledIntegrationTest.APP_BASE_PATH;
+import static uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder.buildUserProfile;
+
 
 public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest {
 
+    private Map<String, UserProfile> userProfileMap;
+
     @Test
-    public void should_return_200_and_add_user_profile_resource() throws Exception {
+    public void should_return_200_and_add_roles_to_user_profile_resource() throws Exception {
 
         CreateUserProfileData data = buildCreateUserProfileData();
 
@@ -39,11 +41,48 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
                         CreateUserProfileResponse.class
                 );
 
-        verifyUserProfileCreation(createdResource, CREATED, data);
+        CreateUserProfileResponse createdResource1 =
+                userProfileRequestHandlerTest.sendPost(
+                        mockMvc,
+                        APP_BASE_PATH,
+                        data.getEmail(),
+                        CREATED,
+                        CreateUserProfileResponse.class
+                );
 
+        UserProfile persistedUserProfile = userProfileMap.get("user");
+        String idamId = persistedUserProfile.getIdamId();
+
+//        UserProfile user = buildUserProfile();
+//        user.setIdamId("1234567");
+//        user.setStatus(IdamStatus.ACTIVE);
+//        testUserProfileRepository.save(user);
+//
+//        UpdateUserProfileData data = new UpdateUserProfileData();
+//
+//        RoleName role1 = new RoleName("pui-case-manager");
+//        RoleName role2 = new RoleName("prd-Admin");
+//
+//        List<RoleName> roles = new ArrayList<>();
+//        roles.add(role1);
+//        roles.add(role2);
+//
+//        data.setRoles(roles);
+
+
+        GetUserProfileResponse retrievedResource =
+                userProfileRequestHandlerTest.sendGet(
+                        mockMvc,
+                        APP_BASE_PATH + "?" + "userId=" + "1234567",
+                        OK,
+                        GetUserProfileResponse.class
+                );
+
+        assertThat(retrievedResource).isNotNull();
     }
 
-    private void verifyUserProfileCreation(CreateUserProfileResponse createdResource, HttpStatus idamStatus, CreateUserProfileData data) {
+
+    private void verifyUserProfileCreation(CreateUserProfileResponse createdResource, HttpStatus idamStatus, UpdateUserProfileData data) {
 
         assertThat(createdResource.getIdamId()).isNotNull();
         assertThat(createdResource.getIdamId()).isInstanceOf(UUID.class);
