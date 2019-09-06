@@ -82,13 +82,13 @@ public class RetrieveUserProfileInternalServerErrorIntTest extends Authorization
         IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(CREATED);
         when(idamService.registerUser(request))
             .thenReturn(idamRegistrationInfo);
-        when(userProfileRepository.findByIdamId(any(UUID.class)))
+        when(userProfileRepository.findByIdamId(any(String.class)))
             .thenThrow(new RuntimeException("This is a test exception"));
 
         MvcResult result =
             userProfileRequestHandlerTest.sendGet(
                 mockMvc,
-                APP_BASE_PATH + "?" + "userId=" + UUID.randomUUID(),
+                APP_BASE_PATH + "?" + "userId=" + UUID.randomUUID().toString(),
                 INTERNAL_SERVER_ERROR
             );
 
@@ -126,13 +126,13 @@ public class RetrieveUserProfileInternalServerErrorIntTest extends Authorization
         IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(CREATED);
         when(idamService.registerUser(request))
             .thenReturn(idamRegistrationInfo);
-        when(userProfileRepository.findByIdamId(any(UUID.class)))
+        when(userProfileRepository.findByIdamId(any(String.class)))
             .thenThrow(new RuntimeException("This is a test exception"));
 
         MvcResult result =
             userProfileRequestHandlerTest.sendGet(
                 mockMvc,
-                APP_BASE_PATH + "?userId=" + UUID.randomUUID(),
+                APP_BASE_PATH + "?userId=" + UUID.randomUUID().toString(),
                 INTERNAL_SERVER_ERROR
             );
 

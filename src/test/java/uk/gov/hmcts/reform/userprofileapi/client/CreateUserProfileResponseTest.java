@@ -13,7 +13,7 @@ public class CreateUserProfileResponseTest {
     public void should_hold_values_after_creation() {
 
 
-        UUID idamId = UUID.randomUUID();
+        String idamId = UUID.randomUUID().toString();
         UserProfile userProfile = new UserProfile();
         userProfile.setIdamId(idamId);
         userProfile.setIdamRegistrationResponse(201);

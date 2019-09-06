@@ -15,10 +15,10 @@ public class SmokeTest {
     private static final Logger LOG = LoggerFactory.getLogger(SmokeTest.class);
 
     private final String targetInstance =
-        StringUtils.defaultIfBlank(
-            System.getenv("TEST_URL"),
-            "http://localhost:8091"
-        );
+            StringUtils.defaultIfBlank(
+                    System.getenv("TEST_URL"),
+                    "http://localhost:8091"
+            );
 
     @Test
     public void should_prove_app_is_running_and_healthy() {
@@ -40,6 +40,6 @@ public class SmokeTest {
             .extract().body().asString();
 
         assertThat(response)
-            .contains("UP");
+                .contains("UP");
     }
 }

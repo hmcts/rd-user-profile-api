@@ -38,7 +38,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
             throw new ResourceNotFoundException("userId provided is malformed");
         }
 
-        Optional<UserProfile> userProfileOptional = userProfileRepository.findByIdamId(java.util.UUID.fromString(userId));
+        Optional<UserProfile> userProfileOptional = userProfileRepository.findByIdamId(userId);
         userProfile =  userProfileOptional.orElse(null);
 
         if (userProfile == null) {

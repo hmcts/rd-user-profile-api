@@ -37,7 +37,7 @@ import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledIntegrationTest {
 
     private Map<String, UserProfile> userProfileMap;
-    private Map<UUID, UserProfile> userProfileMapWithUuid;
+    private Map<String, UserProfile> userProfileMapWithUuid;
     private List<String> userIds;
 
     @Autowired
