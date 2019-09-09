@@ -73,6 +73,7 @@ public class IdamStatusResolverTest {
         assertThat(IdamStatusResolver.resolveIdamStatus(idamStatusMap, createIdamRoleInfo(true,false, true))).isEqualTo(IdamStatus.ACTIVE_AND_LOCKED);
         assertThat(IdamStatusResolver.resolveIdamStatus(idamStatusMap, createIdamRoleInfo(false,false, false))).isEqualTo(IdamStatus.SUSPENDED);
         assertThat(IdamStatusResolver.resolveIdamStatus(idamStatusMap, createIdamRoleInfo(false,false, true))).isEqualTo(IdamStatus.SUSPENDED_AND_LOCKED);
+        assertThat(IdamStatusResolver.resolveIdamStatus(idamStatusMap, createIdamRoleInfo(true,null, null))).isEqualTo(IdamStatus.ACTIVE);
     }
 
 
