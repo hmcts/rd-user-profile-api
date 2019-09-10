@@ -5,7 +5,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.getIdamRolesJson;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -174,10 +176,10 @@ public class UserProfileValidatorTest {
                 .isInstanceOf(RequiredFieldMissingException.class);
     }
 
-    private List<RoleName> addRolesToRoleName() {
+    private Set<RoleName> addRolesToRoleName() {
 
         RoleName roleName = new RoleName("prd-admin");
-        List<RoleName> roleNames = new ArrayList<RoleName>();
+        Set<RoleName> roleNames = new HashSet<RoleName>();
         roleNames.add(roleName);
         return roleNames;
     }

@@ -261,18 +261,18 @@ public class UserProfileController {
             produces = APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseBody
-    public ResponseEntity<CreateUserProfileResponse> updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData, @PathVariable String userId,
-                                                                       @ApiParam(name = "rolesAction", required = false)@RequestParam (value = "rolesAction", required = false) String rolesAction) {
+    public ResponseEntity<CreateUserProfileResponse> updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData, @PathVariable String userId
+                                                                       ) {
         log.info("Updating user profile");
-        UserProfileValidator.validateUserProfileDataAndUserId(updateUserProfileData, userId, rolesAction);
-        if(StringUtils.isEmpty(rolesAction)) {
+        UserProfileValidator.validateUserProfileDataAndUserId(updateUserProfileData, userId);
+        if(StringUtils.isEmpty(updateUserProfileData.getRolesAdd())) {
 
             log.info("Updating user profile without roles");
             userProfileService.update(updateUserProfileData, userId);
         } else {
 
             log.info("Updating user profile with roles");
-            userProfileService.updateRoles(updateUserProfileData, userId, rolesAction);
+            userProfileService.updateRoles(updateUserProfileData, userId);
         }
 
         return ResponseEntity.status(HttpStatus.OK).build();

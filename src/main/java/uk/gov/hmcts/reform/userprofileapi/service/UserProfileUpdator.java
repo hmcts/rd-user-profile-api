@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
@@ -78,34 +79,23 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
     }
 
     @Override
-    public void updateRoles(UpdateUserProfileData profileData, String userId, String rolesAction) {
+    public void updateRoles(UpdateUserProfileData profileData, String userId) {
         UserProfile userProfile = null;
         HttpStatus httpStatus = null;
         Response response;
 
         userProfile = validateUserStatus(userId);
-        if ("add".equalsIgnoreCase(rolesAction.trim())) {
+        if (!CollectionUtils.isEmpty(profileData.getRolesAdd())) {
             log.info("Add idam roles for userId :" + userId);
 
             try {
-                response = idamClient.addUserRoles(profileData.getRoles(), userId);
+                response = idamClient.addUserRoles(profileData.getRolesAdd(), userId);
                 httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode();
             } catch (FeignException ex) {
                 httpStatus = getHttpStatusFromFeignException(ex);
                 persistAudit(httpStatus, userProfile,ResponseSource.API);
-                throw new IdamServiceException("Idam deleteUserRole call failed",httpStatus);
+                throw new IdamServiceException("Idam adduserRoles call failed",httpStatus);
             }
-
-        } else if ("delete".equalsIgnoreCase(rolesAction.trim()))  {
-
-            log.info("Delete idam roles for userId :" + userId);
-
-            UserProfile finalUserProfile = userProfile;
-            profileData.getRoles().forEach(role -> {
-
-                deleteRolesInIdam(userId, role.getName(), finalUserProfile);
-
-            });
 
         }
 

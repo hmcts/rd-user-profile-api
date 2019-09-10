@@ -15,29 +15,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.userprofileapi.client.*;
-import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
-import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
-import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
-import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
-import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
@@ -124,7 +119,6 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
                 ));
     }
 
-    @Ignore
     @Test
     public void should_return_200_and_add_roles_to_user_profile_resource() throws Exception {
 
@@ -152,16 +146,16 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
         RoleName role1 = new RoleName("pui-case-manager");
         RoleName role2 = new RoleName("prd-Admin");
 
-        List<RoleName> roles = new ArrayList<>();
+        Set<RoleName> roles = new HashSet<>();
         roles.add(role1);
         roles.add(role2);
 
-        userRoles.setRoles(roles);
+        userRoles.setRolesAdd(roles);
 
 
         userProfileRequestHandlerTest.sendPut(
                         mockMvc,
-                  APP_BASE_PATH + "/"+ userId +"?rolesAction=add" ,
+                  APP_BASE_PATH + "/"+ userId  ,
                         userRoles,
                         OK
                 );
@@ -178,7 +172,7 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
 
         MvcResult result = userProfileRequestHandlerTest.sendPut(
                 mockMvc,
-                APP_BASE_PATH + "/"+ userId +"?rolesAction=add",
+                APP_BASE_PATH + "/"+ userId ,
                 "{ }",
                 BAD_REQUEST
         );

@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
+import java.util.Set;
 
 @NoArgsConstructor
 @Getter
@@ -21,19 +21,23 @@ public class UpdateUserProfileData implements RequestData {
 
     private String idamStatus;
 
-    private List<RoleName> roles;
+    private Set<RoleName> rolesAdd;
+
+
 
     @JsonCreator
     public UpdateUserProfileData(@JsonProperty(value = "email") String email,
                                  @JsonProperty(value = "firstName") String firstName,
                                  @JsonProperty(value = "lastName") String lastName,
                                  @JsonProperty(value = "idamStatus") String idamStatus,
-                                 @JsonProperty(value="roles") List<RoleName> roles) {
+                                 @JsonProperty(value="rolesAdd") Set<RoleName> rolesAdd
+                               ) {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
         this.idamStatus = idamStatus;
-        this.roles = roles;
+        this.rolesAdd = rolesAdd;
+
     }
 
 }

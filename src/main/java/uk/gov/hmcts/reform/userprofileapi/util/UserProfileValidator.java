@@ -2,15 +2,11 @@ package uk.gov.hmcts.reform.userprofileapi.util;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.util.CollectionUtils;
 
 import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesRequest;
-import uk.gov.hmcts.reform.userprofileapi.client.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
@@ -138,12 +134,12 @@ public interface UserProfileValidator {
         }
     }
 
-    static void validateUserProfileDataAndUserId(UpdateUserProfileData userProfileData, String userId, String rolesAction) {
+    static void validateUserProfileDataAndUserId(UpdateUserProfileData userProfileData, String userId) {
 
-        if (StringUtils.isNotBlank(rolesAction) && null == userProfileData) {
+        if (null == userProfileData) {
 
             throw new RequiredFieldMissingException("No Request Body in the request");
-        } else if(StringUtils.isBlank(userId) || CollectionUtils.isEmpty(userProfileData.getRoles())) {
+        } else if(StringUtils.isBlank(userId) || CollectionUtils.isEmpty(userProfileData.getRolesAdd())) {
 
             throw new RequiredFieldMissingException("No userId or roles in the request");
         }

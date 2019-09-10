@@ -53,10 +53,10 @@ public class AddRolesFuncTest extends AbstractFunctional {
                         GetUserProfileResponse.class
                 );
 
-        RoleName role1 = new RoleName("pui-case-manager");
-        RoleName role2 = new RoleName("prd-Admin");
+        AddRoleName role1 = new AddRoleName("pui-case-manager");
+        AddRoleName role2 = new AddRoleName("prd-Admin");
 
-        List<RoleName> roles = new ArrayList<>();
+        List<AddRoleName> roles = new ArrayList<>();
         roles.add(role1);
         roles.add(role2);
 

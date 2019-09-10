@@ -1,12 +1,12 @@
 package uk.gov.hmcts.reform.userprofileapi.data;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import lombok.Setter;
 import org.apache.commons.lang.RandomStringUtils;
 import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.client.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
@@ -39,7 +39,7 @@ public class CreateUserProfileDataTestBuilder {
                 RandomStringUtils.randomAlphabetic(20),
                 RandomStringUtils.randomAlphabetic(20),
                 IdamStatus.ACTIVE.toString(),
-                new ArrayList<>()
+                new HashSet<>()
                 );
     }
 

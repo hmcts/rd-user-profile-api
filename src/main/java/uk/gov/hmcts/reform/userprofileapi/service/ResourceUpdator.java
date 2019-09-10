@@ -7,6 +7,6 @@ public interface ResourceUpdator<T extends RequestData> {
 
     UserProfile update(T profileData, String userId);
 
-    void updateRoles(T profileData, String userId, String rolesAction);
+    void updateRoles(T profileData, String userId);
 
 }

@@ -1,16 +1,5 @@
 package uk.gov.hmcts.reform.userprofileapi.domain.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -31,6 +20,20 @@ import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceNotFoundException;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileUpdator;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 @RunWith(MockitoJUnitRunner.class)
 public class UserProfileUpdatorTest {
 
@@ -47,7 +50,8 @@ public class UserProfileUpdatorTest {
 
     private CreateUserProfileData createUserProfileData = CreateUserProfileDataTestBuilder.buildCreateUserProfileData();
 
-    private UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("email@net.com", "firstName", "lastName", "ACTIVE", new ArrayList<RoleName>());
+
+    private UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("email@net.com", "firstName", "lastName", "ACTIVE", new HashSet<RoleName>());
 
     private UserProfile userProfile = new UserProfile(createUserProfileData, idamRegistrationInfo.getIdamRegistrationResponse());
 
@@ -93,7 +97,7 @@ public class UserProfileUpdatorTest {
 
         String userId = UUID.randomUUID().toString();
         RoleName roleName = new RoleName("prd-admin");
-        List<RoleName> roleNames = new ArrayList<RoleName>();
+        Set<RoleName> roleNames = new HashSet<RoleName>();
         roleNames.add(roleName);
         updateUserProfileData = new UpdateUserProfileData("", "", "", "ACTIV", roleNames);
         when(userProfileRepository.findByIdamId(userId)).thenReturn(Optional.ofNullable(userProfile));
