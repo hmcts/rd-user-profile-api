@@ -12,10 +12,13 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
 import javax.validation.Valid;
+import javax.websocket.server.PathParam;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -258,10 +261,20 @@ public class UserProfileController {
             produces = APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseBody
-    public ResponseEntity<CreateUserProfileResponse> updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData, @PathVariable String userId) {
+    public ResponseEntity<CreateUserProfileResponse> updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData, @PathVariable String userId,
+                                                                       @ApiParam(name = "rolesAction", required = false)@RequestParam (value = "rolesAction", required = false) String rolesAction) {
         log.info("Updating user profile");
+        UserProfileValidator.validateUserProfileDataAndUserId(updateUserProfileData, userId, rolesAction);
+        if(StringUtils.isEmpty(rolesAction)) {
 
-        userProfileService.update(updateUserProfileData, userId);
+            log.info("Updating user profile without roles");
+            userProfileService.update(updateUserProfileData, userId);
+        } else {
+
+            log.info("Updating user profile with roles");
+            userProfileService.updateRoles(updateUserProfileData, userId, rolesAction);
+        }
+
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -319,7 +332,7 @@ public class UserProfileController {
 
     }
 
-    @ApiOperation(value = "Adding roles to user profiles",
+   /* @ApiOperation(value = "Add or Delete roles to user profiles",
             authorizations = {
                     @Authorization(value = "ServiceAuthorization"),
                     @Authorization(value = "Authorization")
@@ -333,7 +346,7 @@ public class UserProfileController {
     @ApiResponses({
             @ApiResponse(
                     code = 200,
-                    message = "Adding roles to user profiles",
+                    message = "Add or Delete roles to user profiles",
                     response = GetUserProfilesResponse.class
             ),
             @ApiResponse(
@@ -352,20 +365,22 @@ public class UserProfileController {
                     response = String.class
             )
     })
-    @PostMapping(
-            path="/roles",
+    @PutMapping(
+            path = "/{userId}",
             consumes = APPLICATION_JSON_UTF8_VALUE,
             produces = APPLICATION_JSON_UTF8_VALUE
-    )
-    @ResponseBody
-    public ResponseEntity modifyRoles(@RequestBody UpdateUserProfileData userProfileData,
-                                      @RequestParam("userId") String userId, @RequestParam("isDelete") String isAddOrDelete) {
+    )*/
+   // @ResponseBody
+    /*public ResponseEntity modifyRoles(@RequestBody UpdateUserProfileData userProfileData,
+                                      @ApiParam(name = "userId", required = true)@PathVariable(value = "userId", required = true) String userId,
+                                      @ApiParam(name = "rolesAction", required = true)@RequestParam (value = "rolesAction", required = true) String rolesAction) {
 
         log.info("modifyRoles in user profiles");
-        UserProfileValidator.validateRolesAnduserId(userProfileData.getRoles(), userId);
 
-        userProfileService.addRoles(userProfileData, userId, isAddOrDelete);
+        UserProfileValidator.validateUserProfileDataAndUserId(userProfileData, userId, rolesAction);
+
+        userProfileService.addRoles(userProfileData, userId, rolesAction);
 
         return ResponseEntity.status(HttpStatus.OK).build();
-    }
+    }*/
 }

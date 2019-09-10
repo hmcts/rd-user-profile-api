@@ -41,16 +41,16 @@ public interface UserProfileValidator {
     static boolean isUpdateUserProfileRequestValid(UpdateUserProfileData updateUserProfileData) {
 
         boolean isValid = true;
-
-        if (!validateUpdateUserProfileRequestFields(updateUserProfileData)) {
-            isValid = false;
-        } else {
-            try {
-                validateEnumField(STATUS, updateUserProfileData.getIdamStatus().toUpperCase());
-            } catch (Exception ex) {
+            if (!validateUpdateUserProfileRequestFields(updateUserProfileData)) {
                 isValid = false;
+            } else {
+                try {
+                    validateEnumField(STATUS, updateUserProfileData.getIdamStatus().toUpperCase());
+                } catch (Exception ex) {
+                    isValid = false;
+                }
             }
-        }
+
         return isValid;
     }
 
@@ -138,10 +138,16 @@ public interface UserProfileValidator {
         }
     }
 
-    static void validateRolesAnduserId(List<RoleName> roleNames, String userId) {
+    static void validateUserProfileDataAndUserId(UpdateUserProfileData userProfileData, String userId, String rolesAction) {
 
-        if (null == userId && null == roleNames || CollectionUtils.isEmpty(roleNames)) {
-            throw new EmptyResultDataAccessException(1);
+        if (StringUtils.isNotBlank(rolesAction) && null == userProfileData) {
+
+            throw new RequiredFieldMissingException("No Request Body in the request");
+        } else if(StringUtils.isBlank(userId) || CollectionUtils.isEmpty(userProfileData.getRoles())) {
+
+            throw new RequiredFieldMissingException("No userId or roles in the request");
         }
     }
+
+
 }

@@ -99,8 +99,6 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
                     + "  \"forename\": \"fname\","
                     + "  \"surname\": \"lname\","
                     + "  \"email\": \"user@hmcts.net\","
-                    + "  \"locked\": \"false\","
-                    + "  \"pending\": \"false\","
                     + "  \"roles\": ["
                     + "    \"pui-organisation-manager\","
                     + "    \"pui-user-manager\""
@@ -109,8 +107,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
         } else {
             body = "{"
                     + "  \"id\": \"e65e5439-a8f7-4ae6-b378-cc1015b72dbb\","
-                    + "  \"active\": \"false\","
-                    + "  \"pending\": \"true\""
+                    + "  \"active\": \"true\""
                     + "}";
         }
 

@@ -1,35 +1,136 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.put;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
+import static org.springframework.http.HttpStatus.*;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+
+import java.util.*;
+
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.userprofileapi.client.*;
-import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
-import java.util.*;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpStatus.*;
-import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
-import static uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder.buildUserProfile;
-
-
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = MOCK)
+@Transactional
 public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest {
 
     private Map<String, UserProfile> userProfileMap;
+    String id =  UUID.randomUUID().toString();
+    private MockMvc mockMvc;
 
+    @Autowired
+    protected WebApplicationContext webApplicationContext;
+
+    @Autowired
+    protected ObjectMapper objectMapper;
+
+    @Rule
+    public WireMockRule idamService = new WireMockRule(5000);
+
+    @Before
+    public void setUpWireMock() {
+
+        this.mockMvc = webAppContextSetup(webApplicationContext).build();
+        idamService.stubFor(WireMock.post(urlEqualTo("/api/v1/users/registration"))
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withHeader("Location", "/api/v1/users/" + id)
+                        .withStatus(409)
+                ));
+    }
+
+    public void mockWithGetSuccess(boolean withoutStatusFields) {
+
+        String body;
+        if (!withoutStatusFields) {
+
+            body = "{"
+                    + "  \"active\": \"true\","
+                    + "  \"forename\": \"fname\","
+                    + "  \"surname\": \"lname\","
+                    + "  \"email\": \"user@hmcts.net\","
+                    + "  \"roles\": ["
+                    + "    \"pui-organisation-manager\","
+                    + "    \"pui-user-manager\""
+                    + "  ]"
+                    + "}";
+        } else {
+            body = "{"
+                    + "  \"id\": \" " + id + "\","
+                    + "  \"active\": \"true\""
+                    + "}";
+        }
+
+        idamService.stubFor(get(urlMatching("/api/v1/users/.*"))
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withStatus(200)
+                        .withBody(body)));
+
+    }
+
+    public void mockWithUpdateSuccess() {
+        idamService.stubFor(put(urlMatching("/api/v1/users/.*"))
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withStatus(200)
+                ));
+    }
+
+    public void mockWithUpdateRolesSuccess() {
+        idamService.stubFor(WireMock.post(urlEqualTo("/api/v1/users/"+ id + "/roles"))
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withStatus(200)
+                ));
+    }
+
+
+    public void mockWithUpdateRolesFailure() {
+        idamService.stubFor(WireMock.post(urlEqualTo("/api/v1/users/"+ id + "/roles"))
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withStatus(400)
+                ));
+    }
+
+    @Ignore
     @Test
     public void should_return_200_and_add_roles_to_user_profile_resource() throws Exception {
 
+        mockWithGetSuccess(true);
+        mockWithUpdateSuccess();
+        mockWithUpdateRolesSuccess();
         CreateUserProfileData data = buildCreateUserProfileData();
 
         CreateUserProfileResponse createdResource =
@@ -41,95 +142,46 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
                         CreateUserProfileResponse.class
                 );
 
-        CreateUserProfileResponse createdResource1 =
-                userProfileRequestHandlerTest.sendPost(
+
+        String userId = createdResource.getIdamId();
+        System.out.println("userId::" + userId);
+        assertThat(userId).isNotNull();
+
+        UpdateUserProfileData userRoles = new UpdateUserProfileData();
+
+        RoleName role1 = new RoleName("pui-case-manager");
+        RoleName role2 = new RoleName("prd-Admin");
+
+        List<RoleName> roles = new ArrayList<>();
+        roles.add(role1);
+        roles.add(role2);
+
+        userRoles.setRoles(roles);
+
+
+        userProfileRequestHandlerTest.sendPut(
                         mockMvc,
-                        APP_BASE_PATH,
-                        data.getEmail(),
-                        CREATED,
-                        CreateUserProfileResponse.class
+                  APP_BASE_PATH + "/"+ userId +"?rolesAction=add" ,
+                        userRoles,
+                        OK
                 );
 
-        UserProfile persistedUserProfile = userProfileMap.get("user");
-        String idamId = persistedUserProfile.getIdamId();
-
-//        UserProfile user = buildUserProfile();
-//        user.setIdamId("1234567");
-//        user.setStatus(IdamStatus.ACTIVE);
-//        testUserProfileRepository.save(user);
-//
-//        UpdateUserProfileData data = new UpdateUserProfileData();
-//
-//        RoleName role1 = new RoleName("pui-case-manager");
-//        RoleName role2 = new RoleName("prd-Admin");
-//
-//        List<RoleName> roles = new ArrayList<>();
-//        roles.add(role1);
-//        roles.add(role2);
-//
-//        data.setRoles(roles);
-
-
-        GetUserProfileResponse retrievedResource =
-                userProfileRequestHandlerTest.sendGet(
-                        mockMvc,
-                        APP_BASE_PATH + "?" + "userId=" + "1234567",
-                        OK,
-                        GetUserProfileResponse.class
-                );
-
-        assertThat(retrievedResource).isNotNull();
     }
 
-
-    private void verifyUserProfileCreation(CreateUserProfileResponse createdResource, HttpStatus idamStatus, UpdateUserProfileData data) {
-
-        assertThat(createdResource.getIdamId()).isNotNull();
-        assertThat(createdResource.getIdamId()).isInstanceOf(UUID.class);
-        assertThat(createdResource.getIdamRegistrationResponse()).isEqualTo(idamStatus.value());
-
-        Optional<UserProfile> persistedUserProfile = userProfileRepository.findByIdamId(createdResource.getIdamId());
-        UserProfile userProfile = persistedUserProfile.get();
-        assertThat(userProfile.getId()).isNotNull().isExactlyInstanceOf(Long.class);
-        assertThat(userProfile.getIdamRegistrationResponse()).isEqualTo(201);
-        assertThat(userProfile.getEmail()).isEqualToIgnoringCase(data.getEmail());
-        assertThat(userProfile.getFirstName()).isNotEmpty().isEqualTo(data.getFirstName());
-        assertThat(userProfile.getLastName()).isNotEmpty().isEqualTo(data.getLastName());
-        assertThat(userProfile.getLanguagePreference()).isEqualTo(LanguagePreference.EN);
-        assertThat(userProfile.getUserCategory()).isEqualTo(UserCategory.PROFESSIONAL);
-        assertThat(userProfile.getUserType()).isEqualTo(UserType.EXTERNAL);
-        assertThat(userProfile.getStatus()).isEqualTo(IdamStatus.PENDING);
-        assertThat(userProfile.isEmailCommsConsent()).isEqualTo(false);
-        assertThat(userProfile.isPostalCommsConsent()).isEqualTo(false);
-        assertThat(userProfile.getEmailCommsConsentTs()).isNull();
-        assertThat(userProfile.getPostalCommsConsentTs()).isNull();
-        assertThat(userProfile.getCreated()).isNotNull();
-        assertThat(userProfile.getLastUpdated()).isNotNull();
-
-        Optional<Audit> optional = auditRepository.findByUserProfile(userProfile);
-        Audit audit = optional.get();
-
-        assertThat(audit).isNotNull();
-        assertThat(audit.getIdamRegistrationResponse()).isEqualTo(201);
-        assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.ACCEPTED);
-        assertThat(audit.getSource()).isEqualTo(ResponseSource.API);
-        assertThat(audit.getUserProfile().getIdamId()).isEqualTo(createdResource.getIdamId());
-        assertThat(audit.getAuditTs()).isNotNull();
-
-    }
 
 
     @Test
     public void should_return_400_and_not_create_user_profile_when_empty_body() throws Exception {
 
-        MvcResult result =
-                userProfileRequestHandlerTest.sendPost(
-                        mockMvc,
-                        APP_BASE_PATH,
-                        "{}",
-                        BAD_REQUEST
-                );
+        mockWithUpdateRolesFailure();
+        String userId = UUID.randomUUID().toString();
 
+        MvcResult result = userProfileRequestHandlerTest.sendPut(
+                mockMvc,
+                APP_BASE_PATH + "/"+ userId +"?rolesAction=add",
+                "{ }",
+                BAD_REQUEST
+        );
         assertThat(result.getResponse().getContentAsString()).isNotEmpty();
     }
 

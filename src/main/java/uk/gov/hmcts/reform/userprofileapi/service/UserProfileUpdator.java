@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
@@ -61,28 +62,29 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
             persistAudit(HttpStatus.BAD_REQUEST, null,ResponseSource.SYNC);
             throw new RequiredFieldMissingException("Update user profile request is not valid for userId: " + userId);
         } else if (!isSameAsExistingUserProfile(updateUserProfileData, userProfile)) {
-            userProfile.setEmail(updateUserProfileData.getEmail().trim());
-            userProfile.setFirstName(updateUserProfileData.getFirstName().trim());
-            userProfile.setLastName(updateUserProfileData.getLastName().trim());
-            userProfile.setStatus(IdamStatus.valueOf(updateUserProfileData.getIdamStatus().toUpperCase()));
+                userProfile.setEmail(updateUserProfileData.getEmail().trim());
+                userProfile.setFirstName(updateUserProfileData.getFirstName().trim());
+                userProfile.setLastName(updateUserProfileData.getLastName().trim());
+                userProfile.setStatus(IdamStatus.valueOf(updateUserProfileData.getIdamStatus().toUpperCase()));
+         }
+
             try {
                 userProfile = userProfileRepository.save(userProfile);
             } catch (Exception ex) {
                 status = HttpStatus.INTERNAL_SERVER_ERROR;
             }
-        }
         persistAudit(status, userProfile, ResponseSource.SYNC);
         return userProfile;
     }
 
     @Override
-    public void addRoles(UpdateUserProfileData profileData, String userId, String addOrDelete) {
+    public void updateRoles(UpdateUserProfileData profileData, String userId, String rolesAction) {
         UserProfile userProfile = null;
         HttpStatus httpStatus = null;
         Response response;
 
         userProfile = validateUserStatus(userId);
-        if ("add".equalsIgnoreCase(addOrDelete)) {
+        if ("add".equalsIgnoreCase(rolesAction.trim())) {
             log.info("Add idam roles for userId :" + userId);
 
             try {
@@ -94,7 +96,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
                 throw new IdamServiceException("Idam deleteUserRole call failed",httpStatus);
             }
 
-        } else  {
+        } else if ("delete".equalsIgnoreCase(rolesAction.trim()))  {
 
             log.info("Delete idam roles for userId :" + userId);
 
@@ -139,7 +141,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
 
     private UserProfile validateUserStatus(String userId) {
         UserProfile userProfile = null;
-        Optional<UserProfile> userProfileOptional = userProfileRepository.findByIdamId(java.util.UUID.fromString(userId));
+        Optional<UserProfile> userProfileOptional = userProfileRepository.findByIdamId(userId);
         userProfile = userProfileOptional.orElse(null);
         if (userProfile == null) {
             throw new ResourceNotFoundException("could not find user profile for userId: or status is not active " + userId);

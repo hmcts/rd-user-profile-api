@@ -153,7 +153,7 @@ public class UserProfileControllerTest {
 
         String idamId = "13b02995-5e44-4136-bf5a-46f4ff4acb8f";
 
-        ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId);
+        ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId,null);
 
         verify(userProfileServiceMock, times(1)).update(any(), any());
 
