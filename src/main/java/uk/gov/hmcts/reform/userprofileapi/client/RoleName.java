@@ -12,7 +12,7 @@ public class RoleName {
 
     private String name;
 
-    public RoleName(@JsonProperty(value="name")String name) {
+    public RoleName(@JsonProperty(value = "name")String name) {
         this.name = name;
     }
 

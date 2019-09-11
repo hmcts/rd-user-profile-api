@@ -37,15 +37,15 @@ public interface UserProfileValidator {
     static boolean isUpdateUserProfileRequestValid(UpdateUserProfileData updateUserProfileData) {
 
         boolean isValid = true;
-            if (!validateUpdateUserProfileRequestFields(updateUserProfileData)) {
+        if (!validateUpdateUserProfileRequestFields(updateUserProfileData)) {
+            isValid = false;
+        } else {
+            try {
+                validateEnumField(STATUS, updateUserProfileData.getIdamStatus().toUpperCase());
+            } catch (Exception ex) {
                 isValid = false;
-            } else {
-                try {
-                    validateEnumField(STATUS, updateUserProfileData.getIdamStatus().toUpperCase());
-                } catch (Exception ex) {
-                    isValid = false;
-                }
             }
+        }
 
         return isValid;
     }
@@ -80,9 +80,9 @@ public interface UserProfileValidator {
 
         boolean isSame = false;
         if (userProfile.getEmail().equals(updateUserProfileData.getEmail().trim())
-            && userProfile.getFirstName().equals(updateUserProfileData.getFirstName().trim())
-            && userProfile.getLastName().equals(updateUserProfileData.getLastName().trim())
-            && userProfile.getStatus().toString().equals(updateUserProfileData.getIdamStatus().trim())) {
+                && userProfile.getFirstName().equals(updateUserProfileData.getFirstName().trim())
+                && userProfile.getLastName().equals(updateUserProfileData.getLastName().trim())
+                && userProfile.getStatus().toString().equals(updateUserProfileData.getIdamStatus().trim())) {
             isSame = true;
         }
         return isSame;
@@ -139,7 +139,7 @@ public interface UserProfileValidator {
         if (null == userProfileData) {
 
             throw new RequiredFieldMissingException("No Request Body in the request");
-        } else if(StringUtils.isBlank(userId) || CollectionUtils.isEmpty(userProfileData.getRolesAdd())) {
+        } else if (StringUtils.isBlank(userId) || CollectionUtils.isEmpty(userProfileData.getRolesAdd())) {
 
             throw new RequiredFieldMissingException("No userId or roles in the request");
         }

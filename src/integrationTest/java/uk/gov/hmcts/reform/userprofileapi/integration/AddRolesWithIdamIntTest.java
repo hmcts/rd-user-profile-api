@@ -103,7 +103,7 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
     }
 
     public void mockWithUpdateRolesSuccess() {
-        idamService.stubFor(WireMock.post(urlEqualTo("/api/v1/users/"+ id + "/roles"))
+        idamService.stubFor(WireMock.post(urlEqualTo("/api/v1/users/" + id + "/roles"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(200)
@@ -112,7 +112,7 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
 
 
     public void mockWithUpdateRolesFailure() {
-        idamService.stubFor(WireMock.post(urlEqualTo("/api/v1/users/"+ id + "/roles"))
+        idamService.stubFor(WireMock.post(urlEqualTo("/api/v1/users/" + id + "/roles"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(400)
@@ -155,10 +155,10 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
 
         userProfileRequestHandlerTest.sendPut(
                         mockMvc,
-                  APP_BASE_PATH + "/"+ userId  ,
+                  APP_BASE_PATH + "/" + userId,
                         userRoles,
                         OK
-                );
+        );
 
     }
 
@@ -172,7 +172,7 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
 
         MvcResult result = userProfileRequestHandlerTest.sendPut(
                 mockMvc,
-                APP_BASE_PATH + "/"+ userId ,
+                APP_BASE_PATH + "/" + userId,
                 "{ }",
                 BAD_REQUEST
         );

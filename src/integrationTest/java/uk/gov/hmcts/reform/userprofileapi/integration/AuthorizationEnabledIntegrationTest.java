@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRequestHandlerTest;
 import uk.gov.hmcts.reform.userprofileapi.integration.util.TestUserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 
 
 @Configuration

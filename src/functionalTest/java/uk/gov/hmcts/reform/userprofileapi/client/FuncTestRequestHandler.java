@@ -66,7 +66,7 @@ public class FuncTestRequestHandler {
 
     public <T> T sendPut(Object data, HttpStatus expectedStatus, String path, Class<T> clazz) throws JsonProcessingException {
 
-       return sendPut(objectMapper.writeValueAsString(data),
+        return sendPut(objectMapper.writeValueAsString(data),
                expectedStatus,
                path)
                .as(clazz);

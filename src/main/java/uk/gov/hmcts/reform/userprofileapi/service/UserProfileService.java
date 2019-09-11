@@ -43,6 +43,6 @@ public class UserProfileService<T extends RequestData> {
     }
 
     public UserProfileRolesResponse updateRoles(T updateData, String userId) {
-       return  resourceUpdator.updateRoles(updateData, userId);
+        return  resourceUpdator.updateRoles(updateData, userId);
     }
 }

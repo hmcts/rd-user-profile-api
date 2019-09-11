@@ -155,7 +155,8 @@ public class UserProfileControllerTest {
         ResponseEntity responseEntityMock = Mockito.mock(ResponseEntity.class);
 
         String idamId = "13b02995-5e44-4136-bf5a-46f4ff4acb8f";
-
+        Set<RoleName> roles = new HashSet<RoleName>();
+        when(updateUserProfileDataMock.getRolesAdd()).thenReturn(null);
         ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId);
 
         verify(userProfileServiceMock, times(1)).update(any(), any());
@@ -245,6 +246,7 @@ public class UserProfileControllerTest {
         ResponseEntity expect = ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         assertThat(expect).isEqualTo(400);
     }
+
     @Test
     public void testUpdateUserProfileRoles() {
         UpdateUserProfileData updateUserProfileDataMock = Mockito.mock(UpdateUserProfileData.class);

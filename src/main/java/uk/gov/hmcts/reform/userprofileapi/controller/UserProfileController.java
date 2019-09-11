@@ -261,17 +261,17 @@ public class UserProfileController {
     )
     @ResponseBody
     public ResponseEntity<UserProfileRolesResponse> updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData, @PathVariable String userId
-                                                                       ) {
+    ) {
         log.info("Updating user profile");
         UserProfileRolesResponse userProfileResponse = null;
-       if(StringUtils.isEmpty(updateUserProfileData.getRolesAdd())) {
+        if (StringUtils.isEmpty(updateUserProfileData.getRolesAdd())) {
 
             log.info("Updating user profile without roles");
             userProfileService.update(updateUserProfileData, userId);
         } else {
-           UserProfileValidator.validateUserProfileDataAndUserId(updateUserProfileData, userId);
-           log.info("Updating user profile with roles");
-           userProfileResponse = userProfileService.updateRoles(updateUserProfileData, userId);
+            UserProfileValidator.validateUserProfileDataAndUserId(updateUserProfileData, userId);
+            log.info("Updating user profile with roles");
+            userProfileResponse = userProfileService.updateRoles(updateUserProfileData, userId);
         }
         return ResponseEntity.ok(userProfileResponse);
     }

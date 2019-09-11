@@ -64,17 +64,18 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
             persistAudit(HttpStatus.BAD_REQUEST, null,ResponseSource.SYNC);
             throw new RequiredFieldMissingException("Update user profile request is not valid for userId: " + userId);
         } else if (!isSameAsExistingUserProfile(updateUserProfileData, userProfile)) {
-                userProfile.setEmail(updateUserProfileData.getEmail().trim());
-                userProfile.setFirstName(updateUserProfileData.getFirstName().trim());
-                userProfile.setLastName(updateUserProfileData.getLastName().trim());
-                userProfile.setStatus(IdamStatus.valueOf(updateUserProfileData.getIdamStatus().toUpperCase()));
-         }
 
-            try {
-                userProfile = userProfileRepository.save(userProfile);
-            } catch (Exception ex) {
-                status = HttpStatus.INTERNAL_SERVER_ERROR;
-            }
+            userProfile.setEmail(updateUserProfileData.getEmail().trim());
+            userProfile.setFirstName(updateUserProfileData.getFirstName().trim());
+            userProfile.setLastName(updateUserProfileData.getLastName().trim());
+            userProfile.setStatus(IdamStatus.valueOf(updateUserProfileData.getIdamStatus().toUpperCase()));
+        }
+
+        try {
+            userProfile = userProfileRepository.save(userProfile);
+        } catch (Exception ex) {
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
         persistAudit(status, userProfile, ResponseSource.SYNC);
         return userProfile;
     }
@@ -88,14 +89,14 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         if (!CollectionUtils.isEmpty(profileData.getRolesAdd())) {
             log.info("Add idam roles for userId :" + userId);
 
-            try(Response response = idamClient.addUserRoles(profileData.getRolesAdd(), userId)) {
+            try (Response response = idamClient.addUserRoles(profileData.getRolesAdd(), userId)) {
 
                 httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode();
 
             } catch (FeignException ex) {
                 httpStatus = getHttpStatusFromFeignException(ex);
                 persistAudit(httpStatus, userProfile,ResponseSource.API);
-               // throw new IdamServiceException("Idam add userRoles call failed",httpStatus);
+                // throw new IdamServiceException("Idam add userRoles call failed",httpStatus);
                 return new UserProfileRolesResponse(httpStatus);
             }
 
