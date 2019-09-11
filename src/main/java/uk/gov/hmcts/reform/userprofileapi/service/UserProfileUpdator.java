@@ -16,9 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
+
 import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
@@ -79,26 +80,27 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
     }
 
     @Override
-    public void updateRoles(UpdateUserProfileData profileData, String userId) {
+    public UserProfileRolesResponse updateRoles(UpdateUserProfileData profileData, String userId) {
         UserProfile userProfile = null;
         HttpStatus httpStatus = null;
-        Response response;
 
         userProfile = validateUserStatus(userId);
         if (!CollectionUtils.isEmpty(profileData.getRolesAdd())) {
             log.info("Add idam roles for userId :" + userId);
 
-            try {
-                response = idamClient.addUserRoles(profileData.getRolesAdd(), userId);
+            try(Response response = idamClient.addUserRoles(profileData.getRolesAdd(), userId)) {
+
                 httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode();
+
             } catch (FeignException ex) {
                 httpStatus = getHttpStatusFromFeignException(ex);
                 persistAudit(httpStatus, userProfile,ResponseSource.API);
-                throw new IdamServiceException("Idam adduserRoles call failed",httpStatus);
+               // throw new IdamServiceException("Idam add userRoles call failed",httpStatus);
+                return new UserProfileRolesResponse(httpStatus);
             }
 
         }
-
+        return new UserProfileRolesResponse(httpStatus);
     }
 
     public HttpStatus getHttpStatusFromFeignException(FeignException ex) {
@@ -112,22 +114,6 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         auditRepository.save(audit);
     }
 
-    private void deleteRolesInIdam(String userId, String roleName,UserProfile userProfile) {
-        HttpStatus httpStatus = null;
-        Response response;
-        try {
-
-            response = idamClient.deleteUserRole(userId, roleName);
-            httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode();
-
-
-        } catch (FeignException ex) {
-            httpStatus = getHttpStatusFromFeignException(ex);
-            persistAudit(httpStatus,userProfile,ResponseSource.API);
-            throw new IdamServiceException("Idam deleteUserRole call failed",httpStatus);
-
-        }
-    }
 
     private UserProfile validateUserStatus(String userId) {
         UserProfile userProfile = null;

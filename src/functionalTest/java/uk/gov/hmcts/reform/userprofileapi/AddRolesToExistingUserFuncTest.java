@@ -1,11 +1,13 @@
 package uk.gov.hmcts.reform.userprofileapi;
 
-
+import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
+import java.util.HashSet;
+import java.util.Set;
+
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -14,17 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.client.*;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
+import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-@Ignore
 @RunWith(SpringIntegrationSerenityRunner.class)
-public class AddRolesFuncTest extends AbstractFunctional {
+public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CreateUserProfileFuncTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AddRolesToExistingUserFuncTest.class);
 
     @Autowired
     protected TestConfigProperties configProperties;
@@ -39,41 +36,38 @@ public class AddRolesFuncTest extends AbstractFunctional {
     }
 
     @Test
-    public void should_create_user_profile_with_roles_successfully() throws Exception {
+    public void should_update_user_profile_with_roles_successfully() throws Exception {
 
         String email = idamClient.createUser("pui-user-manager");
         CreateUserProfileData data = createUserProfileData();
         data.setEmail(email);
-        CreateUserProfileResponse UserResource = createUserProfile(data, HttpStatus.CREATED);
-
-
+        CreateUserProfileResponse userResource = createUserProfile(data, HttpStatus.CREATED);
         GetUserProfileResponse resource =
                 testRequestHandler.sendGet(
                         requestUri + "?email=" + email.toLowerCase(),
                         GetUserProfileResponse.class
                 );
 
-        AddRoleName role1 = new AddRoleName("pui-case-manager");
-        AddRoleName role2 = new AddRoleName("prd-Admin");
+        RoleName role1 = new RoleName("pui-case-manager");
+        RoleName role2 = new RoleName("prd-Admin");
 
-        List<AddRoleName> roles = new ArrayList<>();
+        Set<RoleName> roles = new HashSet<>();
         roles.add(role1);
         roles.add(role2);
 
-              testRequestHandler.sendPost(
-                      roles,
-                HttpStatus.OK,
-                requestUri + "/users/"+ resource.getIdamId() + "/roles",
-                CreateUserProfileResponse.class
-        );
+        IdamRolesInfo resource1 =
+                testRequestHandler.sendPut(
+                            roles,
+                            HttpStatus.OK,
+                           requestUri + resource.getIdamId() + "/roles", IdamRolesInfo.class);
 
-        GetUserProfileWithRolesResponse resource1 =
+        GetUserProfileWithRolesResponse resource2 =
                 testRequestHandler.sendGet(
-                        requestUri + "/roles?email=" + email.toLowerCase(),
+                        "/v1/userprofile/" + resource.getIdamId() + "/roles",
                         GetUserProfileWithRolesResponse.class
                 );
 
-        assertThat(resource1.getRoles().size()).isNotNull();
-        assertThat(resource1.getRoles().size()).isEqualTo(3);
+        assertThat(resource2.getRoles().size()).isNotNull();
+        assertThat(resource2.getRoles().size()).isEqualTo(4);
     }
 }

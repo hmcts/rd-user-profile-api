@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.client;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -7,11 +8,11 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-public class RoleName extends UpdateUserProfileData{
+public class RoleName {
 
     private String name;
 
-    public RoleName(String name) {
+    public RoleName(@JsonProperty(value="name")String name) {
         this.name = name;
     }
 

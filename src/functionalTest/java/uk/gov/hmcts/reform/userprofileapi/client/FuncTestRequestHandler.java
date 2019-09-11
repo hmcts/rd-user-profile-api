@@ -64,6 +64,14 @@ public class FuncTestRequestHandler {
                 .statusCode(expectedStatus.value()).extract().response();
     }
 
+    public <T> T sendPut(Object data, HttpStatus expectedStatus, String path, Class<T> clazz) throws JsonProcessingException {
+
+       return sendPut(objectMapper.writeValueAsString(data),
+               expectedStatus,
+               path)
+               .as(clazz);
+    }
+
     public void sendPut(Object data, HttpStatus expectedStatus, String path) throws JsonProcessingException {
         sendPut(objectMapper.writeValueAsString(data),
                 expectedStatus,

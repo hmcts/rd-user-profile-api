@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import org.junit.Test;
@@ -15,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.userprofileapi.client.*;
 import uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder;
 import uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder;
+import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileService;
 
@@ -231,4 +234,32 @@ public class UserProfileControllerTest {
 
     }
 
+    @Test(expected = RequiredFieldMissingException.class)
+    public void  testThrowsMissingFieldWhenRolesAddedIsEmpty() throws Exception  {
+        Set<RoleName> roles = new HashSet<RoleName>();
+        String idamId = "13b02995-5e44-4136-bf5a-46f4ff4acb8f";
+        UpdateUserProfileData updateUserProfileDataMock = Mockito.mock(UpdateUserProfileData.class);
+        when(updateUserProfileDataMock.getRolesAdd())
+                .thenReturn(roles);
+        ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId);
+        ResponseEntity expect = ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        assertThat(expect).isEqualTo(400);
+    }
+    @Test
+    public void testUpdateUserProfileRoles() {
+        UpdateUserProfileData updateUserProfileDataMock = Mockito.mock(UpdateUserProfileData.class);
+        UserProfile userProfileMock = Mockito.mock(UserProfile.class);
+        ResponseEntity responseEntityMock = Mockito.mock(ResponseEntity.class);
+        RoleName roleName1 = new RoleName("pui-case-manager");
+        RoleName roleName2 = new RoleName("pui-case-organisation");
+        Set<RoleName> roles = new HashSet<RoleName>();
+        roles.add(roleName1);
+        roles.add(roleName2);
+        when(updateUserProfileDataMock.getRolesAdd()).thenReturn(roles);
+        String idamId = "13b02995-5e44-4136-bf5a-46f4ff4acb8f";
+        ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId);
+        verify(userProfileServiceMock, times(1)).updateRoles(any(), any());
+        ResponseEntity expect = ResponseEntity.status(HttpStatus.OK).build();
+        assertThat(actual).isEqualTo(expect);
+    }
 }

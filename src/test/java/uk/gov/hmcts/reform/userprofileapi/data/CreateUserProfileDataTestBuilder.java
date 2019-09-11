@@ -49,7 +49,7 @@ public class CreateUserProfileDataTestBuilder {
 
     public static List<String> getIdamRolesJson() {
         List<String> roles = new ArrayList<String>();
-        roles.add("pui-user-manager");
+        roles.add("caseworker");
         return roles;
     }
 
