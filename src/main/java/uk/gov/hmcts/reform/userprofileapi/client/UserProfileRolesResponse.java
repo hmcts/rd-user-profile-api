@@ -8,8 +8,6 @@ import lombok.Setter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-@Setter
-@NoArgsConstructor
 public class UserProfileRolesResponse {
 
     private HttpStatus responseStatusCode;

@@ -13,8 +13,6 @@ import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 @Getter
-@Setter
-@NoArgsConstructor
 public class GetUserProfileWithRolesResponse extends GetUserProfileResponse {
 
     private List<String> roles;
