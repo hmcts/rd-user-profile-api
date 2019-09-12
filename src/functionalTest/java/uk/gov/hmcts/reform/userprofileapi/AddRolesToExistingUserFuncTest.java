@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.client.*;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
-import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 
 @RunWith(SpringIntegrationSerenityRunner.class)
 public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
@@ -48,18 +47,20 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
                         GetUserProfileResponse.class
                 );
 
+        UpdateUserProfileData userRoles = new UpdateUserProfileData();
         RoleName role1 = new RoleName("pui-case-manager");
         RoleName role2 = new RoleName("prd-Admin");
 
         Set<RoleName> roles = new HashSet<>();
         roles.add(role1);
         roles.add(role2);
+        userRoles.setRolesAdd(roles);
 
-        IdamRolesInfo resource1 =
+        UserProfileRolesResponse resource1 =
                 testRequestHandler.sendPut(
                             roles,
                             HttpStatus.OK,
-                           requestUri + "/" + resource.getIdamId() + "/roles", IdamRolesInfo.class);
+                           requestUri + "/" + resource.getIdamId() + "/roles", UserProfileRolesResponse.class);
 
         GetUserProfileWithRolesResponse resource2 =
                 testRequestHandler.sendGet(
