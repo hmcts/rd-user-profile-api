@@ -1,23 +1,12 @@
 package uk.gov.hmcts.reform.userprofileapi.client;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mockito;
-import org.springframework.http.ResponseEntity;
-import uk.gov.hmcts.reform.userprofileapi.controller.UserProfileController;
-import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
-import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
-import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
-import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.*;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.getIdamRolesJson;
+import org.junit.Test;
+import org.mockito.InjectMocks;
+import uk.gov.hmcts.reform.userprofileapi.controller.UserProfileController;
 
 public class UpdateUserProfileDataTest {
 

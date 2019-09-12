@@ -174,6 +174,7 @@ public class UserProfileValidatorTest {
         assertThatThrownBy(() -> UserProfileValidator.validateUserIds(getUserProfilesRequest))
                 .isInstanceOf(RequiredFieldMissingException.class);
     }
+    
     @Test
     public void test_validateUserProfileDataAndUser() {
 
