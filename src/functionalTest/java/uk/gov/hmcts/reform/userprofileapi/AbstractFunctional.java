@@ -31,7 +31,7 @@ public class AbstractFunctional {
     @Autowired
     protected FuncTestRequestHandler testRequestHandler;
 
-    protected String requestUri = "/api/v1/users/";
+    protected String requestUri = "/v1/users/";
 
     @Before
     public void setupProxy() {
