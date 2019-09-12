@@ -13,7 +13,6 @@ public class GetUserProfileWithRolesResponseTest {
     @Test
     public void should_hold_values_after_creation_when_user_roles_required() {
 
-
         String idamId = UUID.randomUUID().toString();
 
         UserProfile userProfile = new UserProfile();

@@ -174,6 +174,16 @@ public class UserProfileValidatorTest {
         assertThatThrownBy(() -> UserProfileValidator.validateUserIds(getUserProfilesRequest))
                 .isInstanceOf(RequiredFieldMissingException.class);
     }
+    
+    @Test
+    public void test_validateUserProfileDataAndUser() {
+
+        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData();
+
+        if (null == userProfileData) {
+            throw new RequiredFieldMissingException("No Request Body in the request");
+        }
+    }
 
     private Set<RoleName> addRolesToRoleName() {
 
