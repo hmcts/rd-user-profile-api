@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.data;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import lombok.Setter;

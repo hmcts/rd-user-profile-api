@@ -28,7 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.userprofileapi.client.*;
@@ -167,7 +166,7 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
     @Test
     public void should_return_400_and_not_create_user_profile_when_empty_body() throws Exception {
 
-        String userId = " ";
+
         UpdateUserProfileData userRoles = new UpdateUserProfileData();
         RoleName role1 = new RoleName("pui-case-manager");
         RoleName role2 = new RoleName("prd-Admin");
@@ -175,7 +174,7 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
         Set<RoleName> roles = new HashSet<>();
         roles.add(role1);
         roles.add(role2);
-
+        String userId = " ";
         userRoles.setRolesAdd(roles);
         userProfileRequestHandlerTest.sendPut(
                 mockMvc,
