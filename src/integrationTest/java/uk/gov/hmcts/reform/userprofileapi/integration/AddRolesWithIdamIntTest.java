@@ -167,16 +167,23 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
     @Test
     public void should_return_400_and_not_create_user_profile_when_empty_body() throws Exception {
 
-        mockWithUpdateRolesFailure();
-        String userId = UUID.randomUUID().toString();
+        String userId = " ";
+        UpdateUserProfileData userRoles = new UpdateUserProfileData();
+        RoleName role1 = new RoleName("pui-case-manager");
+        RoleName role2 = new RoleName("prd-Admin");
 
-        MvcResult result = userProfileRequestHandlerTest.sendPut(
+        Set<RoleName> roles = new HashSet<>();
+        roles.add(role1);
+        roles.add(role2);
+
+        userRoles.setRolesAdd(roles);
+        userProfileRequestHandlerTest.sendPut(
                 mockMvc,
                 APP_BASE_PATH + "/" + userId,
-                "{ }",
+                userRoles,
                 BAD_REQUEST
         );
-        assertThat(result.getResponse().getContentAsString()).isNotEmpty();
+
     }
 
 }

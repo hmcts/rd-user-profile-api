@@ -107,7 +107,8 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
         } else {
             body = "{"
                     + "  \"id\": \"e65e5439-a8f7-4ae6-b378-cc1015b72dbb\","
-                    + "  \"active\": \"true\""
+                    + "  \"active\": \"false\","
+                    + "  \"pending\": \"true\""
                     + "}";
         }
 
@@ -167,7 +168,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
     @Test
     public void should_return_201_and_create_user_profile_when_status_not_properly_returned_by_sidam() throws Exception {
 
-        mockWithGetSuccess(true);
+        mockWithGetSuccess(false);
         mockWithUpdateSuccess();
         CreateUserProfileData data = buildCreateUserProfileData();
 
@@ -180,7 +181,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
                         CreateUserProfileResponse.class
                 );
 
-        verifyUserProfileCreation(createdResource, CREATED, data, IdamStatus.PENDING);
+        verifyUserProfileCreation(createdResource, CREATED, data, IdamStatus.ACTIVE);
 
     }
 
