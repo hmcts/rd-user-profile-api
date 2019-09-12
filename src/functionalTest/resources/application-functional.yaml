@@ -1,4 +1,4 @@
-targetInstance: ${TEST_URL:http://localhost:8091}
+targetInstance: ${TEST_URL:http://rd-user-profile-api-aat.service.core-compute-aat.internal}
 spring.flyway.enabled: false
 idamUrl: ${IDAM_URL_TO_TEST:https://idam-api.aat.platform.hmcts.net}
 
@@ -14,4 +14,3 @@ s2s.auth.url: ${S2S_URL_TO_TEST:http://rpe-service-auth-provider-aat.service.cor
 idam.auth.tokenAuth: ${IDAM_TOKEN_ATUH:cmQtcHJvZmVzc2lvbmFsLWFwaTpjYzVmMmE2LTk2OTAtMTFlOS1iYzQyLTUyNmFmNzc2NGY2NA==}
 idam.auth.redirectUrl: ${IDAM_REDIRECT_URL:https://rd-professional-api-aat.service.core-compute-aat.internal/oauth2redirect}
 idam.auth.clientId: rd-professional-api
-
