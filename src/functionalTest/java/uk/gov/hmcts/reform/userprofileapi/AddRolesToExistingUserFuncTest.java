@@ -60,7 +60,7 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
                 testRequestHandler.sendPut(
                         userRoles,
                             HttpStatus.OK,
-                           requestUri + "/" + resource.getIdamId() + "/roles", UserProfileRolesResponse.class);
+                           requestUri + "/" + resource.getIdamId(), UserProfileRolesResponse.class);
 
         GetUserProfileWithRolesResponse resource2 =
                 testRequestHandler.sendGet(
