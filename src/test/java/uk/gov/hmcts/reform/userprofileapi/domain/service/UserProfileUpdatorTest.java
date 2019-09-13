@@ -82,7 +82,7 @@ public class UserProfileUpdatorTest {
 
         UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
 
-        userProfileRolesResponse.setResponseStatusCode(HttpStatus.OK);
+        userProfileRolesResponse.setResponseStatusCode(HttpStatus.OK.toString());
         userProfileRolesResponse.setStatusMessage("Success");
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         String body = mapper.writeValueAsString(userProfileRolesResponse);
@@ -93,7 +93,7 @@ public class UserProfileUpdatorTest {
         UserProfileRolesResponse response = userProfileUpdator.updateRoles(updateUserProfileData, userProfile.getIdamId());
 
         assertThat(response).isNotNull();
-        assertThat(response.getResponseStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getResponseStatusCode()).isEqualTo("200");
     }
 
     @Test
@@ -108,7 +108,7 @@ public class UserProfileUpdatorTest {
 
         UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
 
-        userProfileRolesResponse.setResponseStatusCode(HttpStatus.OK);
+        userProfileRolesResponse.setResponseStatusCode(HttpStatus.OK.toString());
         userProfileRolesResponse.setStatusMessage("Success");
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         String body = mapper.writeValueAsString(userProfileRolesResponse);
@@ -117,7 +117,7 @@ public class UserProfileUpdatorTest {
         when(idamFeignClientMock.addUserRoles(updateUserProfileData.getRolesAdd(), "1234")).thenReturn(Response.builder().request(mock(Request.class)).body(body, Charset.defaultCharset()).status(500).build());
 
         UserProfileRolesResponse response = userProfileUpdator.updateRoles(updateUserProfileData, userProfile.getIdamId());
-        assertThat(response.getResponseStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(response.getResponseStatusCode()).isEqualTo("500");
     }
 
     @Test(expected = InvalidRequest.class)
@@ -133,7 +133,7 @@ public class UserProfileUpdatorTest {
 
         UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
 
-        userProfileRolesResponse.setResponseStatusCode(HttpStatus.OK);
+        userProfileRolesResponse.setResponseStatusCode(HttpStatus.OK.toString());
         userProfileRolesResponse.setStatusMessage("Success");
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         String body = mapper.writeValueAsString(userProfileRolesResponse);

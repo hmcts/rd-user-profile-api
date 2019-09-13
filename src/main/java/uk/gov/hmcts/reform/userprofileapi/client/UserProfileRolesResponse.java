@@ -12,7 +12,7 @@ import org.springframework.http.HttpStatus;
 @NoArgsConstructor
 public class UserProfileRolesResponse {
 
-    private HttpStatus responseStatusCode;
+    private String responseStatusCode;
     private String statusMessage;
 
     public UserProfileRolesResponse(HttpStatus idamGetResponseStatusCode) {
@@ -20,7 +20,7 @@ public class UserProfileRolesResponse {
     }
 
     private void loadStatusCodes(HttpStatus idamGetResponseStatusCode) {
-        this.responseStatusCode = idamGetResponseStatusCode;
+        this.responseStatusCode = String.valueOf(idamGetResponseStatusCode.value());
         this.statusMessage = resolveStatusAndReturnMessage(idamGetResponseStatusCode);
     }
 }

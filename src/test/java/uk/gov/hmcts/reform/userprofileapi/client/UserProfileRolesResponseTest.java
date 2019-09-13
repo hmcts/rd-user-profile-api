@@ -12,7 +12,7 @@ public class UserProfileRolesResponseTest {
     public void should_Return_User_profile_Resposne() {
 
         UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse(HttpStatus.OK);
-        assertThat(userProfileRolesResponse.getResponseStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(userProfileRolesResponse.getResponseStatusCode()).isEqualTo("200");
         assertThat(userProfileRolesResponse.getStatusMessage()).isEqualTo("11 OK");
     }
 }

@@ -49,6 +49,8 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         Set<RoleName> roles = new HashSet<>();
         roles.add(role1);
         roles.add(role2);
+        UpdateUserProfileData userRProfileData = new UpdateUserProfileData();
+        userRProfileData.setRolesAdd(roles);
 
         GetUserProfileResponse resource =
                 testRequestHandler.sendGet(
@@ -59,7 +61,7 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         LOG.info("before addroles call");
         UserProfileRolesResponse resource1 =
                 testRequestHandler.sendPut(
-                        roles,
+                        userRProfileData,
                             HttpStatus.OK,
                            requestUri + "/" + resource.getIdamId(), UserProfileRolesResponse.class);
 
