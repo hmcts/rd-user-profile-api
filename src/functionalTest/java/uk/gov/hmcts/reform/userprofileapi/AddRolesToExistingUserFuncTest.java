@@ -40,15 +40,14 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
 
         CreateUserProfileData data = createUserProfileData();
         String email = idamClient.createUser("pui-user-manager");
+
+
         data.setEmail(email);
         CreateUserProfileResponse userResource = createUserProfile(data, HttpStatus.CREATED);
 
         RoleName role1 = new RoleName("pui-case-manager");
-        RoleName role2 = new RoleName("prd-Admin");
-
         Set<RoleName> roles = new HashSet<>();
         roles.add(role1);
-        roles.add(role2);
         UpdateUserProfileData userRProfileData = new UpdateUserProfileData();
         userRProfileData.setRolesAdd(roles);
 
@@ -74,6 +73,6 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
                 );
         LOG.info("Roles addroles call" + resource2);
         assertThat(resource2.getRoles().size()).isNotNull();
-        assertThat(resource2.getRoles().size()).isEqualTo(4);
+        assertThat(resource2.getRoles().size()).isEqualTo(3);
     }
 }
