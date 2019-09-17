@@ -2,33 +2,16 @@ package uk.gov.hmcts.reform.userprofileapi.client;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.stream.Stream;
 import org.assertj.core.api.Assertions;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 
-@Ignore
 @RunWith(MockitoJUnitRunner.class)
 public class UserProfileResourceTest {
-
-    @Test
-    @Ignore
-    public void should_represent_same_number_of_fields_as_in_db() {
-        long numberOfFieldsInDb = 19;
-        long fieldCount = Stream.of(CreateUserProfileResponse.class.getDeclaredFields())
-            .filter(field -> !field.getName().startsWith("$"))
-            .map(Field::getName)
-            .count();
-
-        assertThat(fieldCount).isEqualTo(numberOfFieldsInDb);
-
-    }
 
     @Test
     public void should_create_successfully_with_no_args_constructor() {

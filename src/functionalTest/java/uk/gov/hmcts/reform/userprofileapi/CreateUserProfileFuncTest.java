@@ -14,9 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.client.IdamClient;
+import uk.gov.hmcts.reform.userprofileapi.client.*;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
 
 @Ignore
@@ -48,7 +46,7 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
     }
 
     @Test
-    public void should_create_user_profile_for_duplicate_idam_user_and_verify_successfully() throws Exception {
+    public void should_create_user_profile_for_duplicate_idam_user_and_verify_successfully_for_prd_roles() throws Exception {
 
         String email = idamClient.createUser("pui-user-manager");
 
@@ -57,6 +55,29 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
         CreateUserProfileResponse duplicateUserResource = createUserProfile(data, HttpStatus.CREATED);
         verifyCreateUserProfile(duplicateUserResource);
 
+    }
+
+    @Test
+    public void should_create_user_profile_for_duplicate_idam_user_and_verify_roles_updated_successfully_for_citizen() throws Exception {
+
+        //create user with citizen role in SIDAM
+        String email = idamClient.createUser("citizen");
+
+        //create user profile in UP with PRD-ADMIN token for above user with same email with pui-user-manager roles
+        CreateUserProfileData data = createUserProfileData();
+        data.setEmail(email);
+        CreateUserProfileResponse duplicateUserResource = createUserProfile(data, HttpStatus.CREATED);
+        verifyCreateUserProfile(duplicateUserResource);
+
+        //get user by getUserById to check new roles got added in SIDAM
+        String userId = duplicateUserResource.getIdamId();
+        GetUserProfileWithRolesResponse resource =
+                testRequestHandler.sendGet(
+                        requestUri + "/" + userId + "/roles",
+                        GetUserProfileWithRolesResponse.class);
+
+        assertThat(resource.getRoles()).contains("citizen");
+        assertThat(resource.getRoles()).contains("pui-user-manager");
     }
 
     @Test

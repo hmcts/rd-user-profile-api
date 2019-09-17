@@ -10,7 +10,6 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -32,23 +31,22 @@ public class UserProfileQueryProviderTest {
     private UserProfileRepository userProfileRepository;
 
     @Test
-    @Ignore
     public void should_query_by_uuid_successfully() {
 
         UserProfile userProfile = Mockito.mock(UserProfile.class);
         Long id = 1L;
         UUID uuid = UUID.randomUUID();
-        Mockito.when(userProfileRepository.findById(id)).thenReturn(Optional.of(userProfile));
+        Mockito.when(userProfileRepository.findByIdamId("1")).thenReturn(Optional.of(userProfile));
 
         Supplier<Optional<UserProfile>> querySupplier =
-            queryProvider.getRetrieveByIdQuery(new UserProfileIdentifier(IdentifierName.UUID, uuid.toString()));
+            queryProvider.getRetrieveByIdQuery(new UserProfileIdentifier(IdentifierName.UUID, "1"));
 
         Optional<UserProfile> optionalProfile = querySupplier.get();
 
         assertThat(optionalProfile.isPresent()).isTrue();
         assertThat(optionalProfile.get()).isEqualTo(userProfile);
 
-        Mockito.verify(userProfileRepository).findById(id);
+        Mockito.verify(userProfileRepository).findByIdamId("1");
         Mockito.verifyNoMoreInteractions(userProfileRepository);
 
     }
@@ -140,8 +138,8 @@ public class UserProfileQueryProviderTest {
         String id2 = UUID.randomUUID().toString();
 
         List<String> stringUserIds = new ArrayList<>();
-        stringUserIds.add(id1.toString());
-        stringUserIds.add(id2.toString());
+        stringUserIds.add(id1);
+        stringUserIds.add(id2);
 
         List<String> ids = new ArrayList<>();
         ids.add(id1);

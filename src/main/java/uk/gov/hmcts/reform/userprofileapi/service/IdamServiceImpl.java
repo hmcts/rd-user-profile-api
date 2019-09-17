@@ -75,6 +75,21 @@ public class IdamServiceImpl implements IdamService {
         return new IdamRolesInfo(httpStatus);
     }
 
+    @Override
+    public IdamRolesInfo addUserRoles(List roleRequest, String userId) {
+        log.info("add idam roles for userId :" + userId);
+        HttpStatus httpStatus = null;
+        Response response;
+        try {
+            response = idamClient.addUserRoles(roleRequest, userId);
+            httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode();
+        } catch (FeignException ex) {
+            httpStatus = gethttpStatusFromFeignException(ex);
+        }
+
+        return new IdamRolesInfo(httpStatus);
+    }
+
     public HttpStatus gethttpStatusFromFeignException(FeignException ex) {
         return (ex instanceof RetryableException)
                 ? HttpStatus.INTERNAL_SERVER_ERROR

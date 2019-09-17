@@ -19,4 +19,6 @@ public interface IdamService {
 
     IdamRolesInfo updateUserRoles(List roleRequest, String userId);
 
+    IdamRolesInfo addUserRoles(List roleRequest, String userId);
+
 }
