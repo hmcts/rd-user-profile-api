@@ -100,12 +100,12 @@ public class UserProfileValidatorTest {
         IdamRegistrationInfo idamInfo = new IdamRegistrationInfo(HttpStatus.CREATED);
         UserProfile userProfile = new UserProfile(userProfileData, idamInfo.getIdamRegistrationResponse());
 
-        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("test-email-@somewhere.com", "test-first-name", "test-last-name", "PENDING");
+        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("test-email-@somewhere.com", "test-first-name", "test-last-name", "PENDING",addRolesToRoleName());
 
         boolean response = UserProfileValidator.isSameAsExistingUserProfile(updateUserProfileData, userProfile);
         assertThat(response).isTrue();
 
-        updateUserProfileData = new UpdateUserProfileData("test-l-@somewhere.com", "test-first-name", "test-last-name", "PENDING");
+        updateUserProfileData = new UpdateUserProfileData("test-l-@somewhere.com", "test-first-name", "test-last-name", "PENDING",addRolesToRoleName());
         boolean response1 = UserProfileValidator.isSameAsExistingUserProfile(updateUserProfileData, userProfile);
         assertThat(response1).isFalse();
     }
