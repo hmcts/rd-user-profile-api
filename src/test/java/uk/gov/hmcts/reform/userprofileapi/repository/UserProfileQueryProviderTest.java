@@ -10,7 +10,6 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -30,29 +29,6 @@ public class UserProfileQueryProviderTest {
 
     @Mock
     private UserProfileRepository userProfileRepository;
-
-    @Test
-    @Ignore
-    public void should_query_by_uuid_successfully() {
-
-        UserProfile userProfile = Mockito.mock(UserProfile.class);
-        Long id = 1L;
-        UUID uuid = UUID.randomUUID();
-        Mockito.when(userProfileRepository.findById(id)).thenReturn(Optional.of(userProfile));
-
-        Supplier<Optional<UserProfile>> querySupplier =
-            queryProvider.getRetrieveByIdQuery(new UserProfileIdentifier(IdentifierName.UUID, uuid.toString()));
-
-        Optional<UserProfile> optionalProfile = querySupplier.get();
-
-        assertThat(optionalProfile.isPresent()).isTrue();
-        assertThat(optionalProfile.get()).isEqualTo(userProfile);
-
-        Mockito.verify(userProfileRepository).findById(id);
-        Mockito.verifyNoMoreInteractions(userProfileRepository);
-
-    }
-
 
     @Test
     public void should_query_by_email_successfully() {

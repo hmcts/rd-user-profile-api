@@ -4,10 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 import feign.FeignException;
+import feign.Request;
 import feign.Response;
+import feign.RetryableException;
 import java.util.*;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -20,7 +21,6 @@ import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamServiceImpl;
 
-
 @RunWith(MockitoJUnitRunner.class)
 public class IdamServiceTest {
     private final String userId = "test796-d05e-480d-bf3d-7cbfacb3ca29";
@@ -31,7 +31,6 @@ public class IdamServiceTest {
 
     @InjectMocks
     private IdamService sut = new IdamServiceImpl();
-
 
     @Test
     public void testRegisterUser() {
@@ -104,13 +103,12 @@ public class IdamServiceTest {
     }
 
     @Test
-    @Ignore
     public void testGetHttpStatusFromFeignException() {
         IdamServiceImpl idamService = new IdamServiceImpl();
 
-        /* HttpStatus status = idamService.gethttpStatusFromFeignException(
-                new RetryableException(StatusCode.INTERNAL_SERVER_ERROR.toString(), new Date()));
-        assertThat(status).isNotNull().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);*/
+        HttpStatus status = idamService.gethttpStatusFromFeignException(
+                new RetryableException(500, StatusCode.INTERNAL_SERVER_ERROR.toString(), Request.HttpMethod.GET, new Date()));
+        assertThat(status).isNotNull().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Test

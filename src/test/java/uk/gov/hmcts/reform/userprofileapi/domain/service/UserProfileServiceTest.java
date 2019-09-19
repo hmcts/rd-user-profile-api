@@ -2,10 +2,13 @@ package uk.gov.hmcts.reform.userprofileapi.domain.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -15,6 +18,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.userprofileapi.client.*;
 import uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.service.ResourceUpdator;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileCreator;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileRetriever;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileService;
@@ -28,8 +32,37 @@ public class UserProfileServiceTest {
     @Mock
     private UserProfileRetriever userProfileRetriever;
 
+    @Mock
+    private ResourceUpdator<UpdateUserProfileData> resourceUpdator;
+
     @InjectMocks
     private UserProfileService<RequestData> userProfileService;
+
+    @Test
+    public void testUpdateRoles() {
+
+        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData();
+
+        RoleName roleName1 = new RoleName("pui-case-manager");
+        RoleName roleName2 = new RoleName("pui-case-organisation");
+        Set<RoleName> roles = new HashSet<>();
+        roles.add(roleName1);
+        roles.add(roleName2);
+
+        updateUserProfileData.setRolesAdd(roles);
+
+        userProfileService.update(updateUserProfileData, "1234");
+
+        UserProfileRolesResponse userProfileRolesResponse = mock(UserProfileRolesResponse.class);
+
+        when(resourceUpdator.updateRoles(updateUserProfileData, "1234")).thenReturn(userProfileRolesResponse);
+        userProfileRolesResponse = userProfileService.updateRoles(updateUserProfileData, "1234");
+
+        assertThat(userProfileRolesResponse).isNotNull();
+
+        //verify(userProfileService, times (1)).updateRoles(any(), "1234");
+        //verify(userProfileService, times (1)).update(updateUserProfileDataMock, "1234");
+    }
 
     @Test
     public void should_call_creator_create_method_successfully() {

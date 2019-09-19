@@ -36,8 +36,8 @@ public class AbstractFunctional {
     @Before
     public void setupProxy() {
         //TO enable for local testing
-       /* RestAssured.proxy("proxyout.reform.hmcts.net",8080);
-        SerenityRest.proxy("proxyout.reform.hmcts.net", 8080);*/
+        //RestAssured.proxy("proxyout.reform.hmcts.net",8080);
+        //SerenityRest.proxy("proxyout.reform.hmcts.net", 8080);
     }
 
 
