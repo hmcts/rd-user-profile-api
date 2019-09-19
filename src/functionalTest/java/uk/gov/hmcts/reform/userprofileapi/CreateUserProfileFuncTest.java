@@ -9,7 +9,6 @@ import java.util.List;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.json.JSONObject;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -19,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.client.*;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
 
-@Ignore
 @RunWith(SpringIntegrationSerenityRunner.class)
 public class CreateUserProfileFuncTest extends AbstractFunctional {
 
@@ -78,7 +76,7 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
     }
 
     @Test
-    public void should_create_user_profile_for_duplicate_idam_user_and_verify_roles_updated_successfully_for_citizen() throws Exception {
+    public void should_create_user_profile_for_duplicate_idam_user_and_verify_roles_updated_successfully_for_user_having_citizen_role() throws Exception {
 
         //create user with citizen role in SIDAM
         String email = idamClient.createUser("citizen");

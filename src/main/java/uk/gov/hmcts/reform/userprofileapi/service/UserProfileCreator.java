@@ -176,7 +176,7 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
         List<String> idamRoles = roles.isPresent() ? roles.get() : new ArrayList<>();
         List<String> xuiRoles = profileData.getRoles();
         xuiRoles.removeAll(idamRoles);
-        return new ArrayList<String>(new HashSet<String>(xuiRoles));
+        return new ArrayList<>(new HashSet<String>(xuiRoles));
     }
 
     private IdamRolesInfo addIdamRoles(List<String> rolesToUpdate, String userId) {
