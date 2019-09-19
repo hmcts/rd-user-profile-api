@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -99,12 +100,12 @@ public class UserProfileValidatorTest {
         IdamRegistrationInfo idamInfo = new IdamRegistrationInfo(HttpStatus.CREATED);
         UserProfile userProfile = new UserProfile(userProfileData, idamInfo.getIdamRegistrationResponse());
 
-        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("test-email-@somewhere.com", "test-first-name", "test-last-name", "PENDING", addRolesToRoleName());
+        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("test-email-@somewhere.com", "test-first-name", "test-last-name", "PENDING");
 
         boolean response = UserProfileValidator.isSameAsExistingUserProfile(updateUserProfileData, userProfile);
         assertThat(response).isTrue();
 
-        updateUserProfileData = new UpdateUserProfileData("test-l-@somewhere.com", "test-first-name", "test-last-name", "PENDING", addRolesToRoleName());
+        updateUserProfileData = new UpdateUserProfileData("test-l-@somewhere.com", "test-first-name", "test-last-name", "PENDING");
         boolean response1 = UserProfileValidator.isSameAsExistingUserProfile(updateUserProfileData, userProfile);
         assertThat(response1).isFalse();
     }
