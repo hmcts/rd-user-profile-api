@@ -61,7 +61,6 @@ public class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegration
             );
 
         verifyUserProfileCreation(createdResource, CREATED, data);
-
     }
 
     private void verifyUserProfileCreation(CreateUserProfileResponse createdResource, HttpStatus idamStatus, CreateUserProfileData data) {
@@ -202,6 +201,58 @@ public class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegration
             }
 
         });
+
+    }
+
+    @Test
+    public void should_return_201_and_create_user_profile_resource_with_allowed_email() throws Exception {
+
+        CreateUserProfileData data = buildCreateUserProfileData();
+        data.setEmail("a.adison@gmail.com");
+
+        CreateUserProfileResponse createdResource =
+                userProfileRequestHandlerTest.sendPost(
+                        mockMvc,
+                        APP_BASE_PATH,
+                        data,
+                        CREATED,
+                        CreateUserProfileResponse.class
+                );
+
+        verifyUserProfileCreation(createdResource, CREATED, data);
+    }
+
+    @Test
+    public void should_return_400_and_create_user_profile_resource_with_invalid_email() throws Exception {
+
+        CreateUserProfileData data = buildCreateUserProfileData();
+        data.setEmail("a.adisongmail.com");
+
+        CreateUserProfileResponse createdResource =
+                userProfileRequestHandlerTest.sendPost(
+                        mockMvc,
+                        APP_BASE_PATH,
+                        data,
+                        BAD_REQUEST,
+                        CreateUserProfileResponse.class
+                );
+
+    }
+
+    @Test
+    public void should_return_400_and_create_user_profile_resource_with_invalid_email_1() throws Exception {
+
+        CreateUserProfileData data = buildCreateUserProfileData();
+        data.setEmail("a.adison@gmailcom");
+
+        CreateUserProfileResponse createdResource =
+                userProfileRequestHandlerTest.sendPost(
+                        mockMvc,
+                        APP_BASE_PATH,
+                        data,
+                        BAD_REQUEST,
+                        CreateUserProfileResponse.class
+                );
 
     }
 

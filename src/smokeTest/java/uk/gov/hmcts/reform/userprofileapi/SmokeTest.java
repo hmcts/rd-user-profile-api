@@ -29,14 +29,15 @@ public class SmokeTest {
         RestAssured.useRelaxedHTTPSValidation();
 
         String response = SerenityRest
-                .given()
-                .baseUri(targetInstance)
-                .when()
-                .get("/health")
-                .then()
-                .statusCode(HttpStatus.OK.value())
-                .and()
-                .extract().body().asString();
+            .given()
+            .relaxedHTTPSValidation()
+            .baseUri(targetInstance)
+            .when()
+            .get("/health")
+            .then()
+            .statusCode(HttpStatus.OK.value())
+            .and()
+            .extract().body().asString();
 
         assertThat(response)
                 .contains("UP");

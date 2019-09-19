@@ -262,4 +262,54 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
 
     }
 
+    @Test
+    public void should_return_200_and_update_user_profile_resource_with_valid_email() throws Exception {
+
+        UserProfile persistedUserProfile = userProfileMap.get("user");
+        String idamId = persistedUserProfile.getIdamId();
+        UpdateUserProfileData data = buildUpdateUserProfileData();
+        data.setEmail("a.adison@gmail.com");
+
+        userProfileRequestHandlerTest.sendPut(
+                mockMvc,
+                APP_BASE_PATH + SLASH + idamId,
+                data,
+                OK
+        );
+
+    }
+
+    @Test
+    public void should_return_400_and_update_user_profile_resource_with_valid_email() throws Exception {
+
+        UserProfile persistedUserProfile = userProfileMap.get("user");
+        String idamId = persistedUserProfile.getIdamId();
+        UpdateUserProfileData data = buildUpdateUserProfileData();
+        data.setEmail("a.adisongmail.com");
+
+        userProfileRequestHandlerTest.sendPut(
+                mockMvc,
+                APP_BASE_PATH + SLASH + idamId,
+                data,
+                BAD_REQUEST
+        );
+
+    }
+
+    @Test
+    public void should_return_400_and_update_user_profile_resource_with_valid_email_1() throws Exception {
+
+        UserProfile persistedUserProfile = userProfileMap.get("user");
+        String idamId = persistedUserProfile.getIdamId();
+        UpdateUserProfileData data = buildUpdateUserProfileData();
+        data.setEmail("a.adison@gmailcom");
+
+        userProfileRequestHandlerTest.sendPut(
+                mockMvc,
+                APP_BASE_PATH + SLASH + idamId,
+                data,
+                BAD_REQUEST
+        );
+
+    }
 }
