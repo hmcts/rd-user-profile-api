@@ -16,11 +16,7 @@ import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesRequest;
 import uk.gov.hmcts.reform.userprofileapi.client.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
-import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
-import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
-import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
-import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
+import uk.gov.hmcts.reform.userprofileapi.domain.*;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceNotFoundException;
 
