@@ -179,11 +179,6 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
         return new ArrayList<String>(new HashSet<String>(xuiRoles));
     }
 
-    private IdamRolesInfo updateIdamRoles(List<String> rolesToUpdate, String userId) {
-
-        return idamService.updateUserRoles(createIdamRolesRequest(rolesToUpdate), userId);
-    }
-
     private IdamRolesInfo addIdamRoles(List<String> rolesToUpdate, String userId) {
 
         return idamService.addUserRoles(createIdamRolesRequest(rolesToUpdate), userId);
@@ -200,3 +195,4 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
     }
 
 }
+

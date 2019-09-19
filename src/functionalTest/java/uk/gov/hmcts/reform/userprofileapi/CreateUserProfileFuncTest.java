@@ -4,6 +4,8 @@ import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
+import java.util.ArrayList;
+import java.util.List;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -48,12 +50,30 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
     @Test
     public void should_create_user_profile_for_duplicate_idam_user_and_verify_successfully_for_prd_roles() throws Exception {
 
+        List<String> roles = new ArrayList();
+        roles.add("pui-user-manager");
+        roles.add("pui-case-manager");
+
+        //create user with "pui-user-manager" role in SIDAM
         String email = idamClient.createUser("pui-user-manager");
 
+        //create User profile with same email to get 409 scenario
         CreateUserProfileData data = createUserProfileData();
+        data.setRoles(roles);
         data.setEmail(email);
         CreateUserProfileResponse duplicateUserResource = createUserProfile(data, HttpStatus.CREATED);
         verifyCreateUserProfile(duplicateUserResource);
+
+        //get user by getUserById to check new roles got added in SIDAM
+        //should have 2 roles
+        String userId = duplicateUserResource.getIdamId();
+        GetUserProfileWithRolesResponse resource =
+                testRequestHandler.sendGet(
+                        requestUri + "/" + userId + "/roles",
+                        GetUserProfileWithRolesResponse.class);
+
+        assertThat(resource.getRoles()).contains("pui-case-manager");
+        assertThat(resource.getRoles()).contains("pui-user-manager");
 
     }
 
