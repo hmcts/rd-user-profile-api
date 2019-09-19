@@ -40,8 +40,6 @@ public class CreateUserProfileDataTest {
         userProfileData.setStatus(null);
         assertThat(userProfileData.getStatus()).isEqualTo(IdamStatus.ACTIVE);
 
-
-
         CreateUserProfileData userProfileData1 = new CreateUserProfileData();
         assertThat(userProfileData1).isNotNull();
 

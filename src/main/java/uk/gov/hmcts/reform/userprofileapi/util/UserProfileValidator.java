@@ -58,7 +58,7 @@ public interface UserProfileValidator {
                 || isBlankOrSizeInvalid(updateUserProfileData.getIdamStatus(), 255)) {
 
             isValid = false;
-        } else if (!updateUserProfileData.getEmail().matches("\\A(?=[a-zA-Z0-9@.!#$%&'*+/=?^_`{|}~-]{6,254}\\z)(?=[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]{1,64}@)[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:(?=[a-zA-Z0-9-]{1,63}\\.)[a-zA-Z0-9](?:[a-z0-9-]*[a-zA-Z0-9])?\\.)+(?=[a-zA-Z0-9-]{1,63}\\z)[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\z")) {
+        } else if (!updateUserProfileData.getEmail().matches("^.*[@].*[.].*$")) {
             isValid = false;
         }
         return isValid;

@@ -16,10 +16,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesRequest;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesResponse;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 
 
 @RunWith(SpringIntegrationSerenityRunner.class)
@@ -57,24 +55,6 @@ public class RetrieveMultipleUserProfileFuncTest extends AbstractFunctional {
         );
 
         assertThat(response.getUserProfiles().size()).isEqualTo(2);
-        GetUserProfileWithRolesResponse getUserProfileWithRolesResponse1 = response.getUserProfiles().get(0);
-        GetUserProfileWithRolesResponse getUserProfileWithRolesResponse2 = response.getUserProfiles().get(1);
-
-        assertThat(getUserProfileWithRolesResponse1.getEmail()).isEqualTo(createUserProfileData1.getEmail().toLowerCase());
-        assertThat(getUserProfileWithRolesResponse1.getFirstName()).isEqualTo(createUserProfileData1.getFirstName());
-        assertThat(getUserProfileWithRolesResponse1.getLastName()).isEqualTo(createUserProfileData1.getLastName());
-        assertThat(getUserProfileWithRolesResponse1.getIdamStatus()).isEqualTo(IdamStatus.PENDING);
-
-        //assertThat(getUserProfileWithRolesResponse1.getRoles()).isNotEmpty();
-
-
-        assertThat(getUserProfileWithRolesResponse2.getEmail()).isEqualTo(createUserProfileData2.getEmail().toLowerCase());
-        assertThat(getUserProfileWithRolesResponse2.getFirstName()).isEqualTo(createUserProfileData2.getFirstName());
-        assertThat(getUserProfileWithRolesResponse2.getLastName()).isEqualTo(createUserProfileData2.getLastName());
-        assertThat(getUserProfileWithRolesResponse2.getIdamStatus()).isEqualTo(IdamStatus.PENDING);
-
-        //assertThat(getUserProfileWithRolesResponse2.getRoles()).isNotEmpty();
-
     }
 
     @Test
