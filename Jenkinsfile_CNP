@@ -29,6 +29,9 @@ def vaultOverrides = [
 
 withPipeline(type, product, component) {
 
+    after('smoketest:aat') {
+        sh "rm -rf infrastructure/"
+    }
 
     env.S2S_URL_TO_TEST = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     env.IDAM_URL_TO_TEST = "https://idam-api.aat.platform.hmcts.net"
