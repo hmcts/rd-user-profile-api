@@ -114,7 +114,7 @@ public class UserProfileValidatorTest {
 
         for (String email : validEmails) {
 
-            UpdateUserProfileData updateUserProfileDataWithInvalidEmail = new UpdateUserProfileData(email, "fanme", "lname", "ACTIVE");
+            UpdateUserProfileData updateUserProfileDataWithInvalidEmail = new UpdateUserProfileData(email, "fanme", "lname", "ACTIVE", addRolesToRoleName());
             boolean response1 = UserProfileValidator.validateUpdateUserProfileRequestFields(updateUserProfileDataWithInvalidEmail);
             assertThat(response1).isTrue();
         }
@@ -132,7 +132,7 @@ public class UserProfileValidatorTest {
 
         for (String email : validEmails) {
 
-            UpdateUserProfileData updateUserProfileDataWithInvalidEmail = new UpdateUserProfileData(email, "fanme", "lname", "ACTIVE");
+            UpdateUserProfileData updateUserProfileDataWithInvalidEmail = new UpdateUserProfileData(email, "fanme", "lname", "ACTIVE", addRolesToRoleName());
             boolean response1 = UserProfileValidator.validateUpdateUserProfileRequestFields(updateUserProfileDataWithInvalidEmail);
             assertThat(response1).isFalse();
         }
