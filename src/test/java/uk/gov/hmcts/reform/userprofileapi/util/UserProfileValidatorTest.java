@@ -58,9 +58,9 @@ public class UserProfileValidatorTest {
     @Test
     public void test_isUpdateUserProfileRequestValid() {
 
-        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("som@org.com", "fanme", "lname", "ACTIV", addRolesToRoleName());
+        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("som@org.com", "fanme", "lname", "ACTIVE", addRolesToRoleName());
         boolean response = UserProfileValidator.isUpdateUserProfileRequestValid(updateUserProfileData);
-        assertThat(response).isFalse();
+        assertThat(response).isTrue();
     }
 
     @Test
