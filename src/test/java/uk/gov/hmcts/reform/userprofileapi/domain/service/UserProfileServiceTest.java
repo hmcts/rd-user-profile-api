@@ -2,7 +2,8 @@ package uk.gov.hmcts.reform.userprofileapi.domain.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -59,9 +60,6 @@ public class UserProfileServiceTest {
         userProfileRolesResponse = userProfileService.updateRoles(updateUserProfileData, "1234");
 
         assertThat(userProfileRolesResponse).isNotNull();
-
-        //verify(userProfileService, times (1)).updateRoles(any(), "1234");
-        //verify(userProfileService, times (1)).update(updateUserProfileDataMock, "1234");
     }
 
     @Test
@@ -72,7 +70,7 @@ public class UserProfileServiceTest {
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         CreateUserProfileResponse expected = new CreateUserProfileResponse(userProfile);
 
-        Mockito.when(userProfileCreator.create(userProfileData)).thenReturn(userProfile);
+        when(userProfileCreator.create(userProfileData)).thenReturn(userProfile);
 
         CreateUserProfileResponse resource = userProfileService.create(userProfileData);
 
@@ -88,7 +86,7 @@ public class UserProfileServiceTest {
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         GetUserProfileResponse expected = new GetUserProfileResponse(userProfile);
 
-        Mockito.when(userProfileRetriever.retrieve(identifier, false)).thenReturn(userProfile);
+        when(userProfileRetriever.retrieve(identifier, false)).thenReturn(userProfile);
 
         GetUserProfileResponse resource = userProfileService.retrieve(identifier);
 
@@ -103,7 +101,7 @@ public class UserProfileServiceTest {
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         GetUserProfileWithRolesResponse expected = new GetUserProfileWithRolesResponse(userProfile, true);
 
-        Mockito.when(userProfileRetriever.retrieve(identifier, true)).thenReturn(userProfile);
+        when(userProfileRetriever.retrieve(identifier, true)).thenReturn(userProfile);
 
         GetUserProfileWithRolesResponse resource = userProfileService.retrieveWithRoles(identifier);
 
@@ -120,7 +118,7 @@ public class UserProfileServiceTest {
         profileList.add(userProfile);
         GetUserProfileWithRolesResponse expected = new GetUserProfileWithRolesResponse(userProfile, true);
 
-        Mockito.when(userProfileRetriever.retrieveMultipleProfiles(identifier, true, true)).thenReturn(profileList);
+        when(userProfileRetriever.retrieveMultipleProfiles(identifier, true, true)).thenReturn(profileList);
 
         GetUserProfilesResponse resource = userProfileService.retrieveWithRoles(identifier, true, true);
 
