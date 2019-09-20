@@ -88,6 +88,29 @@ public class FuncTestRequestHandler {
                 .statusCode(expectedStatus.value()).extract().response();
     }
 
+    public <T> T sendDelete(Object data, HttpStatus expectedStatus, String path, Class<T> clazz) throws JsonProcessingException {
+
+        return sendPut(objectMapper.writeValueAsString(data),
+                expectedStatus,
+                path)
+                .as(clazz);
+    }
+
+    public void sendDelete(Object data, HttpStatus expectedStatus, String path) throws JsonProcessingException {
+        sendPut(objectMapper.writeValueAsString(data),
+                expectedStatus,
+                path);
+    }
+
+    public Response sendDelete(String jsonBody, HttpStatus expectedStatus, String path) {
+
+        return withAuthenticatedRequest()
+                .body(jsonBody)
+                .delete(path)
+                .then()
+                .log().all(true)
+                .statusCode(expectedStatus.value()).extract().response();
+    }
     public <T> T sendGet(String urlPath, Class<T> clazz) {
         return sendGet(HttpStatus.OK, urlPath).as(clazz);
     }

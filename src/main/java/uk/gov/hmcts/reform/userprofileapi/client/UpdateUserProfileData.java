@@ -24,19 +24,22 @@ public class UpdateUserProfileData implements RequestData {
 
     private Set<RoleName> rolesAdd;
 
+    private Set<RoleName> rolesDelete;
+
     @JsonCreator
     public UpdateUserProfileData(@JsonProperty(value = "email") String email,
                                  @JsonProperty(value = "firstName") String firstName,
                                  @JsonProperty(value = "lastName") String lastName,
                                  @JsonProperty(value = "idamStatus") String idamStatus,
-                                 @JsonProperty(value = "rolesAdd") Set<RoleName> rolesAdd
+                                 @JsonProperty(value = "rolesAdd") Set<RoleName> rolesAdd,
+                                 @JsonProperty(value = "rolesDelete") Set<RoleName> rolesDelete
     ) {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
         this.idamStatus = idamStatus;
         this.rolesAdd = rolesAdd;
-
+        this.rolesDelete = rolesDelete;
     }
 
 }

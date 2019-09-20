@@ -38,7 +38,7 @@ public class CreateUserProfileDataTestBuilder {
                 RandomStringUtils.randomAlphabetic(20),
                 RandomStringUtils.randomAlphabetic(20),
                 IdamStatus.ACTIVE.toString(),
-                null
+                null,null
                 );
     }
 
