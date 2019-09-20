@@ -48,6 +48,10 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
     @Test
     public void should_create_user_profile_for_duplicate_idam_user_and_verify_successfully_for_prd_roles() throws Exception {
 
+        List<String> xuiuRoles = new ArrayList();
+        xuiuRoles.add("pui-user-manager");
+        xuiuRoles.add("pui-case-manager");
+
         //create user with "pui-user-manager" role in SIDAM
         List<String> sidamRoles = new ArrayList<>();
         sidamRoles.add("pui-user-manager");
@@ -55,9 +59,6 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
 
         //create User profile with same email to get 409 scenario
         CreateUserProfileData data = createUserProfileData();
-        List<String> xuiuRoles = new ArrayList();
-        xuiuRoles.add("pui-user-manager");
-        xuiuRoles.add("pui-case-manager");
         data.setRoles(xuiuRoles);
         data.setEmail(email);
         CreateUserProfileResponse duplicateUserResource = createUserProfile(data, HttpStatus.CREATED);
