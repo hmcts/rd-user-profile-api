@@ -245,6 +245,8 @@ public class UserProfileValidatorTest {
         if (null == userProfileData) {
             throw new RequiredFieldMissingException("No Request Body in the request");
         }
+
+        assertThat(userProfileData).isNotNull();
     }
 
     private Set<RoleName> addRolesToRoleName() {
