@@ -48,16 +48,17 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
     @Test
     public void should_create_user_profile_for_duplicate_idam_user_and_verify_successfully_for_prd_roles() throws Exception {
 
-        List<String> roles = new ArrayList();
-        roles.add("pui-user-manager");
-        roles.add("pui-case-manager");
-
         //create user with "pui-user-manager" role in SIDAM
-        String email = idamClient.createUser("pui-user-manager");
+        List<String> sidamRoles = new ArrayList<>();
+        sidamRoles.add("pui-user-manager");
+        String email = idamClient.createUser(sidamRoles);
 
         //create User profile with same email to get 409 scenario
         CreateUserProfileData data = createUserProfileData();
-        data.setRoles(roles);
+        List<String> xuiuRoles = new ArrayList();
+        xuiuRoles.add("pui-user-manager");
+        xuiuRoles.add("pui-case-manager");
+        data.setRoles(xuiuRoles);
         data.setEmail(email);
         CreateUserProfileResponse duplicateUserResource = createUserProfile(data, HttpStatus.CREATED);
         verifyCreateUserProfile(duplicateUserResource);
@@ -79,11 +80,18 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
     public void should_create_user_profile_for_duplicate_idam_user_and_verify_roles_updated_successfully_for_user_having_citizen_role() throws Exception {
 
         //create user with citizen role in SIDAM
-        String email = idamClient.createUser("citizen");
+        List<String> roles = new ArrayList<>();
+        roles.add("citizen");
+        roles.add("pui-case-manager");
+        String email = idamClient.createUser(roles);
 
-        //create user profile in UP with PRD-ADMIN token for above user with same email with pui-user-manager roles
+        //create user profile in UP with PRD-ADMIN token for above user with same email with "pui-user-manager" roles
         CreateUserProfileData data = createUserProfileData();
         data.setEmail(email);
+        List<String> xuiRoles = new ArrayList();
+        xuiRoles.add("pui-user-manager");
+        xuiRoles.add("pui-case-manager");
+        data.setRoles(xuiRoles);
         CreateUserProfileResponse duplicateUserResource = createUserProfile(data, HttpStatus.CREATED);
         verifyCreateUserProfile(duplicateUserResource);
 
@@ -96,6 +104,7 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
 
         assertThat(resource.getRoles()).contains("citizen");
         assertThat(resource.getRoles()).contains("pui-user-manager");
+        assertThat(resource.getRoles()).contains("pui-case-manager");
     }
 
     @Test
