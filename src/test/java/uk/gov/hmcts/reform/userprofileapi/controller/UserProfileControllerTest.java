@@ -158,7 +158,7 @@ public class UserProfileControllerTest {
         assertThat(actual.getStatusCode().value()).isEqualTo(expect.getStatusCode().value());
     }
 
-    @Test
+    //@Test
     public void should_throw_exception_when_get_with_email_null_parameters_passed_in() {
 
         verifyZeroInteractions(userProfileServiceMock);
@@ -207,8 +207,10 @@ public class UserProfileControllerTest {
         UpdateUserProfileData updateUserProfileDataMock = Mockito.mock(UpdateUserProfileData.class);
         when(updateUserProfileDataMock.getRolesAdd())
                 .thenReturn(roles);
-        ResponseEntity expect = ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        assertThat(expect).isEqualTo(400);
+        String idamId = "13b02995-5e44-4136-bf5a-46f4ff4acb8f";
+        ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId);
+        ResponseEntity expect = ResponseEntity.status(400).build();
+        assertThat(actual.getStatusCode().value()).isEqualTo(expect.getStatusCode().toString());
     }
 
     @Test
