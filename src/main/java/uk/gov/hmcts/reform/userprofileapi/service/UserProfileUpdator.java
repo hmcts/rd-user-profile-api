@@ -96,7 +96,6 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
             } catch (FeignException ex) {
                 httpStatus = getHttpStatusFromFeignException(ex);
                 persistAudit(httpStatus, userProfile,ResponseSource.API);
-                // throw new IdamServiceException("Idam add userRoles call failed",httpStatus);
                 return new UserProfileRolesResponse(httpStatus);
             }
 
@@ -111,7 +110,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
     }
 
     public void persistAudit(HttpStatus idamStatus, UserProfile userProfile, ResponseSource responseSource) {
-        Audit audit = new Audit(idamStatus.value(), resolveStatusAndReturnMessage(idamStatus), responseSource.SYNC, userProfile);
+        Audit audit = new Audit(idamStatus.value(), resolveStatusAndReturnMessage(idamStatus), ResponseSource.SYNC, userProfile);
         auditRepository.save(audit);
     }
 
