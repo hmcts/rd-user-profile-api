@@ -26,19 +26,19 @@ public class JsonFeignResponseHelper {
         Optional<U> payload = decode(response, classOpt);
         MultiValueMap<String, String> headers = convertHeaders(response.headers());
         HttpStatus httpStatus = HttpStatus.valueOf(response.status());
-        return (payload.isPresent()) // figured it out, we need not be passing nulls!
+        return (payload.isPresent())
                 ? new ResponseEntity<U>(payload.orElse(null), headers, httpStatus)
                 : new ResponseEntity<U>(headers, httpStatus);
     }
 
-    private static MultiValueMap<String, String> convertHeaders(Map<String, Collection<String>> responseHeaders) {
+    public static MultiValueMap<String, String> convertHeaders(Map<String, Collection<String>> responseHeaders) {
         MultiValueMap<String, String> responseEntityHeaders = new LinkedMultiValueMap<>();
         responseHeaders.entrySet().stream().forEach(e ->
                 responseEntityHeaders.put(e.getKey(), new ArrayList<>(e.getValue())));
         return responseEntityHeaders;
     }
 
-    private static <T> Optional<T> decode(Response response, Optional<Class<T>> clazz) {
+    public static <T> Optional<T> decode(Response response, Optional<Class<T>> clazz) {
         Optional<T> result = Optional.empty();
         if (isStatusCodeSuccessful(response.status()) && clazz.isPresent()) {
             try {
@@ -53,7 +53,7 @@ public class JsonFeignResponseHelper {
         return result;
     }
 
-    private static boolean isStatusCodeSuccessful(int statusCode) {
+    public static boolean isStatusCodeSuccessful(int statusCode) {
         return statusCode >= 200 && statusCode < 300;
     }
 
