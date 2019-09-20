@@ -110,7 +110,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
     }
 
     public void persistAudit(HttpStatus idamStatus, UserProfile userProfile, ResponseSource responseSource) {
-        Audit audit = new Audit(idamStatus.value(), resolveStatusAndReturnMessage(idamStatus), ResponseSource.SYNC, userProfile);
+        Audit audit = new Audit(idamStatus.value(), resolveStatusAndReturnMessage(idamStatus), responseSource, userProfile);
         auditRepository.save(audit);
     }
 

@@ -39,13 +39,12 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
 
 
         CreateUserProfileData data = createUserProfileData();
-        String email = idamClient.createUser("pui-user-manager");
-
+        String email = idamClient.createUser(puiUserManager);
 
         data.setEmail(email);
-        CreateUserProfileResponse userResource = createUserProfile(data, HttpStatus.CREATED);
+        createUserProfile(data, HttpStatus.CREATED);
 
-        RoleName role1 = new RoleName("pui-case-manager");
+        RoleName role1 = new RoleName(puiCaseManager);
         Set<RoleName> roles = new HashSet<>();
         roles.add(role1);
         UpdateUserProfileData userRProfileData = new UpdateUserProfileData();

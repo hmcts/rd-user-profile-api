@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
 import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildUpdateUserProfileData;
 
+import io.restassured.RestAssured;
+import net.serenitybdd.rest.SerenityRest;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,11 +35,22 @@ public class AbstractFunctional {
 
     protected String requestUri = "/v1/userprofile";
 
+    @Value("${exui.role.hmcts-admin}")
+    protected String hmctsAdmin;
+    @Value("${exui.role.pui-user-manager}")
+    protected String puiUserManager;
+    @Value("${exui.role.pui-organisation-manager}")
+    protected String puiOrgManager;
+    @Value("${exui.role.pui-finance-manager}")
+    protected String puiFinanceManager;
+    @Value("${exui.role.pui-case-manager}")
+    protected String puiCaseManager;
+
     @Before
     public void setupProxy() {
         //TO enable for local testing
-        //RestAssured.proxy("proxyout.reform.hmcts.net",8080);
-        //SerenityRest.proxy("proxyout.reform.hmcts.net", 8080);
+        RestAssured.proxy("proxyout.reform.hmcts.net",8080);
+        SerenityRest.proxy("proxyout.reform.hmcts.net", 8080);
     }
 
 

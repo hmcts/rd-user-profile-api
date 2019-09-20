@@ -150,47 +150,18 @@ public class UserProfileControllerTest {
     public void testUpdateUserProfile() {
 
         UpdateUserProfileData updateUserProfileDataMock = Mockito.mock(UpdateUserProfileData.class);
-        UserProfile userProfileMock = Mockito.mock(UserProfile.class);
-
-        ResponseEntity responseEntityMock = Mockito.mock(ResponseEntity.class);
-
         String idamId = "13b02995-5e44-4136-bf5a-46f4ff4acb8f";
-        Set<RoleName> roles = new HashSet<RoleName>();
         when(updateUserProfileDataMock.getRolesAdd()).thenReturn(null);
         ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId);
-
         verify(userProfileServiceMock, times(1)).update(any(), any());
-
         ResponseEntity expect = ResponseEntity.status(HttpStatus.OK).build();
-
-        assertThat(actual).isEqualTo(expect);
-    }
-
-    //@Test
-    public void should_propagate_exception_when_get_with_email_and_retrieve_method_throws_exception() {
-
-        UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.EMAIL, UUID.randomUUID().toString());
-        IllegalStateException ex = new IllegalStateException("This is a test exception");
-
-        when(userProfileServiceMock.retrieve(argumentCaptorMock.capture())).thenThrow(ex);
-
-        //  assertThatThrownBy(() -> sut.getUserProfileByEmail(identifier.getValue())).isEqualTo(ex);
-
-        assertThat(argumentCaptorMock.getValue()).isEqualToComparingFieldByField(identifier);
-
-        verify(userProfileServiceMock).retrieve(any(UserProfileIdentifier.class));
-
+        assertThat(actual.getStatusCode().value()).isEqualTo(expect.getStatusCode().value());
     }
 
     @Test
     public void should_throw_exception_when_get_with_email_null_parameters_passed_in() {
 
-        /*  assertThatThrownBy(() -> sut.getUserProfileByEmail(null))
-            .isInstanceOf(NullPointerException.class)
-            .hasMessageContaining("email");*/
-
         verifyZeroInteractions(userProfileServiceMock);
-
     }
 
 
@@ -203,9 +174,6 @@ public class UserProfileControllerTest {
 
         when(userProfileServiceMock.retrieve(argumentCaptorMock.capture())).thenReturn(expectedResource);
 
-        // ResponseEntity<GetUserProfileWithRolesResponse> resource = sut.getUserProfileById(identifier.getValue());
-
-        //  assertThat(resource.getBody()).isEqualToComparingFieldByField(expectedResource);
         assertThat(argumentCaptorMock.getValue()).isEqualToComparingFieldByField(identifier);
 
         verify(userProfileServiceMock).retrieve(any(UserProfileIdentifier.class));
@@ -219,8 +187,6 @@ public class UserProfileControllerTest {
         IllegalStateException ex = new IllegalStateException("This is a test exception");
 
         when(userProfileServiceMock.retrieve(argumentCaptorMock.capture())).thenThrow(ex);
-
-        // assertThatThrownBy(() -> sut.getUserProfileById(identifier.getValue())).isEqualTo(ex);
 
         assertThat(argumentCaptorMock.getValue()).isEqualToComparingFieldByField(identifier);
 
@@ -238,11 +204,9 @@ public class UserProfileControllerTest {
     @Test(expected = RequiredFieldMissingException.class)
     public void  testThrowsMissingFieldWhenRolesAddedIsEmpty() throws Exception  {
         Set<RoleName> roles = new HashSet<RoleName>();
-        String idamId = "13b02995-5e44-4136-bf5a-46f4ff4acb8f";
         UpdateUserProfileData updateUserProfileDataMock = Mockito.mock(UpdateUserProfileData.class);
         when(updateUserProfileDataMock.getRolesAdd())
                 .thenReturn(roles);
-        ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId);
         ResponseEntity expect = ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         assertThat(expect).isEqualTo(400);
     }
@@ -250,8 +214,6 @@ public class UserProfileControllerTest {
     @Test
     public void testUpdateUserProfileRoles() {
         UpdateUserProfileData updateUserProfileDataMock = Mockito.mock(UpdateUserProfileData.class);
-        UserProfile userProfileMock = Mockito.mock(UserProfile.class);
-        ResponseEntity responseEntityMock = Mockito.mock(ResponseEntity.class);
         RoleName roleName1 = new RoleName("pui-case-manager");
         RoleName roleName2 = new RoleName("pui-case-organisation");
         Set<RoleName> roles = new HashSet<RoleName>();

@@ -259,12 +259,12 @@ public class UserProfileController {
             consumes = APPLICATION_JSON_UTF8_VALUE,
             produces = APPLICATION_JSON_UTF8_VALUE
     )
-    @javax.annotation.Nullable
+
     @ResponseBody
     public ResponseEntity<UserProfileRolesResponse> updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData, @PathVariable String userId
     ) {
         log.info("Updating user profile");
-        UserProfileRolesResponse userProfileResponse = null;
+        UserProfileRolesResponse userProfileResponse = new UserProfileRolesResponse();
         if (StringUtils.isEmpty(updateUserProfileData.getRolesAdd())) {
 
             log.info("Updating user profile without roles");
