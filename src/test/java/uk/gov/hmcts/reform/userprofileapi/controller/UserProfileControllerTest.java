@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.Test;
@@ -68,20 +70,6 @@ public class UserProfileControllerTest {
             .hasMessageContaining("createUserProfileData");
 
         verifyZeroInteractions(userProfileServiceMock);
-
-    }
-
-    //@Test
-    public void should_return_null_body_when_post_and_create_method_returns_null() {
-
-        CreateUserProfileData createUserProfileData = CreateUserProfileDataTestBuilder.buildCreateUserProfileData();
-
-        when(userProfileServiceMock.create(createUserProfileData)).thenReturn(null);
-
-        ResponseEntity<CreateUserProfileResponse> resource = sut.createUserProfile(createUserProfileData);
-        assertThat(resource.getBody()).isNull();
-
-        verify(userProfileServiceMock).create(any(CreateUserProfileData.class));
 
     }
 
@@ -228,6 +216,19 @@ public class UserProfileControllerTest {
     public void should_throw_exception_when_get_with_idamId_null_parameters_passed_in() {
 
         verifyZeroInteractions(userProfileServiceMock);
+
+    }
+
+    @Test
+    public void testretrieveUserProfiles() {
+
+        List<String> userIds = new ArrayList<>();
+        userIds.add("1");
+        userIds.add("2");
+        GetUserProfilesRequest getUserProfilesRequest = mock(GetUserProfilesRequest.class);
+        when(getUserProfilesRequest.getUserIds()).thenReturn(userIds);
+        ResponseEntity<GetUserProfilesResponse> responseEntity = sut.retrieveUserProfiles("false","true", getUserProfilesRequest);
+        assertThat(responseEntity).isNotNull();
 
     }
 
