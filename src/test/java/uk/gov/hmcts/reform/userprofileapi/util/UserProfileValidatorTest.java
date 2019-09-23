@@ -54,7 +54,7 @@ public class UserProfileValidatorTest {
     @Test
     public void test_isUpdateUserProfileRequestValid() {
 
-        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("som@org.com", "fanme", "lname", "ACTIVE", addRolesToRoleName());
+        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("som@org.com", "fanme", "lname", "ACTIVE", addRolesToRoleName(), addRolesToRoleName());
         boolean response = UserProfileValidator.isUpdateUserProfileRequestValid(updateUserProfileData);
         assertThat(response).isTrue();
     }
@@ -64,7 +64,7 @@ public class UserProfileValidatorTest {
 
         UpdateUserProfileData updateUserProfileDataWithNull = null;
 
-        UpdateUserProfileData updateUserProfileDataWithInvalidEmail = new UpdateUserProfileData("somorg.com", "fanme", "lname", "ACTIVE", addRolesToRoleName());
+        UpdateUserProfileData updateUserProfileDataWithInvalidEmail = new UpdateUserProfileData("somorg.com", "fanme", "lname", "ACTIVE", addRolesToRoleName(),addRolesToRoleName());
         boolean response = UserProfileValidator.validateUpdateUserProfileRequestFields(updateUserProfileDataWithNull);
         assertThat(response).isFalse();
 
@@ -114,7 +114,7 @@ public class UserProfileValidatorTest {
 
         for (String email : validEmails) {
 
-            UpdateUserProfileData updateUserProfileDataWithInvalidEmail = new UpdateUserProfileData(email, "fanme", "lname", "ACTIVE", addRolesToRoleName());
+            UpdateUserProfileData updateUserProfileDataWithInvalidEmail = new UpdateUserProfileData(email, "fanme", "lname", "ACTIVE", addRolesToRoleName(), addRolesToRoleName());
             boolean response1 = UserProfileValidator.validateUpdateUserProfileRequestFields(updateUserProfileDataWithInvalidEmail);
             assertThat(response1).isTrue();
         }
@@ -132,7 +132,7 @@ public class UserProfileValidatorTest {
 
         for (String email : validEmails) {
 
-            UpdateUserProfileData updateUserProfileDataWithInvalidEmail = new UpdateUserProfileData(email, "fanme", "lname", "ACTIVE", addRolesToRoleName());
+            UpdateUserProfileData updateUserProfileDataWithInvalidEmail = new UpdateUserProfileData(email, "fanme", "lname", "ACTIVE", addRolesToRoleName(), addRolesToRoleName());
             boolean response1 = UserProfileValidator.validateUpdateUserProfileRequestFields(updateUserProfileDataWithInvalidEmail);
             assertThat(response1).isFalse();
         }
@@ -165,12 +165,12 @@ public class UserProfileValidatorTest {
         IdamRegistrationInfo idamInfo = new IdamRegistrationInfo(HttpStatus.CREATED);
         UserProfile userProfile = new UserProfile(userProfileData, idamInfo.getIdamRegistrationResponse());
 
-        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("test-email-@somewhere.com", "test-first-name", "test-last-name", "PENDING",addRolesToRoleName());
+        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("test-email-@somewhere.com", "test-first-name", "test-last-name", "PENDING",addRolesToRoleName(), addRolesToRoleName());
 
         boolean response = UserProfileValidator.isSameAsExistingUserProfile(updateUserProfileData, userProfile);
         assertThat(response).isTrue();
 
-        updateUserProfileData = new UpdateUserProfileData("test-l-@somewhere.com", "test-first-name", "test-last-name", "PENDING",addRolesToRoleName());
+        updateUserProfileData = new UpdateUserProfileData("test-l-@somewhere.com", "test-first-name", "test-last-name", "PENDING",addRolesToRoleName(), addRolesToRoleName());
         boolean response1 = UserProfileValidator.isSameAsExistingUserProfile(updateUserProfileData, userProfile);
         assertThat(response1).isFalse();
     }

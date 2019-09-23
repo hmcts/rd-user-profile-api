@@ -22,6 +22,8 @@ public class UpdateUserProfileDataTest {
         roles.add(roleName1);
         roles.add(roleName2);
         updateUserProfileData.setRolesAdd(roles);
+        updateUserProfileData.setRolesDelete(roles);
         assertThat(updateUserProfileData.getRolesAdd().size()).isEqualTo(2);
+        assertThat(updateUserProfileData.getRolesDelete().size()).isEqualTo(2);
     }
 }

@@ -111,6 +111,7 @@ public class FuncTestRequestHandler {
                 .log().all(true)
                 .statusCode(expectedStatus.value()).extract().response();
     }
+
     public <T> T sendGet(String urlPath, Class<T> clazz) {
         return sendGet(HttpStatus.OK, urlPath).as(clazz);
     }

@@ -9,6 +9,8 @@ import feign.FeignException;
 import feign.Response;
 import feign.RetryableException;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import uk.gov.hmcts.reform.userprofileapi.client.DeleteRoleResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRolesResponse;
@@ -84,7 +87,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
     public UserProfileRolesResponse updateRoles(UpdateUserProfileData profileData, String userId) {
         UserProfile userProfile = null;
         HttpStatus httpStatus = null;
-
+        UserProfileRolesResponse userProfileRolesResponse =  new UserProfileRolesResponse();
         userProfile = validateUserStatus(userId);
         if (!CollectionUtils.isEmpty(profileData.getRolesAdd())) {
             log.info("Add idam roles for userId :" + userId);
@@ -96,11 +99,39 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
             } catch (FeignException ex) {
                 httpStatus = getHttpStatusFromFeignException(ex);
                 persistAudit(httpStatus, userProfile,ResponseSource.API);
-                return new UserProfileRolesResponse(httpStatus);
+                userProfileRolesResponse.loadStatusCodes(httpStatus);
+                return userProfileRolesResponse;
             }
 
         }
-        return new UserProfileRolesResponse(httpStatus);
+
+        if (!CollectionUtils.isEmpty(profileData.getRolesDelete())) {
+
+            log.info("Delete idam roles for userId :" + userId);
+            List<DeleteRoleResponse> deleteRoleResponses = new ArrayList<>();
+            UserProfile finalUserProfile = userProfile;
+            profileData.getRolesDelete().forEach(role -> {
+
+                deleteRoleResponses.add(deleteRolesInIdam(userId, role.getName(), finalUserProfile));
+
+            });
+            userProfileRolesResponse.setDeleteResponses(deleteRoleResponses);
+        }
+
+        return userProfileRolesResponse;
+    }
+
+    private DeleteRoleResponse deleteRolesInIdam(String userId, String roleName, UserProfile userProfile) {
+        HttpStatus httpStatus = null;
+        //Response response;
+        try (Response response = idamClient.deleteUserRole(userId, roleName)) {
+            httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode();
+
+        } catch (FeignException ex) {
+            httpStatus = getHttpStatusFromFeignException(ex);
+            persistAudit(httpStatus,userProfile,ResponseSource.API);
+        }
+        return new DeleteRoleResponse(roleName, httpStatus);
     }
 
     public HttpStatus getHttpStatusFromFeignException(FeignException ex) {
@@ -126,6 +157,8 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         }
         return userProfileOptional.get();
     }
+
+
 
 
 }

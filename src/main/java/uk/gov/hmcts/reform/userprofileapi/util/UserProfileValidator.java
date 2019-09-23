@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.userprofileapi.util;
 import static java.util.Objects.requireNonNull;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.util.CollectionUtils;
 
 import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesRequest;
@@ -139,7 +138,7 @@ public interface UserProfileValidator {
         if (null == userProfileData) {
 
             throw new RequiredFieldMissingException("No Request Body in the request");
-        } else if (StringUtils.isBlank(userId) || CollectionUtils.isEmpty(userProfileData.getRolesAdd())) {
+        } else if (StringUtils.isBlank(userId)) {
 
             throw new RequiredFieldMissingException("No userId or roles in the request");
         }

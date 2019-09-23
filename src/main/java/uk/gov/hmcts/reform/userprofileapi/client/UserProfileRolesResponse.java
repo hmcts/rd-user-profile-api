@@ -2,12 +2,12 @@ package uk.gov.hmcts.reform.userprofileapi.client;
 
 import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.resolveStatusAndReturnMessage;
 
+import java.util.List;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
-
-import java.util.List;
 
 @Getter
 @Setter

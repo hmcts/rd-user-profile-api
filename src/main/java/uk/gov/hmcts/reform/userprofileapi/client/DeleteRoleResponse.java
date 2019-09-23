@@ -16,7 +16,7 @@ public class DeleteRoleResponse  {
     private String idamGetResponseStatusCode;
     private String statusMessage;
 
-    public DeleteRoleResponse(String roleName, HttpStatus idamGetResponseStatusCode, String statusMessage) {
+    public DeleteRoleResponse(String roleName, HttpStatus idamGetResponseStatusCode) {
         this.roleName = roleName;
         loadStatusCodes(idamGetResponseStatusCode);
     }

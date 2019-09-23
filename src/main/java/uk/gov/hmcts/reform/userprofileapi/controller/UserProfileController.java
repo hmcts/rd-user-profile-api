@@ -265,7 +265,8 @@ public class UserProfileController {
     ) {
         log.info("Updating user profile");
         UserProfileRolesResponse userProfileResponse = new UserProfileRolesResponse();
-        if (StringUtils.isEmpty(updateUserProfileData.getRolesAdd())) {
+        if (StringUtils.isEmpty(updateUserProfileData.getRolesAdd())
+             && StringUtils.isEmpty(updateUserProfileData.getRolesDelete())) {
 
             log.info("Updating user profile without roles");
             userProfileService.update(updateUserProfileData, userId);

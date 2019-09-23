@@ -118,6 +118,15 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
                 ));
     }
 
+    public void mockWithDeleteRoleSuccess() {
+        idamService.stubFor(WireMock.delete(urlMatching("/api/v1/users/.*"))
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withStatus(200)
+                ));
+    }
+
+
     @Test
     public void should_return_200_and_add_roles_to_user_profile_resource() throws Exception {
 
@@ -137,7 +146,6 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
 
 
         String userId = createdResource.getIdamId();
-        System.out.println("userId::" + userId);
         assertThat(userId).isNotNull();
 
         UpdateUserProfileData userRoles = new UpdateUserProfileData();
@@ -150,8 +158,6 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
         roles.add(role2);
 
         userRoles.setRolesAdd(roles);
-
-
         userProfileRequestHandlerTest.sendPut(
                         mockMvc,
                   APP_BASE_PATH + "/" + userId,
@@ -161,12 +167,8 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
 
     }
 
-
-
     @Test
     public void should_return_400_and_not_create_user_profile_when_empty_body() throws Exception {
-
-
         UpdateUserProfileData userRoles = new UpdateUserProfileData();
         RoleName role1 = new RoleName("pui-case-manager");
         RoleName role2 = new RoleName("prd-Admin");
@@ -176,6 +178,78 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
         roles.add(role2);
         String userId = " ";
         userRoles.setRolesAdd(roles);
+        userProfileRequestHandlerTest.sendPut(
+                mockMvc,
+                APP_BASE_PATH + "/" + userId,
+                userRoles,
+                BAD_REQUEST
+        );
+
+    }
+
+    @Test
+    public void should_return_200_and_delete_roles_to_user_profile_resource() throws Exception {
+
+        mockWithGetSuccess(true);
+        mockWithUpdateSuccess();
+        mockWithUpdateRolesSuccess();
+        mockWithDeleteRoleSuccess();
+        CreateUserProfileData data = buildCreateUserProfileData();
+
+        CreateUserProfileResponse createdResource =
+                userProfileRequestHandlerTest.sendPost(
+                        mockMvc,
+                        APP_BASE_PATH,
+                        data,
+                        CREATED,
+                        CreateUserProfileResponse.class
+                );
+
+
+        String userId = createdResource.getIdamId();
+        assertThat(userId).isNotNull();
+
+        UpdateUserProfileData userRoles = new UpdateUserProfileData();
+        RoleName role1 = new RoleName("pui-case-manager");
+        RoleName role2 = new RoleName("prd-Admin");
+
+        Set<RoleName> roles = new HashSet<>();
+        roles.add(role1);
+        roles.add(role2);
+
+        userRoles.setRolesAdd(roles);
+        userProfileRequestHandlerTest.sendPut(
+                mockMvc,
+                APP_BASE_PATH + "/" + userId,
+                userRoles,
+                OK
+        );
+
+        UpdateUserProfileData userRoles1 = new UpdateUserProfileData();
+        RoleName role = new RoleName("pui-case-manager");
+        Set<RoleName> rolesDelete = new HashSet<>();
+        rolesDelete.add(role);
+        userRoles1.setRolesDelete(rolesDelete);
+        userProfileRequestHandlerTest.sendPut(
+                mockMvc,
+                APP_BASE_PATH + "/" + userId,
+                userRoles1,
+                OK
+        );
+
+    }
+
+    @Test
+    public void should_return_400_and_not_create_user_profile_when_empty_body_delete_roles() throws Exception {
+        UpdateUserProfileData userRoles = new UpdateUserProfileData();
+        RoleName role1 = new RoleName("pui-case-manager");
+        RoleName role2 = new RoleName("prd-Admin");
+
+        Set<RoleName> roles = new HashSet<>();
+        roles.add(role1);
+        roles.add(role2);
+        String userId = " ";
+        userRoles.setRolesDelete(roles);
         userProfileRequestHandlerTest.sendPut(
                 mockMvc,
                 APP_BASE_PATH + "/" + userId,
