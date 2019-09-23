@@ -35,12 +35,6 @@ public interface UserProfileValidator {
         return valid;
     }
 
-    static void isResponseEntityValidForEmailAndId(String email, String userId) {
-        if (StringUtils.isEmpty(email) || StringUtils.isEmpty(userId)) {
-            throw new ResourceNotFoundException("Email or User Id are null/empty. ");
-        }
-    }
-
     static boolean isUpdateUserProfileRequestValid(UpdateUserProfileData updateUserProfileData) {
 
         boolean isValid = true;
