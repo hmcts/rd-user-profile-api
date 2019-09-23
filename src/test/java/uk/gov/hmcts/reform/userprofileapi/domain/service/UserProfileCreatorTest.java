@@ -3,13 +3,11 @@ package uk.gov.hmcts.reform.userprofileapi.domain.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.powermock.api.mockito.PowerMockito.when;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
@@ -56,7 +54,7 @@ public class UserProfileCreatorTest {
 
     private UserProfile userProfile = new UserProfile(createUserProfileData, idamRegistrationInfo.getIdamRegistrationResponse());
 
-    private IdamRolesInfo idamRolesInfo = Mockito.mock(IdamRolesInfo.class);
+    private IdamRolesInfo idamRolesInfo = mock(IdamRolesInfo.class);
 
     @Test
     public void should_create_user_profile_successfully() {
@@ -121,7 +119,7 @@ public class UserProfileCreatorTest {
     @Test
     public void should_throw_IdamServiceException_when_user_already_exist() {
 
-        Audit audit = Mockito.mock(Audit.class);
+        Audit audit = mock(Audit.class);
         Mockito.when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
         assertThatThrownBy(() -> userProfileCreator.create(createUserProfileData)).isExactlyInstanceOf(IdamServiceException.class);
         Mockito.verify(userProfileRepository, Mockito.times(0)).save(any(UserProfile.class));
@@ -131,7 +129,7 @@ public class UserProfileCreatorTest {
     @Test
     public void should_throw_IdamServiceException_when_idam_registration_fail() {
 
-        Audit audit = Mockito.mock(Audit.class);
+        Audit audit = mock(Audit.class);
         idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.BAD_REQUEST);
         Mockito.when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(null));
         Mockito.when(idamService.registerUser(any(IdamRegisterUserRequest.class))).thenReturn(idamRegistrationInfo);
@@ -145,8 +143,8 @@ public class UserProfileCreatorTest {
 
         List<String> roles = new ArrayList<>();
         roles.add("pui-case-manager");
-        Audit audit = Mockito.mock(Audit.class);
-        ResponseEntity entity = Mockito.mock(ResponseEntity.class);
+        Audit audit = mock(Audit.class);
+        ResponseEntity entity = mock(ResponseEntity.class);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", "/api/v1/users/" + UUID.randomUUID().toString());
         idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.CONFLICT, Optional.ofNullable(entity));
@@ -164,7 +162,7 @@ public class UserProfileCreatorTest {
         Mockito.when(idamRolesInfo.getSurname()).thenReturn("lastName");
 
         Mockito.when(idamService.fetchUserById(any(String.class))).thenReturn(idamRolesInfo);
-        Mockito.when(idamService.updateUserRoles(any(), Mockito.anyString())).thenReturn(idamRolesInfo);
+        Mockito.when(idamService.addUserRoles(any(), Mockito.anyString())).thenReturn(idamRolesInfo);
 
         Map<Map<String, Boolean>, IdamStatus> idamStatusMap = createDecisionMap();
         ReflectionTestUtils.setField(userProfileCreator, "idamStatusResolverMap", idamStatusMap);
@@ -181,8 +179,8 @@ public class UserProfileCreatorTest {
 
         //List<String> roles = new ArrayList<>();
         //roles.add("pui-case-manager");
-        Audit audit = Mockito.mock(Audit.class);
-        ResponseEntity entity = Mockito.mock(ResponseEntity.class);
+        Audit audit = mock(Audit.class);
+        ResponseEntity entity = mock(ResponseEntity.class);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", "/api/v1/users/" + UUID.randomUUID().toString());
         idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.CONFLICT, Optional.ofNullable(entity));
@@ -200,7 +198,7 @@ public class UserProfileCreatorTest {
         Mockito.when(idamRolesInfo.getSurname()).thenReturn("lastName");
 
         Mockito.when(idamService.fetchUserById(any(String.class))).thenReturn(idamRolesInfo);
-        Mockito.when(idamService.updateUserRoles(any(), Mockito.anyString())).thenReturn(idamRolesInfo);
+        Mockito.when(idamService.addUserRoles(any(), Mockito.anyString())).thenReturn(idamRolesInfo);
 
         Map<Map<String, Boolean>, IdamStatus> idamStatusMap = createDecisionMap();
         ReflectionTestUtils.setField(userProfileCreator, "idamStatusResolverMap", idamStatusMap);
@@ -225,7 +223,7 @@ public class UserProfileCreatorTest {
         Mockito.when(idamRolesInfo.getPending()).thenReturn(false);
         Mockito.when(idamRolesInfo.getLocked()).thenReturn(false);
 
-        CreateUserProfileData createUserProfileData = Mockito.mock(CreateUserProfileData.class);
+        CreateUserProfileData createUserProfileData = mock(CreateUserProfileData.class);
         userProfileCreator.updateInputRequestWithLatestSidamUserInfo(createUserProfileData, idamRolesInfo);
         Mockito.verify(createUserProfileData, Mockito.times(1)).setEmail("any@emai");
         Mockito.verify(createUserProfileData, Mockito.times(1)).setFirstName("fname");
@@ -247,7 +245,7 @@ public class UserProfileCreatorTest {
         Mockito.when(idamRolesInfo.getPending()).thenReturn(true);
         Mockito.when(idamRolesInfo.getLocked()).thenReturn(true);
 
-        CreateUserProfileData createUserProfileData = Mockito.mock(CreateUserProfileData.class);
+        CreateUserProfileData createUserProfileData = mock(CreateUserProfileData.class);
         userProfileCreator.updateInputRequestWithLatestSidamUserInfo(createUserProfileData, idamRolesInfo);
         Mockito.verify(createUserProfileData, Mockito.times(1)).setEmail("any@emai");
         Mockito.verify(createUserProfileData, Mockito.times(1)).setFirstName("fname");
@@ -272,6 +270,76 @@ public class UserProfileCreatorTest {
         idamStatusMap.put(addRule(false,false,false), IdamStatus.SUSPENDED);
         idamStatusMap.put(addRule(false,false,true), IdamStatus.SUSPENDED_AND_LOCKED);
         return idamStatusMap;
+    }
+
+    @Test
+    public void test_consolidateRolesFromXuiAndIdam_1() {
+
+        List<String> xuiRolesList = new ArrayList<>();
+        xuiRolesList.add("pui-case-manager");
+        xuiRolesList.add("pui-user-manager");
+        xuiRolesList.add("prd-admin");
+
+        List<String> idamRolesList = new ArrayList<>();
+        idamRolesList.add("pui-case-manager");
+        idamRolesList.add("pui-user-manager");
+
+        CreateUserProfileData createUserProfileDataMock = mock(CreateUserProfileData.class);
+        when(createUserProfileDataMock.getRoles()).thenReturn(xuiRolesList);
+
+        IdamRolesInfo idamRolesInfoMock = mock(IdamRolesInfo.class);
+        when(idamRolesInfoMock.getRoles()).thenReturn(idamRolesList);
+
+        Set<String> rolesToUpdate = userProfileCreator.consolidateRolesFromXuiAndIdam(createUserProfileDataMock, idamRolesInfoMock);
+
+        assertThat(rolesToUpdate.size()).isEqualTo(1);
+        assertThat(rolesToUpdate).contains("prd-admin");
+    }
+
+    @Test
+    public void test_consolidateRolesFromXuiAndIdam_2() {
+
+        List<String> xuiRolesList = new ArrayList<>();
+        xuiRolesList.add("pui-case-manager");
+        xuiRolesList.add("pui-user-manager");
+        xuiRolesList.add("pui-user-manager");
+
+        List<String> idamRolesList = new ArrayList<>();
+        idamRolesList.add("prd-admin");
+
+        CreateUserProfileData createUserProfileDataMock = mock(CreateUserProfileData.class);
+        when(createUserProfileDataMock.getRoles()).thenReturn(xuiRolesList);
+
+        IdamRolesInfo idamRolesInfoMock = mock(IdamRolesInfo.class);
+        when(idamRolesInfoMock.getRoles()).thenReturn(idamRolesList);
+
+        Set<String> rolesToUpdate = userProfileCreator.consolidateRolesFromXuiAndIdam(createUserProfileDataMock, idamRolesInfoMock);
+
+        assertThat(rolesToUpdate.size()).isEqualTo(2);
+        assertThat(rolesToUpdate).contains("pui-case-manager");
+        assertThat(rolesToUpdate).contains("pui-user-manager");
+    }
+
+    @Test
+    public void test_consolidateRolesFromXuiAndIdam_3() {
+
+        List<String> xuiRolesList = new ArrayList<>();
+        xuiRolesList.add("pui-case-manager");
+        xuiRolesList.add("pui-user-manager");
+
+        List<String> idamRolesList = new ArrayList<>();
+        idamRolesList.add("pui-case-manager");
+        idamRolesList.add("pui-user-manager");
+
+        CreateUserProfileData createUserProfileDataMock = mock(CreateUserProfileData.class);
+        when(createUserProfileDataMock.getRoles()).thenReturn(xuiRolesList);
+
+        IdamRolesInfo idamRolesInfoMock = mock(IdamRolesInfo.class);
+        when(idamRolesInfoMock.getRoles()).thenReturn(idamRolesList);
+
+        Set<String> rolesToUpdate = userProfileCreator.consolidateRolesFromXuiAndIdam(createUserProfileDataMock, idamRolesInfoMock);
+
+        assertThat(rolesToUpdate.size()).isEqualTo(0);
     }
 
 }

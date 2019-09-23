@@ -32,7 +32,7 @@ public class AbstractFunctional {
 
     protected String requestUri = "/v1/userprofile";
 
-    /* @Before
+    /*@Before
     public void setupProxy() {
         //TO enable for local testing
         RestAssured.proxy("proxyout.reform.hmcts.net",8080);

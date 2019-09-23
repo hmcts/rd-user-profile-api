@@ -8,12 +8,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import org.assertj.core.util.Lists;
-import org.junit.Ignore;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 
-@Ignore
 public class UserProfileTestDataBuilder {
 
     private UserProfileTestDataBuilder() {

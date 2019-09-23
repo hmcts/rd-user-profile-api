@@ -181,8 +181,7 @@ pitest {
     excludedClasses = [
         'uk.gov.hmcts.reform.userprofileapi.config.*',
         'uk.gov.hmcts.reform.userprofileapi.Application',
-        'uk.gov.hmcts.reform.userprofileapi.controller.*',
-        'uk.gov.hmcts.reform.userprofileapi.util.JsonFeignResponseHelper'
+        'uk.gov.hmcts.reform.userprofileapi.controller.*'
     ]
     threads = 10
     outputFormats = ['XML', 'HTML']
@@ -203,7 +202,6 @@ sonarqube {
         property "sonar.exclusions", "src/main/java/uk/gov/hmcts/reform/userprofileapi/config/**," +
                                      "src/main/java/uk/gov/hmcts/reform/userprofileapi/SystemDateProvider.java," +
                                      "src/main/java/uk/gov/hmcts/reform/userprofileapi/Application.java" +
-                                     "src/main/java/uk/gov/hmcts/reform/userprofileapi/util/JsonFeignResponseHelper.java" +   
                                      "uk.gov.hmcts.reform.userprofileapi.domain/**"
     }
 }
@@ -239,6 +237,7 @@ dependencies {
     compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.9.8'
     compile group: 'io.github.openfeign.form', name: 'feign-form', version: '3.8.0'
     compile group: 'io.github.openfeign.form', name: 'feign-form-spring', version: '3.8.0'
+
     compile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.7'
     compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
     compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger

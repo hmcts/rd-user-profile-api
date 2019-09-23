@@ -97,7 +97,7 @@ public class UserProfileController {
         validateCreateUserProfileRequest(createUserProfileData);
 
         CreateUserProfileResponse resource = userProfileService.create(createUserProfileData);
-        log.info("idamid:" + resource.getIdamId() + "idamRegistrationResponse:" + resource.getIdamRegistrationResponse());
+        log.info("idamid:" + resource.getIdamId() + " idamRegistrationResponse:" + resource.getIdamRegistrationResponse());
         return ResponseEntity.status(HttpStatus.CREATED).body(resource);
 
     }
