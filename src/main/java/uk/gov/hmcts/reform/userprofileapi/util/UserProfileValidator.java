@@ -25,13 +25,20 @@ public interface UserProfileValidator {
     String USERCATEGORY = "USERCATEGORY";
 
     static boolean isUserIdValid(String userId, boolean throwException) {
+        boolean valid = true;
         if (StringUtils.isBlank(userId)) {
+            valid = false;
             if (throwException) {
                 throw new ResourceNotFoundException("userId is null or blank.");
             }
-            return false;
         }
-        return true;
+        return valid;
+    }
+
+    static void isResponseEntityValidForEmailAndId(String email, String userId) {
+        if (StringUtils.isEmpty(email) && StringUtils.isEmpty(userId)) {
+            throw new RequiredFieldMissingException("Email or User Id are null/empty. ");
+        }
     }
 
     static boolean isUpdateUserProfileRequestValid(UpdateUserProfileData updateUserProfileData) {

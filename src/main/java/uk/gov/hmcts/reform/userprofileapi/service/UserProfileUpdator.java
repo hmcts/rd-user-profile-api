@@ -80,26 +80,21 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         return userProfile;
     }
 
-    @Override
     public UserProfileRolesResponse updateRoles(UpdateUserProfileData profileData, String userId) {
-        UserProfile userProfile = null;
+        log.info("Inside updateRoles method");
+        UserProfile userProfile;
         HttpStatus httpStatus = null;
-
         userProfile = validateUserStatus(userId);
         if (!CollectionUtils.isEmpty(profileData.getRolesAdd())) {
-            log.info("Add idam roles for userId :" + userId);
-
             try (Response response = idamClient.addUserRoles(profileData.getRolesAdd(), userId)) {
-
                 httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode();
 
             } catch (FeignException ex) {
                 httpStatus = getHttpStatusFromFeignException(ex);
                 persistAudit(httpStatus, userProfile,ResponseSource.API);
-                return new UserProfileRolesResponse(httpStatus);
             }
-
         }
+        log.info("Exiting updateRoles method");
         return new UserProfileRolesResponse(httpStatus);
     }
 
