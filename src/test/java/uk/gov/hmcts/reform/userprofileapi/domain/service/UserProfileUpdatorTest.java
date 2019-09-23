@@ -136,7 +136,9 @@ public class UserProfileUpdatorTest {
         UserProfileRolesResponse response1 = userProfileUpdator.updateRoles(updateUserProfileData, userProfile.getIdamId());
 
         assertThat(response1).isNotNull();
-        assertThat(response1.getResponseStatusCode()).isEqualTo("200");
+        assertThat(response1.getDeleteResponses().size()).isEqualTo(1);
+        assertThat(response1.getDeleteResponses().get(0).getRoleName()).isEqualTo("pui-case-manager");
+        assertThat(response1.getDeleteResponses().get(0).getIdamGetResponseStatusCode()).isEqualTo("200");
     }
 
     @Test
