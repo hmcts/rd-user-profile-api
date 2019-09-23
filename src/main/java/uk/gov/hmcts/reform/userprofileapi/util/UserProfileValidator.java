@@ -36,8 +36,8 @@ public interface UserProfileValidator {
     }
 
     static void isResponseEntityValidForEmailAndId(String email, String userId) {
-        if (StringUtils.isEmpty(email) && StringUtils.isEmpty(userId)) {
-            throw new RequiredFieldMissingException("Email or User Id are null/empty. ");
+        if (StringUtils.isEmpty(email) || StringUtils.isEmpty(userId)) {
+            throw new ResourceNotFoundException("Email or User Id are null/empty. ");
         }
     }
 

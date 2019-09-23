@@ -11,6 +11,7 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
+import javax.validation.Valid;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,7 +85,7 @@ public class UserProfileController {
         produces = APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseBody
-    public ResponseEntity<CreateUserProfileResponse> createUserProfile(@RequestBody CreateUserProfileData createUserProfileData) {
+    public ResponseEntity<CreateUserProfileResponse> createUserProfile(@Valid @RequestBody CreateUserProfileData createUserProfileData) {
         log.info("Creating new User Profile");
 
         validateCreateUserProfileRequest(createUserProfileData);
@@ -209,17 +210,25 @@ public class UserProfileController {
     public ResponseEntity<GetUserProfileResponse> getUserProfileByEmail(@ApiParam(name = "email", required = false) @RequestParam (value = "email", required = false) String email,
                                                                      @ApiParam(name = "userId", required = false) @RequestParam (value = "userId", required = false) String userId) {
 
-        UserProfileValidator.isResponseEntityValidForEmailAndId(email, userId);
-        GetUserProfileResponse response = null;
-        if (email != null) {
+        if (email == null && userId == null) {
+            return ResponseEntity.badRequest().build();
+        } else if (email != null) {
+
             log.info("Getting user profile with email: {}", email);
-            response = userProfileService.retrieve(
-                            new UserProfileIdentifier(IdentifierName.EMAIL, email.toLowerCase().trim()));
+
+            return ResponseEntity.ok(
+                    userProfileService.retrieve(
+                            new UserProfileIdentifier(IdentifierName.EMAIL, email.toLowerCase().trim())
+                    )
+            );
         } else {
-            response = userProfileService.retrieve(
-                            new UserProfileIdentifier(IdentifierName.UUID, userId.trim()));
+            isUserIdValid(userId, true);
+            return ResponseEntity.ok(
+                    userProfileService.retrieve(
+                            new UserProfileIdentifier(IdentifierName.UUID, userId.trim())
+                    )
+            );
         }
-        return ResponseEntity.ok().body(response);
     }
 
     @ApiOperation(value = "Update user profile", 
@@ -252,7 +261,7 @@ public class UserProfileController {
     )
 
     @ResponseBody
-    public ResponseEntity<UserProfileRolesResponse> updateUserProfile(@RequestBody UpdateUserProfileData updateUserProfileData, @PathVariable String userId
+    public ResponseEntity<UserProfileRolesResponse> updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData, @PathVariable String userId
     ) {
         log.info("Updating user profile");
         UserProfileRolesResponse userProfileResponse = new UserProfileRolesResponse();
