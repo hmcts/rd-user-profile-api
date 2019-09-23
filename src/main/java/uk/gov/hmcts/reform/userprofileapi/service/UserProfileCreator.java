@@ -2,13 +2,7 @@ package uk.gov.hmcts.reform.userprofileapi.service;
 
 import java.net.URI;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -121,14 +115,14 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
                 updateInputRequestWithLatestSidamUserInfo(profileData, idamRolesInfo);
 
                 //consolidate XUI + SIDAM roles having unique roles
-                List<String> rolesToUpdate = consolidateRolesFromXuiAndIdam(profileData, idamRolesInfo);
+                Set<String> rolesToUpdate = consolidateRolesFromXuiAndIdam(profileData, idamRolesInfo);
                 //if roles are same what SIDAM has and XUI sent then skip SIDAM add roles call
                 if (! CollectionUtils.isEmpty(rolesToUpdate)) {
                     idamRolesInfo = addIdamRoles(rolesToUpdate, userId);
                     idamStatus = idamRolesInfo.getResponseStatusCode();
                     idamStatusMessage = idamRolesInfo.getStatusMessage();
                     if (!idamRolesInfo.isSuccessFromIdam()) {
-                        log.error("failed sidam PUT call for userId : " + userId);
+                        log.error("failed sidam add roles POST call for userId : " + userId);
                         persistAuditAndThrowIdamException(idamStatusMessage, idamStatus, null);
                     }
                 }
@@ -171,21 +165,21 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
         }
     }
 
-    public List<String> consolidateRolesFromXuiAndIdam(CreateUserProfileData profileData, IdamRolesInfo idamRolesInfo) {
+    public Set<String> consolidateRolesFromXuiAndIdam(CreateUserProfileData profileData, IdamRolesInfo idamRolesInfo) {
         Optional<List<String>> roles = Optional.ofNullable(idamRolesInfo.getRoles());
         List<String> idamRoles = roles.isPresent() ? roles.get() : new ArrayList<>();
         List<String> xuiRoles = profileData.getRoles();
         xuiRoles.removeAll(idamRoles);
-        return new ArrayList<>(new HashSet<String>(xuiRoles));
+        return new HashSet<String>(xuiRoles);
     }
 
-    private IdamRolesInfo addIdamRoles(List<String> rolesToUpdate, String userId) {
+    private IdamRolesInfo addIdamRoles(Set<String> rolesToUpdate, String userId) {
 
         return idamService.addUserRoles(createIdamRolesRequest(rolesToUpdate), userId);
     }
 
-    public List<Map<String,String>> createIdamRolesRequest(List<String> rolesToUpdate) {
-        List<Map<String, String>> roles = new ArrayList<>();
+    public Set<Map<String,String>> createIdamRolesRequest(Set<String> rolesToUpdate) {
+        Set<Map<String, String>> roles = new HashSet<>();
         rolesToUpdate.forEach(role -> {
             Map<String, String> rolesMap = new HashMap<String, String>();
             rolesMap.put("name", role);

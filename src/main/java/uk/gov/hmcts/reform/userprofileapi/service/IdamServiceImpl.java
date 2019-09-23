@@ -5,6 +5,8 @@ import feign.Response;
 import feign.RetryableException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -76,7 +78,7 @@ public class IdamServiceImpl implements IdamService {
     }
 
     @Override
-    public IdamRolesInfo addUserRoles(List roleRequest, String userId) {
+    public IdamRolesInfo addUserRoles(Set roleRequest, String userId) {
         log.info("add idam roles for userId :" + userId);
         HttpStatus httpStatus = null;
         Response response;

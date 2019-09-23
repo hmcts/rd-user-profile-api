@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.service;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
@@ -19,6 +20,6 @@ public interface IdamService {
 
     IdamRolesInfo updateUserRoles(List roleRequest, String userId);
 
-    IdamRolesInfo addUserRoles(List roleRequest, String userId);
+    IdamRolesInfo addUserRoles(Set roleRequest, String userId);
 
 }

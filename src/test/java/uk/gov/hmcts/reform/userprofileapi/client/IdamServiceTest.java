@@ -7,11 +7,7 @@ import feign.FeignException;
 import feign.Response;
 import feign.RetryableException;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -161,7 +157,7 @@ public class IdamServiceTest {
 
     @Test
     public void testAddUserRoles() {
-        List<String> roleRequest = new ArrayList<>();
+        Set<String> roleRequest = new HashSet<>();
 
         Response responseMock = Mockito.mock(Response.class);
 
@@ -182,7 +178,7 @@ public class IdamServiceTest {
 
     @Test
     public void testAddUserRolesWhenFeignException() {
-        List<String> roleRequest = new ArrayList<>();
+        Set<String> roleRequest = new HashSet<>();
 
         FeignException feignExceptionMock = Mockito.mock(FeignException.class);
 

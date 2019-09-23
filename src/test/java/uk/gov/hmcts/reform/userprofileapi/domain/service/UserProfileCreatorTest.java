@@ -6,12 +6,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.powermock.api.mockito.PowerMockito.when;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
@@ -294,10 +290,10 @@ public class UserProfileCreatorTest {
         IdamRolesInfo idamRolesInfoMock = mock(IdamRolesInfo.class);
         when(idamRolesInfoMock.getRoles()).thenReturn(idamRolesList);
 
-        List<String> rolesToUpdate = userProfileCreator.consolidateRolesFromXuiAndIdam(createUserProfileDataMock, idamRolesInfoMock);
+        Set<String> rolesToUpdate = userProfileCreator.consolidateRolesFromXuiAndIdam(createUserProfileDataMock, idamRolesInfoMock);
 
         assertThat(rolesToUpdate.size()).isEqualTo(1);
-        assertThat(rolesToUpdate.get(0)).isEqualTo("prd-admin");
+        assertThat(rolesToUpdate).contains("prd-admin");
     }
 
     @Test
@@ -317,7 +313,7 @@ public class UserProfileCreatorTest {
         IdamRolesInfo idamRolesInfoMock = mock(IdamRolesInfo.class);
         when(idamRolesInfoMock.getRoles()).thenReturn(idamRolesList);
 
-        List<String> rolesToUpdate = userProfileCreator.consolidateRolesFromXuiAndIdam(createUserProfileDataMock, idamRolesInfoMock);
+        Set<String> rolesToUpdate = userProfileCreator.consolidateRolesFromXuiAndIdam(createUserProfileDataMock, idamRolesInfoMock);
 
         assertThat(rolesToUpdate.size()).isEqualTo(2);
         assertThat(rolesToUpdate).contains("pui-case-manager");
@@ -341,7 +337,7 @@ public class UserProfileCreatorTest {
         IdamRolesInfo idamRolesInfoMock = mock(IdamRolesInfo.class);
         when(idamRolesInfoMock.getRoles()).thenReturn(idamRolesList);
 
-        List<String> rolesToUpdate = userProfileCreator.consolidateRolesFromXuiAndIdam(createUserProfileDataMock, idamRolesInfoMock);
+        Set<String> rolesToUpdate = userProfileCreator.consolidateRolesFromXuiAndIdam(createUserProfileDataMock, idamRolesInfoMock);
 
         assertThat(rolesToUpdate.size()).isEqualTo(0);
     }
