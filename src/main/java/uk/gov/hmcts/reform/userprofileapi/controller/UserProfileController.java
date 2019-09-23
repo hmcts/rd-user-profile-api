@@ -211,7 +211,7 @@ public class UserProfileController {
                                                                      @ApiParam(name = "userId", required = false) @RequestParam (value = "userId", required = false) String userId) {
         GetUserProfileResponse response = null;
         if (email == null && userId == null) {
-            ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().build();
         } else if (email != null) {
 
             log.info("Getting user profile with email: {}", email);
