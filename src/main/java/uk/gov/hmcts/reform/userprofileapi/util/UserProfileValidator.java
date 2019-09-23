@@ -24,16 +24,7 @@ public interface UserProfileValidator {
     static boolean isUserIdValid(String userId, boolean throwException) {
         if (StringUtils.isBlank(userId)) {
             if (throwException) {
-                throw new ResourceNotFoundException("userId is null or blank.Should have UUID format");
-            }
-            return false;
-        }
-
-        try {
-            java.util.UUID.fromString(userId);
-        } catch (IllegalArgumentException ex) {
-            if (throwException) {
-                throw new ResourceNotFoundException("Malformed userId.Should have UUID format");
+                throw new ResourceNotFoundException("userId is null or blank.");
             }
             return false;
         }
@@ -67,7 +58,7 @@ public interface UserProfileValidator {
                 || isBlankOrSizeInvalid(updateUserProfileData.getIdamStatus(), 255)) {
 
             isValid = false;
-        } else if (!updateUserProfileData.getEmail().matches("\\A(?=[a-zA-Z0-9@.!#$%&'*+/=?^_`{|}~-]{6,254}\\z)(?=[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]{1,64}@)[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:(?=[a-zA-Z0-9-]{1,63}\\.)[a-zA-Z0-9](?:[a-z0-9-]*[a-zA-Z0-9])?\\.)+(?=[a-zA-Z0-9-]{1,63}\\z)[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\z")) {
+        } else if (!updateUserProfileData.getEmail().matches("^.*[@].*[.].*$")) {
             isValid = false;
         }
         return isValid;
@@ -119,17 +110,17 @@ public interface UserProfileValidator {
         }
     }
 
-    static boolean validateAndReturnBooleanForParam(String showDeleted) {
+    static boolean validateAndReturnBooleanForParam(String param) {
 
         boolean isValid = false;
-        if (null == showDeleted) {
-            throw new RequiredFieldMissingException("param showDeleted" + " has invalid value : " + showDeleted);
-        } else if ("true".equalsIgnoreCase(showDeleted)) {
+        if (null == param) {
+            throw new RequiredFieldMissingException("param has invalid value : " + param);
+        } else if ("true".equalsIgnoreCase(param)) {
             isValid = true;
-        } else if ("false".equalsIgnoreCase(showDeleted)) {
+        } else if ("false".equalsIgnoreCase(param)) {
             isValid = false;
         } else {
-            throw new RequiredFieldMissingException("param showDeleted" + " has invalid value : " + showDeleted);
+            throw new RequiredFieldMissingException("param showDeleted has invalid value : " + param);
         }
         return isValid;
     }

@@ -44,8 +44,8 @@ public class UserProfileValidatorTest {
         boolean response = UserProfileValidator.isUserIdValid("", false);
         assertThat(response).isFalse();
 
-        assertThatThrownBy(() -> UserProfileValidator.isUserIdValid("INVALID", true))
-                .isInstanceOf(ResourceNotFoundException.class);
+        boolean response2 = UserProfileValidator.isUserIdValid("INVALID", true);
+        assertThat(response2).isTrue();
 
         boolean response1 = UserProfileValidator.isUserIdValid("", false);
         assertThat(response1).isFalse();
@@ -72,6 +72,72 @@ public class UserProfileValidatorTest {
     }
 
     @Test
+    public void test_validateEmailAreValid() {
+
+        String[] validEmails = new String[] {
+            "shreedhar.lomte@hmcts.net",
+            "shreedhar@yahoo.com",
+            "Email.100@yahoo.com",
+            "email111@email.com",
+            "email.100@email.com.au",
+            "email@gmail.com.com",
+            "email_231_a@email.com",
+            "email_100@yahoo-test.ABC.CoM",
+            "email-100@yahoo.com",
+            "email-100@email.net",
+            "email+100@gmail.com",
+            "emAil-100@yahoo-test.com",
+            "v.green@ashfords.co.uk",
+            "j.robinson@timms-law.com",
+            "あいうえお@example.com",
+            "emAil@1.com",
+            "email@.com.my",
+            "email123@gmail.",
+            "email123@.com",
+            "email123@.com.com",
+            ".email@email.com",
+            "email()*@gmAil.com",
+            "eEmail()*@gmail.com",
+            "email@%*.com",
+            "email..2002@gmail.com",
+            "email.@gmail.com",
+            "email@email@gmail.com",
+            "email@gmail.com.",
+            "email..2002@gmail.com@",
+            "-email.23@email.com",
+            "$email.3@email.com",
+            "!email@email.com",
+            "+@Adil61371@gmail.com",
+            "_email.23@email.com",
+            "email.23@-email.com"};
+
+        for (String email : validEmails) {
+
+            UpdateUserProfileData updateUserProfileDataWithInvalidEmail = new UpdateUserProfileData(email, "fanme", "lname", "ACTIVE");
+            boolean response1 = UserProfileValidator.validateUpdateUserProfileRequestFields(updateUserProfileDataWithInvalidEmail);
+            assertThat(response1).isTrue();
+        }
+    }
+
+    @Test
+    public void test_validateEmailAreInValid() {
+
+        String[] validEmails = new String[]{
+            "email.com",
+            "email@com",
+            "email@",
+            "@"
+        };
+
+        for (String email : validEmails) {
+
+            UpdateUserProfileData updateUserProfileDataWithInvalidEmail = new UpdateUserProfileData(email, "fanme", "lname", "ACTIVE");
+            boolean response1 = UserProfileValidator.validateUpdateUserProfileRequestFields(updateUserProfileDataWithInvalidEmail);
+            assertThat(response1).isFalse();
+        }
+    }
+
+    @Test
     public void test_isBlankOrSizeInvalid() {
 
         boolean response = UserProfileValidator.isBlankOrSizeInvalid("", 5);
@@ -79,7 +145,18 @@ public class UserProfileValidatorTest {
 
         boolean response1 = UserProfileValidator.isBlankOrSizeInvalid("lname", 2);
         assertThat(response1).isTrue();
+
+        boolean response3 = UserProfileValidator.isBlankOrSizeInvalid(null, 5);
+        assertThat(response3).isTrue();
+
+        boolean response4 = UserProfileValidator.isBlankOrSizeInvalid("lname", 2);
+        assertThat(response4).isTrue();
+
+        boolean response5 = UserProfileValidator.isBlankOrSizeInvalid("lname", 8);
+        assertThat(response5).isFalse();
     }
+
+
 
     @Test
     public void test_isSameAsExistingUserProfile() {
@@ -106,6 +183,13 @@ public class UserProfileValidatorTest {
 
     @Test(expected = Test.None.class)
     public void test_validateCreateUserProfileRequest_no_exception_thrown() {
+        UserProfileValidator.validateCreateUserProfileRequest(userProfileData);
+    }
+
+    @Test(expected = Test.None.class)
+    public void test_validateCreateUserProfileRequest_no_exception_thrown_when_values_are_null() {
+        userProfileData.setUserCategory(null);
+        userProfileData.setUserType(null);
         UserProfileValidator.validateCreateUserProfileRequest(userProfileData);
     }
 

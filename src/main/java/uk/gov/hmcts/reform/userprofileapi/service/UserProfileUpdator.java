@@ -38,7 +38,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
             throw new ResourceNotFoundException("userId provided is malformed");
         }
 
-        Optional<UserProfile> userProfileOptional = userProfileRepository.findByIdamId(java.util.UUID.fromString(userId));
+        Optional<UserProfile> userProfileOptional = userProfileRepository.findByIdamId(userId);
         userProfile =  userProfileOptional.orElse(null);
 
         if (userProfile == null) {
@@ -62,7 +62,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         return userProfile;
     }
 
-    private void persistAudit(HttpStatus idamStatus, UserProfile userProfile) {
+    public void persistAudit(HttpStatus idamStatus, UserProfile userProfile) {
         Audit audit = new Audit(idamStatus.value(), resolveStatusAndReturnMessage(idamStatus), ResponseSource.SYNC, userProfile);
         auditRepository.save(audit);
     }

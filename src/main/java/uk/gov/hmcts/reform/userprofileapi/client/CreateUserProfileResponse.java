@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.userprofileapi.client;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,7 +12,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 @NoArgsConstructor
 public class CreateUserProfileResponse {
 
-    private UUID idamId;
+    private String idamId;
     private Integer idamRegistrationResponse;
 
     public CreateUserProfileResponse(UserProfile userProfile) {

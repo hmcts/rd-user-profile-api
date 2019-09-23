@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.userprofileapi;
 import io.restassured.RestAssured;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -15,7 +14,7 @@ import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileWithRolesResponse;
 
-@Ignore
+
 @RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest
 public class RetrieveUserProfileFuncTest extends AbstractFunctional {

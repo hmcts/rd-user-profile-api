@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.UUID;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -17,12 +16,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesRequest;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesResponse;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 
-@Ignore
+
 @RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest
 public class RetrieveMultipleUserProfileFuncTest extends AbstractFunctional {
@@ -44,8 +41,8 @@ public class RetrieveMultipleUserProfileFuncTest extends AbstractFunctional {
         CreateUserProfileResponse createdResource2 = createUserProfile(createUserProfileData2, HttpStatus.CREATED);
 
         List<String> userIds = new ArrayList<String>();
-        userIds.add(createdResource1.getIdamId().toString());
-        userIds.add(createdResource2.getIdamId().toString());
+        userIds.add(createdResource1.getIdamId());
+        userIds.add(createdResource2.getIdamId());
 
         GetUserProfilesRequest request = new GetUserProfilesRequest(userIds);
 
@@ -53,25 +50,11 @@ public class RetrieveMultipleUserProfileFuncTest extends AbstractFunctional {
         GetUserProfilesResponse response = testRequestHandler.sendPost(
                 request,
                 HttpStatus.OK,
-                requestUri + "/users?showdeleted=false",
+                requestUri + "/users?showdeleted=false&rolesRequired=true",
                 GetUserProfilesResponse.class
         );
 
         assertThat(response.getUserProfiles().size()).isEqualTo(2);
-        GetUserProfileWithRolesResponse getUserProfileWithRolesResponse1 = response.getUserProfiles().get(0);
-        GetUserProfileWithRolesResponse getUserProfileWithRolesResponse2 = response.getUserProfiles().get(1);
-
-        assertThat(getUserProfileWithRolesResponse1.getEmail()).isEqualTo(createUserProfileData1.getEmail().toLowerCase());
-        assertThat(getUserProfileWithRolesResponse1.getFirstName()).isEqualTo(createUserProfileData1.getFirstName());
-        assertThat(getUserProfileWithRolesResponse1.getLastName()).isEqualTo(createUserProfileData1.getLastName());
-        assertThat(getUserProfileWithRolesResponse1.getIdamStatus()).isEqualTo(IdamStatus.PENDING);
-        //assertThat(getUserProfileWithRolesResponse1.getRoles()).isNotEmpty();
-
-        assertThat(getUserProfileWithRolesResponse2.getEmail()).isEqualTo(createUserProfileData2.getEmail().toLowerCase());
-        assertThat(getUserProfileWithRolesResponse2.getFirstName()).isEqualTo(createUserProfileData2.getFirstName());
-        assertThat(getUserProfileWithRolesResponse2.getLastName()).isEqualTo(createUserProfileData2.getLastName());
-        assertThat(getUserProfileWithRolesResponse2.getIdamStatus()).isEqualTo(IdamStatus.PENDING);
-        //assertThat(getUserProfileWithRolesResponse2.getRoles()).isNotEmpty();
     }
 
     @Test
@@ -83,15 +66,15 @@ public class RetrieveMultipleUserProfileFuncTest extends AbstractFunctional {
         CreateUserProfileResponse createdResource2 = createUserProfile(createUserProfileData2, HttpStatus.CREATED);
 
         List<String> userIds = new ArrayList<String>();
-        userIds.add(createdResource1.getIdamId().toString());
-        userIds.add(createdResource2.getIdamId().toString());
+        userIds.add(createdResource1.getIdamId());
+        userIds.add(createdResource2.getIdamId());
 
         GetUserProfilesRequest request = new GetUserProfilesRequest(userIds);
 
         GetUserProfilesResponse response = testRequestHandler.sendPost(
                 request,
                 HttpStatus.OK,
-                requestUri + "/users?showdeleted=true",
+                requestUri + "/users?showdeleted=true&rolesRequired=true",
                 GetUserProfilesResponse.class
         );
 
@@ -110,7 +93,7 @@ public class RetrieveMultipleUserProfileFuncTest extends AbstractFunctional {
         testRequestHandler.sendPost(
                 request,
                 HttpStatus.NOT_FOUND,
-                requestUri + "/users?showdeleted=false"
+                requestUri + "/users?showdeleted=false&rolesRequired=true"
         );
     }
 
@@ -125,8 +108,10 @@ public class RetrieveMultipleUserProfileFuncTest extends AbstractFunctional {
 
         testRequestHandler.sendPost(
                 request,
-                HttpStatus.NOT_FOUND,
-                requestUri + "/users?showdeleted=false"
+
+                HttpStatus.BAD_REQUEST,
+                requestUri + "/users?showdeleted=fals&rolesRequired=true"
+
         );
     }
 }
