@@ -80,24 +80,25 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         return userProfile;
     }
 
+    @Override
     public UserProfileRolesResponse updateRoles(UpdateUserProfileData profileData, String userId) {
-        log.info("Inside updateRoles method");
-        UserProfile userProfile;
+        UserProfile userProfile = null;
         HttpStatus httpStatus = null;
         UserProfileRolesResponse userProfileRolesResponse =  new UserProfileRolesResponse();
         userProfile = validateUserStatus(userId);
         if (!CollectionUtils.isEmpty(profileData.getRolesAdd())) {
             log.info("Add idam roles for userId :" + userId);
             AddRoleResponse addRoleResponse = new AddRoleResponse();
-
             try (Response response = idamClient.addUserRoles(profileData.getRolesAdd(), userId)) {
                 httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode();
                 addRoleResponse.loadStatusCodes(httpStatus);
             } catch (FeignException ex) {
                 httpStatus = getHttpStatusFromFeignException(ex);
                 persistAudit(httpStatus, userProfile,ResponseSource.API);
+                addRoleResponse.loadStatusCodes(httpStatus);
             }
-             
+            userProfileRolesResponse.setAddRoleResponse(addRoleResponse);
+        }
 
         if (!CollectionUtils.isEmpty(profileData.getRolesDelete())) {
 
@@ -126,7 +127,6 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
             persistAudit(httpStatus,userProfile,ResponseSource.API);
         }
         return new DeleteRoleResponse(roleName, httpStatus);
-
     }
 
     public HttpStatus getHttpStatusFromFeignException(FeignException ex) {
@@ -153,7 +153,5 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         return userProfileOptional.get();
     }
 
-
-
-
 }
+
