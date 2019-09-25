@@ -19,10 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import uk.gov.hmcts.reform.userprofileapi.client.DeleteRoleResponse;
-import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
-import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.client.*;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
@@ -91,18 +88,16 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         userProfile = validateUserStatus(userId);
         if (!CollectionUtils.isEmpty(profileData.getRolesAdd())) {
             log.info("Add idam roles for userId :" + userId);
-
+            AddRoleResponse addRoleResponse = new AddRoleResponse();
             try (Response response = idamClient.addUserRoles(profileData.getRolesAdd(), userId)) {
-
                 httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode();
-
+                addRoleResponse.loadStatusCodes(httpStatus);
             } catch (FeignException ex) {
                 httpStatus = getHttpStatusFromFeignException(ex);
                 persistAudit(httpStatus, userProfile,ResponseSource.API);
-                userProfileRolesResponse.loadStatusCodes(httpStatus);
-                return userProfileRolesResponse;
+                addRoleResponse.loadStatusCodes(httpStatus);
             }
-
+            userProfileRolesResponse.setAddRoleResponse(addRoleResponse);
         }
 
         if (!CollectionUtils.isEmpty(profileData.getRolesDelete())) {
@@ -115,7 +110,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
                 deleteRoleResponses.add(deleteRolesInIdam(userId, role.getName(), finalUserProfile));
 
             });
-            userProfileRolesResponse.setDeleteResponses(deleteRoleResponses);
+            userProfileRolesResponse.setDeleteRolesResponse(deleteRoleResponses);
         }
 
         return userProfileRolesResponse;

@@ -14,7 +14,7 @@ public class DeleteRoleResponseTest {
 
         DeleteRoleResponse deleteRoleResponse = new DeleteRoleResponse(UserProfileConstant.CASE_WORKER,HttpStatus.OK);
         assertThat(deleteRoleResponse.getRoleName()).isEqualTo(UserProfileConstant.CASE_WORKER);
-        assertThat(deleteRoleResponse.getIdamGetResponseStatusCode()).isEqualTo(200);
-        assertThat(deleteRoleResponse.getStatusMessage()).isEqualTo("11 OK");
+        assertThat(deleteRoleResponse.getIdamStatusCode()).isEqualTo("200");
+        assertThat(deleteRoleResponse.getIdamMessage()).isEqualTo("11 OK");
     }
 }

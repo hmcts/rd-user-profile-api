@@ -27,11 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.client.DeleteRoleResponse;
-import uk.gov.hmcts.reform.userprofileapi.client.RoleName;
-import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.client.*;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
@@ -75,74 +71,43 @@ public class UserProfileUpdatorTest {
     }
 
     @Test
-    public void updateRoles() throws Exception {
-        RoleName roleName1 = new RoleName("pui-case-manager");
-        RoleName roleName2 = new RoleName("pui-case-organisation");
-        Set<RoleName> roles = new HashSet<>();
-        roles.add(roleName1);
-        roles.add(roleName2);
+    public void updateRolesForAdd() throws Exception {
 
-        updateUserProfileData.setRolesAdd(roles);
-
-        UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
-
-        userProfileRolesResponse.setResponseStatusCode(HttpStatus.OK.toString());
-        userProfileRolesResponse.setStatusMessage("Success");
-        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        String body = mapper.writeValueAsString(userProfileRolesResponse);
-
-        when(userProfileRepository.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
-        when(idamFeignClientMock.addUserRoles(updateUserProfileData.getRolesAdd(), "1234")).thenReturn(Response.builder().request(mock(Request.class)).body(body, Charset.defaultCharset()).status(200).build());
-
-        UserProfileRolesResponse response = userProfileUpdator.updateRoles(updateUserProfileData, userProfile.getIdamId());
+        UserProfileRolesResponse response = addRoles();
 
         assertThat(response).isNotNull();
-        assertThat(response.getResponseStatusCode()).isEqualTo("200");
+        assertThat(response.getAddRoleResponse().getIdamStatusCode()).isEqualTo("200");
     }
 
     @Test
     public void updateRolesForAddAndDelete() throws Exception {
-        RoleName roleName1 = new RoleName("pui-case-manager");
-        //RoleName roleName2 = new RoleName("pui-organisation-manager");
-        Set<RoleName> roles = new HashSet<>();
-        roles.add(roleName1);
-        // roles.add(roleName2);
 
-        updateUserProfileData.setRolesDelete(roles);
-        UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
-        DeleteRoleResponse deleteRoleResponse = new DeleteRoleResponse();
-        deleteRoleResponse.setRoleName("pui-case-manager");
-        deleteRoleResponse.setIdamGetResponseStatusCode(HttpStatus.OK.toString());
-        deleteRoleResponse.setStatusMessage("Success");
-        List<DeleteRoleResponse> deleteRoleResponses = new ArrayList<DeleteRoleResponse>();
-        deleteRoleResponses.add(deleteRoleResponse);
-        /* DeleteRoleResponse deleteRoleResponse1 = new DeleteRoleResponse();
-        deleteRoleResponse1.setRoleName("pui-organisation-manager");
-        deleteRoleResponse1.setIdamGetResponseStatusCode(HttpStatus.OK.toString());
-        deleteRoleResponse1.setStatusMessage("Success");
-        deleteRoleResponses.add(deleteRoleResponse1);*/
-        //userProfileRolesResponse.setDeleteResponses(deleteRoleResponses);
+        UserProfileRolesResponse response;
+        response = addRoles();
 
-        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        String body = mapper.writeValueAsString(deleteRoleResponse);
+        assertThat(response).isNotNull();
+        assertThat(response.getAddRoleResponse().getIdamStatusCode()).isEqualTo("200");
 
-        when(userProfileRepository.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+        response = deleteRoles();
 
-        Response response = Response.builder().request(Request.create(Request.HttpMethod.DELETE, "", new HashMap<>(), Request.Body.empty())).body(body, Charset.defaultCharset()).status(200).build();
-
-        // Response.builder().request(mock(Request.class)).body(body, Charset.defaultCharset()).status(200).build()
-        when(idamFeignClientMock.deleteUserRole("1234", "pui-case-manager")).thenReturn(response);
-
-        UserProfileRolesResponse response1 = userProfileUpdator.updateRoles(updateUserProfileData, userProfile.getIdamId());
-
-        assertThat(response1).isNotNull();
-        assertThat(response1.getDeleteResponses().size()).isEqualTo(1);
-        assertThat(response1.getDeleteResponses().get(0).getRoleName()).isEqualTo("pui-case-manager");
-        assertThat(response1.getDeleteResponses().get(0).getIdamGetResponseStatusCode()).isEqualTo("200");
+        assertThat(response).isNotNull();
+        assertThat(response.getDeleteRolesResponse().size()).isEqualTo(1);
+        assertThat(response.getDeleteRolesResponse().get(0).getRoleName()).isEqualTo("pui-case-manager");
+        assertThat(response.getDeleteRolesResponse().get(0).getIdamStatusCode()).isEqualTo("200");
     }
 
     @Test
-    public void updateRoles_InternalServerError() throws Exception {
+    public void updateRolesForDelete() throws Exception {
+        UserProfileRolesResponse response1 = deleteRoles();
+
+        assertThat(response1).isNotNull();
+        assertThat(response1.getDeleteRolesResponse().size()).isEqualTo(1);
+        assertThat(response1.getDeleteRolesResponse().get(0).getRoleName()).isEqualTo("pui-case-manager");
+        assertThat(response1.getDeleteRolesResponse().get(0).getIdamStatusCode()).isEqualTo("200");
+    }
+
+    @Test
+    public void addRoles_InternalServerError() throws Exception {
         RoleName roleName1 = new RoleName("pui-case-manager");
         RoleName roleName2 = new RoleName("pui-case-organisation");
         Set<RoleName> roles = new HashSet<>();
@@ -152,9 +117,9 @@ public class UserProfileUpdatorTest {
         updateUserProfileData.setRolesAdd(roles);
 
         UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
-
-        userProfileRolesResponse.setResponseStatusCode(HttpStatus.OK.toString());
-        userProfileRolesResponse.setStatusMessage("Success");
+        AddRoleResponse addRoleResponse = new AddRoleResponse();
+        addRoleResponse.setIdamStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.toString());
+        addRoleResponse.setIdamMessage("Failure");
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         String body = mapper.writeValueAsString(userProfileRolesResponse);
 
@@ -162,11 +127,38 @@ public class UserProfileUpdatorTest {
         when(idamFeignClientMock.addUserRoles(updateUserProfileData.getRolesAdd(), "1234")).thenReturn(Response.builder().request(mock(Request.class)).body(body, Charset.defaultCharset()).status(500).build());
 
         UserProfileRolesResponse response = userProfileUpdator.updateRoles(updateUserProfileData, userProfile.getIdamId());
-        assertThat(response.getResponseStatusCode()).isEqualTo("500");
+        assertThat(response.getAddRoleResponse().getIdamStatusCode()).isEqualTo("500");
+    }
+
+    @Test
+    public void deleteRoles_InternalServerError() throws Exception {
+        RoleName roleName1 = new RoleName("pui-case-manager");
+        // RoleName roleName2 = new RoleName("pui-case-organisation");
+        Set<RoleName> roles = new HashSet<>();
+        roles.add(roleName1);
+
+        updateUserProfileData.setRolesDelete(roles);
+
+        DeleteRoleResponse deleteRoleResponse = new DeleteRoleResponse();
+        deleteRoleResponse.setIdamStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.toString());
+        deleteRoleResponse.setIdamMessage("Failure");
+        List<DeleteRoleResponse> rolesResponse = new ArrayList<DeleteRoleResponse>();
+        rolesResponse.add(deleteRoleResponse);
+
+        UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
+        userProfileRolesResponse.setDeleteRolesResponse(rolesResponse);
+        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        String body = mapper.writeValueAsString(userProfileRolesResponse);
+
+        when(userProfileRepository.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+        when(idamFeignClientMock.deleteUserRole("1234", "pui-case-manager")).thenReturn(Response.builder().request(mock(Request.class)).body(body, Charset.defaultCharset()).status(500).build());
+
+        UserProfileRolesResponse response = userProfileUpdator.updateRoles(updateUserProfileData, userProfile.getIdamId());
+        assertThat(response.getDeleteRolesResponse().get(0).getIdamStatusCode()).isEqualTo("500");
     }
 
     @Test(expected = InvalidRequest.class)
-    public void updateRoles_InvalidRequest() throws Exception {
+    public void addRoles_InvalidRequest() throws Exception {
         RoleName roleName1 = new RoleName("pui-case-manager");
         RoleName roleName2 = new RoleName("pui-case-organisation");
         Set<RoleName> roles = new HashSet<>();
@@ -177,9 +169,9 @@ public class UserProfileUpdatorTest {
         updateUserProfileData.setRolesAdd(roles);
 
         UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
-
-        userProfileRolesResponse.setResponseStatusCode(HttpStatus.OK.toString());
-        userProfileRolesResponse.setStatusMessage("Success");
+        AddRoleResponse addRoleResponse = new AddRoleResponse();
+        addRoleResponse.setIdamStatusCode(HttpStatus.OK.toString());
+        addRoleResponse.setIdamMessage("Success");
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         String body = mapper.writeValueAsString(userProfileRolesResponse);
 
@@ -234,6 +226,64 @@ public class UserProfileUpdatorTest {
         updateUserProfileData = new UpdateUserProfileData("", "", "", "ACTIV", roleNames,roleNames);
         when(userProfileRepository.findByIdamId(userId)).thenReturn(Optional.ofNullable(userProfile));
         assertThatThrownBy(() -> userProfileUpdator.update(updateUserProfileData,userId.toString())).isExactlyInstanceOf(RequiredFieldMissingException.class);
+    }
+
+    private UserProfileRolesResponse addRoles() throws Exception {
+        RoleName roleName1 = new RoleName("pui-case-manager");
+        RoleName roleName2 = new RoleName("pui-case-organisation");
+        Set<RoleName> roles = new HashSet<>();
+        roles.add(roleName1);
+        roles.add(roleName2);
+
+        updateUserProfileData.setRolesAdd(roles);
+
+        UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
+        AddRoleResponse addRoleResponse = new AddRoleResponse();
+        addRoleResponse.setIdamStatusCode(HttpStatus.OK.toString());
+        addRoleResponse.setIdamMessage("Success");
+        userProfileRolesResponse.setAddRoleResponse(addRoleResponse);
+        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        String body = mapper.writeValueAsString(userProfileRolesResponse);
+
+        when(userProfileRepository.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+        when(idamFeignClientMock.addUserRoles(updateUserProfileData.getRolesAdd(), "1234")).thenReturn(Response.builder().request(mock(Request.class)).body(body, Charset.defaultCharset()).status(200).build());
+
+        UserProfileRolesResponse response = userProfileUpdator.updateRoles(updateUserProfileData, userProfile.getIdamId());
+
+        return response;
+    }
+
+    private UserProfileRolesResponse deleteRoles() throws Exception {
+        RoleName roleName1 = new RoleName("pui-case-manager");
+        Set<RoleName> roles = new HashSet<>();
+        roles.add(roleName1);
+
+        updateUserProfileData.setRolesDelete(roles);
+        UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
+        DeleteRoleResponse deleteRoleResponse = new DeleteRoleResponse();
+        deleteRoleResponse.setRoleName("pui-case-manager");
+        deleteRoleResponse.setIdamStatusCode(HttpStatus.OK.toString());
+        deleteRoleResponse.setIdamMessage("Success");
+        List<DeleteRoleResponse> deleteRoleResponses = new ArrayList<DeleteRoleResponse>();
+        deleteRoleResponses.add(deleteRoleResponse);
+        /* DeleteRoleResponse deleteRoleResponse1 = new DeleteRoleResponse();
+        deleteRoleResponse1.setRoleName("pui-organisation-manager");
+        deleteRoleResponse1.setIdamGetResponseStatusCode(HttpStatus.OK.toString());
+        deleteRoleResponse1.setStatusMessage("Success");
+        deleteRoleResponses.add(deleteRoleResponse1);*/
+        //userProfileRolesResponse.setDeleteResponses(deleteRoleResponses);
+
+        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        String body = mapper.writeValueAsString(deleteRoleResponse);
+
+        when(userProfileRepository.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+
+        Response response = Response.builder().request(Request.create(Request.HttpMethod.DELETE, "", new HashMap<>(), Request.Body.empty())).body(body, Charset.defaultCharset()).status(200).build();
+
+        when(idamFeignClientMock.deleteUserRole("1234", "pui-case-manager")).thenReturn(response);
+
+        UserProfileRolesResponse response1 = userProfileUpdator.updateRoles(updateUserProfileData, userProfile.getIdamId());
+        return response1;
     }
 
 }

@@ -10,20 +10,17 @@ import org.springframework.http.HttpStatus;
 @Getter
 @Setter
 @NoArgsConstructor
-public class DeleteRoleResponse  {
+public class AddRoleResponse {
 
-    private String roleName;
     private String idamStatusCode;
     private String idamMessage;
 
-    public DeleteRoleResponse(String roleName, HttpStatus idamStatusCode) {
-        this.roleName = roleName;
+    public AddRoleResponse(HttpStatus idamStatusCode) {
         loadStatusCodes(idamStatusCode);
     }
 
-    public void loadStatusCodes(HttpStatus idamStatusCode) {
-        this.idamStatusCode = String.valueOf(idamStatusCode.value());
-        this.idamMessage = resolveStatusAndReturnMessage(idamStatusCode);
+    public void loadStatusCodes(HttpStatus idamGetResponseStatusCode) {
+        this.idamStatusCode = String.valueOf(idamGetResponseStatusCode.value());
+        this.idamMessage = resolveStatusAndReturnMessage(idamGetResponseStatusCode);
     }
-
 }

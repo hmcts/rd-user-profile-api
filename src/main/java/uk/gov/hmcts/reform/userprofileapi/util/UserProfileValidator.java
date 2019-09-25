@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.userprofileapi.constant.UserProfileConstant.*;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -15,13 +16,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceNotFoundException;
 
-
 public interface UserProfileValidator {
-
-    String STATUS = "STATUS";
-    String LANGUAGEPREFERENCE = "LANGUAGEPREFERENCE";
-    String USERTYPE = "USERTYPE";
-    String USERCATEGORY = "USERCATEGORY";
 
     static boolean isUserIdValid(String userId, boolean throwException) {
         if (StringUtils.isBlank(userId)) {
@@ -138,11 +133,11 @@ public interface UserProfileValidator {
         if (null == userProfileData) {
 
             throw new RequiredFieldMissingException("No Request Body in the request");
-        } else if (StringUtils.isBlank(userId)) {
+        } else if (StringUtils.isBlank(userId)
+                || (!userProfileData.getRolesAdd().isEmpty() && userProfileData.getRolesAdd().size() == 0)
+                || (!userProfileData.getRolesDelete().isEmpty() && userProfileData.getRolesDelete().size() == 0)) {
 
             throw new RequiredFieldMissingException("No userId or roles in the request");
         }
     }
-
-
 }
