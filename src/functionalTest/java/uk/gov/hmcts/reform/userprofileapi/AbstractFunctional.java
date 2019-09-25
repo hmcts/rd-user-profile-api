@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
 import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildUpdateUserProfileData;
 
-import org.junit.Ignore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
@@ -19,7 +18,6 @@ import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileWithRolesResponse
 import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
 
-@Ignore
 @ContextConfiguration(classes = {TestConfigProperties.class, FuncTestRequestHandler.class})
 @ComponentScan("uk.gov.hmcts.reform.userprofileapi")
 @TestPropertySource("classpath:application-functional.yaml")

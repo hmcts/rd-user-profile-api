@@ -6,8 +6,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
-
+    
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
@@ -57,7 +56,7 @@ public class UserProfileControllerTest {
         when(userProfileServiceMock.create(createUserProfileData)).thenThrow(ex);
 
         assertThatThrownBy(() -> sut.createUserProfile(createUserProfileData))
-            .isEqualTo(ex);
+                .isEqualTo(ex);
 
         verify(userProfileServiceMock).create(any(CreateUserProfileData.class));
     }
@@ -66,43 +65,15 @@ public class UserProfileControllerTest {
     public void testCreateUserProfileWithNullParam() {
 
         assertThatThrownBy(() -> sut.createUserProfile(null))
-            .isInstanceOf(NullPointerException.class)
-            .hasMessageContaining("createUserProfileData");
+                .isInstanceOf(NullPointerException.class)
+                .hasMessageContaining("createUserProfileData");
 
         verifyZeroInteractions(userProfileServiceMock);
 
     }
 
-    //@Test
-    public void should_call_retrieve_successfully_when_get_with_uuid_param() {
 
-        UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID, UUID.randomUUID().toString());
-        UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
-        GetUserProfileWithRolesResponse expectedResource = new GetUserProfileWithRolesResponse(userProfile, true);
 
-        when(userProfileServiceMock.retrieve(argumentCaptorMock.capture())).thenReturn(expectedResource);
-
-        /*ResponseEntity<GetUserProfileWithRolesResponse> resource = sut.getUserProfileById(identifier.getValue());
-
-        assertThat(resource.getBody()).isEqualToComparingFieldByField(expectedResource);*/
-        assertThat(argumentCaptorMock.getValue()).isEqualToComparingFieldByField(identifier);
-
-        verify(userProfileServiceMock).retrieve(any(UserProfileIdentifier.class));
-
-    }
-
-    //@Test
-    public void should_propagate_exception_when_get_with_uuid_and_retrieve_method_throws_exception() {
-        UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID, UUID.randomUUID().toString());
-        IllegalStateException ex = new IllegalStateException("This is a test exception");
-
-        when(userProfileServiceMock.retrieve(argumentCaptorMock.capture())).thenThrow(ex);
-        //   assertThatThrownBy(() -> sut.getUserProfileById(identifier.getValue())).isEqualTo(ex);
-        assertThat(argumentCaptorMock.getValue()).isEqualToComparingFieldByField(identifier);
-
-        verify(userProfileServiceMock).retrieve(any(UserProfileIdentifier.class));
-
-    }
 
     @Test
     public void testGetUserProfileWithRolesById() {
@@ -150,21 +121,6 @@ public class UserProfileControllerTest {
         assertThat(actual).isEqualTo(expect);
     }
 
-    //@Test
-    public void should_propagate_exception_when_get_with_email_and_retrieve_method_throws_exception() {
-
-        UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.EMAIL, UUID.randomUUID().toString());
-        IllegalStateException ex = new IllegalStateException("This is a test exception");
-
-        when(userProfileServiceMock.retrieve(argumentCaptorMock.capture())).thenThrow(ex);
-
-        //  assertThatThrownBy(() -> sut.getUserProfileByEmail(identifier.getValue())).isEqualTo(ex);
-
-        assertThat(argumentCaptorMock.getValue()).isEqualToComparingFieldByField(identifier);
-
-        verify(userProfileServiceMock).retrieve(any(UserProfileIdentifier.class));
-
-    }
 
     @Test
     public void should_throw_exception_when_get_with_email_null_parameters_passed_in() {
@@ -174,41 +130,6 @@ public class UserProfileControllerTest {
             .hasMessageContaining("email");*/
 
         verifyZeroInteractions(userProfileServiceMock);
-
-    }
-
-
-    //@Test
-    public void should_call_request_manager_retrieve_method_with_idamId() {
-
-        UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID, "test-idam-id");
-        UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
-        GetUserProfileWithRolesResponse expectedResource = new GetUserProfileWithRolesResponse(userProfile, true);
-
-        when(userProfileServiceMock.retrieve(argumentCaptorMock.capture())).thenReturn(expectedResource);
-
-        // ResponseEntity<GetUserProfileWithRolesResponse> resource = sut.getUserProfileById(identifier.getValue());
-
-        //  assertThat(resource.getBody()).isEqualToComparingFieldByField(expectedResource);
-        assertThat(argumentCaptorMock.getValue()).isEqualToComparingFieldByField(identifier);
-
-        verify(userProfileServiceMock).retrieve(any(UserProfileIdentifier.class));
-
-    }
-
-    //@Test
-    public void should_propagate_exception_when_handle_retrieve_with_idamId_throws_exception() {
-
-        UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID, UUID.randomUUID().toString());
-        IllegalStateException ex = new IllegalStateException("This is a test exception");
-
-        when(userProfileServiceMock.retrieve(argumentCaptorMock.capture())).thenThrow(ex);
-
-        // assertThatThrownBy(() -> sut.getUserProfileById(identifier.getValue())).isEqualTo(ex);
-
-        assertThat(argumentCaptorMock.getValue()).isEqualToComparingFieldByField(identifier);
-
-        verify(userProfileServiceMock).retrieve(any(UserProfileIdentifier.class));
 
     }
 
