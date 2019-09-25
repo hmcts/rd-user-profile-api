@@ -14,8 +14,6 @@ import java.util.List;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import net.serenitybdd.rest.SerenityRest;
 import org.junit.Before;
-
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -25,7 +23,7 @@ import org.springframework.http.HttpStatus;
 
 import org.springframework.test.context.TestPropertySource;
 
-@Ignore
+
 @RunWith(SpringIntegrationSerenityRunner.class)
 @TestPropertySource("classpath:application-functional.yaml")
 public class EndpointSecurityTest {
