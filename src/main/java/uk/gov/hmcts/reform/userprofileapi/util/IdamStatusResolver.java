@@ -39,11 +39,12 @@ public final class IdamStatusResolver {
     }
 
     public static IdamStatus resolveIdamStatus(Map<Map<String, Boolean>, IdamStatus> statusResolver, IdamRolesInfo idamRolesInfo) {
-
+      
         Map<String, Boolean> statusMap = new HashMap<String, Boolean>();
-        statusMap.put(ACTIVE, idamRolesInfo.getActive());
-        statusMap.put(PENDING, idamRolesInfo.getPending());
-        statusMap.put(LOCKED, idamRolesInfo.getLocked());
+
+        statusMap.put(ACTIVE, idamRolesInfo.getActive() == null ? false : idamRolesInfo.getActive());
+        statusMap.put(PENDING, idamRolesInfo.getPending()  == null ? false : idamRolesInfo.getPending());
+        statusMap.put(LOCKED, idamRolesInfo.getLocked()  == null ? false : idamRolesInfo.getLocked());
 
         return statusResolver.get(statusMap) != null ? statusResolver.get(statusMap) : null;
     }

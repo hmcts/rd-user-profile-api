@@ -7,7 +7,6 @@ import io.restassured.RestAssured;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.json.JSONObject;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -19,7 +18,6 @@ import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.IdamClient;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
 
-@Ignore
 @RunWith(SpringIntegrationSerenityRunner.class)
 public class CreateUserProfileFuncTest extends AbstractFunctional {
 

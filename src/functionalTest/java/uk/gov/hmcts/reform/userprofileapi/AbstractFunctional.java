@@ -4,8 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
 import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildUpdateUserProfileData;
 
-import java.util.UUID;
-
+import org.junit.Before;
 import org.junit.Ignore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,12 +33,23 @@ public class AbstractFunctional {
 
     protected String requestUri = "/v1/userprofile";
 
-    /* @Before
+    @Value("${exui.role.hmcts-admin}")
+    protected String hmctsAdmin;
+    @Value("${exui.role.pui-user-manager}")
+    protected String puiUserManager;
+    @Value("${exui.role.pui-organisation-manager}")
+    protected String puiOrgManager;
+    @Value("${exui.role.pui-finance-manager}")
+    protected String puiFinanceManager;
+    @Value("${exui.role.pui-case-manager}")
+    protected String puiCaseManager;
+
+    @Before
     public void setupProxy() {
         //TO enable for local testing
-        RestAssured.proxy("proxyout.reform.hmcts.net",8080);
-        SerenityRest.proxy("proxyout.reform.hmcts.net", 8080);
-    }*/
+        //RestAssured.proxy("proxyout.reform.hmcts.net",8080);
+        //SerenityRest.proxy("proxyout.reform.hmcts.net", 8080);
+    }
 
 
     protected CreateUserProfileResponse createUserProfile(CreateUserProfileData createUserProfileData,HttpStatus expectedStatus) throws Exception {
@@ -54,12 +64,12 @@ public class AbstractFunctional {
         return resource;
     }
 
-    protected void updateUserProfile(UpdateUserProfileData updateUserProfileData, UUID userId, HttpStatus expectedStatus) throws Exception {
+    protected void updateUserProfile(UpdateUserProfileData updateUserProfileData, String userId, HttpStatus expectedStatus) throws Exception {
 
         testRequestHandler.sendPut(
                 updateUserProfileData,
                 expectedStatus,
-                requestUri + "/" + userId.toString());
+                requestUri + "/" + userId);
     }
 
     protected CreateUserProfileData createUserProfileData() {
@@ -74,14 +84,14 @@ public class AbstractFunctional {
 
         assertThat(resource).isNotNull();
         assertThat(resource.getIdamId()).isNotNull();
-        assertThat(resource.getIdamId()).isInstanceOf(UUID.class);
+        assertThat(resource.getIdamId()).isInstanceOf(String.class);
 
     }
 
     protected void verifyGetUserProfile(GetUserProfileResponse resource, CreateUserProfileData expectedResource) {
 
         assertThat(resource).isNotNull();
-        assertThat(resource.getIdamId()).isNotNull().isExactlyInstanceOf(UUID.class);
+        assertThat(resource.getIdamId()).isNotNull().isExactlyInstanceOf(String.class);
         assertThat(resource.getFirstName()).isEqualTo(expectedResource.getFirstName());
         assertThat(resource.getLastName()).isEqualTo(expectedResource.getLastName());
         assertThat(resource.getEmail()).isEqualTo(expectedResource.getEmail().toLowerCase());

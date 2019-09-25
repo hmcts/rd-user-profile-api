@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.userprofileapi.domain.entities;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -38,7 +37,7 @@ public class UserProfile {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_profile_id_seq")
     private Long id;
 
-    private UUID idamId;
+    private String idamId;
 
     @Column(name = "email_address")
     private String email;

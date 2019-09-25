@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.RequestData;
+import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 
 @Service
@@ -26,11 +27,11 @@ public class UserProfileService<T extends RequestData> {
     }
 
     public GetUserProfileWithRolesResponse retrieveWithRoles(T requestData) {
-        return new GetUserProfileWithRolesResponse(resourceRetriever.retrieve(requestData, true));
+        return new GetUserProfileWithRolesResponse(resourceRetriever.retrieve(requestData, true), true);
     }
 
-    public GetUserProfilesResponse retrieveWithRoles(T requestData, boolean showDeleted) {
-        return new GetUserProfilesResponse(resourceRetriever.retrieveMultipleProfiles(requestData, showDeleted));
+    public GetUserProfilesResponse retrieveWithRoles(T requestData, boolean showDeleted, boolean rolesRequired) {
+        return new GetUserProfilesResponse(resourceRetriever.retrieveMultipleProfiles(requestData, showDeleted, rolesRequired), rolesRequired);
     }
 
     public GetUserProfileResponse retrieve(T requestData) {
@@ -41,4 +42,7 @@ public class UserProfileService<T extends RequestData> {
         resourceUpdator.update(updateData, userId);
     }
 
+    public UserProfileRolesResponse updateRoles(T updateData, String userId) {
+        return  resourceUpdator.updateRoles(updateData, userId);
+    }
 }

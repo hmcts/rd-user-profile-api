@@ -37,7 +37,9 @@ public class CreateUserProfileDataTestBuilder {
                 buildRandomEmail(),
                 RandomStringUtils.randomAlphabetic(20),
                 RandomStringUtils.randomAlphabetic(20),
-                IdamStatus.ACTIVE.toString());
+                IdamStatus.ACTIVE.toString(),
+                null
+                );
     }
 
     private static String buildRandomEmail() {
@@ -46,7 +48,7 @@ public class CreateUserProfileDataTestBuilder {
 
     public static List<String> getIdamRolesJson() {
         List<String> roles = new ArrayList<String>();
-        roles.add("pui-user-manager");
+        roles.add("caseworker");
         return roles;
     }
 

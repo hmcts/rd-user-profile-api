@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.userprofileapi.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Response;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,12 +10,12 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.zip.GZIPInputStream;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-
 
 @Slf4j
 public class JsonFeignResponseHelper {

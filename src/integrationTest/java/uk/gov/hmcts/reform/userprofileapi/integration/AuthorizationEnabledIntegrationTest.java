@@ -105,10 +105,10 @@ public class AuthorizationEnabledIntegrationTest {
                                 + "}")));
     }
 
-    public GetUserProfilesResponse getMultipleUsers(GetUserProfilesRequest request, HttpStatus expectedStatus, String showDeleted) throws Exception {
+    public GetUserProfilesResponse getMultipleUsers(GetUserProfilesRequest request, HttpStatus expectedStatus, String showDeleted, String rolesRequired) throws Exception {
         return userProfileRequestHandlerTest.sendPost(
                 mockMvc,
-                APP_BASE_PATH + SLASH + "users?" + "showdeleted=" + showDeleted,
+                APP_BASE_PATH + SLASH + "users?showdeleted=" + showDeleted + "&rolesRequired=" + rolesRequired,
                 request,
                 expectedStatus,
                 GetUserProfilesResponse.class

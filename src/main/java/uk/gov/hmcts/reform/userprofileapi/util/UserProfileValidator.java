@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.userprofileapi.util;
 import static java.util.Objects.requireNonNull;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.util.CollectionUtils;
+
 import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesRequest;
 import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
@@ -14,6 +16,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceNotFoundException;
 
+
 public interface UserProfileValidator {
 
     String STATUS = "STATUS";
@@ -22,28 +25,19 @@ public interface UserProfileValidator {
     String USERCATEGORY = "USERCATEGORY";
 
     static boolean isUserIdValid(String userId, boolean throwException) {
+        boolean valid = true;
         if (StringUtils.isBlank(userId)) {
+            valid = false;
             if (throwException) {
-                throw new ResourceNotFoundException("userId is null or blank.Should have UUID format");
+                throw new ResourceNotFoundException("userId is null or blank.");
             }
-            return false;
         }
-
-        try {
-            java.util.UUID.fromString(userId);
-        } catch (IllegalArgumentException ex) {
-            if (throwException) {
-                throw new ResourceNotFoundException("Malformed userId.Should have UUID format");
-            }
-            return false;
-        }
-        return true;
+        return valid;
     }
 
     static boolean isUpdateUserProfileRequestValid(UpdateUserProfileData updateUserProfileData) {
 
         boolean isValid = true;
-
         if (!validateUpdateUserProfileRequestFields(updateUserProfileData)) {
             isValid = false;
         } else {
@@ -53,6 +47,7 @@ public interface UserProfileValidator {
                 isValid = false;
             }
         }
+
         return isValid;
     }
 
@@ -67,7 +62,7 @@ public interface UserProfileValidator {
                 || isBlankOrSizeInvalid(updateUserProfileData.getIdamStatus(), 255)) {
 
             isValid = false;
-        } else if (!updateUserProfileData.getEmail().matches("\\A(?=[a-zA-Z0-9@.!#$%&'*+/=?^_`{|}~-]{6,254}\\z)(?=[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]{1,64}@)[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:(?=[a-zA-Z0-9-]{1,63}\\.)[a-zA-Z0-9](?:[a-z0-9-]*[a-zA-Z0-9])?\\.)+(?=[a-zA-Z0-9-]{1,63}\\z)[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\z")) {
+        } else if (!updateUserProfileData.getEmail().matches("^.*[@].*[.].*$")) {
             isValid = false;
         }
         return isValid;
@@ -86,9 +81,9 @@ public interface UserProfileValidator {
 
         boolean isSame = false;
         if (userProfile.getEmail().equals(updateUserProfileData.getEmail().trim())
-            && userProfile.getFirstName().equals(updateUserProfileData.getFirstName().trim())
-            && userProfile.getLastName().equals(updateUserProfileData.getLastName().trim())
-            && userProfile.getStatus().toString().equals(updateUserProfileData.getIdamStatus().trim())) {
+                && userProfile.getFirstName().equals(updateUserProfileData.getFirstName().trim())
+                && userProfile.getLastName().equals(updateUserProfileData.getLastName().trim())
+                && userProfile.getStatus().toString().equals(updateUserProfileData.getIdamStatus().trim())) {
             isSame = true;
         }
         return isSame;
@@ -119,17 +114,17 @@ public interface UserProfileValidator {
         }
     }
 
-    static boolean validateAndReturnBooleanForParam(String showDeleted) {
+    static boolean validateAndReturnBooleanForParam(String param) {
 
         boolean isValid = false;
-        if (null == showDeleted) {
-            throw new RequiredFieldMissingException("param showDeleted" + " has invalid value : " + showDeleted);
-        } else if ("true".equalsIgnoreCase(showDeleted)) {
+        if (null == param) {
+            throw new RequiredFieldMissingException("param has invalid value : " + param);
+        } else if ("true".equalsIgnoreCase(param)) {
             isValid = true;
-        } else if ("false".equalsIgnoreCase(showDeleted)) {
+        } else if ("false".equalsIgnoreCase(param)) {
             isValid = false;
         } else {
-            throw new RequiredFieldMissingException("param showDeleted" + " has invalid value : " + showDeleted);
+            throw new RequiredFieldMissingException("param showDeleted has invalid value : " + param);
         }
         return isValid;
     }
@@ -139,4 +134,17 @@ public interface UserProfileValidator {
             throw new RequiredFieldMissingException("no user id in request");
         }
     }
+
+    static void validateUserProfileDataAndUserId(UpdateUserProfileData userProfileData, String userId) {
+
+        if (null == userProfileData) {
+
+            throw new RequiredFieldMissingException("No Request Body in the request");
+        } else if (StringUtils.isBlank(userId) || CollectionUtils.isEmpty(userProfileData.getRolesAdd())) {
+
+            throw new RequiredFieldMissingException("No userId or roles in the request");
+        }
+    }
+
+
 }
