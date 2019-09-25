@@ -5,6 +5,7 @@ import static uk.gov.hmcts.reform.userprofileapi.constant.UserProfileConstant.*;
 
 import org.apache.commons.lang.StringUtils;
 
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesRequest;
 import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
@@ -134,8 +135,8 @@ public interface UserProfileValidator {
 
             throw new RequiredFieldMissingException("No Request Body in the request");
         } else if (StringUtils.isBlank(userId)
-                || (!userProfileData.getRolesAdd().isEmpty() && userProfileData.getRolesAdd().size() == 0)
-                || (!userProfileData.getRolesDelete().isEmpty() && userProfileData.getRolesDelete().size() == 0)) {
+                || (!CollectionUtils.isEmpty(userProfileData.getRolesAdd()) && userProfileData.getRolesAdd().size() == 0)
+                || (!CollectionUtils.isEmpty(userProfileData.getRolesDelete()) && userProfileData.getRolesDelete().size() == 0)) {
 
             throw new RequiredFieldMissingException("No userId or roles in the request");
         }

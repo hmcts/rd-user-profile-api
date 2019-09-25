@@ -266,12 +266,6 @@ public class UserProfileUpdatorTest {
         deleteRoleResponse.setIdamMessage("Success");
         List<DeleteRoleResponse> deleteRoleResponses = new ArrayList<DeleteRoleResponse>();
         deleteRoleResponses.add(deleteRoleResponse);
-        /* DeleteRoleResponse deleteRoleResponse1 = new DeleteRoleResponse();
-        deleteRoleResponse1.setRoleName("pui-organisation-manager");
-        deleteRoleResponse1.setIdamGetResponseStatusCode(HttpStatus.OK.toString());
-        deleteRoleResponse1.setStatusMessage("Success");
-        deleteRoleResponses.add(deleteRoleResponse1);*/
-        //userProfileRolesResponse.setDeleteResponses(deleteRoleResponses);
 
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         String body = mapper.writeValueAsString(deleteRoleResponse);

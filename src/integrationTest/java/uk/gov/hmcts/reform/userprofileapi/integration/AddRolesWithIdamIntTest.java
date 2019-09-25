@@ -188,7 +188,7 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
     }
 
     @Test
-    public void should_return_200_and_delete_roles_to_user_profile_resource() throws Exception {
+    public void should_return_200_and_add_delete_roles_to_user_profile_resource() throws Exception {
 
         mockWithGetSuccess(true);
         mockWithUpdateSuccess();
