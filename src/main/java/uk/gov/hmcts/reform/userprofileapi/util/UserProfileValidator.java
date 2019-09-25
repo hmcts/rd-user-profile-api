@@ -20,13 +20,14 @@ import uk.gov.hmcts.reform.userprofileapi.service.ResourceNotFoundException;
 public interface UserProfileValidator {
 
     static boolean isUserIdValid(String userId, boolean throwException) {
+        boolean valid = true;
         if (StringUtils.isBlank(userId)) {
+            valid = false;
             if (throwException) {
                 throw new ResourceNotFoundException("userId is null or blank.");
             }
-            return false;
         }
-        return true;
+        return valid;
     }
 
     static boolean isUpdateUserProfileRequestValid(UpdateUserProfileData updateUserProfileData) {

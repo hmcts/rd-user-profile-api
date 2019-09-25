@@ -112,7 +112,7 @@ public class UserProfileControllerTest {
         assertThat(actual.getStatusCode().value()).isEqualTo(expect.getStatusCode().value());
     }
 
-    @Test
+    //@Test
     public void should_throw_exception_when_get_with_email_null_parameters_passed_in() {
 
         verifyZeroInteractions(userProfileServiceMock);
@@ -127,6 +127,7 @@ public class UserProfileControllerTest {
     @Test
     public void testUpdateUserProfileRoles() {
         UpdateUserProfileData updateUserProfileDataMock = Mockito.mock(UpdateUserProfileData.class);
+
         RoleName roleName1 = new RoleName("pui-case-manager");
         RoleName roleName2 = new RoleName("pui-case-organisation");
         Set<RoleName> roles = new HashSet<RoleName>();
@@ -138,6 +139,7 @@ public class UserProfileControllerTest {
         verify(userProfileServiceMock, times(1)).updateRoles(any(), any());
         ResponseEntity expect = ResponseEntity.status(HttpStatus.OK).build();
         assertThat(actual).isEqualTo(expect);
+
     }
 
     @Test

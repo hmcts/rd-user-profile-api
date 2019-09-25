@@ -209,26 +209,23 @@ public class UserProfileController {
     @ResponseBody
     public ResponseEntity<GetUserProfileResponse> getUserProfileByEmail(@ApiParam(name = "email", required = false) @RequestParam (value = "email", required = false) String email,
                                                                      @ApiParam(name = "userId", required = false) @RequestParam (value = "userId", required = false) String userId) {
-
+        GetUserProfileResponse response = null;
         if (email == null && userId == null) {
             return ResponseEntity.badRequest().build();
         } else if (email != null) {
 
             log.info("Getting user profile with email: {}", email);
 
-            return ResponseEntity.ok(
+            response =
                     userProfileService.retrieve(
                             new UserProfileIdentifier(IdentifierName.EMAIL, email.toLowerCase().trim())
-                    )
-            );
+                    );
         } else {
             isUserIdValid(userId, true);
-            return ResponseEntity.ok(
-                    userProfileService.retrieve(
-                            new UserProfileIdentifier(IdentifierName.UUID, userId.trim())
-                    )
-            );
+            response =  userProfileService.retrieve(
+                    new UserProfileIdentifier(IdentifierName.UUID, userId.trim()));
         }
+        return ResponseEntity.ok().body(response);
     }
 
     @ApiOperation(value = "Update user profile", 
