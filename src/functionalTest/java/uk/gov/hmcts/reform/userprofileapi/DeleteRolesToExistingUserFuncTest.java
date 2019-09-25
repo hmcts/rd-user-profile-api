@@ -55,11 +55,11 @@ public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
         data.setEmail(email);
         createUserProfile(data, HttpStatus.CREATED);
 
-        RoleName role1 = new RoleName(puiCaseManager);
+        RoleName role1 = new RoleName(puiOrgManager);
         Set<RoleName> rolesName = new HashSet<>();
         rolesName.add(role1);
-        UpdateUserProfileData userRProfileData = new UpdateUserProfileData();
-        userRProfileData.setRolesAdd(rolesName);
+        UpdateUserProfileData userProfileData = new UpdateUserProfileData();
+        userProfileData.setRolesAdd(rolesName);
 
         GetUserProfileResponse resource =
                 testRequestHandler.sendGet(
@@ -70,7 +70,7 @@ public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
         LOG.info("before addroles call");
         UserProfileRolesResponse resource1 =
                 testRequestHandler.sendPut(
-                        userRProfileData,
+                        userProfileData,
                             HttpStatus.OK,
                            requestUri + "/" + resource.getIdamId(), UserProfileRolesResponse.class);
 
@@ -84,7 +84,7 @@ public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
         LOG.info("Roles addroles call" + resource2);
         assertThat(resource2.getRoles().size()).isNotNull();
         assertThat(resource2.getRoles().size()).isEqualTo(3);
-        RoleName roleDelete = new RoleName(puiCaseManager);
+        RoleName roleDelete = new RoleName(puiOrgManager);
         Set<RoleName> rolesDelete = new HashSet<>();
         rolesDelete.add(roleDelete);
 
@@ -93,11 +93,12 @@ public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
 
         UserProfileRolesResponse deleteResourceResp =
                 testRequestHandler.sendDelete(
-                        userRProfileData,
+                        userProfileDataDelete,
                         HttpStatus.OK,
                         requestUri + "/" + resource.getIdamId(), UserProfileRolesResponse.class);
 
-        LOG.info("after DeleteRole call");
+        LOG.info("after DeleteRole call" + deleteResourceResp);
+
 
         GetUserProfileWithRolesResponse resourceForDeleteCheck =
                 testRequestHandler.sendGet(
