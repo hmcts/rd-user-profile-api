@@ -19,7 +19,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import uk.gov.hmcts.reform.userprofileapi.client.*;
+import org.springframework.util.CollectionUtils;
+import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.client.IdamRegisterUserRequest;
+import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
@@ -119,14 +122,16 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
                 updateInputRequestWithLatestSidamUserInfo(profileData, idamRolesInfo);
 
                 //consolidate XUI + SIDAM roles having unique roles
-                List<String> rolesToUpdate = consolidateRolesFromXuiAndIdam(profileData, idamRolesInfo);
-                //if roles are same what SIDAM has and XUI sent then skip SIDAM update call
-                idamRolesInfo = updateIdamRoles(rolesToUpdate, userId);
-                idamStatus = idamRolesInfo.getResponseStatusCode();
-                idamStatusMessage = idamRolesInfo.getStatusMessage();
-                if (!idamRolesInfo.isSuccessFromIdam()) {
-                    log.error("failed sidam PUT call for userId : " + userId);
-                    persistAuditAndThrowIdamException(idamStatusMessage, idamStatus, null);
+                Set<String> rolesToUpdate = consolidateRolesFromXuiAndIdam(profileData, idamRolesInfo);
+                //if roles are same what SIDAM has and XUI sent then skip SIDAM add roles call
+                if (! CollectionUtils.isEmpty(rolesToUpdate)) {
+                    idamRolesInfo = addIdamRoles(rolesToUpdate, userId);
+                    idamStatus = idamRolesInfo.getResponseStatusCode();
+                    idamStatusMessage = idamRolesInfo.getStatusMessage();
+                    if (!idamRolesInfo.isSuccessFromIdam()) {
+                        log.error("failed sidam add roles POST call for userId : " + userId);
+                        persistAuditAndThrowIdamException(idamStatusMessage, idamStatus, null);
+                    }
                 }
                 // for success make status = 201
                 idamStatus = HttpStatus.CREATED;
@@ -167,21 +172,27 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
         }
     }
 
-    private List<String> consolidateRolesFromXuiAndIdam(CreateUserProfileData profileData, IdamRolesInfo idamRolesInfo) {
+    public Set<String> consolidateRolesFromXuiAndIdam(CreateUserProfileData profileData, IdamRolesInfo idamRolesInfo) {
         Optional<List<String>> roles = Optional.ofNullable(idamRolesInfo.getRoles());
-        List<String> rolesToUpdate = roles.isPresent() ? roles.get() : new ArrayList<>();
-        rolesToUpdate.addAll(profileData.getRoles());
-        Set<String> rolesSet = new HashSet<String>(rolesToUpdate);
-        return new ArrayList<String>(rolesSet);
+        List<String> idamRoles = roles.isPresent() ? roles.get() : new ArrayList<>();
+        List<String> xuiRoles = profileData.getRoles();
+        xuiRoles.removeAll(idamRoles);
+        return new HashSet<String>(xuiRoles);
     }
 
-    private IdamRolesInfo updateIdamRoles(List<String> rolesToUpdate, String userId) {
-        List<Map<String, String>> roles = new ArrayList<>();
+    private IdamRolesInfo addIdamRoles(Set<String> rolesToUpdate, String userId) {
+
+        return idamService.addUserRoles(createIdamRolesRequest(rolesToUpdate), userId);
+    }
+
+    public Set<Map<String,String>> createIdamRolesRequest(Set<String> rolesToUpdate) {
+        Set<Map<String, String>> roles = new HashSet<>();
         rolesToUpdate.forEach(role -> {
             Map<String, String> rolesMap = new HashMap<String, String>();
             rolesMap.put("name", role);
             roles.add(rolesMap);
         });
-        return idamService.updateUserRoles(roles, userId);
+        return roles;
     }
+
 }

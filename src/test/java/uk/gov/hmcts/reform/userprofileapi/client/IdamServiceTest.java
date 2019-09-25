@@ -4,9 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 import feign.FeignException;
-import feign.Request;
 import feign.Response;
 import feign.RetryableException;
+
 import java.util.*;
 
 import org.junit.Test;
@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamServiceImpl;
 
+
 @RunWith(MockitoJUnitRunner.class)
 public class IdamServiceTest {
     private final String userId = "test796-d05e-480d-bf3d-7cbfacb3ca29";
@@ -31,6 +32,7 @@ public class IdamServiceTest {
 
     @InjectMocks
     private IdamService sut = new IdamServiceImpl();
+
 
     @Test
     public void testRegisterUser() {
@@ -105,10 +107,16 @@ public class IdamServiceTest {
     @Test
     public void testGetHttpStatusFromFeignException() {
         IdamServiceImpl idamService = new IdamServiceImpl();
+        RetryableException retryableExceptionMock = mock(RetryableException.class);
 
-        HttpStatus status = idamService.gethttpStatusFromFeignException(
-                new RetryableException(500, StatusCode.INTERNAL_SERVER_ERROR.toString(), Request.HttpMethod.GET, new Date()));
+        HttpStatus status = idamService.gethttpStatusFromFeignException(retryableExceptionMock);
         assertThat(status).isNotNull().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+
+        FeignException feignException = mock(FeignException.class);
+        when(feignException.status()).thenReturn(400);
+
+        HttpStatus status1 = idamService.gethttpStatusFromFeignException(feignException);
+        assertThat(status1).isNotNull().isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
     @Test
@@ -144,6 +152,42 @@ public class IdamServiceTest {
         IdamRolesInfo result = sut.updateUserRoles(roleRequest, userId);
 
         verify(idamFeignClientMock, times(1)).updateUserRoles(roleRequest, userId);
+        assertThat(result).isNotNull();
+    }
+
+    @Test
+    public void testAddUserRoles() {
+        Set<String> roleRequest = new HashSet<>();
+
+        Response responseMock = Mockito.mock(Response.class);
+
+        when(idamFeignClientMock.addUserRoles(roleRequest, userId)).thenReturn(responseMock);
+        when(responseMock.headers()).thenReturn(headerData);
+
+        // NB, technical exception to avoid coupling test to logic inside static method of a separate class
+        when(responseMock.status()).thenReturn(StatusCode.INTERNAL_SERVER_ERROR.getStatus());
+
+        IdamRolesInfo result = sut.addUserRoles(roleRequest, userId);
+
+        verify(idamFeignClientMock, times(1)).addUserRoles(roleRequest, userId);
+        verify(responseMock, times(1)).headers();
+        verify(responseMock, times(2)).status();
+
+        assertThat(result).isNotNull();
+    }
+
+    @Test
+    public void testAddUserRolesWhenFeignException() {
+        Set<String> roleRequest = new HashSet<>();
+
+        FeignException feignExceptionMock = Mockito.mock(FeignException.class);
+
+        when(feignExceptionMock.status()).thenReturn(StatusCode.NOT_FOUND.getStatus());
+        when(idamFeignClientMock.addUserRoles(roleRequest, userId)).thenThrow(feignExceptionMock);
+
+        IdamRolesInfo result = sut.addUserRoles(roleRequest, userId);
+
+        verify(idamFeignClientMock, times(1)).addUserRoles(roleRequest, userId);
         assertThat(result).isNotNull();
     }
 

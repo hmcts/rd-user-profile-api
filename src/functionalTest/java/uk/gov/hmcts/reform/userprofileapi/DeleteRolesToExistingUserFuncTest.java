@@ -4,7 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
@@ -46,16 +48,18 @@ public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
 
 
         CreateUserProfileData data = createUserProfileData();
-        String email = idamClient.createUser(puiUserManager);
+        List<String> roles = new ArrayList<>();
+        roles.add(puiUserManager);
+        String email = idamClient.createUser(roles);
 
         data.setEmail(email);
         createUserProfile(data, HttpStatus.CREATED);
 
         RoleName role1 = new RoleName(puiCaseManager);
-        Set<RoleName> roles = new HashSet<>();
-        roles.add(role1);
+        Set<RoleName> rolesName = new HashSet<>();
+        rolesName.add(role1);
         UpdateUserProfileData userRProfileData = new UpdateUserProfileData();
-        userRProfileData.setRolesAdd(roles);
+        userRProfileData.setRolesAdd(rolesName);
 
         GetUserProfileResponse resource =
                 testRequestHandler.sendGet(

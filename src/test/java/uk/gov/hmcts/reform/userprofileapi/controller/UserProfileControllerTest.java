@@ -4,7 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
+
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
@@ -112,11 +115,6 @@ public class UserProfileControllerTest {
         assertThat(actual.getStatusCode().value()).isEqualTo(expect.getStatusCode().value());
     }
 
-    //@Test
-    public void should_throw_exception_when_get_with_email_null_parameters_passed_in() {
-
-        verifyZeroInteractions(userProfileServiceMock);
-    }
 
     @Test
     public void should_throw_exception_when_get_with_idamId_null_parameters_passed_in() {
@@ -139,6 +137,19 @@ public class UserProfileControllerTest {
         verify(userProfileServiceMock, times(1)).updateRoles(any(), any());
         ResponseEntity expect = ResponseEntity.status(HttpStatus.OK).build();
         assertThat(actual).isEqualTo(expect);
+
+    }
+
+    @Test
+    public void testretrieveUserProfiles() {
+
+        List<String> userIds = new ArrayList<>();
+        userIds.add("1");
+        userIds.add("2");
+        GetUserProfilesRequest getUserProfilesRequest = mock(GetUserProfilesRequest.class);
+        when(getUserProfilesRequest.getUserIds()).thenReturn(userIds);
+        ResponseEntity<GetUserProfilesResponse> responseEntity = sut.retrieveUserProfiles("false","true", getUserProfilesRequest);
+        assertThat(responseEntity).isNotNull();
 
     }
 

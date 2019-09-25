@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
 import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildUpdateUserProfileData;
 
-import org.junit.Before;
 import org.junit.Ignore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,12 +43,12 @@ public class AbstractFunctional {
     @Value("${exui.role.pui-case-manager}")
     protected String puiCaseManager;
 
-    @Before
+    /*@Before
     public void setupProxy() {
         //TO enable for local testing
-        //RestAssured.proxy("proxyout.reform.hmcts.net",8080);
-        //SerenityRest.proxy("proxyout.reform.hmcts.net", 8080);
-    }
+        RestAssured.proxy("proxyout.reform.hmcts.net",8080);
+        SerenityRest.proxy("proxyout.reform.hmcts.net", 8080);
+    }*/
 
 
     protected CreateUserProfileResponse createUserProfile(CreateUserProfileData createUserProfileData,HttpStatus expectedStatus) throws Exception {
