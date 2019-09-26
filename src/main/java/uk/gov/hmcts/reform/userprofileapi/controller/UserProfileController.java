@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,7 +27,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.userprofileapi.client.*;
+
+import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileResponse;
+
+import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileWithRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesRequest;
+import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesResponse;
+import uk.gov.hmcts.reform.userprofileapi.client.IdentifierName;
+import uk.gov.hmcts.reform.userprofileapi.client.RequestData;
+import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.client.UserProfileIdentifier;
+import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRolesResponse;
+
 import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileService;
 import uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator;
@@ -262,8 +275,8 @@ public class UserProfileController {
     ) {
         log.info("Updating user profile");
         UserProfileRolesResponse userProfileResponse = new UserProfileRolesResponse();
-        if (StringUtils.isEmpty(updateUserProfileData.getRolesAdd())
-             && StringUtils.isEmpty(updateUserProfileData.getRolesDelete())) {
+        if (CollectionUtils.isEmpty(updateUserProfileData.getRolesAdd())
+             && CollectionUtils.isEmpty(updateUserProfileData.getRolesDelete())) {
 
             log.info("Updating user profile without roles");
             userProfileService.update(updateUserProfileData, userId);

@@ -78,5 +78,7 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         LOG.info("Roles addroles call" + resource2);
         assertThat(resource2.getRoles().size()).isNotNull();
         assertThat(resource2.getRoles().size()).isEqualTo(3);
+        assertThat(resource2.getRoles().contains("caseworker,pui-case-manager,pui-user-manager"));
+
     }
 }

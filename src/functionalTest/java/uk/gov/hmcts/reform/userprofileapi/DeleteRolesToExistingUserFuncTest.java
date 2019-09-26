@@ -108,6 +108,8 @@ public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
         LOG.info("Roles addroles call" + resource2);
         assertThat(resourceForDeleteCheck.getRoles().size()).isNotNull();
         assertThat(resourceForDeleteCheck.getRoles().size()).isEqualTo(2);
+        assertThat(resourceForDeleteCheck.getRoles().contains("caseworker,pui-user-manager"));
+        assertThat(!resourceForDeleteCheck.getRoles().contains(puiOrgManager));
 
     }
 }

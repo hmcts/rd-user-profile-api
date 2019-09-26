@@ -84,7 +84,6 @@ public class AbstractFunctional {
         assertThat(resource).isNotNull();
         assertThat(resource.getIdamId()).isNotNull();
         assertThat(resource.getIdamId()).isInstanceOf(String.class);
-
     }
 
     protected void verifyGetUserProfile(GetUserProfileResponse resource, CreateUserProfileData expectedResource) {
