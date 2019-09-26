@@ -118,7 +118,6 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
 
     private DeleteRoleResponse deleteRolesInIdam(String userId, String roleName, UserProfile userProfile) {
         HttpStatus httpStatus = null;
-        //Response response;
         try (Response response = idamClient.deleteUserRole(userId, roleName)) {
             httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode();
 

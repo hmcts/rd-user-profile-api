@@ -24,6 +24,10 @@ public final class IdamStatusResolver {
     public static final String PENDING = "PENDING";
     public static final String LOCKED = "LOCKED";
 
+    private IdamStatusResolver() {
+
+
+    }
 
     public static String resolveStatusAndReturnMessage(HttpStatus httpStatus) {
         switch (httpStatus) {
