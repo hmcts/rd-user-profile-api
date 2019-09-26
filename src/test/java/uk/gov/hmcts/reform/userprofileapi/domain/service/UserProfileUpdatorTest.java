@@ -229,7 +229,7 @@ public class UserProfileUpdatorTest {
     }
 
     @Test(expected = ResourceNotFoundException.class)
-    public void UserProfileRolesResponse_addRoles_nullProfile() throws Exception {
+    public void userProfileRolesResponse_addRoles_nullProfile() throws Exception {
         RoleName roleName1 = new RoleName("pui-case-manager");
         RoleName roleName2 = new RoleName("pui-case-organisation");
         Set<RoleName> roles = new HashSet<>();
@@ -248,7 +248,7 @@ public class UserProfileUpdatorTest {
     }
 
     @Test(expected = ResourceNotFoundException.class)
-    public void UserProfileRolesResponse_update_invalid_user() throws Exception {
+    public void userProfileRolesResponse_update_invalid_user() throws Exception {
         RoleName roleName1 = new RoleName("pui-case-manager");
         RoleName roleName2 = new RoleName("pui-case-organisation");
         Set<RoleName> roles = new HashSet<>();
