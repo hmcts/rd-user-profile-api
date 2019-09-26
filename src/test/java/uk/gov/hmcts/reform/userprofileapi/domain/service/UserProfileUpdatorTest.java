@@ -225,7 +225,45 @@ public class UserProfileUpdatorTest {
         roleNames.add(roleName);
         updateUserProfileData = new UpdateUserProfileData("", "", "", "ACTIV", roleNames,roleNames);
         when(userProfileRepository.findByIdamId(userId)).thenReturn(Optional.ofNullable(userProfile));
-        assertThatThrownBy(() -> userProfileUpdator.update(updateUserProfileData,userId.toString())).isExactlyInstanceOf(RequiredFieldMissingException.class);
+        assertThatThrownBy(() -> userProfileUpdator.update(updateUserProfileData, userId)).isExactlyInstanceOf(RequiredFieldMissingException.class);
+    }
+
+    @Test(expected = ResourceNotFoundException.class)
+    public void UserProfileRolesResponse_addRoles_nullProfile() throws Exception {
+        RoleName roleName1 = new RoleName("pui-case-manager");
+        RoleName roleName2 = new RoleName("pui-case-organisation");
+        Set<RoleName> roles = new HashSet<>();
+        roles.add(roleName1);
+        roles.add(roleName2);
+
+        updateUserProfileData.setRolesAdd(roles);
+
+        UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
+        AddRoleResponse addRoleResponse = new AddRoleResponse();
+        addRoleResponse.setIdamStatusCode(HttpStatus.OK.toString());
+        addRoleResponse.setIdamMessage("Success");
+        userProfileRolesResponse.setAddRoleResponse(addRoleResponse);
+
+        userProfileUpdator.updateRoles(updateUserProfileData, "1567");
+    }
+
+    @Test(expected = ResourceNotFoundException.class)
+    public void UserProfileRolesResponse_update_invalid_user() throws Exception {
+        RoleName roleName1 = new RoleName("pui-case-manager");
+        RoleName roleName2 = new RoleName("pui-case-organisation");
+        Set<RoleName> roles = new HashSet<>();
+        roles.add(roleName1);
+        roles.add(roleName2);
+
+        updateUserProfileData.setRolesAdd(roles);
+
+        UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
+        AddRoleResponse addRoleResponse = new AddRoleResponse();
+        addRoleResponse.setIdamStatusCode(HttpStatus.OK.toString());
+        addRoleResponse.setIdamMessage("Success");
+        userProfileRolesResponse.setAddRoleResponse(addRoleResponse);
+
+        userProfileUpdator.update(updateUserProfileData, "");
     }
 
     private UserProfileRolesResponse addRoles() throws Exception {

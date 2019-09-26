@@ -112,7 +112,6 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
             });
             userProfileRolesResponse.setDeleteRolesResponse(deleteRoleResponses);
         }
-
         return userProfileRolesResponse;
     }
 
