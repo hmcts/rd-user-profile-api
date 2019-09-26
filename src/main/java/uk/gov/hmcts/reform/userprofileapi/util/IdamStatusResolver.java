@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 
-@SuppressWarnings("HideUtilityClassConstructor")
 public final class IdamStatusResolver {
 
     public static final String OK = "11 OK";
@@ -25,7 +24,6 @@ public final class IdamStatusResolver {
     public static final String LOCKED = "LOCKED";
 
     private IdamStatusResolver() {
-
 
     }
 
