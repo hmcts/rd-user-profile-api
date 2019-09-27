@@ -12,11 +12,11 @@ import lombok.Setter;
 public class UserProfileRolesResponse {
 
 
-    private AddRoleResponse addRoleResponse;
+    private AddRoleResponse addRolesResponse;
     private List<DeleteRoleResponse> deleteRolesResponse;
 
-    public UserProfileRolesResponse(AddRoleResponse addRoleResponse, List<DeleteRoleResponse> deleteResponses) {
-        this.addRoleResponse = addRoleResponse;
-        this.deleteRolesResponse = deleteResponses;
+    public UserProfileRolesResponse(AddRoleResponse addRolesResponse, List<DeleteRoleResponse> deleteRolesResponse) {
+        this.addRolesResponse = addRolesResponse;
+        this.deleteRolesResponse = deleteRolesResponse;
     }
 }
