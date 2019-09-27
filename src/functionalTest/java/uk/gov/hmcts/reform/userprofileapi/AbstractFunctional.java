@@ -32,6 +32,17 @@ public class AbstractFunctional {
 
     protected String requestUri = "/v1/userprofile";
 
+    @Value("${exui.role.hmcts-admin}")
+    protected String hmctsAdmin;
+    @Value("${exui.role.pui-user-manager}")
+    protected String puiUserManager;
+    @Value("${exui.role.pui-organisation-manager}")
+    protected String puiOrgManager;
+    @Value("${exui.role.pui-finance-manager}")
+    protected String puiFinanceManager;
+    @Value("${exui.role.pui-case-manager}")
+    protected String puiCaseManager;
+
     /*@Before
     public void setupProxy() {
         //TO enable for local testing
@@ -73,7 +84,6 @@ public class AbstractFunctional {
         assertThat(resource).isNotNull();
         assertThat(resource.getIdamId()).isNotNull();
         assertThat(resource.getIdamId()).isInstanceOf(String.class);
-
     }
 
     protected void verifyGetUserProfile(GetUserProfileResponse resource, CreateUserProfileData expectedResource) {

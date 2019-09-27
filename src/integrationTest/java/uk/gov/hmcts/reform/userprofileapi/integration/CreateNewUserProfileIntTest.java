@@ -132,6 +132,7 @@ public class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegration
             )
         );
 
+
         mandatoryFieldList.forEach(s -> {
 
             try {
