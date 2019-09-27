@@ -25,7 +25,6 @@ public class IdamRolesInfoTest {
         roles.add("pui-case-manger");
         String surName = "lastName";
         Boolean pending = false;
-
         IdamUserResponse idamUserResponse = new IdamUserResponse(active, email, foreName, userId, locked, pending, roles, surName);
 
         ResponseEntity<IdamUserResponse> entity = new ResponseEntity<IdamUserResponse>(idamUserResponse, HttpStatus.CREATED);

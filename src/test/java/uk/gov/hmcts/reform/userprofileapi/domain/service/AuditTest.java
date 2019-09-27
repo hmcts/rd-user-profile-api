@@ -18,7 +18,6 @@ public class AuditTest {
     public void should_populate_all_fields() {
 
         Audit audit = new Audit(200, "testErrorMessage", ResponseSource.API, userProfile);
-
         assertThat(audit.getIdamRegistrationResponse()).isEqualTo(200);
         assertThat(audit.getStatusMessage()).isEqualTo("testErrorMessage");
         assertThat(audit.getSource()).isEqualTo(ResponseSource.API);

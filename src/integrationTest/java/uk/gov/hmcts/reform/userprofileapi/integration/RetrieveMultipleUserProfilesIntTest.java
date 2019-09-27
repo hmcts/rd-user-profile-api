@@ -53,7 +53,6 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
                                 + "  \"forename\": \"fname\","
                                 + "  \"surname\": \"lname\","
                                 + "  \"email\": \"user@hmcts.net\","
-                                + "  \"locked\": \"false\","
                                 + "  \"roles\": ["
                                 + "    \"pui-case-manager\""
                                 + "  ]"

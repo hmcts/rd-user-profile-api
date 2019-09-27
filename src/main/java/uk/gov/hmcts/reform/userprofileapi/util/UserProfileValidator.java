@@ -1,8 +1,11 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.userprofileapi.constant.UserProfileConstant.*;
 
 import org.apache.commons.lang.StringUtils;
+
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesRequest;
 import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
@@ -16,25 +19,20 @@ import uk.gov.hmcts.reform.userprofileapi.service.ResourceNotFoundException;
 
 public interface UserProfileValidator {
 
-    String STATUS = "STATUS";
-    String LANGUAGEPREFERENCE = "LANGUAGEPREFERENCE";
-    String USERTYPE = "USERTYPE";
-    String USERCATEGORY = "USERCATEGORY";
-
     static boolean isUserIdValid(String userId, boolean throwException) {
+        boolean valid = true;
         if (StringUtils.isBlank(userId)) {
+            valid = false;
             if (throwException) {
                 throw new ResourceNotFoundException("userId is null or blank.");
             }
-            return false;
         }
-        return true;
+        return valid;
     }
 
     static boolean isUpdateUserProfileRequestValid(UpdateUserProfileData updateUserProfileData) {
 
         boolean isValid = true;
-
         if (!validateUpdateUserProfileRequestFields(updateUserProfileData)) {
             isValid = false;
         } else {
@@ -44,6 +42,7 @@ public interface UserProfileValidator {
                 isValid = false;
             }
         }
+
         return isValid;
     }
 
@@ -77,9 +76,9 @@ public interface UserProfileValidator {
 
         boolean isSame = false;
         if (userProfile.getEmail().equals(updateUserProfileData.getEmail().trim())
-            && userProfile.getFirstName().equals(updateUserProfileData.getFirstName().trim())
-            && userProfile.getLastName().equals(updateUserProfileData.getLastName().trim())
-            && userProfile.getStatus().toString().equals(updateUserProfileData.getIdamStatus().trim())) {
+                && userProfile.getFirstName().equals(updateUserProfileData.getFirstName().trim())
+                && userProfile.getLastName().equals(updateUserProfileData.getLastName().trim())
+                && userProfile.getStatus().toString().equals(updateUserProfileData.getIdamStatus().trim())) {
             isSame = true;
         }
         return isSame;
@@ -128,6 +127,19 @@ public interface UserProfileValidator {
     static void validateUserIds(GetUserProfilesRequest getUserProfilesRequest) {
         if (getUserProfilesRequest.getUserIds().isEmpty()) {
             throw new RequiredFieldMissingException("no user id in request");
+        }
+    }
+
+    static void validateUserProfileDataAndUserId(UpdateUserProfileData userProfileData, String userId) {
+
+        if (null == userProfileData) {
+
+            throw new RequiredFieldMissingException("No Request Body in the request");
+        } else if (StringUtils.isBlank(userId)
+                || (!CollectionUtils.isEmpty(userProfileData.getRolesAdd()) && userProfileData.getRolesAdd().size() == 0)
+                || (!CollectionUtils.isEmpty(userProfileData.getRolesDelete()) && userProfileData.getRolesDelete().size() == 0)) {
+
+            throw new RequiredFieldMissingException("No userId or roles in the request");
         }
     }
 }

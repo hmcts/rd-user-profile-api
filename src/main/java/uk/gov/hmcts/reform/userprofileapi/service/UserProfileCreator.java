@@ -2,7 +2,14 @@ package uk.gov.hmcts.reform.userprofileapi.service;
 
 import java.net.URI;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -100,7 +107,7 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
         IdamRolesInfo idamRolesInfo;
         ResponseEntity responseEntity = idamRegistrationInfo.getResponse();
 
-        if (responseEntity != null && responseEntity.getHeaders() != null) {
+        if (responseEntity != null) {
             //get userId from location header
             userIdUri = idamRegistrationInfo.getResponse().getHeaders().getLocation();
             userId = userIdUri != null ? userIdUri.toString().substring(sidamGetUri.length()) : null;
@@ -189,4 +196,3 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
     }
 
 }
-

@@ -5,8 +5,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-    
+import java.util.Set;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
@@ -56,7 +58,7 @@ public class UserProfileControllerTest {
         when(userProfileServiceMock.create(createUserProfileData)).thenThrow(ex);
 
         assertThatThrownBy(() -> sut.createUserProfile(createUserProfileData))
-                .isEqualTo(ex);
+            .isEqualTo(ex);
 
         verify(userProfileServiceMock).create(any(CreateUserProfileData.class));
     }
@@ -65,15 +67,12 @@ public class UserProfileControllerTest {
     public void testCreateUserProfileWithNullParam() {
 
         assertThatThrownBy(() -> sut.createUserProfile(null))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessageContaining("createUserProfileData");
+            .isInstanceOf(NullPointerException.class)
+            .hasMessageContaining("createUserProfileData");
 
         verifyZeroInteractions(userProfileServiceMock);
 
     }
-
-
-
 
     @Test
     public void testGetUserProfileWithRolesById() {
@@ -106,37 +105,37 @@ public class UserProfileControllerTest {
     public void testUpdateUserProfile() {
 
         UpdateUserProfileData updateUserProfileDataMock = Mockito.mock(UpdateUserProfileData.class);
-        UserProfile userProfileMock = Mockito.mock(UserProfile.class);
-
-        ResponseEntity responseEntityMock = Mockito.mock(ResponseEntity.class);
-
         String idamId = "13b02995-5e44-4136-bf5a-46f4ff4acb8f";
-
+        when(updateUserProfileDataMock.getRolesAdd()).thenReturn(null);
+        when(updateUserProfileDataMock.getRolesDelete()).thenReturn(null);
         ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId);
-
         verify(userProfileServiceMock, times(1)).update(any(), any());
-
         ResponseEntity expect = ResponseEntity.status(HttpStatus.OK).build();
-
-        assertThat(actual).isEqualTo(expect);
+        assertThat(actual.getStatusCode().value()).isEqualTo(expect.getStatusCode().value());
     }
 
-
-    @Test
-    public void should_throw_exception_when_get_with_email_null_parameters_passed_in() {
-
-        /*  assertThatThrownBy(() -> sut.getUserProfileByEmail(null))
-            .isInstanceOf(NullPointerException.class)
-            .hasMessageContaining("email");*/
-
-        verifyZeroInteractions(userProfileServiceMock);
-
-    }
 
     @Test
     public void should_throw_exception_when_get_with_idamId_null_parameters_passed_in() {
 
         verifyZeroInteractions(userProfileServiceMock);
+    }
+
+    @Test
+    public void testUpdateUserProfileRoles() {
+        UpdateUserProfileData updateUserProfileDataMock = Mockito.mock(UpdateUserProfileData.class);
+
+        RoleName roleName1 = new RoleName("pui-case-manager");
+        RoleName roleName2 = new RoleName("pui-case-organisation");
+        Set<RoleName> roles = new HashSet<RoleName>();
+        roles.add(roleName1);
+        roles.add(roleName2);
+        when(updateUserProfileDataMock.getRolesAdd()).thenReturn(roles);
+        String idamId = "13b02995-5e44-4136-bf5a-46f4ff4acb8f";
+        ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId);
+        verify(userProfileServiceMock, times(1)).updateRoles(any(), any());
+        ResponseEntity expect = ResponseEntity.status(HttpStatus.OK).build();
+        assertThat(actual).isEqualTo(expect);
 
     }
 
@@ -153,4 +152,19 @@ public class UserProfileControllerTest {
 
     }
 
+    @Test
+    public void testUpdateUserProfileRolesForDelete() {
+        UpdateUserProfileData updateUserProfileDataMock = Mockito.mock(UpdateUserProfileData.class);
+        RoleName roleName1 = new RoleName("pui-case-manager");
+        RoleName roleName2 = new RoleName("pui-case-organisation");
+        Set<RoleName> roles = new HashSet<RoleName>();
+        roles.add(roleName1);
+        roles.add(roleName2);
+        when(updateUserProfileDataMock.getRolesDelete()).thenReturn(roles);
+        String idamId = "13b02995-5e44-4136-bf5a-46f4ff4acb8f";
+        ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId);
+        verify(userProfileServiceMock, times(1)).updateRoles(any(), any());
+        ResponseEntity expect = ResponseEntity.status(HttpStatus.OK).build();
+        assertThat(actual).isEqualTo(expect);
+    }
 }
