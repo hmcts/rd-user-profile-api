@@ -76,7 +76,7 @@ public class UserProfileUpdatorTest {
         UserProfileRolesResponse response = addRoles();
 
         assertThat(response).isNotNull();
-        assertThat(response.getAddRoleResponse().getIdamStatusCode()).isEqualTo("200");
+        assertThat(response.getAddRolesResponse().getIdamStatusCode()).isEqualTo("200");
     }
 
     @Test
@@ -86,7 +86,7 @@ public class UserProfileUpdatorTest {
         response = addRoles();
 
         assertThat(response).isNotNull();
-        assertThat(response.getAddRoleResponse().getIdamStatusCode()).isEqualTo("200");
+        assertThat(response.getAddRolesResponse().getIdamStatusCode()).isEqualTo("200");
 
         response = deleteRoles();
 
@@ -127,7 +127,7 @@ public class UserProfileUpdatorTest {
         when(idamFeignClientMock.addUserRoles(updateUserProfileData.getRolesAdd(), "1234")).thenReturn(Response.builder().request(mock(Request.class)).body(body, Charset.defaultCharset()).status(500).build());
 
         UserProfileRolesResponse response = userProfileUpdator.updateRoles(updateUserProfileData, userProfile.getIdamId());
-        assertThat(response.getAddRoleResponse().getIdamStatusCode()).isEqualTo("500");
+        assertThat(response.getAddRolesResponse().getIdamStatusCode()).isEqualTo("500");
     }
 
     @Test
@@ -242,7 +242,7 @@ public class UserProfileUpdatorTest {
         AddRoleResponse addRoleResponse = new AddRoleResponse();
         addRoleResponse.setIdamStatusCode(HttpStatus.OK.toString());
         addRoleResponse.setIdamMessage("Success");
-        userProfileRolesResponse.setAddRoleResponse(addRoleResponse);
+        userProfileRolesResponse.setAddRolesResponse(addRoleResponse);
 
         userProfileUpdator.updateRoles(updateUserProfileData, "1567");
     }
@@ -261,7 +261,7 @@ public class UserProfileUpdatorTest {
         AddRoleResponse addRoleResponse = new AddRoleResponse();
         addRoleResponse.setIdamStatusCode(HttpStatus.OK.toString());
         addRoleResponse.setIdamMessage("Success");
-        userProfileRolesResponse.setAddRoleResponse(addRoleResponse);
+        userProfileRolesResponse.setAddRolesResponse(addRoleResponse);
 
         userProfileUpdator.update(updateUserProfileData, "");
     }
@@ -279,7 +279,7 @@ public class UserProfileUpdatorTest {
         AddRoleResponse addRoleResponse = new AddRoleResponse();
         addRoleResponse.setIdamStatusCode(HttpStatus.OK.toString());
         addRoleResponse.setIdamMessage("Success");
-        userProfileRolesResponse.setAddRoleResponse(addRoleResponse);
+        userProfileRolesResponse.setAddRolesResponse(addRoleResponse);
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         String body = mapper.writeValueAsString(userProfileRolesResponse);
 
