@@ -85,7 +85,6 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
             if (profileData.getStatus() != null) {
                 userProfile.setStatus(profileData.getStatus());
             }
-
             try {
                 userProfile = userProfileRepository.save(userProfile);
             } catch (Exception ex) {

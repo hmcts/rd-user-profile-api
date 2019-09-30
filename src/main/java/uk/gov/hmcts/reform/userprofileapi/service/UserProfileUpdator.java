@@ -150,6 +150,5 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         }
         return userProfileOptional.get();
     }
-
 }
 
