@@ -5,6 +5,7 @@ import feign.RequestLine;
 import feign.Response;
 import javax.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,4 +41,9 @@ public interface IdamFeignClient {
     @RequestLine("POST /api/v1/users/{userId}/roles")
     @Headers("Content-Type: application/json")
     public Response addUserRoles(@RequestBody Object rolesRequest, @PathVariable("userId") String userId);
+
+    @DeleteMapping(value = "/api/v1/users/{userId}/roles/{roleName}")
+    @RequestLine("DELETE /api/v1/users/{userId}/roles/{roleName}")
+    @Headers("Content-Type: application/json")
+    public Response deleteUserRole(@PathVariable("userId") String userId, @PathVariable("roleName") String roleName);
 }

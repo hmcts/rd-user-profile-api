@@ -44,6 +44,7 @@ withPipeline(type, product, component) {
     enableDockerBuild()
     installCharts()
    // enableAksStagingDeployment()
+    enableMutationTest()
 
     after('functionalTest:preview') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'

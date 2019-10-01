@@ -18,6 +18,7 @@ public final class IdamStatusResolver {
     public static final String USER_EXISTS = "17 User with this email already exists";
     public static final String UNKNOWN = "18 Unknown error from Idam";
     public static final String NO_IDAM_CALL = "19 No call made to SIDAM to get the user roles as user status is ‘Pending’";
+    public static final String NO_CONTENT = "20 User Role Deleted";
 
     public static final String ACTIVE = "ACTIVE";
     public static final String PENDING = "PENDING";
@@ -31,6 +32,7 @@ public final class IdamStatusResolver {
             case FORBIDDEN: return TOKEN_EXPIRED;
             case NOT_FOUND: return NOT_FOUND;
             case CONFLICT: return USER_EXISTS;
+            case NO_CONTENT: return NO_CONTENT;
             default:
                 return UNKNOWN;
         }
