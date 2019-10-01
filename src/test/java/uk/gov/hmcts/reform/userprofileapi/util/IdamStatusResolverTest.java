@@ -61,31 +61,26 @@ public class IdamStatusResolverTest {
     public void should_resolve_and_return_idam_status_by_idam_flags() {
 
         Map<Map<String, Boolean>, IdamStatus> idamStatusMap = new HashMap<Map<String, Boolean>, IdamStatus>();
-        idamStatusMap.put(addRule(false,true, false), IdamStatus.PENDING);
-        idamStatusMap.put(addRule(true, false,false), IdamStatus.ACTIVE);
-        idamStatusMap.put(addRule(true, false,true), IdamStatus.ACTIVE_AND_LOCKED);
-        idamStatusMap.put(addRule(false,false,false), IdamStatus.SUSPENDED);
-        idamStatusMap.put(addRule(false,false,true), IdamStatus.SUSPENDED_AND_LOCKED);
+        idamStatusMap.put(addRule(false,true), IdamStatus.PENDING);
+        idamStatusMap.put(addRule(true, false), IdamStatus.ACTIVE);
+        idamStatusMap.put(addRule(false,false), IdamStatus.SUSPENDED);
 
 
-        assertThat(IdamStatusResolver.resolveIdamStatus(idamStatusMap, createIdamRoleInfo(false,true, false))).isEqualTo(IdamStatus.PENDING);
-        assertThat(IdamStatusResolver.resolveIdamStatus(idamStatusMap, createIdamRoleInfo(true,false, false))).isEqualTo(IdamStatus.ACTIVE);
-        assertThat(IdamStatusResolver.resolveIdamStatus(idamStatusMap, createIdamRoleInfo(true,false, true))).isEqualTo(IdamStatus.ACTIVE_AND_LOCKED);
-        assertThat(IdamStatusResolver.resolveIdamStatus(idamStatusMap, createIdamRoleInfo(false,false, false))).isEqualTo(IdamStatus.SUSPENDED);
-        assertThat(IdamStatusResolver.resolveIdamStatus(idamStatusMap, createIdamRoleInfo(false,false, true))).isEqualTo(IdamStatus.SUSPENDED_AND_LOCKED);
-        assertThat(IdamStatusResolver.resolveIdamStatus(idamStatusMap, createIdamRoleInfo(true,null, null))).isEqualTo(IdamStatus.ACTIVE);
+
+        assertThat(IdamStatusResolver.resolveIdamStatus(idamStatusMap, createIdamRoleInfo(false,true))).isEqualTo(IdamStatus.PENDING);
+        assertThat(IdamStatusResolver.resolveIdamStatus(idamStatusMap, createIdamRoleInfo(true,false))).isEqualTo(IdamStatus.ACTIVE);
+        assertThat(IdamStatusResolver.resolveIdamStatus(idamStatusMap, createIdamRoleInfo(false,false))).isEqualTo(IdamStatus.SUSPENDED);
     }
 
 
-    public Map<String, Boolean> addRule(boolean activeFlag, boolean pendingFlag, boolean lockedFlag) {
+    public Map<String, Boolean> addRule(boolean activeFlag, boolean pendingFlag) {
         Map<String, Boolean> pendingMapWithRules = new HashMap<>();
         pendingMapWithRules.put("ACTIVE", activeFlag);
         pendingMapWithRules.put("PENDING", pendingFlag);
-        pendingMapWithRules.put("LOCKED", lockedFlag);
         return pendingMapWithRules;
     }
 
-    public IdamRolesInfo createIdamRoleInfo(Boolean active, Boolean pending, Boolean locked) {
+    public IdamRolesInfo createIdamRoleInfo(Boolean active, Boolean pending) {
         String email = "some@hmcts.net";
         String foreName = "firstName";
         String userId = UUID.randomUUID().toString();
@@ -93,7 +88,7 @@ public class IdamStatusResolverTest {
         roles.add("pui-case-manger");
         String surName = "lastName";
 
-        IdamUserResponse idamUserResponse = new IdamUserResponse(active, email, foreName, userId, locked, pending, roles, surName);
+        IdamUserResponse idamUserResponse = new IdamUserResponse(active, email, foreName, userId,pending, roles, surName);
         ResponseEntity<IdamUserResponse> entity = new ResponseEntity<IdamUserResponse>(idamUserResponse, HttpStatus.CREATED);
         IdamRolesInfo idamRolesInfo = new IdamRolesInfo(entity, HttpStatus.CREATED);
         return idamRolesInfo;
