@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.client.*;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 
 @RunWith(SpringIntegrationSerenityRunner.class)
 public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
@@ -61,14 +62,13 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
                         GetUserProfileResponse.class
                 );
 
+        LOG.info("after addroles call" + resource);
         LOG.info("before addroles call");
         UserProfileRolesResponse resource1 =
                 testRequestHandler.sendPut(
                         userRProfileData,
                             HttpStatus.OK,
                            requestUri + "/" + resource.getIdamId(), UserProfileRolesResponse.class);
-
-        LOG.info("after addroles call" + resource1);
 
         GetUserProfileWithRolesResponse resource2 =
                 testRequestHandler.sendGet(
@@ -80,5 +80,35 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         assertThat(resource2.getRoles().size()).isEqualTo(3);
         assertThat(resource2.getRoles().contains("caseworker,pui-case-manager,pui-user-manager"));
 
+    }
+
+    @Test
+    public void should_update_user_status_from_active_to_suspended_in_user_profile_successfully() throws Exception {
+
+
+        CreateUserProfileData data = createUserProfileData();
+        List<String> roles = new ArrayList<>();
+        roles.add(puiUserManager);
+        String email = idamClient.createUser(roles);
+
+        data.setEmail(email);
+        createUserProfile(data, HttpStatus.CREATED);
+        GetUserProfileResponse resource =
+                testRequestHandler.sendGet(
+                        requestUri + "?email=" + email.toLowerCase(),
+                        GetUserProfileResponse.class
+                );
+
+        LOG.info("get Userprofile response::" + resource);
+        LOG.info("before addroles call");
+        UpdateUserProfileData userRProfileData = new UpdateUserProfileData();
+        userRProfileData.setIdamStatus(IdamStatus.SUSPENDED.name());
+        UserProfileRolesResponse resource1 =
+                testRequestHandler.sendPut(
+                        userRProfileData,
+                        HttpStatus.OK,
+                        requestUri + "/" + resource.getIdamId(), UserProfileRolesResponse.class);
+
+        LOG.info("after addroles call" + resource1);
     }
 }
