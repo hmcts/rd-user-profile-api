@@ -66,6 +66,7 @@ security:
     - rd_user_profile_api
     - rd_professional_api
     - xui_webapp
+    - finrem_payment_service
 
 feign:
   allow:

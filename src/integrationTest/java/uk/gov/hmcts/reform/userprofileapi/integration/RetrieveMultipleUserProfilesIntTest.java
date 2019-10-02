@@ -9,6 +9,7 @@ import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder.buildUserProfile;
 import static uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder.buildUserProfileWithDeletedStatus;
+import static uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder.buildUserProfileWithSuspendedStatus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,6 +40,7 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
     private Map<String, UserProfile> userProfileMap;
     private Map<String, UserProfile> userProfileMapWithUuid;
     private List<String> userIds;
+    private List<String> suspendedUserId;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -94,21 +96,28 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
 
         UserProfile user3 = testUserProfileRepository.save(buildUserProfileWithDeletedStatus());
         UserProfile user4 = testUserProfileRepository.save(buildUserProfileWithDeletedStatus());
+        UserProfile user5 = testUserProfileRepository.save(buildUserProfileWithSuspendedStatus());
         
         userProfileMap.put("user3", user3);
         userProfileMap.put("user4", user4);
+        userProfileMap.put("user5", user5);
 
         userProfileMapWithUuid = new HashMap<>();
         userProfileMapWithUuid.put(user1.getIdamId(), user1);
         userProfileMapWithUuid.put(user2.getIdamId(), user2);
         userProfileMapWithUuid.put(user3.getIdamId(), user3);
         userProfileMapWithUuid.put(user4.getIdamId(), user4);
+        userProfileMapWithUuid.put(user5.getIdamId(), user5);
 
         userIds = new ArrayList<String>();
-        userIds.add(user1.getIdamId().toString());
-        userIds.add(user2.getIdamId().toString());
-        userIds.add(user3.getIdamId().toString());
-        userIds.add(user4.getIdamId().toString());
+        userIds.add(user1.getIdamId());
+        userIds.add(user2.getIdamId());
+        userIds.add(user3.getIdamId());
+        userIds.add(user4.getIdamId());
+        userIds.add(user5.getIdamId());
+
+        suspendedUserId = new ArrayList<>();
+        suspendedUserId.add(user5.getIdamId());
     }
 
     @Test
@@ -121,7 +130,7 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
         GetUserProfilesResponse response = getMultipleUsers(request, OK,"true","true");
 
         assertThat(response).isNotNull();
-        assertThat(response.getUserProfiles().size()).isEqualTo(4);
+        assertThat(response.getUserProfiles().size()).isEqualTo(5);
 
         response.getUserProfiles().forEach(getUserProfilesResponse -> {
             UserProfile up =  userProfileMapWithUuid.get(getUserProfilesResponse.getIdamId());
@@ -158,7 +167,18 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
         GetUserProfilesResponse response = getMultipleUsers(request, OK,"false", "true");
 
         assertThat(response).isNotNull();
-        assertThat(response.getUserProfiles().size()).isEqualTo(2);
+        assertThat(response.getUserProfiles().size()).isEqualTo(3);
+    }
+
+    @Test
+    public void should_retrieve_a_suspended_user_profiles_with_showDeleted_false() throws Exception {
+        GetUserProfilesRequest request = new GetUserProfilesRequest(suspendedUserId);
+
+        GetUserProfilesResponse response = getMultipleUsers(request, OK,"false", "true");
+
+        assertThat(response).isNotNull();
+        assertThat(response.getUserProfiles().size()).isEqualTo(1);
+        assertThat(response.getUserProfiles().get(0).getIdamStatus()).isEqualByComparingTo(IdamStatus.SUSPENDED);
     }
 
     @Test
@@ -171,7 +191,7 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
         GetUserProfilesResponse response = getMultipleUsers(request, OK, "true", "true");
 
         assertThat(response).isNotNull();
-        assertThat(response.getUserProfiles().size()).isEqualTo(4);
+        assertThat(response.getUserProfiles().size()).isEqualTo(5);
 
         response.getUserProfiles().forEach(getUserProfilesResponse -> {
             UserProfile up =  userProfileMapWithUuid.get(getUserProfilesResponse.getIdamId());
@@ -238,7 +258,7 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
         GetUserProfilesResponse response = getMultipleUsers(request, OK,"true", "false");
 
         assertThat(response).isNotNull();
-        assertThat(response.getUserProfiles().size()).isEqualTo(4);
+        assertThat(response.getUserProfiles().size()).isEqualTo(5);
 
         response.getUserProfiles().forEach(getUserProfilesResponse -> {
             UserProfile up =  userProfileMapWithUuid.get(getUserProfilesResponse.getIdamId());

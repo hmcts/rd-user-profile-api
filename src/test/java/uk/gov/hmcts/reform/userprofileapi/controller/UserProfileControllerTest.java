@@ -58,7 +58,7 @@ public class UserProfileControllerTest {
         when(userProfileServiceMock.create(createUserProfileData)).thenThrow(ex);
 
         assertThatThrownBy(() -> sut.createUserProfile(createUserProfileData))
-            .isEqualTo(ex);
+                .isEqualTo(ex);
 
         verify(userProfileServiceMock).create(any(CreateUserProfileData.class));
     }
@@ -67,8 +67,8 @@ public class UserProfileControllerTest {
     public void testCreateUserProfileWithNullParam() {
 
         assertThatThrownBy(() -> sut.createUserProfile(null))
-            .isInstanceOf(NullPointerException.class)
-            .hasMessageContaining("createUserProfileData");
+                .isInstanceOf(NullPointerException.class)
+                .hasMessageContaining("createUserProfileData");
 
         verifyZeroInteractions(userProfileServiceMock);
 
@@ -105,10 +105,15 @@ public class UserProfileControllerTest {
     public void testUpdateUserProfile() {
 
         UpdateUserProfileData updateUserProfileDataMock = Mockito.mock(UpdateUserProfileData.class);
+        UserProfile userProfileMock = Mockito.mock(UserProfile.class);
+
+        ResponseEntity responseEntityMock = Mockito.mock(ResponseEntity.class);
+
         String idamId = "13b02995-5e44-4136-bf5a-46f4ff4acb8f";
         when(updateUserProfileDataMock.getRolesAdd()).thenReturn(null);
         when(updateUserProfileDataMock.getRolesDelete()).thenReturn(null);
         ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId);
+
         verify(userProfileServiceMock, times(1)).update(any(), any());
         ResponseEntity expect = ResponseEntity.status(HttpStatus.OK).build();
         assertThat(actual.getStatusCode().value()).isEqualTo(expect.getStatusCode().value());

@@ -11,7 +11,6 @@ public class IdamUserResponse {
     private String email;
     private String forename;
     private String id;
-    private Boolean locked;
     private Boolean pending;
     private List<String> roles;
     private String surname;
@@ -21,7 +20,6 @@ public class IdamUserResponse {
                                @JsonProperty(value = "email") String email,
                                @JsonProperty(value = "forename") String forename,
                                @JsonProperty(value = "id") String id,
-                               @JsonProperty(value = "locked") Boolean locked,
                                @JsonProperty(value = "pending") Boolean pending,
                                @JsonProperty(value = "roles") List<String> roles,
                                @JsonProperty(value = "surname") String surname) {
@@ -29,7 +27,6 @@ public class IdamUserResponse {
         this.email = email;
         this.forename = forename;
         this.id = id;
-        this.locked = locked;
         this.pending = pending;
         this.roles = roles;
         this.surname = surname;
