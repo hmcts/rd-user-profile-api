@@ -40,6 +40,7 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
     private Map<String, UserProfile> userProfileMap;
     private Map<String, UserProfile> userProfileMapWithUuid;
     private List<String> userIds;
+    private List<String> suspendedUserId;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -114,6 +115,9 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
         userIds.add(user3.getIdamId());
         userIds.add(user4.getIdamId());
         userIds.add(user5.getIdamId());
+
+        suspendedUserId = new ArrayList<>();
+        suspendedUserId.add(user5.getIdamId());
     }
 
     @Test
@@ -168,13 +172,12 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
 
     @Test
     public void should_retrieve_a_suspended_user_profiles_with_showDeleted_false() throws Exception {
-
-        GetUserProfilesRequest request = new GetUserProfilesRequest(userIds);
+        GetUserProfilesRequest request = new GetUserProfilesRequest(suspendedUserId);
 
         GetUserProfilesResponse response = getMultipleUsers(request, OK,"false", "true");
 
         assertThat(response).isNotNull();
-        assertThat(response.getUserProfiles().size()).isEqualTo(3);
+        assertThat(response.getUserProfiles().size()).isEqualTo(1);
         assertThat(response.getUserProfiles().get(0).getIdamStatus()).isEqualByComparingTo(IdamStatus.SUSPENDED);
     }
 
