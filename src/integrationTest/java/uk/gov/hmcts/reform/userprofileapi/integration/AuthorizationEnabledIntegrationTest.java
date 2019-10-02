@@ -103,6 +103,21 @@ public class AuthorizationEnabledIntegrationTest {
                                 + "    \"pui-organisation-manager\""
                                 + "  ]"
                                 + "}")));
+
+        idamService.stubFor(get(urlMatching("/api/v1/users/.*"))
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withStatus(200)
+                        .withBody("{"
+                                + "  \"active\": \"false\","
+                                + "  \"forename\": \"Suspended\","
+                                + "  \"surname\": \"User\","
+                                + "  \"email\": \"super.user@hmcts.net\","
+                                + "  \"pending\": \"false\","
+                                + "  \"roles\": ["
+                                + "    \"pui-organisation-manager\""
+                                + "  ]"
+                                + "}")));
     }
 
     public GetUserProfilesResponse getMultipleUsers(GetUserProfilesRequest request, HttpStatus expectedStatus, String showDeleted, String rolesRequired) throws Exception {
