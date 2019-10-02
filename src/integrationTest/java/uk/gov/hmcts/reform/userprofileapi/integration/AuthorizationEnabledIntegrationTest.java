@@ -98,7 +98,7 @@ public class AuthorizationEnabledIntegrationTest {
                                 + "  \"forename\": \"Super\","
                                 + "  \"surname\": \"User\","
                                 + "  \"email\": \"super.user@hmcts.net\","
-                                + "  \"locked\": \"false\","
+                                + "  \"pending\": \"false\","
                                 + "  \"roles\": ["
                                 + "    \"pui-organisation-manager\""
                                 + "  ]"
