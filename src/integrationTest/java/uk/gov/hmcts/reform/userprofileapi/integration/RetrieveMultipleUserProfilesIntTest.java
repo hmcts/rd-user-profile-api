@@ -175,7 +175,7 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
 
         assertThat(response).isNotNull();
         assertThat(response.getUserProfiles().size()).isEqualTo(3);
-        assertThat(response.getUserProfiles().get(1).getIdamStatus()).isEqualByComparingTo(IdamStatus.SUSPENDED);
+        assertThat(response.getUserProfiles().get(0).getIdamStatus()).isEqualByComparingTo(IdamStatus.SUSPENDED);
     }
 
     @Test
