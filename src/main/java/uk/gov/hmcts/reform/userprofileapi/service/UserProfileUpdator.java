@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import org.springframework.util.StringUtils;
 import uk.gov.hmcts.reform.userprofileapi.client.*;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
@@ -112,6 +113,22 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
             });
             userProfileRolesResponse.setDeleteRolesResponse(deleteRoleResponses);
         }
+        if (!StringUtils.isEmpty(profileData.getIdamStatus())) {
+
+            log.info("Update the  idam status for userId :" + userId);
+            AttributeResponse attributeResponse = new AttributeResponse();
+            try (Response response = idamClient.addUserRoles(profileData.getIdamStatus(), userId)) {
+                httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode();
+                attributeResponse.loadStatusCodes(httpStatus);
+            } catch (FeignException ex) {
+                httpStatus = getHttpStatusFromFeignException(ex);
+                persistAudit(httpStatus, userProfile,ResponseSource.API);
+                attributeResponse.loadStatusCodes(httpStatus);
+            }
+            userProfileRolesResponse.setAttributeResponse(attributeResponse);
+
+
+        }
         return userProfileRolesResponse;
     }
 
@@ -149,6 +166,23 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
             throw new InvalidRequest("UserId status is not active");
         }
         return userProfileOptional.get();
+    }
+
+    public UserProfileRolesResponse updateUserInfo(String status,String userId, UserProfileRolesResponse userProfileRolesResponse,
+                                                   HttpStatus httpStatus, UserProfile userProfile ) {
+
+        AddRoleResponse addRolesResponse = new AddRoleResponse();
+        try (Response response = idamClient.addUserRoles(status, userId)) {
+            httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode();
+            addRolesResponse.loadStatusCodes(httpStatus);
+        } catch (FeignException ex) {
+            httpStatus = getHttpStatusFromFeignException(ex);
+            persistAudit(httpStatus, userProfile,ResponseSource.API);
+            addRolesResponse.loadStatusCodes(httpStatus);
+        }
+        userProfileRolesResponse.setAddRolesResponse(addRolesResponse);
+
+        return userProfileRolesResponse;
     }
 
 }

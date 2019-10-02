@@ -137,9 +137,29 @@ public interface UserProfileValidator {
             throw new RequiredFieldMissingException("No Request Body in the request");
         } else if (StringUtils.isBlank(userId)
                 || (!CollectionUtils.isEmpty(userProfileData.getRolesAdd()) && userProfileData.getRolesAdd().size() == 0)
-                || (!CollectionUtils.isEmpty(userProfileData.getRolesDelete()) && userProfileData.getRolesDelete().size() == 0)) {
+                || (!CollectionUtils.isEmpty(userProfileData.getRolesDelete()) && userProfileData.getRolesDelete().size() == 0)
+                || (null != userProfileData.getIdamStatus() && userProfileData.getIdamStatus().trim().length() == 0)) {
 
             throw new RequiredFieldMissingException("No userId or roles in the request");
         }
+    }
+
+    static boolean isUserAttributesEmpty(UpdateUserProfileData updateUserProfileData) {
+
+       return requestValues(updateUserProfileData.getFirstName(),updateUserProfileData.getLastName(), updateUserProfileData.getEmail());
+
+    }
+
+    static boolean requestValues(String... values) {
+
+        boolean isEmpty = false;
+        for (String value : values) {
+
+            if (value.trim().isEmpty()) {
+                isEmpty = true;
+                break;
+            }
+        }
+        return isEmpty;
     }
 }

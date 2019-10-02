@@ -276,11 +276,13 @@ public class UserProfileController {
         log.info("Updating user profile");
         UserProfileRolesResponse userProfileResponse = new UserProfileRolesResponse();
         if (CollectionUtils.isEmpty(updateUserProfileData.getRolesAdd())
-             && CollectionUtils.isEmpty(updateUserProfileData.getRolesDelete())) {
+             && CollectionUtils.isEmpty(updateUserProfileData.getRolesDelete())
+            && !UserProfileValidator.isUserAttributesEmpty(updateUserProfileData)) {
 
             log.info("Updating user profile without roles");
             userProfileService.update(updateUserProfileData, userId);
         } else {
+
             UserProfileValidator.validateUserProfileDataAndUserId(updateUserProfileData, userId);
             log.info("Updating user profile with roles");
             userProfileResponse = userProfileService.updateRoles(updateUserProfileData, userId);
