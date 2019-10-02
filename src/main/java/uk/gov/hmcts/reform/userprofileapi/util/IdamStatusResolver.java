@@ -9,6 +9,9 @@ import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 @SuppressWarnings("HideUtilityClassConstructor")
 public final class IdamStatusResolver {
 
+    private IdamStatusResolver() {
+    }
+
     public static final String OK = "11 OK";
     public static final String ACCEPTED = "12 User Registration accepted";
     public static final String INVALID_REQUEST = "13 Required parameters or one of request field is missing or invalid";
