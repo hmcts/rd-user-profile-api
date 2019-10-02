@@ -14,7 +14,7 @@ s2s.auth.url: ${S2S_URL_TO_TEST:http://rpe-service-auth-provider-aat.service.cor
 idam.auth.tokenAuth: ${IDAM_TOKEN_ATUH:cmQtcHJvZmVzc2lvbmFsLWFwaTpjYzVmMmE2LTk2OTAtMTFlOS1iYzQyLTUyNmFmNzc2NGY2NA==}
 idam.auth.redirectUrl: ${IDAM_REDIRECT_URL:https://rd-professional-api-aat.service.core-compute-aat.internal/oauth2redirect}
 idam.auth.clientId: rd-professional-api
-idam:auth:clientSecret: cc5f2a6-9690-11e9-bc42-526af7764f64
+idam.auth.clientSecret: cc5f2a6-9690-11e9-bc42-526af7764f64
 ## Secure roles configuration 1
 exui.role.hmcts-admin: prd-admin
 exui.role.pui-user-manager: pui-user-manager

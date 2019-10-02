@@ -29,8 +29,6 @@ public class IdamOpenIdClient {
 
     private final TestConfigProperties testConfig;
 
-    public static final String BASIC = "Basic ";
-
     private final String password = "Hmcts123";
 
     private Gson gson = new Gson();
@@ -74,54 +72,14 @@ public class IdamOpenIdClient {
         List<String> roles = new ArrayList<>();
         roles.add("prd-admin");
         String userEmail = createUser(roles);
-
-
-        Map<String, String> authenicateParams = new HashMap<>();
-        authenicateParams.put("username", userEmail);
-        authenicateParams.put("password", password);
-
-        Response authenicateResponse = RestAssured
-                .given()
-                .relaxedHTTPSValidation()
-                .baseUri(testConfig.getIdamApiUrl())
-                .header(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE)
-                .params(authenicateParams)
-                .post("authenticate")
-                .andReturn();
-
-        assertThat(authenicateResponse.getStatusCode()).isEqualTo(200);
-
-        Map<String, String> authorizeParams = new HashMap<>();
-        authorizeParams.put("client_id", testConfig.getClientId());
-        authorizeParams.put("redirect_uri", testConfig.getOauthRedirectUrl());
-        authorizeParams.put("response_type", "code");
-        authorizeParams.put("scope", "openid profile roles manage-user create-user search-user");
-        authorizeParams.put("state","shshshshsmm");
-        authorizeParams.put("nonce","noncejk");
-
-        log.info("authorizeParams::" + authorizeParams);
-
-        Response authorizeResponse = RestAssured
-                .given()
-                .relaxedHTTPSValidation()
-                .baseUri(testConfig.getIdamApiUrl())
-                .header(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE)
-                .params(authorizeParams)
-                .get("/o/authorize")
-                .andReturn();
-
-        assertThat(authorizeResponse.getStatusCode()).isEqualTo(200);
-
-        AuthorizationResponse authorizationCode = gson.fromJson(authorizeResponse.getBody().asString(), AuthorizationResponse.class);
-
-        String authCode = authorizationCode.getCode();
-
         Map<String, String> tokenParams = new HashMap<>();
+        tokenParams.put("grant_type", "password");
+        tokenParams.put("username", userEmail);
+        tokenParams.put("password", password);
         tokenParams.put("client_id", testConfig.getClientId());
         tokenParams.put("client_secret", testConfig.getClientSecret());
-        tokenParams.put("code", authCode);
-        tokenParams.put("grant_type", "authorization_code");
         tokenParams.put("redirect_uri", testConfig.getOauthRedirectUrl());
+        tokenParams.put("scope", "openid profile roles manage-user create-user search-user");
 
         Response bearerTokenResponse = RestAssured
                 .given()
@@ -135,7 +93,7 @@ public class IdamOpenIdClient {
         assertThat(bearerTokenResponse.getStatusCode()).isEqualTo(200);
 
         BearerTokenResponse accessTokenResponse = gson.fromJson(bearerTokenResponse.getBody().asString(), BearerTokenResponse.class);
-        return accessTokenResponse.getIdToken();
+        return accessTokenResponse.getAccessToken();
 
     }
 
