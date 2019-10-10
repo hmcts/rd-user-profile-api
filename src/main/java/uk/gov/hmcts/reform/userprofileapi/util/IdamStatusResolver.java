@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.userprofileapi.util;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
@@ -28,14 +29,22 @@ public final class IdamStatusResolver {
 
     public static String resolveStatusAndReturnMessage(HttpStatus httpStatus) {
         switch (httpStatus) {
-            case OK: return OK;
-            case CREATED: return ACCEPTED;
-            case BAD_REQUEST: return INVALID_REQUEST;
-            case UNAUTHORIZED: return MISSING_TOKEN;
-            case FORBIDDEN: return TOKEN_EXPIRED;
-            case NOT_FOUND: return NOT_FOUND;
-            case CONFLICT: return USER_EXISTS;
-            case NO_CONTENT: return NO_CONTENT;
+            case OK:
+                return OK;
+            case CREATED:
+                return ACCEPTED;
+            case BAD_REQUEST:
+                return INVALID_REQUEST;
+            case UNAUTHORIZED:
+                return MISSING_TOKEN;
+            case FORBIDDEN:
+                return TOKEN_EXPIRED;
+            case NOT_FOUND:
+                return NOT_FOUND;
+            case CONFLICT:
+                return USER_EXISTS;
+            case NO_CONTENT:
+                return NO_CONTENT;
             default:
                 return UNKNOWN;
         }
@@ -46,7 +55,7 @@ public final class IdamStatusResolver {
 
         Map<String, Boolean> statusMap = new HashMap<>();
         statusMap.put(ACTIVE, idamRolesInfo.getActive() == null ? false : idamRolesInfo.getActive());
-        statusMap.put(PENDING, idamRolesInfo.getPending()  == null ? false : idamRolesInfo.getPending());
+        statusMap.put(PENDING, idamRolesInfo.getPending() == null ? false : idamRolesInfo.getPending());
 
         return statusResolver.get(statusMap) != null ? statusResolver.get(statusMap) : IdamStatus.SUSPENDED;
     }

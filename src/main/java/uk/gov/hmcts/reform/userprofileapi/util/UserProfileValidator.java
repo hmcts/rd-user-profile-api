@@ -49,15 +49,12 @@ public interface UserProfileValidator {
     static boolean validateUpdateUserProfileRequestFields(UpdateUserProfileData updateUserProfileData) {
 
         boolean isValid = true;
-        if (updateUserProfileData == null) {
-            isValid = false;
-        } else if (isBlankOrSizeInvalid(updateUserProfileData.getEmail(), 255)
+        if (updateUserProfileData == null
+                || isBlankOrSizeInvalid(updateUserProfileData.getEmail(), 255)
                 || isBlankOrSizeInvalid(updateUserProfileData.getFirstName(), 255)
                 || isBlankOrSizeInvalid(updateUserProfileData.getLastName(), 255)
-                || isBlankOrSizeInvalid(updateUserProfileData.getIdamStatus(), 255)) {
-
-            isValid = false;
-        } else if (!updateUserProfileData.getEmail().matches("^.*[@].*[.].*$")) {
+                || isBlankOrSizeInvalid(updateUserProfileData.getIdamStatus(), 255)
+                || !updateUserProfileData.getEmail().matches("^.*[@].*[.].*$")) {
             isValid = false;
         }
         return isValid;
@@ -87,8 +84,8 @@ public interface UserProfileValidator {
     static void validateCreateUserProfileRequest(CreateUserProfileData request) {
         requireNonNull(request, "createUserProfileData cannot be null");
 
-        validateEnumField(USERTYPE, request.getUserType());
-        validateEnumField(USERCATEGORY, request.getUserCategory());
+        validateEnumField(USER_TYPE, request.getUserType());
+        validateEnumField(USER_CATEGORY, request.getUserCategory());
     }
 
     static void validateEnumField(String name, String value) {
@@ -96,11 +93,11 @@ public interface UserProfileValidator {
             try {
                 if (name.equals(STATUS)) {
                     IdamStatus.valueOf(value);
-                } else if (name.equals(LANGUAGEPREFERENCE)) {
+                } else if (name.equals(LANGUAGE_PREFERENCE)) {
                     LanguagePreference.valueOf(value);
-                } else if (name.equals(USERTYPE)) {
+                } else if (name.equals(USER_TYPE)) {
                     UserType.valueOf(value);
-                } else if (name.equals(USERCATEGORY)) {
+                } else if (name.equals(USER_CATEGORY)) {
                     UserCategory.valueOf(value);
                 }
             } catch (IllegalArgumentException ex) {
@@ -136,8 +133,8 @@ public interface UserProfileValidator {
 
             throw new RequiredFieldMissingException("No Request Body in the request");
         } else if (StringUtils.isBlank(userId)
-                || (!CollectionUtils.isEmpty(userProfileData.getRolesAdd()) && userProfileData.getRolesAdd().size() == 0)
-                || (!CollectionUtils.isEmpty(userProfileData.getRolesDelete()) && userProfileData.getRolesDelete().size() == 0)) {
+                || (!CollectionUtils.isEmpty(userProfileData.getRolesAdd()) && userProfileData.getRolesAdd().isEmpty())
+                || (!CollectionUtils.isEmpty(userProfileData.getRolesDelete()) && userProfileData.getRolesDelete().isEmpty())) {
 
             throw new RequiredFieldMissingException("No userId or roles in the request");
         }
