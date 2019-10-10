@@ -55,13 +55,13 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         }
 
         Optional<UserProfile> userProfileOptional = userProfileRepository.findByIdamId(userId);
-        userProfile =  userProfileOptional.orElse(null);
+        userProfile = userProfileOptional.orElse(null);
 
         if (userProfile == null) {
             persistAudit(HttpStatus.NOT_FOUND, null, ResponseSource.SYNC);
             throw new ResourceNotFoundException("could not find user profile for userId: " + userId);
         } else if (!isUpdateUserProfileRequestValid(updateUserProfileData)) {
-            persistAudit(HttpStatus.BAD_REQUEST, null,ResponseSource.SYNC);
+            persistAudit(HttpStatus.BAD_REQUEST, null, ResponseSource.SYNC);
             throw new RequiredFieldMissingException("Update user profile request is not valid for userId: " + userId);
         } else if (!isSameAsExistingUserProfile(updateUserProfileData, userProfile)) {
 
@@ -84,7 +84,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
     public UserProfileRolesResponse updateRoles(UpdateUserProfileData profileData, String userId) {
         UserProfile userProfile = null;
         HttpStatus httpStatus = null;
-        UserProfileRolesResponse userProfileRolesResponse =  new UserProfileRolesResponse();
+        UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
         userProfile = validateUserStatus(userId);
         if (!CollectionUtils.isEmpty(profileData.getRolesAdd())) {
             log.info("Add idam roles for userId :" + userId);
@@ -94,7 +94,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
                 addRolesResponse.loadStatusCodes(httpStatus);
             } catch (FeignException ex) {
                 httpStatus = getHttpStatusFromFeignException(ex);
-                persistAudit(httpStatus, userProfile,ResponseSource.API);
+                persistAudit(httpStatus, userProfile, ResponseSource.API);
                 addRolesResponse.loadStatusCodes(httpStatus);
             }
             userProfileRolesResponse.setAddRolesResponse(addRolesResponse);
@@ -105,11 +105,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
             log.info("Delete idam roles for userId :" + userId);
             List<DeleteRoleResponse> deleteRoleResponses = new ArrayList<>();
             UserProfile finalUserProfile = userProfile;
-            profileData.getRolesDelete().forEach(role -> {
-
-                deleteRoleResponses.add(deleteRolesInIdam(userId, role.getName(), finalUserProfile));
-
-            });
+            profileData.getRolesDelete().forEach(role -> deleteRoleResponses.add(deleteRolesInIdam(userId, role.getName(), finalUserProfile)));
             userProfileRolesResponse.setDeleteRolesResponse(deleteRoleResponses);
         }
         return userProfileRolesResponse;
@@ -122,7 +118,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
 
         } catch (FeignException ex) {
             httpStatus = getHttpStatusFromFeignException(ex);
-            persistAudit(httpStatus,userProfile,ResponseSource.API);
+            persistAudit(httpStatus, userProfile, ResponseSource.API);
         }
         return new DeleteRoleResponse(roleName, httpStatus);
     }
