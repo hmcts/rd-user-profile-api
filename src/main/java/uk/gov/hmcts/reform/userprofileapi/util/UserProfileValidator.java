@@ -49,9 +49,8 @@ public interface UserProfileValidator {
     static boolean validateUpdateUserProfileRequestFields(UpdateUserProfileData updateUserProfileData) {
 
         boolean isValid = true;
-        if (updateUserProfileData == null) {
-            isValid = false;
-        } else if (isBlankOrSizeInvalid(updateUserProfileData.getEmail(), 255)
+        if (updateUserProfileData == null
+                || isBlankOrSizeInvalid(updateUserProfileData.getEmail(), 255)
                 || isBlankOrSizeInvalid(updateUserProfileData.getFirstName(), 255)
                 || isBlankOrSizeInvalid(updateUserProfileData.getLastName(), 255)
                 || isBlankOrSizeInvalid(updateUserProfileData.getIdamStatus(), 255)
