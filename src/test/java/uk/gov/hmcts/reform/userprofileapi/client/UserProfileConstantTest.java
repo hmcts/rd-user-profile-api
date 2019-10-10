@@ -15,10 +15,10 @@ public class UserProfileConstantTest {
     public void should_Return_Correct_Values() {
 
         assertThat(UserProfileConstant.CASE_WORKER).isEqualTo("caseworker");
-        assertThat(UserProfileConstant.LANGUAGEPREFERENCE).isEqualTo("LANGUAGEPREFERENCE");
+        assertThat(UserProfileConstant.LANGUAGE_PREFERENCE).isEqualTo("LANGUAGEPREFERENCE");
         assertThat(UserProfileConstant.STATUS).isEqualTo("STATUS");
-        assertThat(UserProfileConstant.USERTYPE).isEqualTo("USERTYPE");
-        assertThat(UserProfileConstant.USERCATEGORY).isEqualTo("USERCATEGORY");
+        assertThat(UserProfileConstant.USER_TYPE).isEqualTo("USERTYPE");
+        assertThat(UserProfileConstant.USER_CATEGORY).isEqualTo("USERCATEGORY");
         assertThat(UserProfileConstant.PUI_CASE_MANAGER).isEqualTo("pui-case-manager");
         assertThat(UserProfileConstant.PUI_ORGANISATION_MANAGER).isEqualTo("pui-organisation-manager");
 

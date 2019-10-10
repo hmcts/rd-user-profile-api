@@ -54,10 +54,8 @@ public interface UserProfileValidator {
         } else if (isBlankOrSizeInvalid(updateUserProfileData.getEmail(), 255)
                 || isBlankOrSizeInvalid(updateUserProfileData.getFirstName(), 255)
                 || isBlankOrSizeInvalid(updateUserProfileData.getLastName(), 255)
-                || isBlankOrSizeInvalid(updateUserProfileData.getIdamStatus(), 255)) {
-
-            isValid = false;
-        } else if (!updateUserProfileData.getEmail().matches("^.*[@].*[.].*$")) {
+                || isBlankOrSizeInvalid(updateUserProfileData.getIdamStatus(), 255)
+                || !updateUserProfileData.getEmail().matches("^.*[@].*[.].*$")) {
             isValid = false;
         }
         return isValid;
@@ -87,8 +85,8 @@ public interface UserProfileValidator {
     static void validateCreateUserProfileRequest(CreateUserProfileData request) {
         requireNonNull(request, "createUserProfileData cannot be null");
 
-        validateEnumField(USERTYPE, request.getUserType());
-        validateEnumField(USERCATEGORY, request.getUserCategory());
+        validateEnumField(USER_TYPE, request.getUserType());
+        validateEnumField(USER_CATEGORY, request.getUserCategory());
     }
 
     static void validateEnumField(String name, String value) {
@@ -96,11 +94,11 @@ public interface UserProfileValidator {
             try {
                 if (name.equals(STATUS)) {
                     IdamStatus.valueOf(value);
-                } else if (name.equals(LANGUAGEPREFERENCE)) {
+                } else if (name.equals(LANGUAGE_PREFERENCE)) {
                     LanguagePreference.valueOf(value);
-                } else if (name.equals(USERTYPE)) {
+                } else if (name.equals(USER_TYPE)) {
                     UserType.valueOf(value);
-                } else if (name.equals(USERCATEGORY)) {
+                } else if (name.equals(USER_CATEGORY)) {
                     UserCategory.valueOf(value);
                 }
             } catch (IllegalArgumentException ex) {
