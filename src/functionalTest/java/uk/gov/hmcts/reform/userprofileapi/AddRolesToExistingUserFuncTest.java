@@ -68,7 +68,7 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
                 testRequestHandler.sendPut(
                         userRProfileData,
                             HttpStatus.OK,
-                           requestUri + "/" + resource.getIdamId(), UserProfileRolesResponse.class);
+                           requestUri + "/" + resource.getIdamId() +"?origin=exui", UserProfileRolesResponse.class);
 
         GetUserProfileWithRolesResponse resource2 =
                 testRequestHandler.sendGet(
@@ -102,13 +102,16 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         LOG.info("get Userprofile response::" + resource);
         LOG.info("before addroles call");
         UpdateUserProfileData userRProfileData = new UpdateUserProfileData();
+        userRProfileData.setFirstName("firstName");
+        userRProfileData.setLastName("lastName");
+        userRProfileData.setEmail(email);
         userRProfileData.setIdamStatus(IdamStatus.SUSPENDED.name());
-        UserProfileRolesResponse resource1 =
+        UserProfileRolesResponse updatedStatusResponse =
                 testRequestHandler.sendPut(
                         userRProfileData,
                         HttpStatus.OK,
-                        requestUri + "/" + resource.getIdamId(), UserProfileRolesResponse.class);
+                        requestUri + "/" + resource.getIdamId() +"?origin=exui", UserProfileRolesResponse.class);
 
-        LOG.info("after addroles call" + resource1);
+        LOG.info("after Status update call" + updatedStatusResponse);
     }
 }

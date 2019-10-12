@@ -144,22 +144,13 @@ public interface UserProfileValidator {
         }
     }
 
-    static boolean isUserAttributesEmpty(UpdateUserProfileData updateUserProfileData) {
+    static boolean isStatusPresentInRequestParam(String param) {
 
-       return requestValues(updateUserProfileData.getFirstName(),updateUserProfileData.getLastName(), updateUserProfileData.getEmail());
-
-    }
-
-    static boolean requestValues(String... values) {
-
-        boolean isEmpty = false;
-        for (String value : values) {
-
-            if (value.trim().isEmpty()) {
-                isEmpty = true;
-                break;
-            }
+        boolean isValid = false;
+        if ("exui".equalsIgnoreCase(param)) {
+            isValid = true;
         }
-        return isEmpty;
+        return isValid;
     }
+
 }

@@ -117,7 +117,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
 
             log.info("Update the  idam status for userId :" + userId);
             AttributeResponse attributeResponse = new AttributeResponse();
-            try (Response response = idamClient.addUserRoles(profileData.getIdamStatus(), userId)) {
+            try (Response response = idamClient.addUserRoles(profileData, userId)) {
                 httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode();
                 attributeResponse.loadStatusCodes(httpStatus);
             } catch (FeignException ex) {
@@ -167,23 +167,5 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         }
         return userProfileOptional.get();
     }
-
-    public UserProfileRolesResponse updateUserInfo(String status,String userId, UserProfileRolesResponse userProfileRolesResponse,
-                                                   HttpStatus httpStatus, UserProfile userProfile ) {
-
-        AddRoleResponse addRolesResponse = new AddRoleResponse();
-        try (Response response = idamClient.addUserRoles(status, userId)) {
-            httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode();
-            addRolesResponse.loadStatusCodes(httpStatus);
-        } catch (FeignException ex) {
-            httpStatus = getHttpStatusFromFeignException(ex);
-            persistAudit(httpStatus, userProfile,ResponseSource.API);
-            addRolesResponse.loadStatusCodes(httpStatus);
-        }
-        userProfileRolesResponse.setAddRolesResponse(addRolesResponse);
-
-        return userProfileRolesResponse;
-    }
-
 }
 

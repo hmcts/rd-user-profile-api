@@ -95,7 +95,7 @@ public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
                 testRequestHandler.sendDelete(
                         userProfileDataDelete,
                         HttpStatus.OK,
-                        requestUri + "/" + resource.getIdamId(), UserProfileRolesResponse.class);
+                        requestUri + "/" + resource.getIdamId() +"?origin=exui", UserProfileRolesResponse.class);
 
         LOG.info("after DeleteRole call" + deleteResourceResp);
 

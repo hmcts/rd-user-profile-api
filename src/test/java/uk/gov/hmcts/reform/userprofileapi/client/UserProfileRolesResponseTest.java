@@ -22,7 +22,7 @@ public class UserProfileRolesResponseTest {
         addRoleResponse.setIdamMessage("Success");
         DeleteRoleResponse deleteRoleResponse = new DeleteRoleResponse();
         deleteRoleResponse.setIdamStatusCode(HttpStatus.OK.toString());
-        deleteRoleResponse.setIdamMessage("success");
+        deleteRoleResponse.setIdamMessage("Success");
         List<DeleteRoleResponse> deleteRoleResponses = new ArrayList<>();
         deleteRoleResponses.add(deleteRoleResponse);
 
@@ -36,14 +36,13 @@ public class UserProfileRolesResponseTest {
         assertThat(userProfileRolesResponse.getAddRolesResponse().getIdamMessage()).isEqualTo("Success");
         userProfileRolesResponse.setDeleteRolesResponse(deleteRoleResponses);
         userProfileRolesResponse.getDeleteRolesResponse().forEach(
-                deleteRoleResponse1 -> {
 
-                    assertThat(deleteRoleResponse1.getIdamMessage()).isEqualTo("Success");
-                    assertThat(deleteRoleResponse1.getIdamStatusCode()).isEqualTo("200 OK");
-                }
+            deleteRoleResponse1 -> {
+
+                assertThat(deleteRoleResponse1.getIdamMessage()).isEqualTo("Success");
+                assertThat(deleteRoleResponse1.getIdamStatusCode()).isEqualTo("200 OK");
+            }
         );
-
-
     }
 
     @Test

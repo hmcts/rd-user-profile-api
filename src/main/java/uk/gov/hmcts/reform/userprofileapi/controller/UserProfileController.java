@@ -271,17 +271,20 @@ public class UserProfileController {
     )
 
     @ResponseBody
-    public ResponseEntity<UserProfileRolesResponse> updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData, @PathVariable String userId
+    public ResponseEntity<UserProfileRolesResponse> updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData, @PathVariable String userId,
+                                                                       @ApiParam(name = "origin", required = false) @RequestParam(value = "origin", required = false) String origin
     ) {
         log.info("Updating user profile");
         UserProfileRolesResponse userProfileResponse = new UserProfileRolesResponse();
-        if (CollectionUtils.isEmpty(updateUserProfileData.getRolesAdd())
-             && CollectionUtils.isEmpty(updateUserProfileData.getRolesDelete())
-            && !UserProfileValidator.isUserAttributesEmpty(updateUserProfileData)) {
+        boolean isOriginFrom = UserProfileValidator.isStatusPresentInRequestParam(origin);
+        if (!isOriginFrom) {
 
             log.info("Updating user profile without roles");
             userProfileService.update(updateUserProfileData, userId);
-        } else {
+        }
+
+        if (isOriginFrom || !CollectionUtils.isEmpty(updateUserProfileData.getRolesAdd())
+                || !CollectionUtils.isEmpty(updateUserProfileData.getRolesDelete())) {
 
             UserProfileValidator.validateUserProfileDataAndUserId(updateUserProfileData, userId);
             log.info("Updating user profile with roles");

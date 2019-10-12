@@ -16,7 +16,7 @@ public class UserProfileRolesResponse {
     private AddRoleResponse addRolesResponse;
     private List<DeleteRoleResponse> deleteRolesResponse;
 
-    public UserProfileRolesResponse(AttributeResponse attributeResponse ,AddRoleResponse addRolesResponse, List<DeleteRoleResponse> deleteRolesResponse) {
+    public UserProfileRolesResponse(AttributeResponse attributeResponse, AddRoleResponse addRolesResponse, List<DeleteRoleResponse> deleteRolesResponse) {
         this.attributeResponse = attributeResponse;
         this.addRolesResponse = addRolesResponse;
         this.deleteRolesResponse = deleteRolesResponse;

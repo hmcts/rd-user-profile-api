@@ -106,9 +106,10 @@ public class UserProfileControllerTest {
 
         UpdateUserProfileData updateUserProfileDataMock = Mockito.mock(UpdateUserProfileData.class);
         String idamId = "13b02995-5e44-4136-bf5a-46f4ff4acb8f";
+        String origin = "false";
         when(updateUserProfileDataMock.getRolesAdd()).thenReturn(null);
         when(updateUserProfileDataMock.getRolesDelete()).thenReturn(null);
-        ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId);
+        ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId, origin);
         verify(userProfileServiceMock, times(1)).update(any(), any());
         ResponseEntity expect = ResponseEntity.status(HttpStatus.OK).build();
         assertThat(actual.getStatusCode().value()).isEqualTo(expect.getStatusCode().value());
@@ -132,7 +133,8 @@ public class UserProfileControllerTest {
         roles.add(roleName2);
         when(updateUserProfileDataMock.getRolesAdd()).thenReturn(roles);
         String idamId = "13b02995-5e44-4136-bf5a-46f4ff4acb8f";
-        ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId);
+        String origin = "exui";
+        ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId,origin);
         verify(userProfileServiceMock, times(1)).updateRoles(any(), any());
         ResponseEntity expect = ResponseEntity.status(HttpStatus.OK).build();
         assertThat(actual).isEqualTo(expect);
@@ -162,7 +164,8 @@ public class UserProfileControllerTest {
         roles.add(roleName2);
         when(updateUserProfileDataMock.getRolesDelete()).thenReturn(roles);
         String idamId = "13b02995-5e44-4136-bf5a-46f4ff4acb8f";
-        ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId);
+        String origin = "exui";
+        ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId,origin);
         verify(userProfileServiceMock, times(1)).updateRoles(any(), any());
         ResponseEntity expect = ResponseEntity.status(HttpStatus.OK).build();
         assertThat(actual).isEqualTo(expect);
