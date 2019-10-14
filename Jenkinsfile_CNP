@@ -45,6 +45,7 @@ withPipeline(type, product, component) {
     installCharts()
     disableLegacyDeployment()
     enableAksStagingDeployment()
+    enableMutationTest()
 
     after('functionalTest:preview') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
