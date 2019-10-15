@@ -125,7 +125,4 @@ public class UserProfileServiceTest {
         assertThat(resource).isNotNull();
 
     }
-
-
-
 }

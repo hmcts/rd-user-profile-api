@@ -41,9 +41,13 @@ public class Audit {
     private UserProfile userProfile;
 
     public Audit(Integer idamRegistrationResponse, String statusMessage, ResponseSource source, UserProfile userProfile) {
+        this(idamRegistrationResponse, statusMessage, source);
+        this.userProfile = userProfile;
+    }
+
+    public Audit(Integer idamRegistrationResponse, String statusMessage, ResponseSource source) {
         this.idamRegistrationResponse = idamRegistrationResponse;
         this.statusMessage = statusMessage;
         this.source = source;
-        this.userProfile = userProfile;
     }
 }

@@ -61,13 +61,7 @@ public class UserProfileValidatorTest {
 
     @Test
     public void test_validateUpdateUserProfileRequestFields() {
-
-        UpdateUserProfileData updateUserProfileDataWithNull = null;
-
         UpdateUserProfileData updateUserProfileDataWithInvalidEmail = new UpdateUserProfileData("somorg.com", "fanme", "lname", "ACTIVE", addRolesToRoleName(),addRolesToRoleName());
-        boolean response = UserProfileValidator.validateUpdateUserProfileRequestFields(updateUserProfileDataWithNull);
-        assertThat(response).isFalse();
-
         boolean response1 = UserProfileValidator.validateUpdateUserProfileRequestFields(updateUserProfileDataWithInvalidEmail);
         assertThat(response1).isFalse();
     }

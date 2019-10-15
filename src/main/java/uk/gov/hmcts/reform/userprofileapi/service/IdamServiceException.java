@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 
 public class IdamServiceException extends RuntimeException {
 
-    private HttpStatus httpStatus;
+    private final HttpStatus httpStatus;
 
     public IdamServiceException(String message, HttpStatus httpStatus) {
         super(message);

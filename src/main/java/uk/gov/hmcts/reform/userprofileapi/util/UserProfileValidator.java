@@ -31,33 +31,29 @@ public interface UserProfileValidator {
     }
 
     static boolean isUpdateUserProfileRequestValid(UpdateUserProfileData updateUserProfileData) {
-
-        boolean isValid = true;
-        if (!validateUpdateUserProfileRequestFields(updateUserProfileData)) {
-            isValid = false;
-        } else {
-            try {
-                validateEnumField(STATUS, updateUserProfileData.getIdamStatus().toUpperCase());
-            } catch (Exception ex) {
-                isValid = false;
-            }
+        if (validateUpdateUserProfileRequestFields(updateUserProfileData)) {
+            return validateUserProfileRequestWithException(updateUserProfileData);
         }
+        return false;
+    }
 
-        return isValid;
+    static boolean validateUserProfileRequestWithException(UpdateUserProfileData updateUserProfileData) {
+        try {
+            validateEnumField(STATUS, updateUserProfileData.getIdamStatus().toUpperCase());
+        } catch (Exception ex) {
+            //TODO log exception
+            return false;
+        }
+        return true;
     }
 
     static boolean validateUpdateUserProfileRequestFields(UpdateUserProfileData updateUserProfileData) {
-
-        boolean isValid = true;
-        if (updateUserProfileData == null
+        return !(null == updateUserProfileData.getEmail()
                 || isBlankOrSizeInvalid(updateUserProfileData.getEmail(), 255)
                 || isBlankOrSizeInvalid(updateUserProfileData.getFirstName(), 255)
                 || isBlankOrSizeInvalid(updateUserProfileData.getLastName(), 255)
                 || isBlankOrSizeInvalid(updateUserProfileData.getIdamStatus(), 255)
-                || !updateUserProfileData.getEmail().matches("^.*[@].*[.].*$")) {
-            isValid = false;
-        }
-        return isValid;
+                || !updateUserProfileData.getEmail().matches(EMAIL_REGEX));
     }
 
     static boolean isBlankOrSizeInvalid(String fieldValue, int validSize) {
