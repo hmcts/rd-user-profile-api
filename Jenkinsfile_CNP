@@ -38,12 +38,13 @@ withPipeline(type, product, component) {
     env.TEST_URL = "http://rd-user-profile-api-aat.service.core-compute-aat.internal"
 
     overrideVaultEnvironments(vaultOverrides)
-    //loadVaultSecrets(secrets)
+    loadVaultSecrets(secrets)
 
     enableDbMigration('rd')
     enableDockerBuild()
     installCharts()
-   // enableAksStagingDeployment()
+    disableLegacyDeployment()
+    enableAksStagingDeployment()
     enableMutationTest()
 
     after('functionalTest:preview') {

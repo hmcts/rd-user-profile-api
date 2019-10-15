@@ -1,4 +1,4 @@
-targetInstance: ${TEST_URL:https://rd-user-profile-api-pr-107.service.core-compute-preview.internal}
+targetInstance: ${TEST_URL:http://rd-user-profile-api-pr-115.service.core-compute-preview.internal}
 spring.flyway.enabled: false
 idamUrl: ${IDAM_URL_TO_TEST:https://idam-api.aat.platform.hmcts.net}
 
