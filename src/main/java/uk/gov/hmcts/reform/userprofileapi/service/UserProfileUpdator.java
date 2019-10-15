@@ -34,10 +34,10 @@ import uk.gov.hmcts.reform.userprofileapi.util.JsonFeignResponseHelper;
 @Slf4j
 public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData> {
 
-    @Autowired
-    private IdamService idamService;
+
     @Autowired
     private UserProfileRepository userProfileRepository;
+
     @Autowired
     private AuditRepository auditRepository;
 
@@ -45,39 +45,37 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
     private IdamFeignClient idamClient;
 
     @Override
-    public UserProfile update(UpdateUserProfileData updateUserProfileData, String userId) {
+    public Optional<UserProfile> update(UpdateUserProfileData updateUserProfileData, String userId) {
 
         HttpStatus status = HttpStatus.OK;
-        UserProfile userProfile = null;
         if (!isUserIdValid(userId, false)) {
-            persistAudit(HttpStatus.NOT_FOUND, null, ResponseSource.SYNC);
+            persistAudit(HttpStatus.NOT_FOUND, ResponseSource.SYNC);
             throw new ResourceNotFoundException("userId provided is malformed");
         }
 
         Optional<UserProfile> userProfileOptional = userProfileRepository.findByIdamId(userId);
-        userProfile = userProfileOptional.orElse(null);
 
-        if (userProfile == null) {
-            persistAudit(HttpStatus.NOT_FOUND, null, ResponseSource.SYNC);
+        if (!userProfileOptional.isPresent()) {
+            persistAudit(HttpStatus.NOT_FOUND, ResponseSource.SYNC);
             throw new ResourceNotFoundException("could not find user profile for userId: " + userId);
         } else if (!isUpdateUserProfileRequestValid(updateUserProfileData)) {
-            persistAudit(HttpStatus.BAD_REQUEST, null, ResponseSource.SYNC);
+            persistAudit(HttpStatus.BAD_REQUEST, ResponseSource.SYNC);
             throw new RequiredFieldMissingException("Update user profile request is not valid for userId: " + userId);
-        } else if (!isSameAsExistingUserProfile(updateUserProfileData, userProfile)) {
-
-            userProfile.setEmail(updateUserProfileData.getEmail().trim());
-            userProfile.setFirstName(updateUserProfileData.getFirstName().trim());
-            userProfile.setLastName(updateUserProfileData.getLastName().trim());
-            userProfile.setStatus(IdamStatus.valueOf(updateUserProfileData.getIdamStatus().toUpperCase()));
+        } else if (!isSameAsExistingUserProfile(updateUserProfileData, userProfileOptional.get())) {
+            userProfileOptional.get().setEmail(updateUserProfileData.getEmail().trim());
+            userProfileOptional.get().setFirstName(updateUserProfileData.getFirstName().trim());
+            userProfileOptional.get().setLastName(updateUserProfileData.getLastName().trim());
+            userProfileOptional.get().setStatus(IdamStatus.valueOf(updateUserProfileData.getIdamStatus().toUpperCase()));
         }
 
+        Optional<UserProfile> result = Optional.empty();
         try {
-            userProfile = userProfileRepository.save(userProfile);
+            result = Optional.ofNullable(userProfileRepository.save(userProfileOptional.get()));
         } catch (Exception ex) {
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
-        persistAudit(status, userProfile, ResponseSource.SYNC);
-        return userProfile;
+        persistAudit(status, userProfileOptional.get(), ResponseSource.SYNC);
+        return result;
     }
 
     @Override
@@ -112,10 +110,9 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
     }
 
     private DeleteRoleResponse deleteRolesInIdam(String userId, String roleName, UserProfile userProfile) {
-        HttpStatus httpStatus = null;
+        HttpStatus httpStatus;
         try (Response response = idamClient.deleteUserRole(userId, roleName)) {
             httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode();
-
         } catch (FeignException ex) {
             httpStatus = getHttpStatusFromFeignException(ex);
             persistAudit(httpStatus, userProfile, ResponseSource.API);
@@ -123,23 +120,26 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         return new DeleteRoleResponse(roleName, httpStatus);
     }
 
-    public HttpStatus getHttpStatusFromFeignException(FeignException ex) {
+    private HttpStatus getHttpStatusFromFeignException(FeignException ex) {
         return (ex instanceof RetryableException)
                 ? HttpStatus.INTERNAL_SERVER_ERROR
                 : HttpStatus.valueOf(ex.status());
     }
 
-    public void persistAudit(HttpStatus idamStatus, UserProfile userProfile, ResponseSource responseSource) {
+    private void persistAudit(HttpStatus idamStatus, UserProfile userProfile, ResponseSource responseSource) {
         Audit audit = new Audit(idamStatus.value(), resolveStatusAndReturnMessage(idamStatus), responseSource, userProfile);
+        auditRepository.save(audit);
+    }
+
+    private void persistAudit(HttpStatus idamStatus, ResponseSource responseSource) {
+        Audit audit = new Audit(idamStatus.value(), resolveStatusAndReturnMessage(idamStatus), responseSource);
         auditRepository.save(audit);
     }
 
 
     private UserProfile validateUserStatus(String userId) {
-        UserProfile userProfile = null;
         Optional<UserProfile> userProfileOptional = userProfileRepository.findByIdamId(userId);
-        userProfile = userProfileOptional.orElse(null);
-        if (userProfile == null) {
+        if (!userProfileOptional.isPresent()) {
             throw new ResourceNotFoundException("could not find user profile for userId: or status is not active " + userId);
         } else if (!IdamStatus.ACTIVE.equals(userProfileOptional.get().getStatus())) {
             throw new InvalidRequest("UserId status is not active");

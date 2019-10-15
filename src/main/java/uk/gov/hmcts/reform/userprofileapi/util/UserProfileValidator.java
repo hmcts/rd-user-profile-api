@@ -47,17 +47,12 @@ public interface UserProfileValidator {
     }
 
     static boolean validateUpdateUserProfileRequestFields(UpdateUserProfileData updateUserProfileData) {
-
-        boolean isValid = true;
-        if (updateUserProfileData == null
+        return !(null == updateUserProfileData.getEmail()
                 || isBlankOrSizeInvalid(updateUserProfileData.getEmail(), 255)
                 || isBlankOrSizeInvalid(updateUserProfileData.getFirstName(), 255)
                 || isBlankOrSizeInvalid(updateUserProfileData.getLastName(), 255)
                 || isBlankOrSizeInvalid(updateUserProfileData.getIdamStatus(), 255)
-                || !updateUserProfileData.getEmail().matches("^.*[@].*[.].*$")) {
-            isValid = false;
-        }
-        return isValid;
+                || !updateUserProfileData.getEmail().matches(EMAIL_REGEX));
     }
 
     static boolean isBlankOrSizeInvalid(String fieldValue, int validSize) {

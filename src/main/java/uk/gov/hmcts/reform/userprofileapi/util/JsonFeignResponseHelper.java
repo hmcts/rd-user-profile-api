@@ -29,8 +29,8 @@ public class JsonFeignResponseHelper {
         MultiValueMap<String, String> headers = convertHeaders(response.headers());
         HttpStatus httpStatus = HttpStatus.valueOf(response.status());
         return (payload.isPresent())
-                ? new ResponseEntity<U>(payload.orElse(null), headers, httpStatus)
-                : new ResponseEntity<U>(headers, httpStatus);
+                ? new ResponseEntity<>(payload.orElse(null), headers, httpStatus)
+                : new ResponseEntity<>(headers, httpStatus);
     }
 
     public static MultiValueMap<String, String> convertHeaders(Map<String, Collection<String>> responseHeaders) {
