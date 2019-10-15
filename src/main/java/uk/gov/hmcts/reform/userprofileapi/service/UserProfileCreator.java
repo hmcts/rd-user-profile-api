@@ -1,8 +1,5 @@
 package uk.gov.hmcts.reform.userprofileapi.service;
 
-import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.ACTIVE;
-import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.PENDING;
-
 import java.net.URI;
 
 import java.util.ArrayList;
@@ -163,7 +160,7 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
     }
 
     public void updateInputRequestWithLatestSidamUserInfo(CreateUserProfileData profileData, IdamRolesInfo idamRolesInfo) {
-        profileData.setStatus(resolveIdamStatus(idamStatusResolverMap, idamRolesInfo));
+        profileData.setStatus(IdamStatusResolver.resolveIdamStatus(idamStatusResolverMap, idamRolesInfo));
         if (idamRolesInfo.getEmail() != null) {
             profileData.setEmail(idamRolesInfo.getEmail());
         }
@@ -173,15 +170,6 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
         if (idamRolesInfo.getSurname() != null) {
             profileData.setLastName(idamRolesInfo.getSurname());
         }
-    }
-
-    public static IdamStatus resolveIdamStatus(Map<Map<String, Boolean>, IdamStatus> statusResolver, IdamRolesInfo idamRolesInfo) {
-
-        Map<String, Boolean> statusMap = new HashMap<>();
-        statusMap.put(ACTIVE, idamRolesInfo.getActive() == null ? false : idamRolesInfo.getActive());
-        statusMap.put(PENDING, idamRolesInfo.getPending() == null ? false : idamRolesInfo.getPending());
-
-        return statusResolver.get(statusMap) != null ? statusResolver.get(statusMap) : IdamStatus.SUSPENDED;
     }
 
     public Set<String> consolidateRolesFromXuiAndIdam(CreateUserProfileData profileData, IdamRolesInfo idamRolesInfo) {

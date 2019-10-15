@@ -1,6 +1,11 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
+import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 
 @SuppressWarnings("HideUtilityClassConstructor")
 public final class IdamStatusResolver {
@@ -45,4 +50,13 @@ public final class IdamStatusResolver {
         }
     }
 
+
+    public static IdamStatus resolveIdamStatus(Map<Map<String, Boolean>, IdamStatus> statusResolver, IdamRolesInfo idamRolesInfo) {
+
+        Map<String, Boolean> statusMap = new HashMap<>();
+        statusMap.put(ACTIVE, idamRolesInfo.getActive() == null ? false : idamRolesInfo.getActive());
+        statusMap.put(PENDING, idamRolesInfo.getPending() == null ? false : idamRolesInfo.getPending());
+
+        return statusResolver.get(statusMap) != null ? statusResolver.get(statusMap) : IdamStatus.SUSPENDED;
+    }
 }

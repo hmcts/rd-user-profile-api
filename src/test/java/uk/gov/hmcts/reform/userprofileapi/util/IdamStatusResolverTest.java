@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.userprofileapi.client.IdamUserResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IdamStatusResolverTest {
@@ -48,6 +49,22 @@ public class IdamStatusResolverTest {
         httpStatusString = IdamStatusResolver.resolveStatusAndReturnMessage(HttpStatus.MULTI_STATUS);
         assertThat(httpStatusString).isEqualTo(UNKNOWN);
     }
+
+    @Test
+    public void should_resolve_and_return_idam_status_by_idam_flags() {
+
+        Map<Map<String, Boolean>, IdamStatus> idamStatusMap = new HashMap<Map<String, Boolean>, IdamStatus>();
+        idamStatusMap.put(addRule(false,true), IdamStatus.PENDING);
+        idamStatusMap.put(addRule(true, false), IdamStatus.ACTIVE);
+        idamStatusMap.put(addRule(false,false), IdamStatus.SUSPENDED);
+
+
+
+        assertThat(IdamStatusResolver.resolveIdamStatus(idamStatusMap, createIdamRoleInfo(false,true))).isEqualTo(IdamStatus.PENDING);
+        assertThat(IdamStatusResolver.resolveIdamStatus(idamStatusMap, createIdamRoleInfo(true,false))).isEqualTo(IdamStatus.ACTIVE);
+        assertThat(IdamStatusResolver.resolveIdamStatus(idamStatusMap, createIdamRoleInfo(false,false))).isEqualTo(IdamStatus.SUSPENDED);
+    }
+
 
     public Map<String, Boolean> addRule(boolean activeFlag, boolean pendingFlag) {
         Map<String, Boolean> pendingMapWithRules = new HashMap<>();
