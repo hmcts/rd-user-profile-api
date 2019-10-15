@@ -31,19 +31,20 @@ public interface UserProfileValidator {
     }
 
     static boolean isUpdateUserProfileRequestValid(UpdateUserProfileData updateUserProfileData) {
-
-        boolean isValid = true;
-        if (!validateUpdateUserProfileRequestFields(updateUserProfileData)) {
-            isValid = false;
-        } else {
-            try {
-                validateEnumField(STATUS, updateUserProfileData.getIdamStatus().toUpperCase());
-            } catch (Exception ex) {
-                isValid = false;
-            }
+        if (validateUpdateUserProfileRequestFields(updateUserProfileData)) {
+            return validateUserProfileRequestWithException(updateUserProfileData);
         }
+        return false;
+    }
 
-        return isValid;
+    static boolean validateUserProfileRequestWithException(UpdateUserProfileData updateUserProfileData) {
+        try {
+            validateEnumField(STATUS, updateUserProfileData.getIdamStatus().toUpperCase());
+        } catch (Exception ex) {
+            //TODO log exception
+            return false;
+        }
+        return true;
     }
 
     static boolean validateUpdateUserProfileRequestFields(UpdateUserProfileData updateUserProfileData) {

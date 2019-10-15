@@ -188,7 +188,7 @@ public class UserProfileUpdatorTest {
         when(userProfileRepository.findByIdamId(userId)).thenReturn(Optional.ofNullable(userProfile));
         when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);
 
-        UserProfile response = userProfileUpdator.update(updateUserProfileData, userId.toString());
+        UserProfile response = userProfileUpdator.update(updateUserProfileData, userId).orElse(null);
 
         assertThat(response).isNotNull();
         assertThat(response.getEmail()).isEqualTo("email@net.com");
