@@ -18,7 +18,6 @@ public class IdamUserResponseTest {
                         "forename",
                         "id",
                         false,
-                        false,
                         new ArrayList<String>(),
                         "lastname");
 
@@ -27,7 +26,6 @@ public class IdamUserResponseTest {
         assertThat(idamUserResponse.getEmail()).isEqualTo("someemail@abc.com");
         assertThat(idamUserResponse.getForename()).isEqualTo("forename");
         assertThat(idamUserResponse.getId()).isEqualTo("id");
-        assertThat(idamUserResponse.getLocked()).isEqualTo(false);
         assertThat(idamUserResponse.getRoles()).isNotNull();
 
     }

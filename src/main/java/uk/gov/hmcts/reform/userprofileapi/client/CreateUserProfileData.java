@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.client;
 
+import static uk.gov.hmcts.reform.userprofileapi.constant.UserProfileConstant.EMAIL_REGEX;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -18,7 +20,7 @@ import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 @NoArgsConstructor
 public class CreateUserProfileData implements RequestData {
 
-    @Email(regexp = "^.*[@].*[.].*$")
+    @Email(regexp = EMAIL_REGEX)
     @NotBlank (message = "email must not be null or blank")
     private String email;
 

@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.userprofileapi.integration;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.put;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -13,14 +13,10 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -69,22 +65,19 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
     @Autowired
     protected WebApplicationContext webApplicationContext;
 
-    @Autowired
-    protected ObjectMapper objectMapper;
 
     @Rule
     public WireMockRule idamService = new WireMockRule(5000);
 
-    private Map<String, UserProfile> userProfileMap;
 
     @Before
     public void setUpWireMock() {
 
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
-        idamService.stubFor(WireMock.post(urlEqualTo("/api/v1/users/registration"))
+        idamService.stubFor(post(urlEqualTo("/api/v1/users/registration"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
-                        .withHeader("Location", "/api/v1/users/" + UUID.randomUUID().toString())
+                        .withHeader("Location", "/api/v1/users/" + "7feb739c-1ae1-4ef4-9f46-86716d84fd72")
                         .withStatus(409)
                 ));
     }
@@ -99,8 +92,6 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
                     + "  \"forename\": \"fname\","
                     + "  \"surname\": \"lname\","
                     + "  \"email\": \"user@hmcts.net\","
-                    //+ "  \"locked\": \"false\","
-                    //+ "  \"pending\": \"false\","
                     + "  \"roles\": ["
                     + "    \"pui-organisation-manager\","
                     + "    \"pui-user-manager\""
@@ -123,7 +114,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
     }
 
     public void mockWithUpdateSuccess() {
-        idamService.stubFor(put(urlMatching("/api/v1/users/.*"))
+        idamService.stubFor(post(urlMatching("/api/v1/users/7feb739c-1ae1-4ef4-9f46-86716d84fd72/roles"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(200)
@@ -140,7 +131,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
     }
 
     public void mockWithUpdateFail() {
-        idamService.stubFor(put(urlMatching("/api/v1/users/.*"))
+        idamService.stubFor(post(urlMatching("/api/v1/users/7feb739c-1ae1-4ef4-9f46-86716d84fd72/roles"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(400)
@@ -170,7 +161,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
     @Test
     public void should_return_201_and_create_user_profile_when_status_not_properly_returned_by_sidam() throws Exception {
 
-        mockWithGetSuccess(true);
+        mockWithGetSuccess(false);
         mockWithUpdateSuccess();
         CreateUserProfileData data = buildCreateUserProfileData();
 
@@ -183,7 +174,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
                         CreateUserProfileResponse.class
                 );
 
-        verifyUserProfileCreation(createdResource, CREATED, data, IdamStatus.PENDING);
+        verifyUserProfileCreation(createdResource, CREATED, data, IdamStatus.ACTIVE);
 
     }
 

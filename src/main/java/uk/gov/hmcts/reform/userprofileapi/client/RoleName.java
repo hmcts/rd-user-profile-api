@@ -1,16 +1,20 @@
 package uk.gov.hmcts.reform.userprofileapi.client;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@NoArgsConstructor
 @Setter
 @Getter
+@NoArgsConstructor
 public class RoleName {
-    public RoleName(String name) {
+
+    private String name;
+
+    public RoleName(@JsonProperty(value = "name")String name) {
         this.name = name;
     }
 
-    private String name;
+
 }

@@ -1,8 +1,11 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.userprofileapi.constant.UserProfileConstant.*;
 
 import org.apache.commons.lang.StringUtils;
+
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesRequest;
 import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
@@ -16,52 +19,41 @@ import uk.gov.hmcts.reform.userprofileapi.service.ResourceNotFoundException;
 
 public interface UserProfileValidator {
 
-    String STATUS = "STATUS";
-    String LANGUAGEPREFERENCE = "LANGUAGEPREFERENCE";
-    String USERTYPE = "USERTYPE";
-    String USERCATEGORY = "USERCATEGORY";
-
     static boolean isUserIdValid(String userId, boolean throwException) {
+        boolean valid = true;
         if (StringUtils.isBlank(userId)) {
+            valid = false;
             if (throwException) {
                 throw new ResourceNotFoundException("userId is null or blank.");
             }
+        }
+        return valid;
+    }
+
+    static boolean isUpdateUserProfileRequestValid(UpdateUserProfileData updateUserProfileData) {
+        if (validateUpdateUserProfileRequestFields(updateUserProfileData)) {
+            return validateUserProfileRequestWithException(updateUserProfileData);
+        }
+        return false;
+    }
+
+    static boolean validateUserProfileRequestWithException(UpdateUserProfileData updateUserProfileData) {
+        try {
+            validateEnumField(STATUS, updateUserProfileData.getIdamStatus().toUpperCase());
+        } catch (Exception ex) {
+            //TODO log exception
             return false;
         }
         return true;
     }
 
-    static boolean isUpdateUserProfileRequestValid(UpdateUserProfileData updateUserProfileData) {
-
-        boolean isValid = true;
-
-        if (!validateUpdateUserProfileRequestFields(updateUserProfileData)) {
-            isValid = false;
-        } else {
-            try {
-                validateEnumField(STATUS, updateUserProfileData.getIdamStatus().toUpperCase());
-            } catch (Exception ex) {
-                isValid = false;
-            }
-        }
-        return isValid;
-    }
-
     static boolean validateUpdateUserProfileRequestFields(UpdateUserProfileData updateUserProfileData) {
-
-        boolean isValid = true;
-        if (updateUserProfileData == null) {
-            isValid = false;
-        } else if (isBlankOrSizeInvalid(updateUserProfileData.getEmail(), 255)
+        return !(null == updateUserProfileData.getEmail()
+                || isBlankOrSizeInvalid(updateUserProfileData.getEmail(), 255)
                 || isBlankOrSizeInvalid(updateUserProfileData.getFirstName(), 255)
                 || isBlankOrSizeInvalid(updateUserProfileData.getLastName(), 255)
-                || isBlankOrSizeInvalid(updateUserProfileData.getIdamStatus(), 255)) {
-
-            isValid = false;
-        } else if (!updateUserProfileData.getEmail().matches("^.*[@].*[.].*$")) {
-            isValid = false;
-        }
-        return isValid;
+                || isBlankOrSizeInvalid(updateUserProfileData.getIdamStatus(), 255)
+                || !updateUserProfileData.getEmail().matches(EMAIL_REGEX));
     }
 
     static boolean isBlankOrSizeInvalid(String fieldValue, int validSize) {
@@ -77,9 +69,9 @@ public interface UserProfileValidator {
 
         boolean isSame = false;
         if (userProfile.getEmail().equals(updateUserProfileData.getEmail().trim())
-            && userProfile.getFirstName().equals(updateUserProfileData.getFirstName().trim())
-            && userProfile.getLastName().equals(updateUserProfileData.getLastName().trim())
-            && userProfile.getStatus().toString().equals(updateUserProfileData.getIdamStatus().trim())) {
+                && userProfile.getFirstName().equals(updateUserProfileData.getFirstName().trim())
+                && userProfile.getLastName().equals(updateUserProfileData.getLastName().trim())
+                && userProfile.getStatus().toString().equals(updateUserProfileData.getIdamStatus().trim())) {
             isSame = true;
         }
         return isSame;
@@ -88,8 +80,8 @@ public interface UserProfileValidator {
     static void validateCreateUserProfileRequest(CreateUserProfileData request) {
         requireNonNull(request, "createUserProfileData cannot be null");
 
-        validateEnumField(USERTYPE, request.getUserType());
-        validateEnumField(USERCATEGORY, request.getUserCategory());
+        validateEnumField(USER_TYPE, request.getUserType());
+        validateEnumField(USER_CATEGORY, request.getUserCategory());
     }
 
     static void validateEnumField(String name, String value) {
@@ -97,11 +89,11 @@ public interface UserProfileValidator {
             try {
                 if (name.equals(STATUS)) {
                     IdamStatus.valueOf(value);
-                } else if (name.equals(LANGUAGEPREFERENCE)) {
+                } else if (name.equals(LANGUAGE_PREFERENCE)) {
                     LanguagePreference.valueOf(value);
-                } else if (name.equals(USERTYPE)) {
+                } else if (name.equals(USER_TYPE)) {
                     UserType.valueOf(value);
-                } else if (name.equals(USERCATEGORY)) {
+                } else if (name.equals(USER_CATEGORY)) {
                     UserCategory.valueOf(value);
                 }
             } catch (IllegalArgumentException ex) {
@@ -128,6 +120,19 @@ public interface UserProfileValidator {
     static void validateUserIds(GetUserProfilesRequest getUserProfilesRequest) {
         if (getUserProfilesRequest.getUserIds().isEmpty()) {
             throw new RequiredFieldMissingException("no user id in request");
+        }
+    }
+
+    static void validateUserProfileDataAndUserId(UpdateUserProfileData userProfileData, String userId) {
+
+        if (null == userProfileData) {
+
+            throw new RequiredFieldMissingException("No Request Body in the request");
+        } else if (StringUtils.isBlank(userId)
+                || (!CollectionUtils.isEmpty(userProfileData.getRolesAdd()) && userProfileData.getRolesAdd().isEmpty())
+                || (!CollectionUtils.isEmpty(userProfileData.getRolesDelete()) && userProfileData.getRolesDelete().isEmpty())) {
+
+            throw new RequiredFieldMissingException("No userId or roles in the request");
         }
     }
 }

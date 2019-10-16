@@ -80,7 +80,7 @@ public class UserProfile {
     private List<Audit> responses = new ArrayList<>();
 
     @Transient
-    private List<String> roles = new ArrayList<String>();
+    private List<String> roles = new ArrayList<>();
 
     @Transient
     private String errorMessage;
