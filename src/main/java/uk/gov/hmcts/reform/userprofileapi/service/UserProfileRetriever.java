@@ -45,7 +45,7 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
     public UserProfile getRolesFromIdam(UserProfile userProfile, boolean isMultiUserGet) {
 
         if (IdamStatus.ACTIVE == userProfile.getStatus()) {
-            IdamRolesInfo idamRolesInfo = idamService.fetchUserById(userProfile.getIdamId().toString());
+            IdamRolesInfo idamRolesInfo = idamService.fetchUserById(userProfile.getIdamId());
             if (idamRolesInfo.getResponseStatusCode().is2xxSuccessful()) {
                 persistAudit(idamRolesInfo, userProfile);
                 userProfile.setRoles(idamRolesInfo);

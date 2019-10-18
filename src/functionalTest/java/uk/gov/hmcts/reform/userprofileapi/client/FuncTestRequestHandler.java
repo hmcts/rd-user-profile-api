@@ -158,7 +158,7 @@ public class FuncTestRequestHandler {
     }
 
     private String getBearerToken() {
-        IdamClient idamClient = new IdamClient(testConfig);
+        IdamOpenIdClient idamClient = new IdamOpenIdClient(testConfig);
         return idamClient.getBearerToken();
     }
 

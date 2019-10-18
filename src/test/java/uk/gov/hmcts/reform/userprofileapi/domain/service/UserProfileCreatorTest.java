@@ -221,7 +221,7 @@ public class UserProfileCreatorTest {
         Mockito.when(idamRolesInfo.getSurname()).thenReturn("lastName");
         Mockito.when(idamRolesInfo.getActive()).thenReturn(true);
         Mockito.when(idamRolesInfo.getPending()).thenReturn(false);
-        Mockito.when(idamRolesInfo.getLocked()).thenReturn(false);
+
 
         CreateUserProfileData createUserProfileData = mock(CreateUserProfileData.class);
         userProfileCreator.updateInputRequestWithLatestSidamUserInfo(createUserProfileData, idamRolesInfo);
@@ -243,14 +243,13 @@ public class UserProfileCreatorTest {
         Mockito.when(idamRolesInfo.getSurname()).thenReturn("lastName");
         Mockito.when(idamRolesInfo.getActive()).thenReturn(true);
         Mockito.when(idamRolesInfo.getPending()).thenReturn(true);
-        Mockito.when(idamRolesInfo.getLocked()).thenReturn(true);
 
         CreateUserProfileData createUserProfileData = mock(CreateUserProfileData.class);
         userProfileCreator.updateInputRequestWithLatestSidamUserInfo(createUserProfileData, idamRolesInfo);
         Mockito.verify(createUserProfileData, Mockito.times(1)).setEmail("any@emai");
         Mockito.verify(createUserProfileData, Mockito.times(1)).setFirstName("fname");
         Mockito.verify(createUserProfileData, Mockito.times(1)).setLastName("lastName");
-        Mockito.verify(createUserProfileData, Mockito.times(1)).setStatus(null);
+        Mockito.verify(createUserProfileData, Mockito.times(1)).setStatus(any());
 
     }
 
@@ -266,9 +265,7 @@ public class UserProfileCreatorTest {
         Map<Map<String, Boolean>, IdamStatus> idamStatusMap = new HashMap<Map<String, Boolean>, IdamStatus>();
         idamStatusMap.put(addRule(false,true, false), IdamStatus.PENDING);
         idamStatusMap.put(addRule(true, false,false), IdamStatus.ACTIVE);
-        idamStatusMap.put(addRule(true, false,true), IdamStatus.ACTIVE_AND_LOCKED);
         idamStatusMap.put(addRule(false,false,false), IdamStatus.SUSPENDED);
-        idamStatusMap.put(addRule(false,false,true), IdamStatus.SUSPENDED_AND_LOCKED);
         return idamStatusMap;
     }
 

@@ -2,11 +2,16 @@ package uk.gov.hmcts.reform.userprofileapi.util;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 
+@SuppressWarnings("HideUtilityClassConstructor")
 public final class IdamStatusResolver {
+
+    private IdamStatusResolver() {
+    }
 
     public static final String OK = "11 OK";
     public static final String ACCEPTED = "12 User Registration accepted";
@@ -21,35 +26,37 @@ public final class IdamStatusResolver {
 
     public static final String ACTIVE = "ACTIVE";
     public static final String PENDING = "PENDING";
-    public static final String LOCKED = "LOCKED";
-
-    private IdamStatusResolver() {
-
-    }
 
     public static String resolveStatusAndReturnMessage(HttpStatus httpStatus) {
         switch (httpStatus) {
-            case OK: return OK;
-            case CREATED: return ACCEPTED;
-            case BAD_REQUEST: return INVALID_REQUEST;
-            case UNAUTHORIZED: return MISSING_TOKEN;
-            case FORBIDDEN: return TOKEN_EXPIRED;
-            case NOT_FOUND: return NOT_FOUND;
-            case CONFLICT: return USER_EXISTS;
-            case NO_CONTENT: return NO_CONTENT;
+            case OK:
+                return OK;
+            case CREATED:
+                return ACCEPTED;
+            case BAD_REQUEST:
+                return INVALID_REQUEST;
+            case UNAUTHORIZED:
+                return MISSING_TOKEN;
+            case FORBIDDEN:
+                return TOKEN_EXPIRED;
+            case NOT_FOUND:
+                return NOT_FOUND;
+            case CONFLICT:
+                return USER_EXISTS;
+            case NO_CONTENT:
+                return NO_CONTENT;
             default:
                 return UNKNOWN;
         }
     }
 
+
     public static IdamStatus resolveIdamStatus(Map<Map<String, Boolean>, IdamStatus> statusResolver, IdamRolesInfo idamRolesInfo) {
-      
-        Map<String, Boolean> statusMap = new HashMap<String, Boolean>();
 
+        Map<String, Boolean> statusMap = new HashMap<>();
         statusMap.put(ACTIVE, idamRolesInfo.getActive() == null ? false : idamRolesInfo.getActive());
-        statusMap.put(PENDING, idamRolesInfo.getPending()  == null ? false : idamRolesInfo.getPending());
-        statusMap.put(LOCKED, idamRolesInfo.getLocked()  == null ? false : idamRolesInfo.getLocked());
+        statusMap.put(PENDING, idamRolesInfo.getPending() == null ? false : idamRolesInfo.getPending());
 
-        return statusResolver.get(statusMap) != null ? statusResolver.get(statusMap) : null;
+        return statusResolver.get(statusMap) != null ? statusResolver.get(statusMap) : IdamStatus.SUSPENDED;
     }
 }

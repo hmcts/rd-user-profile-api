@@ -98,7 +98,22 @@ public class AuthorizationEnabledIntegrationTest {
                                 + "  \"forename\": \"Super\","
                                 + "  \"surname\": \"User\","
                                 + "  \"email\": \"super.user@hmcts.net\","
-                                + "  \"locked\": \"false\","
+                                + "  \"pending\": \"false\","
+                                + "  \"roles\": ["
+                                + "    \"pui-organisation-manager\""
+                                + "  ]"
+                                + "}")));
+
+        idamService.stubFor(get(urlMatching("/api/v1/users/.*"))
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withStatus(200)
+                        .withBody("{"
+                                + "  \"active\": \"false\","
+                                + "  \"forename\": \"Suspended\","
+                                + "  \"surname\": \"User\","
+                                + "  \"email\": \"super.user@hmcts.net\","
+                                + "  \"pending\": \"false\","
                                 + "  \"roles\": ["
                                 + "    \"pui-organisation-manager\""
                                 + "  ]"

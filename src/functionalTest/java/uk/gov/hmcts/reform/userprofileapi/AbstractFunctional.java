@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileWithRolesResponse
 import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
 
-@Ignore
 @ContextConfiguration(classes = {TestConfigProperties.class, FuncTestRequestHandler.class})
 @ComponentScan("uk.gov.hmcts.reform.userprofileapi")
 @TestPropertySource("classpath:application-functional.yaml")
