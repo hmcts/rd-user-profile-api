@@ -1,10 +1,13 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.userprofileapi.constant.UserProfileConstant.*;
+import static uk.gov.hmcts.reform.userprofileapi.constant.UserProfileConstant.EXUI;
+import static uk.gov.hmcts.reform.userprofileapi.constant.UserProfileConstant.LANGUAGEPREFERENCE;
+import static uk.gov.hmcts.reform.userprofileapi.constant.UserProfileConstant.STATUS;
+import static uk.gov.hmcts.reform.userprofileapi.constant.UserProfileConstant.USERCATEGORY;
+import static uk.gov.hmcts.reform.userprofileapi.constant.UserProfileConstant.USERTYPE;
 
 import org.apache.commons.lang.StringUtils;
-
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesRequest;
@@ -33,7 +36,7 @@ public interface UserProfileValidator {
     static boolean isUpdateUserProfileRequestValid(UpdateUserProfileData updateUserProfileData) {
 
         boolean isValid = true;
-        if (!validateUpdateUserProfileRequestFields(updateUserProfileData)) {
+        if (updateUserProfileData == null) {
             isValid = false;
         } else {
             try {
@@ -46,22 +49,6 @@ public interface UserProfileValidator {
         return isValid;
     }
 
-    static boolean validateUpdateUserProfileRequestFields(UpdateUserProfileData updateUserProfileData) {
-
-        boolean isValid = true;
-        if (updateUserProfileData == null) {
-            isValid = false;
-        } else if (isBlankOrSizeInvalid(updateUserProfileData.getEmail(), 255)
-                || isBlankOrSizeInvalid(updateUserProfileData.getFirstName(), 255)
-                || isBlankOrSizeInvalid(updateUserProfileData.getLastName(), 255)
-                || isBlankOrSizeInvalid(updateUserProfileData.getIdamStatus(), 255)) {
-
-            isValid = false;
-        } else if (!updateUserProfileData.getEmail().matches("^.*[@].*[.].*$")) {
-            isValid = false;
-        }
-        return isValid;
-    }
 
     static boolean isBlankOrSizeInvalid(String fieldValue, int validSize) {
 
@@ -75,8 +62,7 @@ public interface UserProfileValidator {
     static boolean isSameAsExistingUserProfile(UpdateUserProfileData updateUserProfileData, UserProfile userProfile) {
 
         boolean isSame = false;
-        if (userProfile.getEmail().equals(updateUserProfileData.getEmail().trim())
-                && userProfile.getFirstName().equals(updateUserProfileData.getFirstName().trim())
+        if (userProfile.getFirstName().equals(updateUserProfileData.getFirstName().trim())
                 && userProfile.getLastName().equals(updateUserProfileData.getLastName().trim())
                 && userProfile.getStatus().toString().equals(updateUserProfileData.getIdamStatus().trim())) {
             isSame = true;
@@ -144,13 +130,19 @@ public interface UserProfileValidator {
         }
     }
 
-    static boolean isStatusPresentInRequestParam(String param) {
+    static boolean isUpdateFromExui(String param) {
 
-        boolean isValid = false;
-        if ("exui".equalsIgnoreCase(param)) {
-            isValid = true;
+        return EXUI.equalsIgnoreCase(param) ? true : false;
+    }
+
+    static Boolean deriveStatusFlag(UpdateUserProfileData data) {
+
+        Boolean deriveStatusFlag = null;
+        if (null !=  data.getIdamStatus()) {
+            deriveStatusFlag = IdamStatus.ACTIVE.toString().equalsIgnoreCase(data.getIdamStatus()) ? true : false;
         }
-        return isValid;
+        return deriveStatusFlag;
+
     }
 
 }

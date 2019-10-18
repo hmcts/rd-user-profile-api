@@ -12,7 +12,6 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
 import javax.validation.Valid;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,10 +26,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
+import uk.gov.hmcts.reform.userprofileapi.client.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileResponse;
-
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesRequest;
@@ -40,11 +38,9 @@ import uk.gov.hmcts.reform.userprofileapi.client.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.client.UserProfileIdentifier;
 import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRolesResponse;
-
 import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileService;
 import uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator;
-
 
 @Api(
     value = "/v1/userprofile"
@@ -271,26 +267,24 @@ public class UserProfileController {
     )
 
     @ResponseBody
-    public ResponseEntity<UserProfileRolesResponse> updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData, @PathVariable String userId,
-                                                                       @ApiParam(name = "origin", required = false) @RequestParam(value = "origin", required = false) String origin
-    ) {
+    public ResponseEntity<UserProfileRolesResponse> updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData,
+                                                                      @PathVariable String userId,
+                                                                      @ApiParam(name = "origin", required = false) @RequestParam (value = "origin", required = false) String origin) {
         log.info("Updating user profile");
         UserProfileRolesResponse userProfileResponse = new UserProfileRolesResponse();
-        boolean isOriginFrom = UserProfileValidator.isStatusPresentInRequestParam(origin);
-        if (!isOriginFrom) {
+        if (CollectionUtils.isEmpty(updateUserProfileData.getRolesAdd())
+             && CollectionUtils.isEmpty(updateUserProfileData.getRolesDelete())) {
 
             log.info("Updating user profile without roles");
-            userProfileService.update(updateUserProfileData, userId);
-        }
-
-        if (isOriginFrom || !CollectionUtils.isEmpty(updateUserProfileData.getRolesAdd())
-                || !CollectionUtils.isEmpty(updateUserProfileData.getRolesDelete())) {
-
+            AttributeResponse response = userProfileService.update(updateUserProfileData, userId, origin);
+            userProfileResponse.setAttributeResponse(response);
+            return ResponseEntity.ok(userProfileResponse);
+        } else {
             UserProfileValidator.validateUserProfileDataAndUserId(updateUserProfileData, userId);
             log.info("Updating user profile with roles");
             userProfileResponse = userProfileService.updateRoles(updateUserProfileData, userId);
+            return ResponseEntity.ok(userProfileResponse);
         }
-        return ResponseEntity.ok(userProfileResponse);
     }
 
     @ApiOperation(value = "Retrieving multiple user profiles",

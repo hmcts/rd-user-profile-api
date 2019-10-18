@@ -6,16 +6,17 @@ import feign.RetryableException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.userprofileapi.client.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.IdamRegisterUserRequest;
 import uk.gov.hmcts.reform.userprofileapi.client.IdamUserResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
+import uk.gov.hmcts.reform.userprofileapi.domain.UpdateUserDetails;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.util.JsonFeignResponseHelper;
 
@@ -90,6 +91,20 @@ public class IdamServiceImpl implements IdamService {
         }
 
         return new IdamRolesInfo(httpStatus);
+    }
+
+    @Override
+    public AttributeResponse updateUserDetails(UpdateUserDetails updateUserDetails, String userId) {
+        log.info("Update user details for userId :" + userId);
+        HttpStatus httpStatus = null;
+        Response response;
+        try {
+            response = idamClient.updateUserDetails(updateUserDetails, userId);
+            httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode();
+        } catch (FeignException ex) {
+            httpStatus = gethttpStatusFromFeignException(ex);
+        }
+        return new AttributeResponse(httpStatus);
     }
 
     public HttpStatus gethttpStatusFromFeignException(FeignException ex) {

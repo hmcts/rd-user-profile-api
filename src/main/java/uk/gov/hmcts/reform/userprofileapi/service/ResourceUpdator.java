@@ -1,12 +1,12 @@
 package uk.gov.hmcts.reform.userprofileapi.service;
 
+import uk.gov.hmcts.reform.userprofileapi.client.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRolesResponse;
-import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 
 public interface ResourceUpdator<T extends RequestData> {
 
-    UserProfile update(T profileData, String userId);
+    AttributeResponse update(T profileData, String userId, String origin);
 
     UserProfileRolesResponse updateRoles(T profileData, String userId);
 

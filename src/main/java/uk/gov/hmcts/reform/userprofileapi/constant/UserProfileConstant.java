@@ -10,6 +10,7 @@ public final class UserProfileConstant {
     public static final String LANGUAGEPREFERENCE = "LANGUAGEPREFERENCE";
     public static final String USERTYPE = "USERTYPE";
     public static final String USERCATEGORY = "USERCATEGORY";
+    public static final String EXUI  = "EXUI";
     
     private UserProfileConstant() {
         //not called
