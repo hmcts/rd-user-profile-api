@@ -31,6 +31,13 @@ public class UserProfileTestDataBuilder {
         return up;
     }
 
+    public static UserProfile buildUserProfileWithSuspendedStatus() {
+        UserProfile up = new UserProfile(buildCreateUserProfileData(), HttpStatus.CREATED);
+        up.setStatus(IdamStatus.SUSPENDED);
+        up.setIdamId(UUID.randomUUID().toString());
+        return up;
+    }
+
     public static UserProfile buildUserProfileWithAllFields() {
 
         List<String> unInitFields =

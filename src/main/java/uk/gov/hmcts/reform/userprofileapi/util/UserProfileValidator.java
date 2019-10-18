@@ -45,10 +45,18 @@ public interface UserProfileValidator {
                 isValid = false;
             }
         }
-
-        return isValid;
+        return false;
     }
 
+    static boolean validateUserProfileRequestWithException(UpdateUserProfileData updateUserProfileData) {
+        try {
+            validateEnumField(STATUS, updateUserProfileData.getIdamStatus().toUpperCase());
+        } catch (Exception ex) {
+            //TODO log exception
+            return false;
+        }
+        return true;
+    }
 
     static boolean isBlankOrSizeInvalid(String fieldValue, int validSize) {
 
@@ -73,8 +81,8 @@ public interface UserProfileValidator {
     static void validateCreateUserProfileRequest(CreateUserProfileData request) {
         requireNonNull(request, "createUserProfileData cannot be null");
 
-        validateEnumField(USERTYPE, request.getUserType());
-        validateEnumField(USERCATEGORY, request.getUserCategory());
+        validateEnumField(USER_TYPE, request.getUserType());
+        validateEnumField(USER_CATEGORY, request.getUserCategory());
     }
 
     static void validateEnumField(String name, String value) {
@@ -82,11 +90,11 @@ public interface UserProfileValidator {
             try {
                 if (name.equals(STATUS)) {
                     IdamStatus.valueOf(value);
-                } else if (name.equals(LANGUAGEPREFERENCE)) {
+                } else if (name.equals(LANGUAGE_PREFERENCE)) {
                     LanguagePreference.valueOf(value);
-                } else if (name.equals(USERTYPE)) {
+                } else if (name.equals(USER_TYPE)) {
                     UserType.valueOf(value);
-                } else if (name.equals(USERCATEGORY)) {
+                } else if (name.equals(USER_CATEGORY)) {
                     UserCategory.valueOf(value);
                 }
             } catch (IllegalArgumentException ex) {
@@ -125,6 +133,7 @@ public interface UserProfileValidator {
                 || (!CollectionUtils.isEmpty(userProfileData.getRolesAdd()) && userProfileData.getRolesAdd().size() == 0)
                 || (!CollectionUtils.isEmpty(userProfileData.getRolesDelete()) && userProfileData.getRolesDelete().size() == 0)
                 || (null != userProfileData.getIdamStatus() && userProfileData.getIdamStatus().trim().length() == 0)) {
+
 
             throw new RequiredFieldMissingException("No userId or roles in the request");
         }
