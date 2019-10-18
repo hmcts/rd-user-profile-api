@@ -46,6 +46,8 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
     private AuditRepository auditRepository;
     @Autowired
     private IdamFeignClient idamClient;
+    @Autowired
+    private IdamService idamService;
 
     @Override
     public AttributeResponse update(UpdateUserProfileData updateUserProfileData, String userId, String origin) {
