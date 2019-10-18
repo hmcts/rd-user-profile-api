@@ -142,22 +142,6 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
             });
             userProfileRolesResponse.setDeleteRolesResponse(deleteRoleResponses);
         }
-        if (!StringUtils.isEmpty(profileData.getIdamStatus())) {
-
-            log.info("Update the  idam status for userId :" + userId);
-            AttributeResponse attributeResponse = new AttributeResponse();
-            try (Response response = idamClient.addUserRoles(profileData, userId)) {
-                httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode();
-                attributeResponse.loadStatusCodes(httpStatus);
-            } catch (FeignException ex) {
-                httpStatus = getHttpStatusFromFeignException(ex);
-                persistAudit(httpStatus, userProfile,ResponseSource.API);
-                attributeResponse.loadStatusCodes(httpStatus);
-            }
-            userProfileRolesResponse.setAttributeResponse(attributeResponse);
-
-
-        }
         return userProfileRolesResponse;
     }
 
