@@ -48,7 +48,7 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
     @Test
     public void should_create_user_profile_for_duplicate_idam_user_and_verify_successfully_for_prd_roles() throws Exception {
 
-        List<String> xuiuRoles = new ArrayList();
+        List<String> xuiuRoles = new ArrayList<String>();
         xuiuRoles.add("pui-user-manager");
         xuiuRoles.add("pui-case-manager");
 

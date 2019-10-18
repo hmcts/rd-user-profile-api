@@ -2,10 +2,10 @@ package uk.gov.hmcts.reform.userprofileapi.util;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.reform.userprofileapi.constant.UserProfileConstant.EXUI;
-import static uk.gov.hmcts.reform.userprofileapi.constant.UserProfileConstant.LANGUAGEPREFERENCE;
+import static uk.gov.hmcts.reform.userprofileapi.constant.UserProfileConstant.LANGUAGE_PREFERENCE;
 import static uk.gov.hmcts.reform.userprofileapi.constant.UserProfileConstant.STATUS;
-import static uk.gov.hmcts.reform.userprofileapi.constant.UserProfileConstant.USERCATEGORY;
-import static uk.gov.hmcts.reform.userprofileapi.constant.UserProfileConstant.USERTYPE;
+import static uk.gov.hmcts.reform.userprofileapi.constant.UserProfileConstant.USER_CATEGORY;
+import static uk.gov.hmcts.reform.userprofileapi.constant.UserProfileConstant.USER_TYPE;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;

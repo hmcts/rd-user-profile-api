@@ -7,7 +7,6 @@ import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestB
 import io.restassured.RestAssured;
 import net.serenitybdd.rest.SerenityRest;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
