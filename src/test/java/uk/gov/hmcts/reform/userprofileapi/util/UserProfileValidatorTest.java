@@ -7,7 +7,6 @@ import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestB
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -16,7 +15,11 @@ import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesRequest;
 import uk.gov.hmcts.reform.userprofileapi.client.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.domain.*;
+import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
+import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
+import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
+import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
+import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceNotFoundException;
 
@@ -65,77 +68,8 @@ public class UserProfileValidatorTest {
         UpdateUserProfileData updateUserProfileDataWithNull = null;
 
         UpdateUserProfileData updateUserProfileDataWithInvalidEmail = new UpdateUserProfileData("somorg.com", "fanme", "lname", "ACTIVE", addRolesToRoleName(),addRolesToRoleName());
-        boolean response = UserProfileValidator.validateUpdateUserProfileRequestFields(updateUserProfileDataWithNull);
+        boolean response = UserProfileValidator.isUpdateUserProfileRequestValid(updateUserProfileDataWithNull);
         assertThat(response).isFalse();
-
-        boolean response1 = UserProfileValidator.validateUpdateUserProfileRequestFields(updateUserProfileDataWithInvalidEmail);
-        assertThat(response1).isFalse();
-    }
-
-    @Test
-    public void test_validateEmailAreValid() {
-
-        String[] validEmails = new String[] {
-            "shreedhar.lomte@hmcts.net",
-            "shreedhar@yahoo.com",
-            "Email.100@yahoo.com",
-            "email111@email.com",
-            "email.100@email.com.au",
-            "email@gmail.com.com",
-            "email_231_a@email.com",
-            "email_100@yahoo-test.ABC.CoM",
-            "email-100@yahoo.com",
-            "email-100@email.net",
-            "email+100@gmail.com",
-            "emAil-100@yahoo-test.com",
-            "v.green@ashfords.co.uk",
-            "j.robinson@timms-law.com",
-            "あいうえお@example.com",
-            "emAil@1.com",
-            "email@.com.my",
-            "email123@gmail.",
-            "email123@.com",
-            "email123@.com.com",
-            ".email@email.com",
-            "email()*@gmAil.com",
-            "eEmail()*@gmail.com",
-            "email@%*.com",
-            "email..2002@gmail.com",
-            "email.@gmail.com",
-            "email@email@gmail.com",
-            "email@gmail.com.",
-            "email..2002@gmail.com@",
-            "-email.23@email.com",
-            "$email.3@email.com",
-            "!email@email.com",
-            "+@Adil61371@gmail.com",
-            "_email.23@email.com",
-            "email.23@-email.com"};
-
-        for (String email : validEmails) {
-
-            UpdateUserProfileData updateUserProfileDataWithInvalidEmail = new UpdateUserProfileData(email, "fanme", "lname", "ACTIVE", addRolesToRoleName(), addRolesToRoleName());
-            boolean response1 = UserProfileValidator.validateUpdateUserProfileRequestFields(updateUserProfileDataWithInvalidEmail);
-            assertThat(response1).isTrue();
-        }
-    }
-
-    @Test
-    public void test_validateEmailAreInValid() {
-
-        String[] validEmails = new String[]{
-            "email.com",
-            "email@com",
-            "email@",
-            "@"
-        };
-
-        for (String email : validEmails) {
-
-            UpdateUserProfileData updateUserProfileDataWithInvalidEmail = new UpdateUserProfileData(email, "fanme", "lname", "ACTIVE", addRolesToRoleName(), addRolesToRoleName());
-            boolean response1 = UserProfileValidator.validateUpdateUserProfileRequestFields(updateUserProfileDataWithInvalidEmail);
-            assertThat(response1).isFalse();
-        }
     }
 
     @Test
@@ -170,7 +104,7 @@ public class UserProfileValidatorTest {
         boolean response = UserProfileValidator.isSameAsExistingUserProfile(updateUserProfileData, userProfile);
         assertThat(response).isTrue();
 
-        updateUserProfileData = new UpdateUserProfileData("test-l-@somewhere.com", "test-first-name", "test-last-name", "PENDING",addRolesToRoleName(), addRolesToRoleName());
+        updateUserProfileData = new UpdateUserProfileData("test-l-@somewhere.com", "test-first-name", "test-last-name", "SUSPENDED",addRolesToRoleName(), addRolesToRoleName());
         boolean response1 = UserProfileValidator.isSameAsExistingUserProfile(updateUserProfileData, userProfile);
         assertThat(response1).isFalse();
     }

@@ -7,7 +7,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
-import static org.springframework.http.HttpStatus.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
 
@@ -26,6 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -141,7 +141,7 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
                         mockMvc,
                         APP_BASE_PATH,
                         data,
-                        CREATED,
+                        HttpStatus.CREATED,
                         CreateUserProfileResponse.class
                 );
 
@@ -161,9 +161,9 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
         userRoles.setRolesAdd(roles);
         userProfileRequestHandlerTest.sendPut(
                         mockMvc,
-                  APP_BASE_PATH + "/" + userId+ "?origin=exui",
+                  APP_BASE_PATH + "/" + userId + "?origin=exui",
                         userRoles,
-                        OK
+                        HttpStatus.OK
         );
 
     }
@@ -181,9 +181,9 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
         userRoles.setRolesAdd(roles);
         userProfileRequestHandlerTest.sendPut(
                 mockMvc,
-                APP_BASE_PATH + "/" + userId+ "?origin=exui",
+                APP_BASE_PATH + "/" + userId + "?origin=exui",
                 userRoles,
-                BAD_REQUEST
+                HttpStatus.BAD_REQUEST
         );
 
     }
@@ -202,7 +202,7 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
                         mockMvc,
                         APP_BASE_PATH,
                         data,
-                        CREATED,
+                        HttpStatus.CREATED,
                         CreateUserProfileResponse.class
                 );
 
@@ -223,7 +223,7 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
                 mockMvc,
                 APP_BASE_PATH + "/" + userId + "?origin=exui",
                 userRoles,
-                OK
+                HttpStatus.OK
         );
 
         UpdateUserProfileData userRoles1 = new UpdateUserProfileData();
@@ -233,9 +233,9 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
         userRoles1.setRolesDelete(rolesDelete);
         userProfileRequestHandlerTest.sendPut(
                 mockMvc,
-                APP_BASE_PATH + "/" + userId+ "?origin=exui",
+                APP_BASE_PATH + "/" + userId + "?origin=exui",
                 userRoles1,
-                OK
+                HttpStatus.OK
         );
 
     }
@@ -254,7 +254,7 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
                         mockMvc,
                         APP_BASE_PATH,
                         data,
-                        CREATED,
+                        HttpStatus.CREATED,
                         CreateUserProfileResponse.class
                 );
 
@@ -272,7 +272,7 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
                 mockMvc,
                 APP_BASE_PATH + "/" + userId + "?origin=exui",
                 userRoles,
-                OK
+                HttpStatus.OK
         );
 
     }
@@ -290,9 +290,9 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
         userRoles.setRolesDelete(roles);
         userProfileRequestHandlerTest.sendPut(
                 mockMvc,
-                APP_BASE_PATH + "/" + userId+ "?orign=exui",
+                APP_BASE_PATH + "/" + userId + "?orign=exui",
                 userRoles,
-                BAD_REQUEST
+                HttpStatus.BAD_REQUEST
         );
 
     }

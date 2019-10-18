@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.patch;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
@@ -309,6 +312,71 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
                 data,
                 BAD_REQUEST
         );
+
+    }
+
+    @Test
+    public void should_return_200_and_update_user_status_resource() throws Exception {
+
+        UserProfile persistedUserProfile = userProfileMap.get("user");
+        UpdateUserProfileData data = new UpdateUserProfileData();
+        persistedUserProfile.setStatus(IdamStatus.ACTIVE);
+        userProfileRepository.save(persistedUserProfile);
+        data.setFirstName("fname1");
+        data.setLastName("lname1");
+        data.setIdamStatus("SUSPENDED");
+        String idamId = persistedUserProfile.getIdamId();
+        userProfileRequestHandlerTest.sendPut(
+                mockMvc,
+                APP_BASE_PATH + SLASH + idamId + "?origin=EXUI",
+                data,
+                OK
+        );
+
+        Optional<UserProfile> optionalUp = userProfileRepository.findByIdamId(persistedUserProfile.getIdamId());
+        UserProfile updatedUserProfile = optionalUp.orElse(null);
+
+        assertThat(updatedUserProfile).isNotNull();
+        assertThat(updatedUserProfile.getIdamId()).isEqualTo(persistedUserProfile.getIdamId());
+        assertThat(updatedUserProfile.getEmail()).isEqualToIgnoringCase(persistedUserProfile.getEmail());
+        assertThat(updatedUserProfile.getFirstName()).isEqualTo(data.getFirstName());
+        assertThat(updatedUserProfile.getLastName()).isEqualTo(data.getLastName());
+        assertThat(updatedUserProfile.getStatus().toString()).isEqualTo(data.getIdamStatus());
+
+    }
+
+    @Test
+    public void should_return_400_and_update_user_status_resource() throws Exception {
+
+        UserProfile persistedUserProfile = userProfileMap.get("user");
+        UpdateUserProfileData data = new UpdateUserProfileData();
+        persistedUserProfile.setStatus(IdamStatus.ACTIVE);
+        userProfileRepository.save(persistedUserProfile);
+        data.setFirstName("fname1");
+        data.setLastName("lname1");
+        data.setIdamStatus("SUSPENDED");
+
+        idamService.stubFor(patch(urlMatching("/api/v1/users/.*"))
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withStatus(400)));
+
+        userProfileRequestHandlerTest.sendPut(
+                mockMvc,
+                APP_BASE_PATH + SLASH + persistedUserProfile.getIdamId() + "?origin=EXUI",
+                data,
+                OK
+        );
+
+        Optional<UserProfile> optionalUp = userProfileRepository.findByIdamId(persistedUserProfile.getIdamId());
+        UserProfile updatedUserProfile = optionalUp.orElse(null);
+
+        assertThat(updatedUserProfile).isNotNull();
+        assertThat(updatedUserProfile.getIdamId()).isEqualTo(persistedUserProfile.getIdamId());
+        assertThat(updatedUserProfile.getEmail()).isEqualToIgnoringCase(persistedUserProfile.getEmail());
+        assertThat(updatedUserProfile.getFirstName()).isEqualTo(persistedUserProfile.getFirstName());
+        assertThat(updatedUserProfile.getLastName()).isEqualTo(persistedUserProfile.getLastName());
+        assertThat(updatedUserProfile.getStatus()).isEqualTo(persistedUserProfile.getStatus());
 
     }
 }

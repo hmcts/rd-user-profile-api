@@ -2,14 +2,13 @@ package uk.gov.hmcts.reform.userprofileapi.domain.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import feign.Request;
 import feign.Response;
-
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,25 +17,32 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
-
-import uk.gov.hmcts.reform.userprofileapi.client.*;
+import uk.gov.hmcts.reform.userprofileapi.client.AddRoleResponse;
+import uk.gov.hmcts.reform.userprofileapi.client.AttributeResponse;
+import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.client.DeleteRoleResponse;
+import uk.gov.hmcts.reform.userprofileapi.client.RoleName;
+import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
+import uk.gov.hmcts.reform.userprofileapi.domain.UpdateUserDetails;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceNotFoundException;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileUpdator;
@@ -52,6 +58,15 @@ public class UserProfileUpdatorTest {
 
     @Mock
     private AuditRepository auditRepository;
+
+    @Mock
+    AttributeResponse response;
+
+    @Mock
+    IdamService idamService;
+
+    @Mock
+    AttributeResponse attributeResponse;
 
     private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.ACCEPTED);
 
@@ -126,8 +141,8 @@ public class UserProfileUpdatorTest {
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         String body = mapper.writeValueAsString(userProfileRolesResponse);
 
-        when(userProfileRepository.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
-        when(idamFeignClientMock.addUserRoles(updateUserProfileData.getRolesAdd(), "1234")).thenReturn(Response.builder().request(mock(Request.class)).body(body, Charset.defaultCharset()).status(500).build());
+        Mockito.when(userProfileRepository.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+        Mockito.when(idamFeignClientMock.addUserRoles(updateUserProfileData.getRolesAdd(), "1234")).thenReturn(Response.builder().request(mock(Request.class)).body(body, Charset.defaultCharset()).status(500).build());
         UserProfileRolesResponse response = userProfileUpdator.updateRoles(updateUserProfileData, userProfile.getIdamId());
         assertThat(response.getAddRolesResponse().getIdamStatusCode()).isEqualTo("500");
     }
@@ -151,8 +166,8 @@ public class UserProfileUpdatorTest {
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         String body = mapper.writeValueAsString(userProfileRolesResponse);
 
-        when(userProfileRepository.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
-        when(idamFeignClientMock.deleteUserRole("1234", "pui-case-manager")).thenReturn(Response.builder().request(mock(Request.class)).body(body, Charset.defaultCharset()).status(500).build());
+        Mockito.when(userProfileRepository.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+        Mockito.when(idamFeignClientMock.deleteUserRole("1234", "pui-case-manager")).thenReturn(Response.builder().request(mock(Request.class)).body(body, Charset.defaultCharset()).status(500).build());
 
         UserProfileRolesResponse response = userProfileUpdator.updateRoles(updateUserProfileData, userProfile.getIdamId());
         assertThat(response.getDeleteRolesResponse().get(0).getIdamStatusCode()).isEqualTo("500");
@@ -174,8 +189,8 @@ public class UserProfileUpdatorTest {
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         String body = mapper.writeValueAsString(userProfileRolesResponse);
 
-        when(userProfileRepository.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
-        when(idamFeignClientMock.addUserRoles(updataAttData, "1234")).thenReturn(Response.builder().request(mock(Request.class)).body(body, Charset.defaultCharset()).status(500).build());
+        Mockito.when(userProfileRepository.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+        Mockito.when(idamFeignClientMock.addUserRoles(updataAttData, "1234")).thenReturn(Response.builder().request(mock(Request.class)).body(body, Charset.defaultCharset()).status(500).build());
         UserProfileRolesResponse response = userProfileUpdator.updateRoles(updataAttData, userProfile.getIdamId());
         assertThat(response.getAttributeResponse().getIdamStatusCode()).isEqualTo("500");
     }
@@ -198,45 +213,64 @@ public class UserProfileUpdatorTest {
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         String body = mapper.writeValueAsString(userProfileRolesResponse);
 
-        when(userProfileRepository.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+        Mockito.when(userProfileRepository.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
 
         userProfileUpdator.updateRoles(updateUserProfileData, userProfile.getIdamId());
     }
 
     @Test
-    public void should_update_user_profile_successfully() {
+    public void should_update_user_profile_by_sync_successfully() {
 
         String userId = UUID.randomUUID().toString();
 
-        when(userProfileRepository.findByIdamId(userId)).thenReturn(Optional.ofNullable(userProfile));
-        when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);
+        Mockito.when(userProfileRepository.findByIdamId(userId)).thenReturn(Optional.ofNullable(userProfile));
+        Mockito.when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);
 
-        UserProfile response = userProfileUpdator.update(updateUserProfileData, userId.toString());
+        AttributeResponse response = userProfileUpdator.update(updateUserProfileData, userId, null);
 
         assertThat(response).isNotNull();
-        assertThat(response.getEmail()).isEqualTo("email@net.com");
-        assertThat(response.getFirstName()).isEqualTo("firstName");
-        assertThat(response.getLastName()).isEqualTo("lastName");
-        assertThat(response.getStatus()).isEqualTo(IdamStatus.ACTIVE);
 
-        verify(userProfileRepository,times(1)).save(any(UserProfile.class));
-        verify(auditRepository,times(1)).save(any(Audit.class));
+        Mockito.verify(userProfileRepository, Mockito.times(1)).save(any(UserProfile.class));
+        Mockito.verify(auditRepository, Mockito.times(1)).save(any(Audit.class));
+
+    }
+
+    @Test
+    public void should_update_user_profile_by_exui_successfully() {
+
+        //UpdateUserDetails details = new UpdateUserDetails("firstName", "lastName", Boolean.TRUE);
+
+        UpdateUserDetails details = mock(UpdateUserDetails.class);
+        details.setActive(true);
+        details.setForename("firstName");
+        details.setSurname("laastName");
+        String userId = UUID.randomUUID().toString();
+        Mockito.when(userProfileRepository.findByIdamId(userId)).thenReturn(Optional.ofNullable(userProfile));
+        Mockito.when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);
+        Mockito.when(idamService.updateUserDetails(details, userId)).thenReturn(attributeResponse);
+
+        AttributeResponse response = userProfileUpdator.update(updateUserProfileData, userId, "EXUI");
+
+        assertThat(response).isNotNull();
+
+        Mockito.verify(userProfileRepository, Mockito.times(1)).save(any(UserProfile.class));
+        Mockito.verify(auditRepository, Mockito.times(1)).save(any(Audit.class));
 
     }
 
     @Test
     public void should_throw_ResourceNotFound_when_userId_not_valid() {
 
-        assertThatThrownBy(() -> userProfileUpdator.update(updateUserProfileData,"invalid")).isExactlyInstanceOf(ResourceNotFoundException.class);
-        verify(auditRepository,times(1)).save(any(Audit.class));
+        assertThatThrownBy(() -> userProfileUpdator.update(updateUserProfileData,"invalid", "EXUI")).isExactlyInstanceOf(ResourceNotFoundException.class);
+        Mockito.verify(auditRepository, Mockito.times(1)).save(any(Audit.class));
     }
 
     @Test
     public void should_throw_IdamServiceException_when_user_user_profile_not_found_in_db() {
 
         String userId = UUID.randomUUID().toString();
-        when(userProfileRepository.findByIdamId(userId)).thenReturn(Optional.ofNullable(null));
-        assertThatThrownBy(() -> userProfileUpdator.update(updateUserProfileData,userId.toString())).isExactlyInstanceOf(ResourceNotFoundException.class);
+        Mockito.when(userProfileRepository.findByIdamId(userId)).thenReturn(Optional.ofNullable(null));
+        assertThatThrownBy(() -> userProfileUpdator.update(updateUserProfileData,userId.toString(),"EXUI")).isExactlyInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
@@ -247,8 +281,8 @@ public class UserProfileUpdatorTest {
         Set<RoleName> roleNames = new HashSet<RoleName>();
         roleNames.add(roleName);
         updateUserProfileData = new UpdateUserProfileData("", "", "", "ACTIV", roleNames,roleNames);
-        when(userProfileRepository.findByIdamId(userId)).thenReturn(Optional.ofNullable(userProfile));
-        assertThatThrownBy(() -> userProfileUpdator.update(updateUserProfileData, userId)).isExactlyInstanceOf(RequiredFieldMissingException.class);
+        Mockito.when(userProfileRepository.findByIdamId(userId)).thenReturn(Optional.ofNullable(userProfile));
+        assertThatThrownBy(() -> userProfileUpdator.update(updateUserProfileData, userId, "EXUI")).isExactlyInstanceOf(RequiredFieldMissingException.class);
     }
 
     @Test(expected = ResourceNotFoundException.class)
@@ -286,7 +320,7 @@ public class UserProfileUpdatorTest {
         addRoleResponse.setIdamMessage("Success");
         userProfileRolesResponse.setAddRolesResponse(addRoleResponse);
 
-        userProfileUpdator.update(updateUserProfileData, "");
+        userProfileUpdator.update(updateUserProfileData, "xyz", null);
     }
 
     private UserProfileRolesResponse addRoles() throws Exception {
@@ -307,8 +341,8 @@ public class UserProfileUpdatorTest {
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         String body = mapper.writeValueAsString(userProfileRolesResponse);
 
-        when(userProfileRepository.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
-        when(idamFeignClientMock.addUserRoles(updateUserProfileData.getRolesAdd(), "1234")).thenReturn(Response.builder().request(mock(Request.class)).body(body, Charset.defaultCharset()).status(200).build());
+        Mockito.when(userProfileRepository.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+        Mockito.when(idamFeignClientMock.addUserRoles(updateUserProfileData.getRolesAdd(), "1234")).thenReturn(Response.builder().request(mock(Request.class)).body(body, Charset.defaultCharset()).status(200).build());
 
         UserProfileRolesResponse response = userProfileUpdator.updateRoles(updateUserProfileData, userProfile.getIdamId());
 
@@ -330,8 +364,8 @@ public class UserProfileUpdatorTest {
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         String body = mapper.writeValueAsString(userProfileRolesResponse);
 
-        when(userProfileRepository.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
-        when(idamFeignClientMock.addUserRoles(updataAttData, "1234")).thenReturn(Response.builder().request(mock(Request.class)).body(body, Charset.defaultCharset()).status(200).build());
+        Mockito.when(userProfileRepository.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+        Mockito.when(idamFeignClientMock.addUserRoles(updataAttData, "1234")).thenReturn(Response.builder().request(mock(Request.class)).body(body, Charset.defaultCharset()).status(200).build());
 
         UserProfileRolesResponse response = userProfileUpdator.updateRoles(updataAttData, userProfile.getIdamId());
 
@@ -356,11 +390,11 @@ public class UserProfileUpdatorTest {
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         String body = mapper.writeValueAsString(deleteRoleResponse);
 
-        when(userProfileRepository.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+        Mockito.when(userProfileRepository.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
 
         Response response = Response.builder().request(Request.create(Request.HttpMethod.DELETE, "", new HashMap<>(), Request.Body.empty())).body(body, Charset.defaultCharset()).status(200).build();
 
-        when(idamFeignClientMock.deleteUserRole("1234", "pui-case-manager")).thenReturn(response);
+        Mockito.when(idamFeignClientMock.deleteUserRole("1234", "pui-case-manager")).thenReturn(response);
 
         UserProfileRolesResponse response1 = userProfileUpdator.updateRoles(updateUserProfileData, userProfile.getIdamId());
         return response1;

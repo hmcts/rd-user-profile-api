@@ -52,7 +52,7 @@ public class UserProfileServiceTest {
 
         updateUserProfileData.setRolesAdd(roles);
 
-        userProfileService.update(updateUserProfileData, "1234");
+        userProfileService.update(updateUserProfileData, "1234", "EXUI");
 
         UserProfileRolesResponse userProfileRolesResponse = mock(UserProfileRolesResponse.class);
 

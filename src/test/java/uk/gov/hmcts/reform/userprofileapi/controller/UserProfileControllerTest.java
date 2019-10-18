@@ -110,7 +110,7 @@ public class UserProfileControllerTest {
         when(updateUserProfileDataMock.getRolesAdd()).thenReturn(null);
         when(updateUserProfileDataMock.getRolesDelete()).thenReturn(null);
         ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId, origin);
-        verify(userProfileServiceMock, times(1)).update(any(), any());
+        verify(userProfileServiceMock, times(1)).update(any(), any(), any());
         ResponseEntity expect = ResponseEntity.status(HttpStatus.OK).build();
         assertThat(actual.getStatusCode().value()).isEqualTo(expect.getStatusCode().value());
     }
