@@ -64,31 +64,10 @@ public class UserProfileValidatorTest {
 
     @Test
     public void test_validateUpdateUserProfileRequestFields() {
-        UpdateUserProfileData updateUserProfileDataWithInvalidEmail = new UpdateUserProfileData("somorg.com", "fanme", "lname", "ACTIVE", addRolesToRoleName(),addRolesToRoleName());
+        UpdateUserProfileData updateUserProfileDataWithInvalidEmail = new UpdateUserProfileData("somorg.com", "", "", "", addRolesToRoleName(),addRolesToRoleName());
         boolean response = UserProfileValidator.isUpdateUserProfileRequestValid(updateUserProfileDataWithInvalidEmail);
         assertThat(response).isFalse();
     }
-
-    @Test
-    public void test_isBlankOrSizeInvalid() {
-
-        boolean response = UserProfileValidator.isBlankOrSizeInvalid("", 5);
-        assertThat(response).isTrue();
-
-        boolean response1 = UserProfileValidator.isBlankOrSizeInvalid("lname", 2);
-        assertThat(response1).isTrue();
-
-        boolean response3 = UserProfileValidator.isBlankOrSizeInvalid(null, 5);
-        assertThat(response3).isTrue();
-
-        boolean response4 = UserProfileValidator.isBlankOrSizeInvalid("lname", 2);
-        assertThat(response4).isTrue();
-
-        boolean response5 = UserProfileValidator.isBlankOrSizeInvalid("lname", 8);
-        assertThat(response5).isFalse();
-    }
-
-
 
     @Test
     public void test_isSameAsExistingUserProfile() {

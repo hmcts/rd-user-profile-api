@@ -282,46 +282,44 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
     }
 
     @Test
-    public void should_return_400_and_update_user_profile_resource_with_valid_email() throws Exception {
-
-        UserProfile persistedUserProfile = userProfileMap.get("user");
-        String idamId = persistedUserProfile.getIdamId();
-        UpdateUserProfileData data = buildUpdateUserProfileData();
-        data.setEmail("a.adisongmail.com");
-
-        userProfileRequestHandlerTest.sendPut(
-                mockMvc,
-                APP_BASE_PATH + SLASH + idamId,
-                data,
-                BAD_REQUEST
-        );
-
-    }
-
-    @Test
-    public void should_return_400_and_update_user_profile_resource_with_valid_email_1() throws Exception {
-
-        UserProfile persistedUserProfile = userProfileMap.get("user");
-        String idamId = persistedUserProfile.getIdamId();
-        UpdateUserProfileData data = buildUpdateUserProfileData();
-        data.setEmail("a.adison@gmailcom");
-
-        userProfileRequestHandlerTest.sendPut(
-                mockMvc,
-                APP_BASE_PATH + SLASH + idamId,
-                data,
-                BAD_REQUEST
-        );
-
-    }
-
-    @Test
     public void should_return_200_and_update_user_status_resource() throws Exception {
 
         UserProfile persistedUserProfile = userProfileMap.get("user");
-        UpdateUserProfileData data = new UpdateUserProfileData();
         persistedUserProfile.setStatus(IdamStatus.ACTIVE);
         userProfileRepository.save(persistedUserProfile);
+        Optional<UserProfile> optPersistedUserProfile = userProfileRepository.findByIdamId(persistedUserProfile.getIdamId());
+        persistedUserProfile = optPersistedUserProfile.get();
+        UpdateUserProfileData data = new UpdateUserProfileData();
+        data.setIdamStatus("SUSPENDED");
+        String idamId = persistedUserProfile.getIdamId();
+        userProfileRequestHandlerTest.sendPut(
+                mockMvc,
+                APP_BASE_PATH + SLASH + idamId + "?origin=EXUI",
+                data,
+                OK
+        );
+
+        Optional<UserProfile> optionalUp = userProfileRepository.findByIdamId(persistedUserProfile.getIdamId());
+        UserProfile updatedUserProfile = optionalUp.orElse(null);
+
+        assertThat(updatedUserProfile).isNotNull();
+        assertThat(updatedUserProfile.getIdamId()).isEqualTo(persistedUserProfile.getIdamId());
+        assertThat(updatedUserProfile.getEmail()).isEqualToIgnoringCase(persistedUserProfile.getEmail());
+        assertThat(updatedUserProfile.getFirstName()).isEqualTo(persistedUserProfile.getFirstName());
+        assertThat(updatedUserProfile.getLastName()).isEqualTo(persistedUserProfile.getLastName());
+        assertThat(updatedUserProfile.getStatus().toString()).isEqualTo(data.getIdamStatus());
+
+    }
+
+    @Test
+    public void should_return_200_and_update_user_fields() throws Exception {
+
+        UserProfile persistedUserProfile = userProfileMap.get("user");
+        persistedUserProfile.setStatus(IdamStatus.ACTIVE);
+        userProfileRepository.save(persistedUserProfile);
+        Optional<UserProfile> optPersistedUserProfile = userProfileRepository.findByIdamId(persistedUserProfile.getIdamId());
+        persistedUserProfile = optPersistedUserProfile.get();
+        UpdateUserProfileData data = new UpdateUserProfileData();
         data.setFirstName("fname1");
         data.setLastName("lname1");
         data.setIdamStatus("SUSPENDED");

@@ -36,7 +36,7 @@ public interface UserProfileValidator {
     static boolean isUpdateUserProfileRequestValid(UpdateUserProfileData updateUserProfileData) {
 
         boolean isValid = true;
-        if (updateUserProfileData == null) {
+        if (!validateUpdateUserProfileRequestFields(updateUserProfileData)) {
             isValid = false;
         } else {
             try {
@@ -45,7 +45,20 @@ public interface UserProfileValidator {
                 isValid = false;
             }
         }
-        return false;
+
+        return isValid;
+    }
+
+    static boolean validateUpdateUserProfileRequestFields(UpdateUserProfileData updateUserProfileData) {
+
+        boolean isValid = true;
+        if (updateUserProfileData == null
+                || StringUtils.isBlank(updateUserProfileData.getFirstName())
+                || StringUtils.isBlank(updateUserProfileData.getLastName())
+                || StringUtils.isBlank(updateUserProfileData.getIdamStatus())) {
+            isValid = false;
+        }
+        return isValid;
     }
 
     static boolean validateUserProfileRequestWithException(UpdateUserProfileData updateUserProfileData) {
@@ -58,21 +71,12 @@ public interface UserProfileValidator {
         return true;
     }
 
-    static boolean isBlankOrSizeInvalid(String fieldValue, int validSize) {
-
-        boolean isInvalid = false;
-        if (StringUtils.isBlank(fieldValue) || fieldValue.trim().length() > validSize) {
-            isInvalid = true;
-        }
-        return isInvalid;
-    }
-
     static boolean isSameAsExistingUserProfile(UpdateUserProfileData updateUserProfileData, UserProfile userProfile) {
 
         boolean isSame = false;
-        if (userProfile.getFirstName().equals(updateUserProfileData.getFirstName().trim())
-                && userProfile.getLastName().equals(updateUserProfileData.getLastName().trim())
-                && userProfile.getStatus().toString().equals(updateUserProfileData.getIdamStatus().trim())) {
+        if (null != updateUserProfileData.getFirstName() && userProfile.getFirstName().equals(updateUserProfileData.getFirstName().trim())
+                && (null != updateUserProfileData.getLastName() && userProfile.getLastName().equals(updateUserProfileData.getLastName().trim()))
+                && (null != updateUserProfileData.getIdamStatus() && userProfile.getStatus().toString().equals(updateUserProfileData.getIdamStatus().trim()))) {
             isSame = true;
         }
         return isSame;

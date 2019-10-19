@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.userprofileapi.service;
 
 import feign.FeignException;
 import feign.Response;
-import feign.RetryableException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -34,7 +33,7 @@ public class IdamServiceImpl implements IdamService {
             ResponseEntity entity = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty());
             result = new IdamRegistrationInfo(entity.getStatusCode(), Optional.ofNullable(entity));
         } catch (FeignException ex) {
-            result = new IdamRegistrationInfo(gethttpStatusFromFeignException(ex));
+            result = new IdamRegistrationInfo(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return result;
     }
@@ -72,7 +71,8 @@ public class IdamServiceImpl implements IdamService {
             response = idamClient.updateUserRoles(roleRequest, userId);
             httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode();
         } catch (FeignException ex) {
-            httpStatus = gethttpStatusFromFeignException(ex);
+            log.error("SIDAM call failed:", ex);
+            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
         return new IdamRolesInfo(httpStatus);
@@ -87,7 +87,8 @@ public class IdamServiceImpl implements IdamService {
             response = idamClient.addUserRoles(roleRequest, userId);
             httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode();
         } catch (FeignException ex) {
-            httpStatus = gethttpStatusFromFeignException(ex);
+            log.error("SIDAM call failed:", ex);
+            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
         return new IdamRolesInfo(httpStatus);
@@ -102,15 +103,10 @@ public class IdamServiceImpl implements IdamService {
             response = idamClient.updateUserDetails(updateUserDetails, userId);
             httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode();
         } catch (FeignException ex) {
-            httpStatus = gethttpStatusFromFeignException(ex);
+            log.error("SIDAM call failed:", ex);
+            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         }
         return new AttributeResponse(httpStatus);
-    }
-
-    public HttpStatus gethttpStatusFromFeignException(FeignException ex) {
-        return (ex instanceof RetryableException)
-                ? HttpStatus.INTERNAL_SERVER_ERROR
-                : HttpStatus.valueOf(ex.status());
     }
 
     private IdamRolesInfo buildIdamResponseResult(Response response) {
@@ -119,6 +115,6 @@ public class IdamServiceImpl implements IdamService {
     }
 
     private IdamRolesInfo buildIdamResponseFromFeignException(FeignException ex) {
-        return new IdamRolesInfo(gethttpStatusFromFeignException(ex));
+        return new IdamRolesInfo(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

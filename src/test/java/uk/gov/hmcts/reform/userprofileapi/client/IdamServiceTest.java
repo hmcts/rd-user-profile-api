@@ -5,7 +5,6 @@ import static org.mockito.Mockito.*;
 
 import feign.FeignException;
 import feign.Response;
-import feign.RetryableException;
 
 import java.util.*;
 
@@ -82,7 +81,7 @@ public class IdamServiceTest {
         Response responseMock = Mockito.mock(Response.class);
 
         when(idamFeignClientMock.getUserByEmail(email)).thenThrow(feignExceptionMock);
-        when(feignExceptionMock.status()).thenReturn(StatusCode.INTERNAL_SERVER_ERROR.getStatus());
+        //when(feignExceptionMock.status()).thenReturn(StatusCode.INTERNAL_SERVER_ERROR.getStatus());
 
         IdamRolesInfo idamRolesInfo = sut.fetchUserByEmail(email);
 
@@ -95,28 +94,13 @@ public class IdamServiceTest {
         IdamRegisterUserRequest dataMock = Mockito.mock(IdamRegisterUserRequest.class);
 
         when(idamFeignClientMock.createUserProfile(dataMock)).thenThrow(feignExceptionMock);
-        when(feignExceptionMock.status()).thenReturn(StatusCode.NOT_FOUND.getStatus());
+        //when(feignExceptionMock.status()).thenReturn(StatusCode.INTERNAL_SERVER_ERROR.getStatus());
 
         IdamRegistrationInfo idamId = sut.registerUser(dataMock);
 
         assertThat(idamId.getIdamRegistrationResponse()).isNotNull();
         assertThat(idamId.getIdamRegistrationResponse().value())
-                .isEqualTo(HttpStatus.NOT_FOUND.value());
-    }
-
-    @Test
-    public void testGetHttpStatusFromFeignException() {
-        IdamServiceImpl idamService = new IdamServiceImpl();
-        RetryableException retryableExceptionMock = mock(RetryableException.class);
-
-        HttpStatus status = idamService.gethttpStatusFromFeignException(retryableExceptionMock);
-        assertThat(status).isNotNull().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-
-        FeignException feignException = mock(FeignException.class);
-        when(feignException.status()).thenReturn(400);
-
-        HttpStatus status1 = idamService.gethttpStatusFromFeignException(feignException);
-        assertThat(status1).isNotNull().isEqualTo(HttpStatus.BAD_REQUEST);
+                .isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     @Test
@@ -146,7 +130,7 @@ public class IdamServiceTest {
 
         FeignException feignExceptionMock = Mockito.mock(FeignException.class);
 
-        when(feignExceptionMock.status()).thenReturn(StatusCode.NOT_FOUND.getStatus());
+        //when(feignExceptionMock.status()).thenReturn(StatusCode.NOT_FOUND.getStatus());
         when(idamFeignClientMock.updateUserRoles(roleRequest, userId)).thenThrow(feignExceptionMock);
 
         IdamRolesInfo result = sut.updateUserRoles(roleRequest, userId);
@@ -182,7 +166,7 @@ public class IdamServiceTest {
 
         FeignException feignExceptionMock = Mockito.mock(FeignException.class);
 
-        when(feignExceptionMock.status()).thenReturn(StatusCode.NOT_FOUND.getStatus());
+        //when(feignExceptionMock.status()).thenReturn(StatusCode.NOT_FOUND.getStatus());
         when(idamFeignClientMock.addUserRoles(roleRequest, userId)).thenThrow(feignExceptionMock);
 
         IdamRolesInfo result = sut.addUserRoles(roleRequest, userId);
