@@ -110,15 +110,18 @@ public class UserProfileControllerTest {
         ResponseEntity responseEntityMock = Mockito.mock(ResponseEntity.class);
 
         String idamId = "13b02995-5e44-4136-bf5a-46f4ff4acb8f";
-        String origin = "false";
+        String origin = "EXUI";
         when(updateUserProfileDataMock.getRolesAdd()).thenReturn(null);
         when(updateUserProfileDataMock.getRolesDelete()).thenReturn(null);
+        AttributeResponse attributeResponse = Mockito.mock(AttributeResponse.class);
+        when(attributeResponse.getIdamStatusCode()).thenReturn("200");
+        when(userProfileServiceMock.update(updateUserProfileDataMock, idamId, origin)).thenReturn(attributeResponse);
         ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId, origin);
+
         verify(userProfileServiceMock, times(1)).update(any(), any(), any());
         ResponseEntity expect = ResponseEntity.status(HttpStatus.OK).build();
         assertThat(actual.getStatusCode().value()).isEqualTo(expect.getStatusCode().value());
     }
-
 
     @Test
     public void should_throw_exception_when_get_with_idamId_null_parameters_passed_in() {

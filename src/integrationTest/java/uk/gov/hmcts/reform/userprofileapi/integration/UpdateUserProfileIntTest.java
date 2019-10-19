@@ -215,56 +215,6 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
     }
 
     @Test
-    public void should_return_400_when_fields_are_blank_or_having_only_whitespaces() throws Exception {
-
-        UserProfile persistedUserProfile = userProfileMap.get("user");
-        String idamId = persistedUserProfile.getIdamId();
-        List<String> mandatoryFieldList =
-                Lists.newArrayList(
-                        "email",
-                        "firstName",
-                        "lastName",
-                        "idamStatus"
-                );
-
-        new JSONObject(
-                objectMapper.writeValueAsString(
-                        buildUpdateUserProfileData()
-                )
-        );
-
-        mandatoryFieldList.forEach(s -> {
-
-            try {
-
-                JSONObject jsonObject =
-                        new JSONObject(objectMapper.writeValueAsString(buildUpdateUserProfileData()));
-
-                jsonObject.put(s,"");
-
-                mockMvc.perform(put(APP_BASE_PATH  + SLASH + idamId.toString())
-                        .content(jsonObject.toString())
-                        .contentType(APPLICATION_JSON_UTF8))
-                        .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
-                        .andReturn();
-
-                jsonObject.put(s," ");
-
-                mockMvc.perform(put(APP_BASE_PATH + SLASH + idamId.toString())
-                        .content(jsonObject.toString())
-                        .contentType(APPLICATION_JSON_UTF8))
-                        .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
-                        .andReturn();
-
-            } catch (Exception e) {
-                Assertions.fail("could not run test correctly", e);
-            }
-
-        });
-
-    }
-
-    @Test
     public void should_return_200_and_update_user_profile_resource_with_valid_email() throws Exception {
 
         UserProfile persistedUserProfile = userProfileMap.get("user");
@@ -363,18 +313,7 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
                 mockMvc,
                 APP_BASE_PATH + SLASH + persistedUserProfile.getIdamId() + "?origin=EXUI",
                 data,
-                OK
+                BAD_REQUEST
         );
-
-        Optional<UserProfile> optionalUp = userProfileRepository.findByIdamId(persistedUserProfile.getIdamId());
-        UserProfile updatedUserProfile = optionalUp.orElse(null);
-
-        assertThat(updatedUserProfile).isNotNull();
-        assertThat(updatedUserProfile.getIdamId()).isEqualTo(persistedUserProfile.getIdamId());
-        assertThat(updatedUserProfile.getEmail()).isEqualToIgnoringCase(persistedUserProfile.getEmail());
-        assertThat(updatedUserProfile.getFirstName()).isEqualTo(persistedUserProfile.getFirstName());
-        assertThat(updatedUserProfile.getLastName()).isEqualTo(persistedUserProfile.getLastName());
-        assertThat(updatedUserProfile.getStatus()).isEqualTo(persistedUserProfile.getStatus());
-
     }
 }

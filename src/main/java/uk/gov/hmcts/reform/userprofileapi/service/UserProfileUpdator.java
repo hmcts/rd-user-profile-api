@@ -107,7 +107,8 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
             throw new RequiredFieldMissingException("Cannot change status to PENDING or user has already PENDING status");
         }
         UpdateUserDetails data = new UpdateUserDetails(updateUserProfileData.getFirstName(), updateUserProfileData.getLastName(), deriveStatusFlag(updateUserProfileData));
-        return idamService.updateUserDetails(data, userId);
+        AttributeResponse response =  idamService.updateUserDetails(data, userId);
+        return response == null ? new AttributeResponse(HttpStatus.INTERNAL_SERVER_ERROR) : response;
     }
 
     @Override

@@ -131,7 +131,7 @@ public class UserProfileUpdatorTest {
         Set<RoleName> roles = new HashSet<>();
         roles.add(roleName1);
         roles.add(roleName2);
-        UpdateUserProfileData updateUserProfileData = new  UpdateUserProfileData();
+
         updateUserProfileData.setRolesAdd(roles);
 
         UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
@@ -152,7 +152,7 @@ public class UserProfileUpdatorTest {
         RoleName roleName1 = new RoleName("pui-case-manager");
         Set<RoleName> roles = new HashSet<>();
         roles.add(roleName1);
-        UpdateUserProfileData updateUserProfileData = new  UpdateUserProfileData();
+
         updateUserProfileData.setRolesDelete(roles);
 
         DeleteRoleResponse deleteRoleResponse = new DeleteRoleResponse();
@@ -171,28 +171,6 @@ public class UserProfileUpdatorTest {
 
         UserProfileRolesResponse response = userProfileUpdator.updateRoles(updateUserProfileData, userProfile.getIdamId());
         assertThat(response.getDeleteRolesResponse().get(0).getIdamStatusCode()).isEqualTo("500");
-    }
-
-    @Test
-    public void attributeResponse_InternalServerError() throws Exception {
-        UpdateUserProfileData updataAttData = new UpdateUserProfileData();
-        updataAttData.setFirstName("firstName");
-        updataAttData.setLastName("lastName");
-        updataAttData.setEmail("some@gmail.com");
-        updataAttData.setIdamStatus(IdamStatus.ACTIVE.name());
-
-        UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
-        AttributeResponse attributeResponse = new AttributeResponse();
-        attributeResponse.setIdamStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.toString());
-        attributeResponse.setIdamMessage("Failure");
-        userProfileRolesResponse.setAttributeResponse(attributeResponse);
-        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        String body = mapper.writeValueAsString(userProfileRolesResponse);
-
-        Mockito.when(userProfileRepository.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
-        Mockito.when(idamFeignClientMock.addUserRoles(updataAttData, "1234")).thenReturn(Response.builder().request(mock(Request.class)).body(body, Charset.defaultCharset()).status(500).build());
-        UserProfileRolesResponse response = userProfileUpdator.updateRoles(updataAttData, userProfile.getIdamId());
-        assertThat(response.getAttributeResponse().getIdamStatusCode()).isEqualTo("500");
     }
 
     @Test(expected = InvalidRequest.class)
@@ -228,7 +206,7 @@ public class UserProfileUpdatorTest {
 
         AttributeResponse response = userProfileUpdator.update(updateUserProfileData, userId, null);
 
-        assertThat(response).isNotNull();
+        assertThat(response).isNull();
 
         Mockito.verify(userProfileRepository, Mockito.times(1)).save(any(UserProfile.class));
         Mockito.verify(auditRepository, Mockito.times(1)).save(any(Audit.class));
@@ -236,24 +214,39 @@ public class UserProfileUpdatorTest {
     }
 
     @Test
-    public void should_update_user_profile_by_exui_successfully() {
+    public void should_update_user_details_by_exui_successfully() {
 
-        //UpdateUserDetails details = new UpdateUserDetails("firstName", "lastName", Boolean.TRUE);
-
-        UpdateUserDetails details = mock(UpdateUserDetails.class);
-        details.setActive(true);
-        details.setForename("firstName");
-        details.setSurname("laastName");
+        UpdateUserDetails updateUserDetailsMock = mock(UpdateUserDetails.class);
+        updateUserDetailsMock.setActive(true);
+        updateUserDetailsMock.setForename("firstName");
+        updateUserDetailsMock.setSurname("lastName");
         String userId = UUID.randomUUID().toString();
         Mockito.when(userProfileRepository.findByIdamId(userId)).thenReturn(Optional.ofNullable(userProfile));
-        Mockito.when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);
-        Mockito.when(idamService.updateUserDetails(details, userId)).thenReturn(attributeResponse);
 
         AttributeResponse response = userProfileUpdator.update(updateUserProfileData, userId, "EXUI");
 
         assertThat(response).isNotNull();
 
-        Mockito.verify(userProfileRepository, Mockito.times(1)).save(any(UserProfile.class));
+        Mockito.verify(auditRepository, Mockito.times(1)).save(any(Audit.class));
+
+    }
+
+    @Test
+    public void should_update_user_status_by_exui_successfully() {
+
+        UpdateUserDetails updateUserDetailsMock = mock(UpdateUserDetails.class);
+        updateUserDetailsMock.setActive(true);
+        updateUserDetailsMock.setForename("firstName");
+        updateUserDetailsMock.setSurname("lastName");
+        String userId = UUID.randomUUID().toString();
+        Mockito.when(userProfileRepository.findByIdamId(userId)).thenReturn(Optional.ofNullable(userProfile));
+
+        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData();
+        updateUserProfileData.setIdamStatus("SUSPENDED");
+        AttributeResponse response = userProfileUpdator.update(updateUserProfileData, userId, "EXUI");
+
+        assertThat(response).isNotNull();
+
         Mockito.verify(auditRepository, Mockito.times(1)).save(any(Audit.class));
 
     }
@@ -365,8 +358,6 @@ public class UserProfileUpdatorTest {
         String body = mapper.writeValueAsString(userProfileRolesResponse);
 
         Mockito.when(userProfileRepository.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
-        Mockito.when(idamFeignClientMock.addUserRoles(updataAttData, "1234")).thenReturn(Response.builder().request(mock(Request.class)).body(body, Charset.defaultCharset()).status(200).build());
-
         UserProfileRolesResponse response = userProfileUpdator.updateRoles(updataAttData, userProfile.getIdamId());
 
         return response;

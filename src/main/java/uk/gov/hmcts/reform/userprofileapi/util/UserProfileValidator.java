@@ -53,9 +53,9 @@ public interface UserProfileValidator {
 
         boolean isValid = true;
         if (updateUserProfileData == null
-                || StringUtils.isBlank(updateUserProfileData.getFirstName())
-                || StringUtils.isBlank(updateUserProfileData.getLastName())
-                || StringUtils.isBlank(updateUserProfileData.getIdamStatus())) {
+                || (StringUtils.isBlank(updateUserProfileData.getFirstName())
+                && StringUtils.isBlank(updateUserProfileData.getLastName())
+                && StringUtils.isBlank(updateUserProfileData.getIdamStatus()))) {
             isValid = false;
         }
         return isValid;
@@ -148,7 +148,7 @@ public interface UserProfileValidator {
         return EXUI.equalsIgnoreCase(param) ? true : false;
     }
 
-    static Boolean deriveStatusFlag(UpdateUserProfileData data) {
+    static boolean deriveStatusFlag(UpdateUserProfileData data) {
 
         Boolean deriveStatusFlag = null;
         if (null !=  data.getIdamStatus()) {

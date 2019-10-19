@@ -278,7 +278,7 @@ public class UserProfileController {
             log.info("Updating user profile without roles");
             AttributeResponse response = userProfileService.update(updateUserProfileData, userId, origin);
             userProfileResponse.setAttributeResponse(response);
-            return ResponseEntity.ok(userProfileResponse);
+            return ResponseEntity.status(Integer.valueOf(response.getIdamStatusCode())).body(userProfileResponse);
         } else {
             UserProfileValidator.validateUserProfileDataAndUserId(updateUserProfileData, userId);
             log.info("Updating user profile with roles");
