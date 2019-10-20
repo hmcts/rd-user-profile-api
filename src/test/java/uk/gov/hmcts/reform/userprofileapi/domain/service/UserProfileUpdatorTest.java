@@ -206,7 +206,7 @@ public class UserProfileUpdatorTest {
 
         AttributeResponse response = userProfileUpdator.update(updateUserProfileData, userId, null);
 
-        assertThat(response).isNull();
+        assertThat(response).isNotNull();
 
         Mockito.verify(userProfileRepository, Mockito.times(1)).save(any(UserProfile.class));
         Mockito.verify(auditRepository, Mockito.times(1)).save(any(Audit.class));

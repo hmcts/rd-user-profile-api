@@ -32,7 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.userprofileapi.client.*;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
@@ -161,7 +160,7 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
         userRoles.setRolesAdd(roles);
         userProfileRequestHandlerTest.sendPut(
                         mockMvc,
-                  APP_BASE_PATH + "/" + userId + "?origin=exui",
+                  APP_BASE_PATH + "/" + userId,
                         userRoles,
                         HttpStatus.OK
         );
@@ -181,7 +180,7 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
         userRoles.setRolesAdd(roles);
         userProfileRequestHandlerTest.sendPut(
                 mockMvc,
-                APP_BASE_PATH + "/" + userId + "?origin=exui",
+                APP_BASE_PATH + "/" + userId,
                 userRoles,
                 HttpStatus.BAD_REQUEST
         );
@@ -221,7 +220,7 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
         userRoles.setRolesAdd(roles);
         userProfileRequestHandlerTest.sendPut(
                 mockMvc,
-                APP_BASE_PATH + "/" + userId + "?origin=exui",
+                APP_BASE_PATH + "/" + userId,
                 userRoles,
                 HttpStatus.OK
         );
@@ -233,7 +232,7 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
         userRoles1.setRolesDelete(rolesDelete);
         userProfileRequestHandlerTest.sendPut(
                 mockMvc,
-                APP_BASE_PATH + "/" + userId + "?origin=exui",
+                APP_BASE_PATH + "/" + userId,
                 userRoles1,
                 HttpStatus.OK
         );
@@ -261,20 +260,6 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
 
         String userId = createdResource.getIdamId();
         assertThat(userId).isNotNull();
-
-
-        UpdateUserProfileData userRoles = new UpdateUserProfileData();
-        userRoles.setFirstName("firstName");
-        userRoles.setLastName("LastName");
-        userRoles.setEmail("kpr@gmail.com");
-        userRoles.setIdamStatus(IdamStatus.SUSPENDED.name());
-        userProfileRequestHandlerTest.sendPut(
-                mockMvc,
-                APP_BASE_PATH + "/" + userId + "?origin=exui",
-                userRoles,
-                HttpStatus.OK
-        );
-
     }
 
     @Test
@@ -290,7 +275,7 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
         userRoles.setRolesDelete(roles);
         userProfileRequestHandlerTest.sendPut(
                 mockMvc,
-                APP_BASE_PATH + "/" + userId + "?orign=exui",
+                APP_BASE_PATH + "/" + userId,
                 userRoles,
                 HttpStatus.BAD_REQUEST
         );

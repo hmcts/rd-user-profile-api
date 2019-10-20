@@ -89,7 +89,7 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
         //create user profile in UP with PRD-ADMIN token for above user with same email with "pui-user-manager" roles
         CreateUserProfileData data = createUserProfileData();
         data.setEmail(email);
-        List<String> xuiRoles = new ArrayList();
+        List<String> xuiRoles = new ArrayList<String>();
         xuiRoles.add("pui-user-manager");
         xuiRoles.add("pui-case-manager");
         data.setRoles(xuiRoles);

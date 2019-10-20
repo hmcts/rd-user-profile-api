@@ -62,10 +62,25 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
         userProfileMap.put("user", user);
     }
 
+    public void setUserProfileUpdateSuccessMock() {
+        idamService.stubFor(patch(urlMatching("/api/v1/users/.*"))
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withStatus(200)));
+    }
+
+    public void setUserProfileUpdateFailureMock() {
+        idamService.stubFor(patch(urlMatching("/api/v1/users/.*"))
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withStatus(400)));
+    }
+
     @Test
     public void should_return_200_and_update_user_profile_resource() throws Exception {
 
         UserProfile persistedUserProfile = userProfileMap.get("user");
+        System.out.println("Old");
         String idamId = persistedUserProfile.getIdamId();
         UpdateUserProfileData data = buildUpdateUserProfileData();
 
@@ -108,7 +123,7 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
 
         assertThat(updatedUserProfile).isNotNull();
         assertThat(updatedUserProfile.getIdamId()).isEqualTo(persistedUserProfile.getIdamId());
-        assertThat(updatedUserProfile.getEmail()).isEqualToIgnoringCase(data.getEmail());
+        assertThat(updatedUserProfile.getEmail()).isEqualToIgnoringCase(persistedUserProfile.getEmail());
         assertThat(updatedUserProfile.getFirstName()).isEqualTo(data.getFirstName());
         assertThat(updatedUserProfile.getLastName()).isEqualTo(data.getLastName());
         assertThat(updatedUserProfile.getLanguagePreference()).isEqualTo(persistedUserProfile.getLanguagePreference());
@@ -234,6 +249,7 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
     @Test
     public void should_return_200_and_update_user_status_resource() throws Exception {
 
+        setUserProfileUpdateSuccessMock();
         UserProfile persistedUserProfile = userProfileMap.get("user");
         persistedUserProfile.setStatus(IdamStatus.ACTIVE);
         userProfileRepository.save(persistedUserProfile);
@@ -264,6 +280,7 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
     @Test
     public void should_return_200_and_update_user_fields() throws Exception {
 
+        setUserProfileUpdateSuccessMock();
         UserProfile persistedUserProfile = userProfileMap.get("user");
         persistedUserProfile.setStatus(IdamStatus.ACTIVE);
         userProfileRepository.save(persistedUserProfile);
@@ -296,6 +313,7 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
     @Test
     public void should_return_400_and_update_user_status_resource() throws Exception {
 
+        setUserProfileUpdateFailureMock();
         UserProfile persistedUserProfile = userProfileMap.get("user");
         UpdateUserProfileData data = new UpdateUserProfileData();
         persistedUserProfile.setStatus(IdamStatus.ACTIVE);
@@ -303,11 +321,6 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
         data.setFirstName("fname1");
         data.setLastName("lname1");
         data.setIdamStatus("SUSPENDED");
-
-        idamService.stubFor(patch(urlMatching("/api/v1/users/.*"))
-                .willReturn(aResponse()
-                        .withHeader("Content-Type", "application/json")
-                        .withStatus(400)));
 
         userProfileRequestHandlerTest.sendPut(
                 mockMvc,

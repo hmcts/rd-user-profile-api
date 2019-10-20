@@ -54,7 +54,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
 
         HttpStatus status = HttpStatus.OK;
         UserProfile userProfile = null;
-        AttributeResponse response = null;
+        AttributeResponse response = new AttributeResponse(status);
         boolean isExuiUpdate = UserProfileValidator.isUpdateFromExui(origin);
         ResponseSource source = isExuiUpdate ? ResponseSource.API : ResponseSource.SYNC;
         if (!isUserIdValid(userId, false)) {
@@ -75,12 +75,13 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
                 response = updateUserDetailsInSidam(userProfile, source, updateUserProfileData, userId);
                 status = HttpStatus.valueOf(Integer.valueOf(response.getIdamStatusCode()));
             }
-            updateExistingUserProfile(updateUserProfileData, userProfile);
             if (!isExuiUpdate || (status.is2xxSuccessful())) {
+                updateExistingUserProfile(updateUserProfileData, userProfile);
                 try {
                     userProfile = userProfileRepository.save(userProfile);
                 } catch (Exception ex) {
                     status = HttpStatus.INTERNAL_SERVER_ERROR;
+                    response = new AttributeResponse(status);
                 }
             }
         }

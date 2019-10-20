@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.userprofileapi.config;
 
 import feign.Feign;
 import feign.RequestInterceptor;
+import feign.Retryer;
 import feign.httpclient.ApacheHttpClient;
 import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
@@ -40,9 +41,9 @@ public class FeignInterceptorConfiguration {
     @Bean
     @Scope("prototype")
     @ConditionalOnMissingBean
-    public Feign.Builder feignBuilder() {
+    public Feign.Builder feignBuilder(Retryer r) {
         return Feign.builder()
-                .client(new ApacheHttpClient());
+                .client(new ApacheHttpClient()).retryer(r);
     }
 
 

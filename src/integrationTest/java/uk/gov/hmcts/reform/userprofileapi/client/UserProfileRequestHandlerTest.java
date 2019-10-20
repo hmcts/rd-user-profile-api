@@ -115,8 +115,6 @@ public class UserProfileRequestHandlerTest {
 
     private HttpHeaders getMultipleAuthHeaders() {
 
-        log.info("JWT TOKEN::" + JWT_TOKEN);
-        log.info("IDAM_TOKEN::" + IDAM_TOKEN.get("authToken"));
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
 
