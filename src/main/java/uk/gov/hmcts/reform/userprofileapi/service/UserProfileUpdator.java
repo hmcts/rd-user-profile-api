@@ -1,9 +1,5 @@
 package uk.gov.hmcts.reform.userprofileapi.service;
 
-import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.resolveStatusAndReturnMessage;
-import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUpdateUserProfileRequestValid;
-import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
-
 import feign.FeignException;
 import feign.Response;
 import feign.RetryableException;
@@ -18,15 +14,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import org.springframework.util.StringUtils;
 import uk.gov.hmcts.reform.userprofileapi.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.*;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
-import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
-import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
-import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.util.JsonFeignResponseHelper;
 import uk.gov.hmcts.reform.userprofileapi.util.UserProfileMapper;
@@ -38,9 +30,6 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
 
     @Autowired
     private UserProfileRepository userProfileRepository;
-
-    @Autowired
-    private AuditRepository auditRepository;
 
     @Autowired
     private IdamFeignClient idamClient;
