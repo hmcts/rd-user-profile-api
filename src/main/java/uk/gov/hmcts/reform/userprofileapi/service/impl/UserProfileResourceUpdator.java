@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.userprofileapi.service;
+package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
 import feign.FeignException;
 import feign.Response;
@@ -20,13 +20,18 @@ import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
+import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
+import uk.gov.hmcts.reform.userprofileapi.service.ResourceNotFoundException;
+import uk.gov.hmcts.reform.userprofileapi.service.ResourceUpdator;
+import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
 import uk.gov.hmcts.reform.userprofileapi.util.JsonFeignResponseHelper;
 import uk.gov.hmcts.reform.userprofileapi.util.UserProfileMapper;
 
 
 @Service
 @Slf4j
-public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData> {
+public class UserProfileResourceUpdator implements ResourceUpdator<UpdateUserProfileData> {
 
     @Autowired
     private UserProfileRepository userProfileRepository;
@@ -46,27 +51,30 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
 
         Optional<UserProfile> userProfileOptional = validationService.validateUpdate(updateUserProfileData, userId);
 
-        UserProfileMapper.mapUpdatableFields(updateUserProfileData, userProfileOptional.get());
+        if(userProfileOptional.isPresent()) {
+            UserProfileMapper.mapUpdatableFields(updateUserProfileData, userProfileOptional.get());
+            return Optional.ofNullable(doPersistUserProfile(userProfileOptional.get()));
+        }
 
-        return Optional.ofNullable(doPersistUserProfile(userProfileOptional.get()));
+        auditService.persistAudit(HttpStatus.NOT_FOUND, ResponseSource.SYNC);
+        throw new ResourceNotFoundException("Could not find user profile for userId:" + userId);
     }
-
 
     private UserProfile doPersistUserProfile(UserProfile userProfile) {
         UserProfile result = null;
         HttpStatus status = HttpStatus.OK;
         try {
             result = userProfileRepository.save(userProfile);
-            auditService.persistAudit(status, result, ResponseSource.SYNC);
         } catch (Exception ex) {
             status = HttpStatus.INTERNAL_SERVER_ERROR;
-            auditService.persistAudit(status, userProfile, ResponseSource.SYNC);
+        } finally {
+            auditService.persistAudit(status, (null != result) ? result : userProfile, ResponseSource.SYNC);
         }
         return result;
     }
 
     //TODO new functionality with origin for RDCC-418
-    private void assignFieldToUse(){}
+    private void assignFieldToUse() {}
 
     @Override
     public AttributeResponse update(UpdateUserProfileData profileData, String userId, String origin) {
@@ -75,8 +83,8 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
 
     @Override
     public UserProfileRolesResponse updateRoles(UpdateUserProfileData profileData, String userId) {
-        UserProfile userProfile = null;
-        HttpStatus httpStatus = null;
+        UserProfile userProfile;
+        HttpStatus httpStatus;
         UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
         userProfile = validateUserStatus(userId);
         if (!CollectionUtils.isEmpty(profileData.getRolesAdd())) {
@@ -94,11 +102,9 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         }
 
         if (!CollectionUtils.isEmpty(profileData.getRolesDelete())) {
-
             log.info("Delete idam roles for userId :" + userId);
             List<DeleteRoleResponse> deleteRoleResponses = new ArrayList<>();
-            UserProfile finalUserProfile = userProfile;
-            profileData.getRolesDelete().forEach(role -> deleteRoleResponses.add(deleteRolesInIdam(userId, role.getName(), finalUserProfile)));
+            profileData.getRolesDelete().forEach(role -> deleteRoleResponses.add(deleteRolesInIdam(userId, role.getName(), userProfile)));
             userProfileRolesResponse.setDeleteRolesResponse(deleteRoleResponses);
         }
         return userProfileRolesResponse;

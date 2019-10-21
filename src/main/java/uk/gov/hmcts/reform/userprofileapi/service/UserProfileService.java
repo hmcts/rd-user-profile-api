@@ -16,10 +16,13 @@ public class UserProfileService<T extends RequestData> {
 
     @Autowired
     private ResourceCreator<T> resourceCreator;
+
     @Autowired
     private ResourceRetriever<T> resourceRetriever;
+
     @Autowired
     private ResourceUpdator<T> resourceUpdator;
+
     @Autowired
     private UserProfileRepository userProfileRepository;
 

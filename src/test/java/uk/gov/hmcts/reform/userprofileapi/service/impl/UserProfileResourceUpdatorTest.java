@@ -1,14 +1,34 @@
-package uk.gov.hmcts.reform.userprofileapi.domain.service;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
+package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import feign.Request;
 import feign.Response;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
+import uk.gov.hmcts.reform.userprofileapi.client.AddRoleResponse;
+import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.client.DeleteRoleResponse;
+import uk.gov.hmcts.reform.userprofileapi.client.RoleName;
+import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
+import uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder;
+import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
+import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
+import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
+import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
+import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
+import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
+import uk.gov.hmcts.reform.userprofileapi.service.ResourceNotFoundException;
+import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -19,32 +39,17 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.http.HttpStatus;
-
-import uk.gov.hmcts.reform.userprofileapi.client.*;
-import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
-import uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder;
-import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
-import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
-import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
-import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
-import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
-import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
-import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
-import uk.gov.hmcts.reform.userprofileapi.service.ResourceNotFoundException;
-import uk.gov.hmcts.reform.userprofileapi.service.UserProfileUpdator;
-import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UserProfileUpdatorTest {
+public class UserProfileResourceUpdatorTest {
 
     @Mock
     private UserProfileRepository userProfileRepositoryMock;
@@ -69,7 +74,7 @@ public class UserProfileUpdatorTest {
     private final IdamFeignClient idamFeignClientMock = mock(IdamFeignClient.class);
 
     @InjectMocks
-    private UserProfileUpdator sut;
+    private UserProfileResourceUpdator sut;
 
     @Before
     public void setUp() {

@@ -272,11 +272,8 @@ public class UserProfileController {
 
     @ResponseBody
     public ResponseEntity<UserProfileRolesResponse> updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData,
-                                                                      @PathVariable String userId
-                                                                      ,@ApiParam(name = "origin", required = false) @RequestParam (value = "origin", required = false) String origin
-    ) {
-
-
+                                                                      @PathVariable String userId,
+                                                                      @ApiParam(name = "origin", required = false) @RequestParam (value = "origin", required = false) String origin) {
         log.info("Updating user profile");
         UserProfileRolesResponse userProfileResponse = new UserProfileRolesResponse();
         if (CollectionUtils.isEmpty(updateUserProfileData.getRolesAdd())
