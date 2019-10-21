@@ -161,12 +161,10 @@ public class UserProfileValidatorTest {
 
         UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("test-email-@somewhere.com", "test-first-name", "test-last-name", "PENDING",addRolesToRoleName(), addRolesToRoleName());
 
-        boolean response = UserProfileValidator.isSameAsExistingUserProfile(updateUserProfileData, userProfile);
-        assertThat(response).isTrue();
+        assertThat(updateUserProfileData.isSameAsUserProfile(userProfile)).isTrue();
 
         updateUserProfileData = new UpdateUserProfileData("test-l-@somewhere.com", "test-first-name", "test-last-name", "PENDING",addRolesToRoleName(), addRolesToRoleName());
-        boolean response1 = UserProfileValidator.isSameAsExistingUserProfile(updateUserProfileData, userProfile);
-        assertThat(response1).isFalse();
+        assertThat(updateUserProfileData.isSameAsUserProfile(userProfile)).isFalse();
     }
 
     @Test

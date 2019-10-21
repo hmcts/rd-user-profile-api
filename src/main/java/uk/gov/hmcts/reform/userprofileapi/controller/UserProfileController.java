@@ -271,8 +271,12 @@ public class UserProfileController {
     )
 
     @ResponseBody
-    public ResponseEntity<UserProfileRolesResponse> updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData, @PathVariable String userId
+    public ResponseEntity<UserProfileRolesResponse> updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData,
+                                                                      @PathVariable String userId
+                                                                      ,@ApiParam(name = "origin", required = false) @RequestParam (value = "origin", required = false) String origin
     ) {
+
+
         log.info("Updating user profile");
         UserProfileRolesResponse userProfileResponse = new UserProfileRolesResponse();
         if (CollectionUtils.isEmpty(updateUserProfileData.getRolesAdd())
@@ -280,6 +284,7 @@ public class UserProfileController {
 
             log.info("Updating user profile without roles");
             userProfileService.update(updateUserProfileData, userId);
+            // TODO if origin is populated call overloaded service method
         } else {
             UserProfileValidator.validateUserProfileDataAndUserId(updateUserProfileData, userId);
             log.info("Updating user profile with roles");
