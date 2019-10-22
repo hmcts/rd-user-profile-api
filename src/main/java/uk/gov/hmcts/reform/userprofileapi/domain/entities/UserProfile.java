@@ -93,10 +93,10 @@ public class UserProfile {
     }
 
     public UserProfile(CreateUserProfileData data, HttpStatus idamStatus) {
-
         this.email = data.getEmail().trim().toLowerCase();
         this.firstName = data.getFirstName().trim();
         this.lastName = data.getLastName().trim();
+
         if (StringUtils.isNotBlank(data.getLanguagePreference())) {
             this.languagePreference = LanguagePreference.valueOf(data.getLanguagePreference());
         }
@@ -105,6 +105,28 @@ public class UserProfile {
         this.userCategory = UserCategory.valueOf(data.getUserCategory());
         this.userType = UserType.valueOf(data.getUserType());
         this.idamRegistrationResponse = idamStatus.value();
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+
+
+    public void setStatus(CreateUserProfileData createUserProfileData) {
+        this.status = createUserProfileData.getStatus();
+    }
+
+    public void setStatus(IdamStatus status) {
+        this.status = status;
     }
 
     public void setRoles(IdamRolesInfo idamrolesInfo) {

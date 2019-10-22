@@ -1,11 +1,8 @@
 package uk.gov.hmcts.reform.userprofileapi.config;
 
 import feign.RequestInterceptor;
-
 import java.util.Enumeration;
-
 import javax.servlet.http.HttpServletRequest;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -36,4 +33,14 @@ public class FeignInterceptorConfiguration {
             }
         };
     }
+
+    /*@Bean
+    @Scope("prototype")
+    @ConditionalOnMissingBean
+    public Feign.Builder feignBuilder(Retryer r) {
+        return Feign.builder()
+                .client(new ApacheHttpClient()).retryer(r);
+    }*/
+
+
 }

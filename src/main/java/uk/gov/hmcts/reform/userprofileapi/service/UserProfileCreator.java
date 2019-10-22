@@ -82,8 +82,8 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
         if (idamStatus.is2xxSuccessful()) {
             userProfile = new UserProfile(profileData, idamStatus);
             userProfile.setIdamId(userId);
-            if (profileData.getStatus() != null) {
-                userProfile.setStatus(profileData.getStatus());
+            if (null != profileData.getStatus()) {
+                userProfile.setStatus(profileData);
             }
 
             try {

@@ -42,6 +42,16 @@ public class CreateUserProfileDataTestBuilder {
                 );
     }
 
+    public static UpdateUserProfileData buildUpdateUserProfileDataForUpdatingStatus() {
+        return new UpdateUserProfileData(
+                buildRandomEmail(),
+                RandomStringUtils.randomAlphabetic(20),
+                RandomStringUtils.randomAlphabetic(20),
+                IdamStatus.ACTIVE.toString(),
+                null,null
+        );
+    }
+
     private static String buildRandomEmail() {
         return RandomStringUtils.randomAlphanumeric(20) + "@somewhere.com";
     }
