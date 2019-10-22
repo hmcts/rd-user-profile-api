@@ -6,15 +6,15 @@ import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 
 public interface UserProfileMapper {
-//TODO
-//    static void mapUpdatableFields(UpdateUserProfileData updateUserProfileData, UserProfile userProfile) {
-//        if (!updateUserProfileData.isSameAsUserProfile(userProfile)) {
-//            setEmail(updateUserProfileData, userProfile);
-//            setFirstName(updateUserProfileData, userProfile);
-//            setLastName(updateUserProfileData, userProfile);
-//            setStatus(updateUserProfileData, userProfile);
-//        }
-//    }
+
+    static void mapUpdatableFields(UpdateUserProfileData updateUserProfileData, UserProfile userProfile) {
+        if (!updateUserProfileData.isSameAsUserProfile(userProfile)) {
+            setEmail(updateUserProfileData, userProfile);
+            setFirstName(updateUserProfileData, userProfile);
+            setLastName(updateUserProfileData, userProfile);
+            setStatus(updateUserProfileData, userProfile);
+        }
+    }
 
     static void setEmail(UpdateUserProfileData data, UserProfile userProfile){
         String email = data.getEmail().trim().toLowerCase();

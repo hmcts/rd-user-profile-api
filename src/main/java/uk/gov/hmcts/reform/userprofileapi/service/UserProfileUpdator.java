@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import uk.gov.hmcts.reform.userprofileapi.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.*;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
@@ -42,6 +43,13 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
 
     @Autowired
     private IdamFeignClient idamClient;
+
+    @Autowired
+    private ValidationService validationService;
+
+    @Autowired
+    private AuditService auditService;
+
 
     @Override
     public Optional<UserProfile> update(UpdateUserProfileData updateUserProfileData, String userId) {
@@ -75,6 +83,14 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         }
         persistAudit(status, userProfileOptional.get(), ResponseSource.SYNC);
         return result;
+    }
+
+    //TODO new functionality with origin for RDCC-418
+    private void assignFieldToUse(){}
+
+    @Override
+    public AttributeResponse update(UpdateUserProfileData profileData, String userId, String origin) {
+        return null;
     }
 
     @Override
