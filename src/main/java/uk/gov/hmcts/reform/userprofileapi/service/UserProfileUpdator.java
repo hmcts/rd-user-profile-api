@@ -89,9 +89,6 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         return result;
     }
 
-    //TODO new functionality with origin for RDCC-418
-    private void assignFieldToUse(){}
-
     @Override
     public UserProfileRolesResponse updateRoles(UpdateUserProfileData profileData, String userId) {
         UserProfile userProfile = null;
