@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.userprofileapi.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.userprofileapi.AttributeResponse;
+// import uk.gov.hmcts.reform.userprofileapi.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileWithRolesResponse;
@@ -43,9 +43,9 @@ public class UserProfileService<T extends RequestData> {
         resourceUpdator.update(updateData, userId);
     }
 
-    public AttributeResponse update(T updateData, String userId, String origin) {
-        return resourceUpdator.update(updateData, userId, origin);
-    }
+//    public AttributeResponse update(T updateData, String userId, String origin) {
+//        return resourceUpdator.update(updateData, userId, origin);
+//    }
 
     public UserProfileRolesResponse updateRoles(T updateData, String userId) {
         return  resourceUpdator.updateRoles(updateData, userId);

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.service;
 
 import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.resolveStatusAndReturnMessage;
+import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isSameAsExistingUserProfile;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUpdateUserProfileRequestValid;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
 
@@ -18,8 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import org.springframework.util.StringUtils;
-import uk.gov.hmcts.reform.userprofileapi.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.*;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
@@ -29,7 +28,6 @@ import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.util.JsonFeignResponseHelper;
-import uk.gov.hmcts.reform.userprofileapi.util.UserProfileMapper;
 
 
 @Service
@@ -45,43 +43,38 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
     @Autowired
     private IdamFeignClient idamClient;
 
-    @Autowired
-    private ValidationService validationService;
-
-    @Autowired
-    private AuditService auditService;
-
-
     @Override
     public Optional<UserProfile> update(UpdateUserProfileData updateUserProfileData, String userId) {
 
-        Optional<UserProfile> userProfileOptional = validationService.validateUpdate(updateUserProfileData, userId);
-
-        UserProfileMapper.mapUpdatableFields(updateUserProfileData, userProfileOptional.get());
-
-        return Optional.ofNullable(doPersistUserProfile(userProfileOptional.get()));
-    }
-
-
-    private UserProfile doPersistUserProfile(UserProfile userProfile) {
-        UserProfile result = null;
         HttpStatus status = HttpStatus.OK;
+        if (!isUserIdValid(userId, false)) {
+            persistAudit(HttpStatus.NOT_FOUND, ResponseSource.SYNC);
+            throw new ResourceNotFoundException("userId provided is malformed");
+        }
+
+        Optional<UserProfile> userProfileOptional = userProfileRepository.findByIdamId(userId);
+
+        if (!userProfileOptional.isPresent()) {
+            persistAudit(HttpStatus.NOT_FOUND, ResponseSource.SYNC);
+            throw new ResourceNotFoundException("could not find user profile for userId: " + userId);
+        } else if (!isUpdateUserProfileRequestValid(updateUserProfileData)) {
+            persistAudit(HttpStatus.BAD_REQUEST, ResponseSource.SYNC);
+            throw new RequiredFieldMissingException("Update user profile request is not valid for userId: " + userId);
+        } else if (!isSameAsExistingUserProfile(updateUserProfileData, userProfileOptional.get())) {
+            userProfileOptional.get().setEmail(updateUserProfileData.getEmail().trim());
+            userProfileOptional.get().setFirstName(updateUserProfileData.getFirstName().trim());
+            userProfileOptional.get().setLastName(updateUserProfileData.getLastName().trim());
+            userProfileOptional.get().setStatus(IdamStatus.valueOf(updateUserProfileData.getIdamStatus().toUpperCase()));
+        }
+
+        Optional<UserProfile> result = Optional.empty();
         try {
-            result = userProfileRepository.save(userProfile);
-            auditService.persistAudit(status, result, ResponseSource.SYNC);
+            result = Optional.ofNullable(userProfileRepository.save(userProfileOptional.get()));
         } catch (Exception ex) {
             status = HttpStatus.INTERNAL_SERVER_ERROR;
-            auditService.persistAudit(status, userProfile, ResponseSource.SYNC);
         }
+        persistAudit(status, userProfileOptional.get(), ResponseSource.SYNC);
         return result;
-    }
-
-    //TODO new functionality with origin for RDCC-418
-    private void assignFieldToUse(){}
-
-    @Override
-    public AttributeResponse update(UpdateUserProfileData profileData, String userId, String origin) {
-        return null;
     }
 
     @Override
@@ -98,7 +91,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
                 addRolesResponse.loadStatusCodes(httpStatus);
             } catch (FeignException ex) {
                 httpStatus = getHttpStatusFromFeignException(ex);
-                auditService.persistAudit(httpStatus, userProfile, ResponseSource.API);
+                persistAudit(httpStatus, userProfile, ResponseSource.API);
                 addRolesResponse.loadStatusCodes(httpStatus);
             }
             userProfileRolesResponse.setAddRolesResponse(addRolesResponse);
@@ -121,7 +114,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
             httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode();
         } catch (FeignException ex) {
             httpStatus = getHttpStatusFromFeignException(ex);
-            auditService.persistAudit(httpStatus, userProfile, ResponseSource.API);
+            persistAudit(httpStatus, userProfile, ResponseSource.API);
         }
         return new DeleteRoleResponse(roleName, httpStatus);
     }
@@ -131,6 +124,17 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
                 ? HttpStatus.INTERNAL_SERVER_ERROR
                 : HttpStatus.valueOf(ex.status());
     }
+
+    private void persistAudit(HttpStatus idamStatus, UserProfile userProfile, ResponseSource responseSource) {
+        Audit audit = new Audit(idamStatus.value(), resolveStatusAndReturnMessage(idamStatus), responseSource, userProfile);
+        auditRepository.save(audit);
+    }
+
+    private void persistAudit(HttpStatus idamStatus, ResponseSource responseSource) {
+        Audit audit = new Audit(idamStatus.value(), resolveStatusAndReturnMessage(idamStatus), responseSource);
+        auditRepository.save(audit);
+    }
+
 
     private UserProfile validateUserStatus(String userId) {
         Optional<UserProfile> userProfileOptional = userProfileRepository.findByIdamId(userId);

@@ -37,26 +37,21 @@ import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
-import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceNotFoundException;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileUpdator;
-import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserProfileUpdatorTest {
 
-    @Mock
-    private UserProfileRepository userProfileRepositoryMock;
+    @InjectMocks
+    private UserProfileUpdator userProfileUpdator;
 
     @Mock
-    private AuditRepository auditRepositoryMock;
+    private UserProfileRepository userProfileRepository;
 
     @Mock
-    private ValidationService validationServiceMock;
-
-    @Mock
-    private AuditService auditServiceMock;
+    private AuditRepository auditRepository;
 
     private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.ACCEPTED);
 
@@ -67,9 +62,6 @@ public class UserProfileUpdatorTest {
     private UserProfile userProfile = new UserProfile(createUserProfileData, idamRegistrationInfo.getIdamRegistrationResponse());
 
     private final IdamFeignClient idamFeignClientMock = mock(IdamFeignClient.class);
-
-    @InjectMocks
-    private UserProfileUpdator sut;
 
     @Before
     public void setUp() {
@@ -131,10 +123,10 @@ public class UserProfileUpdatorTest {
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         String body = mapper.writeValueAsString(userProfileRolesResponse);
 
-        when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+        when(userProfileRepository.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
         when(idamFeignClientMock.addUserRoles(updateUserProfileData.getRolesAdd(), "1234")).thenReturn(Response.builder().request(mock(Request.class)).body(body, Charset.defaultCharset()).status(500).build());
 
-        UserProfileRolesResponse response = sut.updateRoles(updateUserProfileData, userProfile.getIdamId());
+        UserProfileRolesResponse response = userProfileUpdator.updateRoles(updateUserProfileData, userProfile.getIdamId());
         assertThat(response.getAddRolesResponse().getIdamStatusCode()).isEqualTo("500");
     }
 
@@ -158,10 +150,10 @@ public class UserProfileUpdatorTest {
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         String body = mapper.writeValueAsString(userProfileRolesResponse);
 
-        when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+        when(userProfileRepository.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
         when(idamFeignClientMock.deleteUserRole("1234", "pui-case-manager")).thenReturn(Response.builder().request(mock(Request.class)).body(body, Charset.defaultCharset()).status(500).build());
 
-        UserProfileRolesResponse response = sut.updateRoles(updateUserProfileData, userProfile.getIdamId());
+        UserProfileRolesResponse response = userProfileUpdator.updateRoles(updateUserProfileData, userProfile.getIdamId());
         assertThat(response.getDeleteRolesResponse().get(0).getIdamStatusCode()).isEqualTo("500");
     }
 
@@ -183,9 +175,9 @@ public class UserProfileUpdatorTest {
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         String body = mapper.writeValueAsString(userProfileRolesResponse);
 
-        when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+        when(userProfileRepository.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
 
-        sut.updateRoles(updateUserProfileData, userProfile.getIdamId());
+        userProfileUpdator.updateRoles(updateUserProfileData, userProfile.getIdamId());
     }
 
     @Test
@@ -193,57 +185,47 @@ public class UserProfileUpdatorTest {
 
         String userId = UUID.randomUUID().toString();
 
-        Optional<UserProfile> expected = Optional.of(userProfile);
+        when(userProfileRepository.findByIdamId(userId)).thenReturn(Optional.ofNullable(userProfile));
+        when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);
 
-        when(validationServiceMock.validateUpdate(any(), any())).thenReturn(expected);
-
-        when(userProfileRepositoryMock.save(any(UserProfile.class))).thenReturn(userProfile);
-
-        Optional<UserProfile> response = sut.update(updateUserProfileData, userId);
+        UserProfile response = userProfileUpdator.update(updateUserProfileData, userId).orElse(null);
 
         assertThat(response).isNotNull();
-        assertThat(response.get().getEmail()).isEqualTo("email@net.com");
-        assertThat(response.get().getFirstName()).isEqualTo("firstName");
-        assertThat(response.get().getLastName()).isEqualTo("lastName");
-        assertThat(response.get().getStatus()).isEqualTo(IdamStatus.ACTIVE);
+        assertThat(response.getEmail()).isEqualTo("email@net.com");
+        assertThat(response.getFirstName()).isEqualTo("firstName");
+        assertThat(response.getLastName()).isEqualTo("lastName");
+        assertThat(response.getStatus()).isEqualTo(IdamStatus.ACTIVE);
 
-        verify(userProfileRepositoryMock,times(1)).save(any(UserProfile.class));
-
-
-        //  TODO verify in separate auditService test
-        //! verify(auditRepositoryMock,times(1)).save(any(Audit.class));
+        verify(userProfileRepository,times(1)).save(any(UserProfile.class));
+        verify(auditRepository,times(1)).save(any(Audit.class));
 
     }
 
     @Test
     public void should_throw_ResourceNotFound_when_userId_not_valid() {
 
-        when(validationServiceMock.validateUpdate(any(), any())).thenThrow(ResourceNotFoundException.class);
-
-        assertThatThrownBy(() -> sut.update(updateUserProfileData,"invalid")).isExactlyInstanceOf(ResourceNotFoundException.class);
-
-        //! verify(auditRepositoryMock, times(1)).save(any(Audit.class));
-        //TODO verify auditService independantly
+        assertThatThrownBy(() -> userProfileUpdator.update(updateUserProfileData,"invalid")).isExactlyInstanceOf(ResourceNotFoundException.class);
+        verify(auditRepository,times(1)).save(any(Audit.class));
     }
 
     @Test
     public void should_throw_IdamServiceException_when_user_user_profile_not_found_in_db() {
 
         String userId = UUID.randomUUID().toString();
-
-        when(validationServiceMock.validateUpdate(any(), any())).thenThrow(ResourceNotFoundException.class);
-
-        assertThatThrownBy(() -> sut.update(updateUserProfileData, userId)).isExactlyInstanceOf(ResourceNotFoundException.class);
+        when(userProfileRepository.findByIdamId(userId)).thenReturn(Optional.ofNullable(null));
+        assertThatThrownBy(() -> userProfileUpdator.update(updateUserProfileData,userId.toString())).isExactlyInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
     public void should_throw_IdamServiceException_when_request_invalid() {
 
         String userId = UUID.randomUUID().toString();
-
-        when(validationServiceMock.validateUpdate(any(), eq(userId))).thenThrow(RequiredFieldMissingException.class);
-
-        assertThatThrownBy(() -> sut.update(updateUserProfileData, userId)).isExactlyInstanceOf(RequiredFieldMissingException.class);
+        RoleName roleName = new RoleName("prd-admin");
+        Set<RoleName> roleNames = new HashSet<RoleName>();
+        roleNames.add(roleName);
+        updateUserProfileData = new UpdateUserProfileData("", "", "", "ACTIV", roleNames,roleNames);
+        when(userProfileRepository.findByIdamId(userId)).thenReturn(Optional.ofNullable(userProfile));
+        assertThatThrownBy(() -> userProfileUpdator.update(updateUserProfileData, userId)).isExactlyInstanceOf(RequiredFieldMissingException.class);
     }
 
     @Test(expected = ResourceNotFoundException.class)
@@ -262,11 +244,11 @@ public class UserProfileUpdatorTest {
         addRoleResponse.setIdamMessage("Success");
         userProfileRolesResponse.setAddRolesResponse(addRoleResponse);
 
-        sut.updateRoles(updateUserProfileData, "1567");
+        userProfileUpdator.updateRoles(updateUserProfileData, "1567");
     }
 
     @Test(expected = ResourceNotFoundException.class)
-    public void userProfileRolesResponse_update_invalid_user() {
+    public void userProfileRolesResponse_update_invalid_user() throws Exception {
         RoleName roleName1 = new RoleName("pui-case-manager");
         RoleName roleName2 = new RoleName("pui-case-organisation");
         Set<RoleName> roles = new HashSet<>();
@@ -281,9 +263,7 @@ public class UserProfileUpdatorTest {
         addRoleResponse.setIdamMessage("Success");
         userProfileRolesResponse.setAddRolesResponse(addRoleResponse);
 
-        when(validationServiceMock.validateUpdate(any(), any())).thenThrow(ResourceNotFoundException.class);
-
-        sut.update(updateUserProfileData, "");
+        userProfileUpdator.update(updateUserProfileData, "");
     }
 
     private UserProfileRolesResponse addRoles() throws Exception {
@@ -303,10 +283,10 @@ public class UserProfileUpdatorTest {
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         String body = mapper.writeValueAsString(userProfileRolesResponse);
 
-        when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+        when(userProfileRepository.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
         when(idamFeignClientMock.addUserRoles(updateUserProfileData.getRolesAdd(), "1234")).thenReturn(Response.builder().request(mock(Request.class)).body(body, Charset.defaultCharset()).status(200).build());
 
-        UserProfileRolesResponse response = sut.updateRoles(updateUserProfileData, userProfile.getIdamId());
+        UserProfileRolesResponse response = userProfileUpdator.updateRoles(updateUserProfileData, userProfile.getIdamId());
 
         return response;
     }
@@ -328,13 +308,13 @@ public class UserProfileUpdatorTest {
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         String body = mapper.writeValueAsString(deleteRoleResponse);
 
-        when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+        when(userProfileRepository.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
 
         Response response = Response.builder().request(Request.create(Request.HttpMethod.DELETE, "", new HashMap<>(), Request.Body.empty())).body(body, Charset.defaultCharset()).status(200).build();
 
         when(idamFeignClientMock.deleteUserRole("1234", "pui-case-manager")).thenReturn(response);
 
-        UserProfileRolesResponse response1 = sut.updateRoles(updateUserProfileData, userProfile.getIdamId());
+        UserProfileRolesResponse response1 = userProfileUpdator.updateRoles(updateUserProfileData, userProfile.getIdamId());
         return response1;
     }
 
