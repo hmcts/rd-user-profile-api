@@ -8,6 +8,7 @@ import java.util.Set;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 
 @NoArgsConstructor
 @Getter
@@ -42,4 +43,11 @@ public class UpdateUserProfileData implements RequestData {
         this.rolesDelete = rolesDelete;
     }
 
+
+    public boolean isSameAsUserProfile(UserProfile userProfile) {
+        return userProfile.getEmail().trim().equalsIgnoreCase(this.getEmail().trim())
+                && userProfile.getFirstName().trim().equals(this.getFirstName().trim())
+                && userProfile.getLastName().trim().equals(this.getLastName().trim())
+                && userProfile.getStatus().toString().equals(this.getIdamStatus().trim());
+    }
 }
