@@ -50,6 +50,10 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
     @Autowired
     private AuditService auditService;
 
+    @Override
+    public AttributeResponse update(UpdateUserProfileData profileData, String userId, String origin) {
+        return null;
+    }
 
     @Override
     public Optional<UserProfile> update(UpdateUserProfileData updateUserProfileData, String userId) {
@@ -87,11 +91,6 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
 
     //TODO new functionality with origin for RDCC-418
     private void assignFieldToUse(){}
-
-    @Override
-    public AttributeResponse update(UpdateUserProfileData profileData, String userId, String origin) {
-        return null;
-    }
 
     @Override
     public UserProfileRolesResponse updateRoles(UpdateUserProfileData profileData, String userId) {
