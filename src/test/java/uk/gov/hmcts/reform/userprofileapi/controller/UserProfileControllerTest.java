@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.userprofileapi.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
+import static uk.gov.hmcts.reform.userprofileapi.constant.UserProfileConstant.ORIGIN;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -110,9 +111,10 @@ public class UserProfileControllerTest {
         ResponseEntity responseEntityMock = Mockito.mock(ResponseEntity.class);
 
         String idamId = "13b02995-5e44-4136-bf5a-46f4ff4acb8f";
+
         when(updateUserProfileDataMock.getRolesAdd()).thenReturn(null);
         when(updateUserProfileDataMock.getRolesDelete()).thenReturn(null);
-        ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId);
+        ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId, ORIGIN);
 
         verify(userProfileServiceMock, times(1)).update(any(), any());
         ResponseEntity expect = ResponseEntity.status(HttpStatus.OK).build();
@@ -137,7 +139,7 @@ public class UserProfileControllerTest {
         roles.add(roleName2);
         when(updateUserProfileDataMock.getRolesAdd()).thenReturn(roles);
         String idamId = "13b02995-5e44-4136-bf5a-46f4ff4acb8f";
-        ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId);
+        ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId, ORIGIN);
         verify(userProfileServiceMock, times(1)).updateRoles(any(), any());
         ResponseEntity expect = ResponseEntity.status(HttpStatus.OK).build();
         assertThat(actual).isEqualTo(expect);
@@ -167,7 +169,7 @@ public class UserProfileControllerTest {
         roles.add(roleName2);
         when(updateUserProfileDataMock.getRolesDelete()).thenReturn(roles);
         String idamId = "13b02995-5e44-4136-bf5a-46f4ff4acb8f";
-        ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId);
+        ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId, ORIGIN);
         verify(userProfileServiceMock, times(1)).updateRoles(any(), any());
         ResponseEntity expect = ResponseEntity.status(HttpStatus.OK).build();
         assertThat(actual).isEqualTo(expect);

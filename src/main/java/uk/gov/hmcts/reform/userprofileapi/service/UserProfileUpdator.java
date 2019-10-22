@@ -34,7 +34,6 @@ import uk.gov.hmcts.reform.userprofileapi.util.JsonFeignResponseHelper;
 @Slf4j
 public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData> {
 
-
     @Autowired
     private UserProfileRepository userProfileRepository;
 
