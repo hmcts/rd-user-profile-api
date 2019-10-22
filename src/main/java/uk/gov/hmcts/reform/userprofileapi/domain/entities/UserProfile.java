@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.userprofileapi.domain.entities;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,6 +22,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
@@ -93,10 +95,10 @@ public class UserProfile {
     }
 
     public UserProfile(CreateUserProfileData data, HttpStatus idamStatus) {
-
         this.email = data.getEmail().trim().toLowerCase();
         this.firstName = data.getFirstName().trim();
         this.lastName = data.getLastName().trim();
+
         if (StringUtils.isNotBlank(data.getLanguagePreference())) {
             this.languagePreference = LanguagePreference.valueOf(data.getLanguagePreference());
         }
@@ -105,6 +107,28 @@ public class UserProfile {
         this.userCategory = UserCategory.valueOf(data.getUserCategory());
         this.userType = UserType.valueOf(data.getUserType());
         this.idamRegistrationResponse = idamStatus.value();
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+
+
+    public void setStatus(CreateUserProfileData createUserProfileData) {
+        this.status = createUserProfileData.getStatus();
+    }
+
+    public void setStatus(IdamStatus status) {
+        this.status = status;
     }
 
     public void setRoles(IdamRolesInfo idamrolesInfo) {

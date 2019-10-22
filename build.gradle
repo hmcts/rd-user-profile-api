@@ -237,6 +237,8 @@ dependencies {
     compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.9.8'
     compile group: 'io.github.openfeign.form', name: 'feign-form', version: '3.8.0'
     compile group: 'io.github.openfeign.form', name: 'feign-form-spring', version: '3.8.0'
+    compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '10.5.1'
+
 
     compile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.7'
     compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
