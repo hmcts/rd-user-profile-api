@@ -239,7 +239,7 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
 
                 jsonObject.put(s,"");
 
-                mockMvc.perform(put(APP_BASE_PATH  + SLASH + idamId.toString())
+                mockMvc.perform(put(APP_BASE_PATH  + SLASH + idamId)
                         .content(jsonObject.toString())
                         .contentType(APPLICATION_JSON_UTF8))
                         .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
@@ -247,7 +247,7 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
 
                 jsonObject.put(s," ");
 
-                mockMvc.perform(put(APP_BASE_PATH + SLASH + idamId.toString())
+                mockMvc.perform(put(APP_BASE_PATH + SLASH + idamId)
                         .content(jsonObject.toString())
                         .contentType(APPLICATION_JSON_UTF8))
                         .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
