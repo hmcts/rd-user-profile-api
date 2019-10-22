@@ -1,17 +1,16 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mockito;
-import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-
-import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mockito;
+import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 
 public class UserProfileMapperTest {
 
