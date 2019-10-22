@@ -28,18 +28,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
-import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileWithRolesResponse;
-import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesRequest;
-import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesResponse;
-import uk.gov.hmcts.reform.userprofileapi.client.IdentifierName;
-import uk.gov.hmcts.reform.userprofileapi.client.RequestData;
-import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.client.UserProfileIdentifier;
-import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfilesRequest;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
+import uk.gov.hmcts.reform.userprofileapi.resource.IdentifierName;
+import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
+import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 
 import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileService;
@@ -74,7 +74,7 @@ public class UserProfileController {
         @ApiResponse(
             code = 201,
             message = "Create a User Profile using request body",
-            response = CreateUserProfileResponse.class
+            response = UserProfileCreationResponse.class
         ),
         @ApiResponse(
             code = 400,
@@ -98,12 +98,12 @@ public class UserProfileController {
         produces = APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseBody
-    public ResponseEntity<CreateUserProfileResponse> createUserProfile(@Valid @RequestBody CreateUserProfileData createUserProfileData) {
+    public ResponseEntity<UserProfileCreationResponse> createUserProfile(@Valid @RequestBody UserProfileCreationData userProfileCreationData) {
         log.info("Creating new User Profile");
 
-        validateCreateUserProfileRequest(createUserProfileData);
+        validateCreateUserProfileRequest(userProfileCreationData);
 
-        CreateUserProfileResponse resource = userProfileService.create(createUserProfileData);
+        UserProfileCreationResponse resource = userProfileService.create(userProfileCreationData);
         log.info("idamid:" + resource.getIdamId() + " idamRegistrationResponse:" + resource.getIdamRegistrationResponse());
         return ResponseEntity.status(HttpStatus.CREATED).body(resource);
 
@@ -142,10 +142,10 @@ public class UserProfileController {
         produces = APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseBody
-    public ResponseEntity<GetUserProfileWithRolesResponse> getUserProfileWithRolesById(@PathVariable String id) {
+    public ResponseEntity<UserProfileWithRolesResponse> getUserProfileWithRolesById(@PathVariable String id) {
         log.info("Getting user profile with id: {}", id);
         isUserIdValid(id, true);
-        GetUserProfileWithRolesResponse response = userProfileService.retrieveWithRoles(new UserProfileIdentifier(IdentifierName.UUID, id));
+        UserProfileWithRolesResponse response = userProfileService.retrieveWithRoles(new UserProfileIdentifier(IdentifierName.UUID, id));
         return ResponseEntity.ok(response);
     }
 
@@ -184,11 +184,11 @@ public class UserProfileController {
             produces = APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseBody
-    public ResponseEntity<GetUserProfileWithRolesResponse> getUserProfileWithRolesByEmail(@RequestParam String email) {
+    public ResponseEntity<UserProfileWithRolesResponse> getUserProfileWithRolesByEmail(@RequestParam String email) {
         log.info("Getting user profile with email: {}", email);
 
         requireNonNull(email, "email cannot be null");
-        GetUserProfileWithRolesResponse response = userProfileService.retrieveWithRoles(new UserProfileIdentifier(IdentifierName.EMAIL, email.toLowerCase()));
+        UserProfileWithRolesResponse response = userProfileService.retrieveWithRoles(new UserProfileIdentifier(IdentifierName.EMAIL, email.toLowerCase()));
         return ResponseEntity.ok(response);
     }
 
@@ -201,7 +201,7 @@ public class UserProfileController {
             @ApiResponse(
                     code = 200,
                     message = "Representation of a user profile data",
-                    response = GetUserProfileResponse.class
+                    response = UserProfileResponse.class
             ),
             @ApiResponse(
                     code = 400,
@@ -220,9 +220,9 @@ public class UserProfileController {
             produces = APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseBody
-    public ResponseEntity<GetUserProfileResponse> getUserProfileByEmail(@ApiParam(name = "email", required = false) @RequestParam (value = "email", required = false) String email,
+    public ResponseEntity<UserProfileResponse> getUserProfileByEmail(@ApiParam(name = "email", required = false) @RequestParam (value = "email", required = false) String email,
                                                                      @ApiParam(name = "userId", required = false) @RequestParam (value = "userId", required = false) String userId) {
-        GetUserProfileResponse response = null;
+        UserProfileResponse response = null;
         if (email == null && userId == null) {
             return ResponseEntity.badRequest().build();
         } else if (email != null) {
@@ -250,7 +250,7 @@ public class UserProfileController {
             @ApiResponse(
                     code = 200,
                     message = "Update User Profile using request body",
-                    response = CreateUserProfileResponse.class
+                    response = UserProfileCreationResponse.class
             ),
             @ApiResponse(
                     code = 400,
@@ -304,7 +304,7 @@ public class UserProfileController {
             @ApiResponse(
                     code = 200,
                     message = "Retrieving multiple user profiles",
-                    response = GetUserProfilesResponse.class
+                    response = UserProfileDataResponse.class
             ),
             @ApiResponse(
                     code = 400,
@@ -329,17 +329,17 @@ public class UserProfileController {
             produces = APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseBody
-    public ResponseEntity<GetUserProfilesResponse> retrieveUserProfiles(@ApiParam(name = "showdeleted", required = true)@RequestParam (value = "showdeleted", required = true) String showDeleted,
+    public ResponseEntity<UserProfileDataResponse> retrieveUserProfiles(@ApiParam(name = "showdeleted", required = true)@RequestParam (value = "showdeleted", required = true) String showDeleted,
                                                                         @ApiParam(name = "rolesRequired", required = true)@RequestParam (value = "rolesRequired", required = true) String rolesRequired,
-                                                                        @RequestBody GetUserProfilesRequest getUserProfilesRequest) {
+                                                                        @RequestBody UserProfilesRequest userProfilesRequest) {
         log.info("Retrieving multiple user profiles");
 
         boolean showDeletedBoolean = UserProfileValidator.validateAndReturnBooleanForParam(showDeleted);
         boolean rolesRequiredBoolean = UserProfileValidator.validateAndReturnBooleanForParam(rolesRequired);
-        UserProfileValidator.validateUserIds(getUserProfilesRequest);
-        GetUserProfilesResponse getUserProfilesResponse =
-                userProfileService.retrieveWithRoles(new UserProfileIdentifier(IdentifierName.UUID_LIST, getUserProfilesRequest.getUserIds()), showDeletedBoolean, rolesRequiredBoolean);
-        return ResponseEntity.status(HttpStatus.OK).body(getUserProfilesResponse);
+        UserProfileValidator.validateUserIds(userProfilesRequest);
+        UserProfileDataResponse userProfileDataResponse =
+                userProfileService.retrieveWithRoles(new UserProfileIdentifier(IdentifierName.UUID_LIST, userProfilesRequest.getUserIds()), showDeletedBoolean, rolesRequiredBoolean);
+        return ResponseEntity.status(HttpStatus.OK).body(userProfileDataResponse);
 
     }
 

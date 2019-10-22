@@ -19,6 +19,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.client.*;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
+import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
+import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 
 @RunWith(SpringIntegrationSerenityRunner.class)
 public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
@@ -41,7 +47,7 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
     public void should_update_user_profile_with_roles_successfully() throws Exception {
 
 
-        CreateUserProfileData data = createUserProfileData();
+        UserProfileCreationData data = createUserProfileData();
         List<String> roles = new ArrayList<>();
         roles.add(puiUserManager);
         String email = idamClient.createUser(roles);
@@ -55,10 +61,10 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         UpdateUserProfileData userRProfileData = new UpdateUserProfileData();
         userRProfileData.setRolesAdd(rolesName);
 
-        GetUserProfileResponse resource =
+        UserProfileResponse resource =
                 testRequestHandler.sendGet(
                         requestUri + "?email=" + email.toLowerCase(),
-                        GetUserProfileResponse.class
+                        UserProfileResponse.class
                 );
 
         LOG.info("before addroles call");
@@ -70,10 +76,10 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
 
         LOG.info("after addroles call" + resource1);
 
-        GetUserProfileWithRolesResponse resource2 =
+        UserProfileWithRolesResponse resource2 =
                 testRequestHandler.sendGet(
                         "/v1/userprofile/" + resource.getIdamId() + "/roles",
-                        GetUserProfileWithRolesResponse.class
+                        UserProfileWithRolesResponse.class
                 );
         LOG.info("Roles addroles call" + resource2);
         assertThat(resource2.getRoles().size()).isNotNull();

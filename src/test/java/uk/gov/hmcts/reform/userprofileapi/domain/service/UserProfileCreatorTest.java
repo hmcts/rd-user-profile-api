@@ -19,8 +19,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.client.IdamRegisterUserRequest;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
+import uk.gov.hmcts.reform.userprofileapi.controller.request.IdamRegisterUserRequest;
 import uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
@@ -29,7 +29,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamServiceException;
+import uk.gov.hmcts.reform.userprofileapi.exception.IdamServiceException;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileCreator;
 
@@ -50,9 +50,9 @@ public class UserProfileCreatorTest {
 
     private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.ACCEPTED);
 
-    private CreateUserProfileData createUserProfileData = CreateUserProfileDataTestBuilder.buildCreateUserProfileData();
+    private UserProfileCreationData userProfileCreationData = CreateUserProfileDataTestBuilder.buildCreateUserProfileData();
 
-    private UserProfile userProfile = new UserProfile(createUserProfileData, idamRegistrationInfo.getIdamRegistrationResponse());
+    private UserProfile userProfile = new UserProfile(userProfileCreationData, idamRegistrationInfo.getIdamRegistrationResponse());
 
     private IdamRolesInfo idamRolesInfo = mock(IdamRolesInfo.class);
 
@@ -63,7 +63,7 @@ public class UserProfileCreatorTest {
         Mockito.when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(null));
         Mockito.when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);
 
-        UserProfile response = userProfileCreator.create(createUserProfileData);
+        UserProfile response = userProfileCreator.create(userProfileCreationData);
 
         assertThat(response).isEqualToComparingFieldByField(userProfile);
 
@@ -82,8 +82,8 @@ public class UserProfileCreatorTest {
         Mockito.when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(null));
         Mockito.when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);
 
-        createUserProfileData.setStatus(IdamStatus.PENDING);
-        UserProfile response = userProfileCreator.create(createUserProfileData);
+        userProfileCreationData.setStatus(IdamStatus.PENDING);
+        UserProfile response = userProfileCreator.create(userProfileCreationData);
 
         assertThat(response).isEqualToComparingFieldByField(userProfile);
 
@@ -104,7 +104,7 @@ public class UserProfileCreatorTest {
         Mockito.when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(null));
         Mockito.when(userProfileRepository.save(any(UserProfile.class))).thenThrow(new RuntimeException());
 
-        UserProfile response = userProfileCreator.create(createUserProfileData);
+        UserProfile response = userProfileCreator.create(userProfileCreationData);
 
         assertThat(response).isEqualToComparingFieldByField(userProfile);
 
@@ -121,7 +121,7 @@ public class UserProfileCreatorTest {
 
         Audit audit = mock(Audit.class);
         Mockito.when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
-        assertThatThrownBy(() -> userProfileCreator.create(createUserProfileData)).isExactlyInstanceOf(IdamServiceException.class);
+        assertThatThrownBy(() -> userProfileCreator.create(userProfileCreationData)).isExactlyInstanceOf(IdamServiceException.class);
         Mockito.verify(userProfileRepository, Mockito.times(0)).save(any(UserProfile.class));
         Mockito.verify(auditRepository, Mockito.times(1)).save(any(Audit.class));
     }
@@ -133,7 +133,7 @@ public class UserProfileCreatorTest {
         idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.BAD_REQUEST);
         Mockito.when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(null));
         Mockito.when(idamService.registerUser(any(IdamRegisterUserRequest.class))).thenReturn(idamRegistrationInfo);
-        assertThatThrownBy(() -> userProfileCreator.create(createUserProfileData)).isExactlyInstanceOf(IdamServiceException.class);
+        assertThatThrownBy(() -> userProfileCreator.create(userProfileCreationData)).isExactlyInstanceOf(IdamServiceException.class);
         Mockito.verify(userProfileRepository, Mockito.times(0)).save(any(UserProfile.class));
         Mockito.verify(auditRepository, Mockito.times(1)).save(any(Audit.class));
     }
@@ -168,7 +168,7 @@ public class UserProfileCreatorTest {
         ReflectionTestUtils.setField(userProfileCreator, "idamStatusResolverMap", idamStatusMap);
         ReflectionTestUtils.setField(userProfileCreator, "sidamGetUri", "/api/v1/users/");
 
-        UserProfile responseUserProfile = userProfileCreator.create(createUserProfileData);
+        UserProfile responseUserProfile = userProfileCreator.create(userProfileCreationData);
         Mockito.verify(userProfileRepository, Mockito.times(1)).save(any(UserProfile.class));
         Mockito.verify(auditRepository, Mockito.times(1)).save(any(Audit.class));
         assertThat(responseUserProfile).isNotNull();
@@ -204,7 +204,7 @@ public class UserProfileCreatorTest {
         ReflectionTestUtils.setField(userProfileCreator, "idamStatusResolverMap", idamStatusMap);
         ReflectionTestUtils.setField(userProfileCreator, "sidamGetUri", "/api/v1/users/");
 
-        UserProfile responseUserProfile = userProfileCreator.create(createUserProfileData);
+        UserProfile responseUserProfile = userProfileCreator.create(userProfileCreationData);
         Mockito.verify(userProfileRepository, Mockito.times(1)).save(any(UserProfile.class));
         Mockito.verify(auditRepository, Mockito.times(1)).save(any(Audit.class));
         assertThat(responseUserProfile).isNotNull();
@@ -223,12 +223,12 @@ public class UserProfileCreatorTest {
         Mockito.when(idamRolesInfo.getPending()).thenReturn(false);
 
 
-        CreateUserProfileData createUserProfileData = mock(CreateUserProfileData.class);
-        userProfileCreator.updateInputRequestWithLatestSidamUserInfo(createUserProfileData, idamRolesInfo);
-        Mockito.verify(createUserProfileData, Mockito.times(1)).setEmail("any@emai");
-        Mockito.verify(createUserProfileData, Mockito.times(1)).setFirstName("fname");
-        Mockito.verify(createUserProfileData, Mockito.times(1)).setLastName("lastName");
-        Mockito.verify(createUserProfileData, Mockito.times(1)).setStatus(any(IdamStatus.class));
+        UserProfileCreationData userProfileCreationData = mock(UserProfileCreationData.class);
+        userProfileCreator.updateInputRequestWithLatestSidamUserInfo(userProfileCreationData, idamRolesInfo);
+        Mockito.verify(userProfileCreationData, Mockito.times(1)).setEmail("any@emai");
+        Mockito.verify(userProfileCreationData, Mockito.times(1)).setFirstName("fname");
+        Mockito.verify(userProfileCreationData, Mockito.times(1)).setLastName("lastName");
+        Mockito.verify(userProfileCreationData, Mockito.times(1)).setStatus(any(IdamStatus.class));
 
     }
 
@@ -244,12 +244,12 @@ public class UserProfileCreatorTest {
         Mockito.when(idamRolesInfo.getActive()).thenReturn(true);
         Mockito.when(idamRolesInfo.getPending()).thenReturn(true);
 
-        CreateUserProfileData createUserProfileData = mock(CreateUserProfileData.class);
-        userProfileCreator.updateInputRequestWithLatestSidamUserInfo(createUserProfileData, idamRolesInfo);
-        Mockito.verify(createUserProfileData, Mockito.times(1)).setEmail("any@emai");
-        Mockito.verify(createUserProfileData, Mockito.times(1)).setFirstName("fname");
-        Mockito.verify(createUserProfileData, Mockito.times(1)).setLastName("lastName");
-        Mockito.verify(createUserProfileData, Mockito.times(1)).setStatus(any());
+        UserProfileCreationData userProfileCreationData = mock(UserProfileCreationData.class);
+        userProfileCreator.updateInputRequestWithLatestSidamUserInfo(userProfileCreationData, idamRolesInfo);
+        Mockito.verify(userProfileCreationData, Mockito.times(1)).setEmail("any@emai");
+        Mockito.verify(userProfileCreationData, Mockito.times(1)).setFirstName("fname");
+        Mockito.verify(userProfileCreationData, Mockito.times(1)).setLastName("lastName");
+        Mockito.verify(userProfileCreationData, Mockito.times(1)).setStatus(any());
 
     }
 
@@ -281,13 +281,13 @@ public class UserProfileCreatorTest {
         idamRolesList.add("pui-case-manager");
         idamRolesList.add("pui-user-manager");
 
-        CreateUserProfileData createUserProfileDataMock = mock(CreateUserProfileData.class);
-        when(createUserProfileDataMock.getRoles()).thenReturn(xuiRolesList);
+        UserProfileCreationData userProfileCreationDataMock = mock(UserProfileCreationData.class);
+        when(userProfileCreationDataMock.getRoles()).thenReturn(xuiRolesList);
 
         IdamRolesInfo idamRolesInfoMock = mock(IdamRolesInfo.class);
         when(idamRolesInfoMock.getRoles()).thenReturn(idamRolesList);
 
-        Set<String> rolesToUpdate = userProfileCreator.consolidateRolesFromXuiAndIdam(createUserProfileDataMock, idamRolesInfoMock);
+        Set<String> rolesToUpdate = userProfileCreator.consolidateRolesFromXuiAndIdam(userProfileCreationDataMock, idamRolesInfoMock);
 
         assertThat(rolesToUpdate.size()).isEqualTo(1);
         assertThat(rolesToUpdate).contains("prd-admin");
@@ -304,13 +304,13 @@ public class UserProfileCreatorTest {
         List<String> idamRolesList = new ArrayList<>();
         idamRolesList.add("prd-admin");
 
-        CreateUserProfileData createUserProfileDataMock = mock(CreateUserProfileData.class);
-        when(createUserProfileDataMock.getRoles()).thenReturn(xuiRolesList);
+        UserProfileCreationData userProfileCreationDataMock = mock(UserProfileCreationData.class);
+        when(userProfileCreationDataMock.getRoles()).thenReturn(xuiRolesList);
 
         IdamRolesInfo idamRolesInfoMock = mock(IdamRolesInfo.class);
         when(idamRolesInfoMock.getRoles()).thenReturn(idamRolesList);
 
-        Set<String> rolesToUpdate = userProfileCreator.consolidateRolesFromXuiAndIdam(createUserProfileDataMock, idamRolesInfoMock);
+        Set<String> rolesToUpdate = userProfileCreator.consolidateRolesFromXuiAndIdam(userProfileCreationDataMock, idamRolesInfoMock);
 
         assertThat(rolesToUpdate.size()).isEqualTo(2);
         assertThat(rolesToUpdate).contains("pui-case-manager");
@@ -328,13 +328,13 @@ public class UserProfileCreatorTest {
         idamRolesList.add("pui-case-manager");
         idamRolesList.add("pui-user-manager");
 
-        CreateUserProfileData createUserProfileDataMock = mock(CreateUserProfileData.class);
-        when(createUserProfileDataMock.getRoles()).thenReturn(xuiRolesList);
+        UserProfileCreationData userProfileCreationDataMock = mock(UserProfileCreationData.class);
+        when(userProfileCreationDataMock.getRoles()).thenReturn(xuiRolesList);
 
         IdamRolesInfo idamRolesInfoMock = mock(IdamRolesInfo.class);
         when(idamRolesInfoMock.getRoles()).thenReturn(idamRolesList);
 
-        Set<String> rolesToUpdate = userProfileCreator.consolidateRolesFromXuiAndIdam(createUserProfileDataMock, idamRolesInfoMock);
+        Set<String> rolesToUpdate = userProfileCreator.consolidateRolesFromXuiAndIdam(userProfileCreationDataMock, idamRolesInfoMock);
 
         assertThat(rolesToUpdate.size()).isEqualTo(0);
     }

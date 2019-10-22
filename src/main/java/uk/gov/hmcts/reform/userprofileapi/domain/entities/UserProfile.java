@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.userprofileapi.domain.entities;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,22 +14,19 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Transient;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 
-@Getter
-@Setter
+@Data
 @Entity
 @SequenceGenerator(name = "user_profile_id_seq", sequenceName = "user_profile_id_seq", allocationSize = 1)
 public class UserProfile {
@@ -90,11 +86,8 @@ public class UserProfile {
     @Transient
     private String errorStatusCode;
 
-    public UserProfile() {
-        //noop
-    }
 
-    public UserProfile(CreateUserProfileData data, HttpStatus idamStatus) {
+    public UserProfile(UserProfileCreationData data, HttpStatus idamStatus) {
         this.email = data.getEmail().trim().toLowerCase();
         this.firstName = data.getFirstName().trim();
         this.lastName = data.getLastName().trim();
@@ -109,22 +102,9 @@ public class UserProfile {
         this.idamRegistrationResponse = idamStatus.value();
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-
-
-    public void setStatus(CreateUserProfileData createUserProfileData) {
-        this.status = createUserProfileData.getStatus();
+    public void setStatus(UserProfileCreationData userProfileCreationData) {
+        this.status = userProfileCreationData.getStatus();
     }
 
     public void setStatus(IdamStatus status) {

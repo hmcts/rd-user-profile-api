@@ -11,12 +11,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.reform.userprofileapi.client.AddRoleResponse;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.client.DeleteRoleResponse;
-import uk.gov.hmcts.reform.userprofileapi.client.RoleName;
-import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.RoleAdditionResponse;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.RoleDeletionResponse;
+import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
+import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
@@ -65,11 +65,11 @@ public class UserProfileResourceUpdatorTest {
 
     private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.ACCEPTED);
 
-    private CreateUserProfileData createUserProfileData = CreateUserProfileDataTestBuilder.buildCreateUserProfileData();
+    private UserProfileCreationData userProfileCreationData = CreateUserProfileDataTestBuilder.buildCreateUserProfileData();
 
     private UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("email@net.com", "firstName", "lastName", "ACTIVE", new HashSet<RoleName>(), new HashSet<RoleName>());
 
-    private UserProfile userProfile = new UserProfile(createUserProfileData, idamRegistrationInfo.getIdamRegistrationResponse());
+    private UserProfile userProfile = new UserProfile(userProfileCreationData, idamRegistrationInfo.getIdamRegistrationResponse());
 
     private final IdamFeignClient idamFeignClientMock = mock(IdamFeignClient.class);
 
@@ -130,9 +130,9 @@ public class UserProfileResourceUpdatorTest {
         updateUserProfileData.setRolesAdd(roles);
 
         UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
-        AddRoleResponse addRoleResponse = new AddRoleResponse();
-        addRoleResponse.setIdamStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.toString());
-        addRoleResponse.setIdamMessage("Failure");
+        RoleAdditionResponse roleAdditionResponse = new RoleAdditionResponse();
+        roleAdditionResponse.setIdamStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.toString());
+        roleAdditionResponse.setIdamMessage("Failure");
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         String body = mapper.writeValueAsString(userProfileRolesResponse);
 
@@ -152,11 +152,11 @@ public class UserProfileResourceUpdatorTest {
 
         updateUserProfileData.setRolesDelete(roles);
 
-        DeleteRoleResponse deleteRoleResponse = new DeleteRoleResponse();
-        deleteRoleResponse.setIdamStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.toString());
-        deleteRoleResponse.setIdamMessage("Failure");
-        List<DeleteRoleResponse> rolesResponse = new ArrayList<DeleteRoleResponse>();
-        rolesResponse.add(deleteRoleResponse);
+        RoleDeletionResponse roleDeletionResponse = new RoleDeletionResponse();
+        roleDeletionResponse.setIdamStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.toString());
+        roleDeletionResponse.setIdamMessage("Failure");
+        List<RoleDeletionResponse> rolesResponse = new ArrayList<RoleDeletionResponse>();
+        rolesResponse.add(roleDeletionResponse);
 
         UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
         userProfileRolesResponse.setDeleteRolesResponse(rolesResponse);
@@ -182,9 +182,9 @@ public class UserProfileResourceUpdatorTest {
         updateUserProfileData.setRolesAdd(roles);
 
         UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
-        AddRoleResponse addRoleResponse = new AddRoleResponse();
-        addRoleResponse.setIdamStatusCode(HttpStatus.OK.toString());
-        addRoleResponse.setIdamMessage("Success");
+        RoleAdditionResponse roleAdditionResponse = new RoleAdditionResponse();
+        roleAdditionResponse.setIdamStatusCode(HttpStatus.OK.toString());
+        roleAdditionResponse.setIdamMessage("Success");
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         String body = mapper.writeValueAsString(userProfileRolesResponse);
 
@@ -262,10 +262,10 @@ public class UserProfileResourceUpdatorTest {
         updateUserProfileData.setRolesAdd(roles);
 
         UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
-        AddRoleResponse addRoleResponse = new AddRoleResponse();
-        addRoleResponse.setIdamStatusCode(HttpStatus.OK.toString());
-        addRoleResponse.setIdamMessage("Success");
-        userProfileRolesResponse.setAddRolesResponse(addRoleResponse);
+        RoleAdditionResponse roleAdditionResponse = new RoleAdditionResponse();
+        roleAdditionResponse.setIdamStatusCode(HttpStatus.OK.toString());
+        roleAdditionResponse.setIdamMessage("Success");
+        userProfileRolesResponse.setAddRolesResponse(roleAdditionResponse);
 
         sut.updateRoles(updateUserProfileData, "1567");
     }
@@ -281,10 +281,10 @@ public class UserProfileResourceUpdatorTest {
         updateUserProfileData.setRolesAdd(roles);
 
         UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
-        AddRoleResponse addRoleResponse = new AddRoleResponse();
-        addRoleResponse.setIdamStatusCode(HttpStatus.OK.toString());
-        addRoleResponse.setIdamMessage("Success");
-        userProfileRolesResponse.setAddRolesResponse(addRoleResponse);
+        RoleAdditionResponse roleAdditionResponse = new RoleAdditionResponse();
+        roleAdditionResponse.setIdamStatusCode(HttpStatus.OK.toString());
+        roleAdditionResponse.setIdamMessage("Success");
+        userProfileRolesResponse.setAddRolesResponse(roleAdditionResponse);
 
         when(validationServiceMock.validateUpdate(any(), any())).thenThrow(ResourceNotFoundException.class);
 
@@ -301,10 +301,10 @@ public class UserProfileResourceUpdatorTest {
         updateUserProfileData.setRolesAdd(roles);
 
         UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
-        AddRoleResponse addRoleResponse = new AddRoleResponse();
-        addRoleResponse.setIdamStatusCode(HttpStatus.OK.toString());
-        addRoleResponse.setIdamMessage("Success");
-        userProfileRolesResponse.setAddRolesResponse(addRoleResponse);
+        RoleAdditionResponse roleAdditionResponse = new RoleAdditionResponse();
+        roleAdditionResponse.setIdamStatusCode(HttpStatus.OK.toString());
+        roleAdditionResponse.setIdamMessage("Success");
+        userProfileRolesResponse.setAddRolesResponse(roleAdditionResponse);
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         String body = mapper.writeValueAsString(userProfileRolesResponse);
 
@@ -323,15 +323,15 @@ public class UserProfileResourceUpdatorTest {
 
         updateUserProfileData.setRolesDelete(roles);
         UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
-        DeleteRoleResponse deleteRoleResponse = new DeleteRoleResponse();
-        deleteRoleResponse.setRoleName("pui-case-manager");
-        deleteRoleResponse.setIdamStatusCode(HttpStatus.OK.toString());
-        deleteRoleResponse.setIdamMessage("Success");
-        List<DeleteRoleResponse> deleteRoleResponses = new ArrayList<DeleteRoleResponse>();
-        deleteRoleResponses.add(deleteRoleResponse);
+        RoleDeletionResponse roleDeletionResponse = new RoleDeletionResponse();
+        roleDeletionResponse.setRoleName("pui-case-manager");
+        roleDeletionResponse.setIdamStatusCode(HttpStatus.OK.toString());
+        roleDeletionResponse.setIdamMessage("Success");
+        List<RoleDeletionResponse> roleDeletionRespons = new ArrayList<RoleDeletionResponse>();
+        roleDeletionRespons.add(roleDeletionResponse);
 
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        String body = mapper.writeValueAsString(deleteRoleResponse);
+        String body = mapper.writeValueAsString(roleDeletionResponse);
 
         when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
 

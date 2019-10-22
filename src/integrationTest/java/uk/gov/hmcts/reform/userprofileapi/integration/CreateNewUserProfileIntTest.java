@@ -25,9 +25,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
+import uk.gov.hmcts.reform.userprofileapi.resource.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
@@ -49,21 +49,21 @@ public class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegration
     @Test
     public void should_return_201_and_create_user_profile_resource() throws Exception {
 
-        CreateUserProfileData data = buildCreateUserProfileData();
+        UserProfileCreationData data = buildCreateUserProfileData();
 
-        CreateUserProfileResponse createdResource =
+        UserProfileCreationResponse createdResource =
             userProfileRequestHandlerTest.sendPost(
                 mockMvc,
                 APP_BASE_PATH,
                 data,
                 CREATED,
-                CreateUserProfileResponse.class
+                UserProfileCreationResponse.class
             );
 
         verifyUserProfileCreation(createdResource, CREATED, data);
     }
 
-    private void verifyUserProfileCreation(CreateUserProfileResponse createdResource, HttpStatus idamStatus, CreateUserProfileData data) {
+    private void verifyUserProfileCreation(UserProfileCreationResponse createdResource, HttpStatus idamStatus, UserProfileCreationData data) {
 
         assertThat(createdResource.getIdamId()).isNotNull();
         assertThat(createdResource.getIdamId()).isInstanceOf(String.class);
@@ -208,16 +208,16 @@ public class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegration
     @Test
     public void should_return_201_and_create_user_profile_resource_with_allowed_email() throws Exception {
 
-        CreateUserProfileData data = buildCreateUserProfileData();
+        UserProfileCreationData data = buildCreateUserProfileData();
         data.setEmail("a.adison@gmail.com");
 
-        CreateUserProfileResponse createdResource =
+        UserProfileCreationResponse createdResource =
                 userProfileRequestHandlerTest.sendPost(
                         mockMvc,
                         APP_BASE_PATH,
                         data,
                         CREATED,
-                        CreateUserProfileResponse.class
+                        UserProfileCreationResponse.class
                 );
 
         verifyUserProfileCreation(createdResource, CREATED, data);
@@ -226,16 +226,16 @@ public class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegration
     @Test
     public void should_return_400_and_create_user_profile_resource_with_invalid_email() throws Exception {
 
-        CreateUserProfileData data = buildCreateUserProfileData();
+        UserProfileCreationData data = buildCreateUserProfileData();
         data.setEmail("a.adisongmail.com");
 
-        CreateUserProfileResponse createdResource =
+        UserProfileCreationResponse createdResource =
                 userProfileRequestHandlerTest.sendPost(
                         mockMvc,
                         APP_BASE_PATH,
                         data,
                         BAD_REQUEST,
-                        CreateUserProfileResponse.class
+                        UserProfileCreationResponse.class
                 );
 
     }
@@ -243,16 +243,16 @@ public class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegration
     @Test
     public void should_return_400_and_create_user_profile_resource_with_invalid_email_1() throws Exception {
 
-        CreateUserProfileData data = buildCreateUserProfileData();
+        UserProfileCreationData data = buildCreateUserProfileData();
         data.setEmail("a.adison@gmailcom");
 
-        CreateUserProfileResponse createdResource =
+        UserProfileCreationResponse createdResource =
                 userProfileRequestHandlerTest.sendPost(
                         mockMvc,
                         APP_BASE_PATH,
                         data,
                         BAD_REQUEST,
-                        CreateUserProfileResponse.class
+                        UserProfileCreationResponse.class
                 );
 
     }

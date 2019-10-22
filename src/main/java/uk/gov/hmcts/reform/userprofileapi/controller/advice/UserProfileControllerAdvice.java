@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamServiceException;
+import uk.gov.hmcts.reform.userprofileapi.exception.IdamServiceException;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceNotFoundException;
 
 @Slf4j

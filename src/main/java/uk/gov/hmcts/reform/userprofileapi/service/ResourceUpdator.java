@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.userprofileapi.service;
 import java.util.Optional;
 
 import uk.gov.hmcts.reform.userprofileapi.AttributeResponse;
-import uk.gov.hmcts.reform.userprofileapi.client.RequestData;
-import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 
 public interface ResourceUpdator<T extends RequestData> {

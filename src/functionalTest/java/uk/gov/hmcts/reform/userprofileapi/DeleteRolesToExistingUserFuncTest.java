@@ -17,13 +17,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileWithRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.IdamClient;
-import uk.gov.hmcts.reform.userprofileapi.client.RoleName;
-import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
+import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
 
 @RunWith(SpringIntegrationSerenityRunner.class)
@@ -47,7 +47,7 @@ public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
     public void should_delete_user_profile_with_roles_successfully() throws Exception {
 
 
-        CreateUserProfileData data = createUserProfileData();
+        UserProfileCreationData data = createUserProfileData();
         List<String> roles = new ArrayList<>();
         roles.add(puiUserManager);
         String email = idamClient.createUser(roles);
@@ -61,10 +61,10 @@ public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
         UpdateUserProfileData userProfileData = new UpdateUserProfileData();
         userProfileData.setRolesAdd(rolesName);
 
-        GetUserProfileResponse resource =
+        UserProfileResponse resource =
                 testRequestHandler.sendGet(
                         requestUri + "?email=" + email.toLowerCase(),
-                        GetUserProfileResponse.class
+                        UserProfileResponse.class
                 );
 
         LOG.info("before addroles call");
@@ -76,10 +76,10 @@ public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
 
         LOG.info("after addroles call" + resource1);
 
-        GetUserProfileWithRolesResponse resource2 =
+        UserProfileWithRolesResponse resource2 =
                 testRequestHandler.sendGet(
                         "/v1/userprofile/" + resource.getIdamId() + "/roles",
-                        GetUserProfileWithRolesResponse.class
+                        UserProfileWithRolesResponse.class
                 );
         LOG.info("Roles addroles call" + resource2);
         assertThat(resource2.getRoles().size()).isNotNull();
@@ -100,10 +100,10 @@ public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
         LOG.info("after DeleteRole call" + deleteResourceResp);
 
 
-        GetUserProfileWithRolesResponse resourceForDeleteCheck =
+        UserProfileWithRolesResponse resourceForDeleteCheck =
                 testRequestHandler.sendGet(
                         "/v1/userprofile/" + resource.getIdamId() + "/roles",
-                        GetUserProfileWithRolesResponse.class
+                        UserProfileWithRolesResponse.class
                 );
         LOG.info("Roles addroles call" + resource2);
         assertThat(resourceForDeleteCheck.getRoles().size()).isNotNull();

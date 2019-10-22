@@ -6,8 +6,8 @@ import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUse
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
-import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.resource.ResponseSource;
+import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;

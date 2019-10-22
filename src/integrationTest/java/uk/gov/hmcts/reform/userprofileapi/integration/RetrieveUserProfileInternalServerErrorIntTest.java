@@ -23,12 +23,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.client.IdamRegisterUserRequest;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
+import uk.gov.hmcts.reform.userprofileapi.controller.request.IdamRegisterUserRequest;
 import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRequestHandlerTest;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamServiceImpl;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
@@ -38,7 +38,7 @@ public class RetrieveUserProfileInternalServerErrorIntTest extends Authorization
     private static final String APP_BASE_PATH = "/v1/userprofile";
     private static final String SLASH = "/";
     @MockBean
-    protected IdamServiceImpl idamService;
+    protected IdamService idamService;
 
     @MockBean
     private UserProfileRepository userProfileRepository;
@@ -62,7 +62,7 @@ public class RetrieveUserProfileInternalServerErrorIntTest extends Authorization
         when(idamService.registerUser(any(IdamRegisterUserRequest.class)))
             .thenThrow(new RuntimeException("This is a test exception"));
 
-        CreateUserProfileData data = buildCreateUserProfileData();
+        UserProfileCreationData data = buildCreateUserProfileData();
 
         MvcResult result = userProfileRequestHandlerTest.sendPost(
             mockMvc,

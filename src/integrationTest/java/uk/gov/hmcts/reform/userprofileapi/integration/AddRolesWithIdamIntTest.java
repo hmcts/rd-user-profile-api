@@ -30,8 +30,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
-import uk.gov.hmcts.reform.userprofileapi.client.*;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
+import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
+import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
@@ -133,15 +136,15 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
         mockWithGetSuccess(true);
         mockWithUpdateSuccess();
         mockWithUpdateRolesSuccess();
-        CreateUserProfileData data = buildCreateUserProfileData();
+        UserProfileCreationData data = buildCreateUserProfileData();
 
-        CreateUserProfileResponse createdResource =
+        UserProfileCreationResponse createdResource =
                 userProfileRequestHandlerTest.sendPost(
                         mockMvc,
                         APP_BASE_PATH,
                         data,
                         CREATED,
-                        CreateUserProfileResponse.class
+                        UserProfileCreationResponse.class
                 );
 
 
@@ -194,15 +197,15 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
         mockWithUpdateSuccess();
         mockWithUpdateRolesSuccess();
         mockWithDeleteRoleSuccess();
-        CreateUserProfileData data = buildCreateUserProfileData();
+        UserProfileCreationData data = buildCreateUserProfileData();
 
-        CreateUserProfileResponse createdResource =
+        UserProfileCreationResponse createdResource =
                 userProfileRequestHandlerTest.sendPost(
                         mockMvc,
                         APP_BASE_PATH,
                         data,
                         CREATED,
-                        CreateUserProfileResponse.class
+                        UserProfileCreationResponse.class
                 );
 
 

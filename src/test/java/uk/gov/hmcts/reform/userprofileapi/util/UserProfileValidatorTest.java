@@ -12,10 +12,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesRequest;
-import uk.gov.hmcts.reform.userprofileapi.client.RoleName;
-import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
+import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfilesRequest;
+import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
+import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.domain.*;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceNotFoundException;
@@ -23,8 +23,8 @@ import uk.gov.hmcts.reform.userprofileapi.service.ResourceNotFoundException;
 @RunWith(MockitoJUnitRunner.class)
 public class UserProfileValidatorTest {
 
-    CreateUserProfileData userProfileData =
-            new CreateUserProfileData(
+    UserProfileCreationData userProfileData =
+            new UserProfileCreationData(
                     "test-email-@somewhere.com",
                     "test-first-name",
                     "test-last-name",
@@ -215,8 +215,8 @@ public class UserProfileValidatorTest {
                 .isInstanceOf(RequiredFieldMissingException.class);
     }
 
-    static void validateUserIds(GetUserProfilesRequest getUserProfilesRequest) {
-        if (getUserProfilesRequest.getUserIds().isEmpty()) {
+    static void validateUserIds(UserProfilesRequest userProfilesRequest) {
+        if (userProfilesRequest.getUserIds().isEmpty()) {
             throw new RequiredFieldMissingException("no user id in request");
         }
     }
@@ -224,8 +224,8 @@ public class UserProfileValidatorTest {
     @Test
     public void test_validateUserIds() {
 
-        GetUserProfilesRequest getUserProfilesRequest = new GetUserProfilesRequest(new ArrayList<String>());
-        assertThatThrownBy(() -> UserProfileValidator.validateUserIds(getUserProfilesRequest))
+        UserProfilesRequest userProfilesRequest = new UserProfilesRequest(new ArrayList<String>());
+        assertThatThrownBy(() -> UserProfileValidator.validateUserIds(userProfilesRequest))
                 .isInstanceOf(RequiredFieldMissingException.class);
     }
     
