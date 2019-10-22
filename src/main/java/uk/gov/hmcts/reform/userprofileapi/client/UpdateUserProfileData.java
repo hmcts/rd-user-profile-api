@@ -33,8 +33,7 @@ public class UpdateUserProfileData implements RequestData {
                                  @JsonProperty(value = "lastName") String lastName,
                                  @JsonProperty(value = "idamStatus") String idamStatus,
                                  @JsonProperty(value = "rolesAdd") Set<RoleName> rolesAdd,
-                                 @JsonProperty(value = "rolesDelete") Set<RoleName> rolesDelete
-    ) {
+                                 @JsonProperty(value = "rolesDelete") Set<RoleName> rolesDelete) {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
