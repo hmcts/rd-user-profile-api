@@ -16,30 +16,30 @@ public interface UserProfileMapper {
         }
     }
 
-    static void setEmail(UpdateUserProfileData data, UserProfile userProfile){
+    static void setEmail(UpdateUserProfileData data, UserProfile userProfile) {
         String email = data.getEmail().trim().toLowerCase();
-        if(StringUtils.isNotEmpty(email)) {
+        if (StringUtils.isNotEmpty(email)) {
             userProfile.setEmail(email);
         }
     }
 
-    static void setFirstName(UpdateUserProfileData data, UserProfile userProfile){
+    static void setFirstName(UpdateUserProfileData data, UserProfile userProfile) {
         String firstName = data.getFirstName().trim();
-        if(StringUtils.isNotEmpty(firstName)) {
+        if (StringUtils.isNotEmpty(firstName)) {
             userProfile.setFirstName(firstName);
         }
     }
 
-    static void setLastName(UpdateUserProfileData data, UserProfile userProfile){
+    static void setLastName(UpdateUserProfileData data, UserProfile userProfile) {
         String lastName = data.getLastName().trim();
-        if(StringUtils.isNotEmpty(lastName)) {
+        if (StringUtils.isNotEmpty(lastName)) {
             userProfile.setLastName(lastName);
         }
     }
 
     static void setStatus(UpdateUserProfileData data, UserProfile userProfile) {
         String idamStatus = data.getIdamStatus();
-        if(StringUtils.isNotEmpty(idamStatus)) {
+        if (StringUtils.isNotEmpty(idamStatus)) {
             userProfile.setStatus(IdamStatus.valueOf(idamStatus.toUpperCase()));
         }
     }
