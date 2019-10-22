@@ -120,8 +120,7 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
 
         Optional<Audit> optional = auditRepository.findByUserProfile(updatedUserProfile);
 
-        //TODO ensure this is ok
-        if(optional.isPresent()) {
+        if (optional.isPresent()) {
             Audit audit = optional.get();
             assertThat(audit).isNotNull();
             assertThat(audit.getIdamRegistrationResponse()).isEqualTo(200);
