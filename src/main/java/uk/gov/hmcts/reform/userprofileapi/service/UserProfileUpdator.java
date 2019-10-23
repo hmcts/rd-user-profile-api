@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.userprofileapi.client.*;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
-import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.util.JsonFeignResponseHelper;
 import uk.gov.hmcts.reform.userprofileapi.util.UserProfileMapper;
@@ -30,9 +29,6 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
 
     @Autowired
     private UserProfileRepository userProfileRepository;
-
-    @Autowired
-    private AuditRepository auditRepository;
 
     @Autowired
     private IdamFeignClient idamClient;
