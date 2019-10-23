@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.userprofileapi.service;
+package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
 import feign.FeignException;
 import feign.Response;
@@ -12,11 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.userprofileapi.client.IdamRegisterUserRequest;
-import uk.gov.hmcts.reform.userprofileapi.client.IdamUserResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.request.IdamRegisterUserRequest;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamUserResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.util.JsonFeignResponseHelper;
 
 @Slf4j

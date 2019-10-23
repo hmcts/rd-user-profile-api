@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.userprofileapi.client;
+package uk.gov.hmcts.reform.userprofileapi.resource;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;

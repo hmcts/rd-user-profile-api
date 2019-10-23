@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.userprofileapi.client;
+package uk.gov.hmcts.reform.userprofileapi.resource;
 
 import static uk.gov.hmcts.reform.userprofileapi.constant.UserProfileConstant.EMAIL_REGEX;
 
@@ -18,7 +18,7 @@ import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 @Setter
 @Getter
 @NoArgsConstructor
-public class CreateUserProfileData implements RequestData {
+public class UserProfileCreationData implements RequestData {
 
     @Email(regexp = EMAIL_REGEX)
     @NotBlank (message = "email must not be null or blank")
@@ -47,15 +47,15 @@ public class CreateUserProfileData implements RequestData {
     private IdamStatus status;
 
     @JsonCreator
-    public CreateUserProfileData(@JsonProperty(value = "email") String email,
-                                 @JsonProperty(value = "firstName") String firstName,
-                                 @JsonProperty(value = "lastName") String lastName,
-                                 @JsonProperty(value = "languagePreference") String languagePreference,
-                                 @JsonProperty(value = "emailCommsConsent") boolean emailCommsConsent,
-                                 @JsonProperty(value = "postalCommsConsent") boolean postalCommsConsent,
-                                 @JsonProperty(value = "userCategory") String userCategory,
-                                 @JsonProperty(value = "userType") String userType,
-                                 @JsonProperty(value = "roles") List<String> roles) {
+    public UserProfileCreationData(@JsonProperty(value = "email") String email,
+                                   @JsonProperty(value = "firstName") String firstName,
+                                   @JsonProperty(value = "lastName") String lastName,
+                                   @JsonProperty(value = "languagePreference") String languagePreference,
+                                   @JsonProperty(value = "emailCommsConsent") boolean emailCommsConsent,
+                                   @JsonProperty(value = "postalCommsConsent") boolean postalCommsConsent,
+                                   @JsonProperty(value = "userCategory") String userCategory,
+                                   @JsonProperty(value = "userType") String userType,
+                                   @JsonProperty(value = "roles") List<String> roles) {
 
         this.email = email;
         this.firstName = firstName;

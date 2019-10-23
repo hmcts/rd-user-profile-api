@@ -17,6 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.client.*;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 @RunWith(SpringIntegrationSerenityRunner.class)
 public class CreateUserProfileFuncTest extends AbstractFunctional {
@@ -38,7 +41,7 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
     @Test
     public void should_create_user_profile_and_verify_successfully() throws Exception {
 
-        CreateUserProfileResponse createdResource = createUserProfile(createUserProfileData(), HttpStatus.CREATED);
+        UserProfileCreationResponse createdResource = createUserProfile(createUserProfileData(), HttpStatus.CREATED);
 
         verifyCreateUserProfile(createdResource);
 
@@ -58,19 +61,19 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
         String email = idamClient.createUser(sidamRoles);
 
         //create User profile with same email to get 409 scenario
-        CreateUserProfileData data = createUserProfileData();
+        UserProfileCreationData data = createUserProfileData();
         data.setRoles(xuiuRoles);
         data.setEmail(email);
-        CreateUserProfileResponse duplicateUserResource = createUserProfile(data, HttpStatus.CREATED);
+        UserProfileCreationResponse duplicateUserResource = createUserProfile(data, HttpStatus.CREATED);
         verifyCreateUserProfile(duplicateUserResource);
 
         //get user by getUserById to check new roles got added in SIDAM
         //should have 2 roles
         String userId = duplicateUserResource.getIdamId();
-        GetUserProfileWithRolesResponse resource =
+        UserProfileWithRolesResponse resource =
                 testRequestHandler.sendGet(
                         requestUri + "/" + userId + "/roles",
-                        GetUserProfileWithRolesResponse.class);
+                        UserProfileWithRolesResponse.class);
 
         assertThat(resource.getRoles()).contains("pui-case-manager");
         assertThat(resource.getRoles()).contains("pui-user-manager");
@@ -87,21 +90,21 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
         String email = idamClient.createUser(roles);
 
         //create user profile in UP with PRD-ADMIN token for above user with same email with "pui-user-manager" roles
-        CreateUserProfileData data = createUserProfileData();
+        UserProfileCreationData data = createUserProfileData();
         data.setEmail(email);
         List<String> xuiRoles = new ArrayList();
         xuiRoles.add("pui-user-manager");
         xuiRoles.add("pui-case-manager");
         data.setRoles(xuiRoles);
-        CreateUserProfileResponse duplicateUserResource = createUserProfile(data, HttpStatus.CREATED);
+        UserProfileCreationResponse duplicateUserResource = createUserProfile(data, HttpStatus.CREATED);
         verifyCreateUserProfile(duplicateUserResource);
 
         //get user by getUserById to check new roles got added in SIDAM
         String userId = duplicateUserResource.getIdamId();
-        GetUserProfileWithRolesResponse resource =
+        UserProfileWithRolesResponse resource =
                 testRequestHandler.sendGet(
                         requestUri + "/" + userId + "/roles",
-                        GetUserProfileWithRolesResponse.class);
+                        UserProfileWithRolesResponse.class);
 
         assertThat(resource.getRoles()).contains("citizen");
         assertThat(resource.getRoles()).contains("pui-user-manager");
@@ -123,14 +126,14 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
     @Test
     public void should_return_409_when_attempting_to_add_duplicate_emails() throws Exception {
 
-        CreateUserProfileData data = createUserProfileData();
+        UserProfileCreationData data = createUserProfileData();
 
-        CreateUserProfileResponse createdResource =
+        UserProfileCreationResponse createdResource =
             testRequestHandler.sendPost(
                 data,
                 HttpStatus.CREATED,
                 requestUri,
-                    CreateUserProfileResponse.class
+                    UserProfileCreationResponse.class
             );
 
         assertThat(createdResource).isNotNull();

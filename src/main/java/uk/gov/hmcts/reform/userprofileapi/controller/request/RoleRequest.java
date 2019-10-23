@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.userprofileapi.client;
+package uk.gov.hmcts.reform.userprofileapi.controller.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;

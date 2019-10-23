@@ -15,11 +15,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
+import uk.gov.hmcts.reform.userprofileapi.controller.request.IdamRegisterUserRequest;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamServiceImpl;
+import uk.gov.hmcts.reform.userprofileapi.service.impl.IdamServiceImpl;
 
 
 @RunWith(MockitoJUnitRunner.class)

@@ -8,10 +8,11 @@ import java.util.List;
 import java.util.UUID;
 
 import org.junit.Test;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 
-public class GetUserProfilesResponseTest {
+public class UserProfileDataResponseTest {
 
     @Test
     public void should_hold_values_after_creation() {
@@ -38,8 +39,8 @@ public class GetUserProfilesResponseTest {
         profilesList.add(userProfile);
         profilesList.add(userProfile1);
 
-        GetUserProfilesResponse getUserProfilesResponse = new GetUserProfilesResponse(profilesList, false);
+        UserProfileDataResponse userProfileDataResponse = new UserProfileDataResponse(profilesList, false);
 
-        assertThat(getUserProfilesResponse.getUserProfiles()).isNotNull();
+        assertThat(userProfileDataResponse.getUserProfiles()).isNotNull();
     }
 }

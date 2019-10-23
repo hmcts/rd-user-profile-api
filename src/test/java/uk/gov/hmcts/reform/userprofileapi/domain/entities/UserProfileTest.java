@@ -7,9 +7,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -50,7 +50,7 @@ public class UserProfileTest {
     @Test
     public void should_create_and_get_successfully() {
 
-        CreateUserProfileData data = buildCreateUserProfileData();
+        UserProfileCreationData data = buildCreateUserProfileData();
         UserProfile userProfile = new UserProfile(data, HttpStatus.CREATED);
 
         assertThat(userProfile.getId()).isNull();
@@ -101,7 +101,7 @@ public class UserProfileTest {
     @Test
     public void should_set_defaults_when_language_pref_field_is_not_provided() {
 
-        CreateUserProfileData data = buildCreateUserProfileData();
+        UserProfileCreationData data = buildCreateUserProfileData();
         data.setLanguagePreference(null);
         UserProfile userProfile = new UserProfile(data, HttpStatus.CREATED);
         assertThat(userProfile.getLanguagePreference()).isEqualTo(LanguagePreference.EN);

@@ -16,9 +16,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.userprofileapi.client.*;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
+import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
+import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceUpdator;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileCreator;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileRetriever;
@@ -65,17 +74,17 @@ public class UserProfileServiceTest {
     @Test
     public void should_call_creator_create_method_successfully() {
 
-        CreateUserProfileData userProfileData = mock(CreateUserProfileData.class);
+        UserProfileCreationData userProfileData = mock(UserProfileCreationData.class);
 
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
-        CreateUserProfileResponse expected = new CreateUserProfileResponse(userProfile);
+        UserProfileCreationResponse expected = new UserProfileCreationResponse(userProfile);
 
         when(userProfileCreator.create(userProfileData)).thenReturn(userProfile);
 
-        CreateUserProfileResponse resource = userProfileService.create(userProfileData);
+        UserProfileCreationResponse resource = userProfileService.create(userProfileData);
 
         assertThat(resource).isEqualToComparingFieldByField(expected);
-        Mockito.verify(userProfileCreator).create(any(CreateUserProfileData.class));
+        Mockito.verify(userProfileCreator).create(any(UserProfileCreationData.class));
 
     }
 
@@ -84,11 +93,11 @@ public class UserProfileServiceTest {
         UserProfileIdentifier identifier = mock(UserProfileIdentifier.class);
 
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
-        GetUserProfileResponse expected = new GetUserProfileResponse(userProfile);
+        UserProfileResponse expected = new UserProfileResponse(userProfile);
 
         when(userProfileRetriever.retrieve(identifier, false)).thenReturn(userProfile);
 
-        GetUserProfileResponse resource = userProfileService.retrieve(identifier);
+        UserProfileResponse resource = userProfileService.retrieve(identifier);
 
         assertThat(resource).isEqualToComparingFieldByField(expected);
 
@@ -99,11 +108,11 @@ public class UserProfileServiceTest {
         UserProfileIdentifier identifier = mock(UserProfileIdentifier.class);
 
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
-        GetUserProfileWithRolesResponse expected = new GetUserProfileWithRolesResponse(userProfile, true);
+        UserProfileWithRolesResponse expected = new UserProfileWithRolesResponse(userProfile, true);
 
         when(userProfileRetriever.retrieve(identifier, true)).thenReturn(userProfile);
 
-        GetUserProfileWithRolesResponse resource = userProfileService.retrieveWithRoles(identifier);
+        UserProfileWithRolesResponse resource = userProfileService.retrieveWithRoles(identifier);
 
         assertThat(resource).isEqualToComparingFieldByField(expected);
 
@@ -116,11 +125,11 @@ public class UserProfileServiceTest {
         List<UserProfile> profileList = new ArrayList<>();
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         profileList.add(userProfile);
-        GetUserProfileWithRolesResponse expected = new GetUserProfileWithRolesResponse(userProfile, true);
+        UserProfileWithRolesResponse expected = new UserProfileWithRolesResponse(userProfile, true);
 
         when(userProfileRetriever.retrieveMultipleProfiles(identifier, true, true)).thenReturn(profileList);
 
-        GetUserProfilesResponse resource = userProfileService.retrieveWithRoles(identifier, true, true);
+        UserProfileDataResponse resource = userProfileService.retrieveWithRoles(identifier, true, true);
 
         assertThat(resource).isNotNull();
 

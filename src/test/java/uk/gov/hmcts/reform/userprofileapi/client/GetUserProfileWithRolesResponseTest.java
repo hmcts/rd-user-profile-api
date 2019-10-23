@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.UUID;
 import org.junit.Test;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
@@ -25,7 +27,7 @@ public class GetUserProfileWithRolesResponseTest {
         userProfile.setErrorStatusCode("200");
         userProfile.setErrorMessage("error message");
 
-        GetUserProfileWithRolesResponse getUserProfileWithRolesResponse = new GetUserProfileWithRolesResponse(userProfile, true);
+        UserProfileWithRolesResponse getUserProfileWithRolesResponse = new UserProfileWithRolesResponse(userProfile, true);
 
         assertThat(getUserProfileWithRolesResponse.getIdamId()).isEqualTo(idamId);
         assertThat(getUserProfileWithRolesResponse.getEmail()).isEqualTo("a@hmcts.net");
@@ -36,8 +38,8 @@ public class GetUserProfileWithRolesResponseTest {
         assertThat(getUserProfileWithRolesResponse.getIdamMessage()).isEqualTo("error message");
         assertThat(getUserProfileWithRolesResponse.getIdamStatusCode()).isEqualTo("200");
 
-        GetUserProfileResponse getUserProfileResponse1 = new GetUserProfileResponse();
-        assertThat(getUserProfileResponse1).isNotNull();
+        UserProfileResponse userProfileResponse1 = new UserProfileResponse();
+        assertThat(userProfileResponse1).isNotNull();
     }
 
     @Test
@@ -54,7 +56,7 @@ public class GetUserProfileWithRolesResponseTest {
         userProfile.setEmail("a@hmcts.net");
         userProfile.setStatus(IdamStatus.ACTIVE);
 
-        GetUserProfileWithRolesResponse getUserProfileWithRolesResponse = new GetUserProfileWithRolesResponse(userProfile, false);
+        UserProfileWithRolesResponse getUserProfileWithRolesResponse = new UserProfileWithRolesResponse(userProfile, false);
 
         assertThat(getUserProfileWithRolesResponse.getIdamId()).isEqualTo(idamId);
         assertThat(getUserProfileWithRolesResponse.getEmail()).isEqualTo("a@hmcts.net");
@@ -82,7 +84,7 @@ public class GetUserProfileWithRolesResponseTest {
         userProfile.setErrorStatusCode("200");
         userProfile.setErrorMessage("error message");
 
-        GetUserProfileWithRolesResponse getUserProfileWithRolesResponse = new GetUserProfileWithRolesResponse(userProfile, true);
+        UserProfileWithRolesResponse getUserProfileWithRolesResponse = new UserProfileWithRolesResponse(userProfile, true);
 
         assertThat(getUserProfileWithRolesResponse.getIdamId()).isEqualTo(idamId);
         assertThat(getUserProfileWithRolesResponse.getEmail()).isEqualTo("a@hmcts.net");
@@ -93,8 +95,8 @@ public class GetUserProfileWithRolesResponseTest {
         assertThat(getUserProfileWithRolesResponse.getIdamMessage()).isEqualTo("error message");
         assertThat(getUserProfileWithRolesResponse.getIdamStatusCode()).isEqualTo("200");
 
-        GetUserProfileResponse getUserProfileResponse1 = new GetUserProfileResponse();
-        assertThat(getUserProfileResponse1).isNotNull();
+        UserProfileResponse userProfileResponse1 = new UserProfileResponse();
+        assertThat(userProfileResponse1).isNotNull();
     }
 
 

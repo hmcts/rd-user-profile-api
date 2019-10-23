@@ -28,12 +28,11 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
-import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.resource.ResponseSource;
+import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
@@ -120,15 +119,13 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
 
         Optional<Audit> optional = auditRepository.findByUserProfile(updatedUserProfile);
 
-        if (optional.isPresent()) {
-            Audit audit = optional.get();
-            assertThat(audit).isNotNull();
-            assertThat(audit.getIdamRegistrationResponse()).isEqualTo(200);
-            assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.OK);
-            assertThat(audit.getSource()).isEqualTo(ResponseSource.SYNC);
-            assertThat(audit.getUserProfile().getIdamId()).isEqualTo(updatedUserProfile.getIdamId());
-            assertThat(audit.getAuditTs()).isNotNull();
-        }
+        Audit audit = optional.get();
+        assertThat(audit).isNotNull();
+        assertThat(audit.getIdamRegistrationResponse()).isEqualTo(200);
+        assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.OK);
+        assertThat(audit.getSource()).isEqualTo(ResponseSource.SYNC);
+        assertThat(audit.getUserProfile().getIdamId()).isEqualTo(updatedUserProfile.getIdamId());
+        assertThat(audit.getAuditTs()).isNotNull();
 
     }
 
@@ -138,37 +135,35 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
 
         UserProfile persistedUserProfile = userProfileMap.get("user");
         String idamId = persistedUserProfile.getIdamId();
-        MvcResult result =
-            userProfileRequestHandlerTest.sendPut(
-                mockMvc,
-                APP_BASE_PATH + SLASH + idamId,
-                "{}",
-                BAD_REQUEST
-            );
+
+        userProfileRequestHandlerTest.sendPut(
+            mockMvc,
+            APP_BASE_PATH + SLASH + idamId,
+            "{}",
+            BAD_REQUEST
+        );
     }
 
     @Test
     public void should_return_404_while_create_user_profile_when_userId_invalid() throws Exception {
 
-        MvcResult result =
-                userProfileRequestHandlerTest.sendPut(
-                        mockMvc,
-                        APP_BASE_PATH + SLASH + "invalid",
-                        "{}",
-                        NOT_FOUND
-                );
+        userProfileRequestHandlerTest.sendPut(
+                mockMvc,
+                APP_BASE_PATH + SLASH + "invalid",
+                "{}",
+                NOT_FOUND
+        );
     }
 
     @Test
     public void should_return_404_while_create_user_profile_when_userId_not_in_db() throws Exception {
 
-        MvcResult result =
-                userProfileRequestHandlerTest.sendPut(
-                        mockMvc,
-                        APP_BASE_PATH + SLASH + UUID.randomUUID(),
-                        "{}",
-                        NOT_FOUND
-                );
+        userProfileRequestHandlerTest.sendPut(
+                mockMvc,
+                APP_BASE_PATH + SLASH + UUID.randomUUID(),
+                "{}",
+                NOT_FOUND
+        );
     }
 
     @Test

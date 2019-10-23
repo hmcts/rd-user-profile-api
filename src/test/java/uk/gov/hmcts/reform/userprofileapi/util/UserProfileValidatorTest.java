@@ -7,24 +7,23 @@ import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestB
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesRequest;
-import uk.gov.hmcts.reform.userprofileapi.client.RoleName;
-import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.domain.*;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
+import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceNotFoundException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserProfileValidatorTest {
 
-    CreateUserProfileData userProfileData =
-            new CreateUserProfileData(
+    UserProfileCreationData userProfileData =
+            new UserProfileCreationData(
                     "test-email-@somewhere.com",
                     "test-first-name",
                     "test-last-name",
@@ -161,12 +160,10 @@ public class UserProfileValidatorTest {
 
         UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("test-email-@somewhere.com", "test-first-name", "test-last-name", "PENDING",addRolesToRoleName(), addRolesToRoleName());
 
-        boolean response = UserProfileValidator.isSameAsExistingUserProfile(updateUserProfileData, userProfile);
-        assertThat(response).isTrue();
+        assertThat(updateUserProfileData.isSameAsUserProfile(userProfile)).isTrue();
 
         updateUserProfileData = new UpdateUserProfileData("test-l-@somewhere.com", "test-first-name", "test-last-name", "PENDING",addRolesToRoleName(), addRolesToRoleName());
-        boolean response1 = UserProfileValidator.isSameAsExistingUserProfile(updateUserProfileData, userProfile);
-        assertThat(response1).isFalse();
+        assertThat(updateUserProfileData.isSameAsUserProfile(userProfile)).isFalse();
     }
 
     @Test
@@ -176,12 +173,12 @@ public class UserProfileValidatorTest {
                 .isInstanceOf(NullPointerException.class);
     }
 
-    @Test(expected = Test.None.class)
+    @Test
     public void test_validateCreateUserProfileRequest_no_exception_thrown() {
         UserProfileValidator.validateCreateUserProfileRequest(userProfileData);
     }
 
-    @Test(expected = Test.None.class)
+    @Test
     public void test_validateCreateUserProfileRequest_no_exception_thrown_when_values_are_null() {
         userProfileData.setUserCategory(null);
         userProfileData.setUserType(null);
@@ -217,8 +214,8 @@ public class UserProfileValidatorTest {
                 .isInstanceOf(RequiredFieldMissingException.class);
     }
 
-    static void validateUserIds(GetUserProfilesRequest getUserProfilesRequest) {
-        if (getUserProfilesRequest.getUserIds().isEmpty()) {
+    static void validateUserIds(UserProfileDataRequest userProfileDataRequest) {
+        if (userProfileDataRequest.getUserIds().isEmpty()) {
             throw new RequiredFieldMissingException("no user id in request");
         }
     }
@@ -226,8 +223,8 @@ public class UserProfileValidatorTest {
     @Test
     public void test_validateUserIds() {
 
-        GetUserProfilesRequest getUserProfilesRequest = new GetUserProfilesRequest(new ArrayList<String>());
-        assertThatThrownBy(() -> UserProfileValidator.validateUserIds(getUserProfilesRequest))
+        UserProfileDataRequest userProfileDataRequest = new UserProfileDataRequest(new ArrayList<String>());
+        assertThatThrownBy(() -> UserProfileValidator.validateUserIds(userProfileDataRequest))
                 .isInstanceOf(RequiredFieldMissingException.class);
     }
     

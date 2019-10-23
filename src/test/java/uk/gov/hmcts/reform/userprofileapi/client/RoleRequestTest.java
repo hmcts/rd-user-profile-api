@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+import uk.gov.hmcts.reform.userprofileapi.controller.request.RoleRequest;
 
 public class RoleRequestTest {
 

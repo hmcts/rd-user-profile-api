@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.userprofileapi.client;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Test;
+import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 
 public class RoleNameTest {
 

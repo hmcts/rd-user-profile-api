@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.userprofileapi.service;
+package uk.gov.hmcts.reform.userprofileapi.exception;
 
 import org.springframework.http.HttpStatus;
 

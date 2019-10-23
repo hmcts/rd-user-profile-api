@@ -6,14 +6,15 @@ import static uk.gov.hmcts.reform.userprofileapi.constant.UserProfileConstant.*;
 import org.apache.commons.lang.StringUtils;
 
 import org.springframework.util.CollectionUtils;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesRequest;
-import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
+
+import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceNotFoundException;
 
@@ -72,7 +73,7 @@ public interface UserProfileValidator {
                 && userProfile.getStatus().toString().equals(updateUserProfileData.getIdamStatus().trim());
     }
 
-    static void validateCreateUserProfileRequest(CreateUserProfileData request) {
+    static void validateCreateUserProfileRequest(UserProfileCreationData request) {
         requireNonNull(request, "createUserProfileData cannot be null");
 
         validateEnumField(USER_TYPE, request.getUserType());
@@ -112,8 +113,8 @@ public interface UserProfileValidator {
         return isValid;
     }
 
-    static void validateUserIds(GetUserProfilesRequest getUserProfilesRequest) {
-        if (getUserProfilesRequest.getUserIds().isEmpty()) {
+    static void validateUserIds(UserProfileDataRequest userProfileDataRequest) {
+        if (userProfileDataRequest.getUserIds().isEmpty()) {
             throw new RequiredFieldMissingException("no user id in request");
         }
     }

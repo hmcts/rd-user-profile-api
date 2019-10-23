@@ -5,7 +5,7 @@ import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
-import uk.gov.hmcts.reform.userprofileapi.client.IdamRegisterUserRequest;
+import uk.gov.hmcts.reform.userprofileapi.controller.request.IdamRegisterUserRequest;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 

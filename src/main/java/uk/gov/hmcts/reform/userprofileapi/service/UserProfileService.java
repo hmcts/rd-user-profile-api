@@ -3,40 +3,43 @@ package uk.gov.hmcts.reform.userprofileapi.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.userprofileapi.AttributeResponse;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileWithRolesResponse;
-import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesResponse;
-import uk.gov.hmcts.reform.userprofileapi.client.RequestData;
-import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
+import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
 
 @Service
 public class UserProfileService<T extends RequestData> {
 
     @Autowired
     private ResourceCreator<T> resourceCreator;
+
     @Autowired
     private ResourceRetriever<T> resourceRetriever;
+
     @Autowired
     private ResourceUpdator<T> resourceUpdator;
+
     @Autowired
     private UserProfileRepository userProfileRepository;
 
-    public CreateUserProfileResponse create(T requestData) {
-        return new CreateUserProfileResponse(resourceCreator.create(requestData));
+    public UserProfileCreationResponse create(T requestData) {
+        return new UserProfileCreationResponse(resourceCreator.create(requestData));
     }
 
-    public GetUserProfileWithRolesResponse retrieveWithRoles(T requestData) {
-        return new GetUserProfileWithRolesResponse(resourceRetriever.retrieve(requestData, true), true);
+    public UserProfileWithRolesResponse retrieveWithRoles(T requestData) {
+        return new UserProfileWithRolesResponse(resourceRetriever.retrieve(requestData, true), true);
     }
 
-    public GetUserProfilesResponse retrieveWithRoles(T requestData, boolean showDeleted, boolean rolesRequired) {
-        return new GetUserProfilesResponse(resourceRetriever.retrieveMultipleProfiles(requestData, showDeleted, rolesRequired), rolesRequired);
+    public UserProfileDataResponse retrieveWithRoles(T requestData, boolean showDeleted, boolean rolesRequired) {
+        return new UserProfileDataResponse(resourceRetriever.retrieveMultipleProfiles(requestData, showDeleted, rolesRequired), rolesRequired);
     }
 
-    public GetUserProfileResponse retrieve(T requestData) {
-        return new GetUserProfileResponse(resourceRetriever.retrieve(requestData, false));
+    public UserProfileResponse retrieve(T requestData) {
+        return new UserProfileResponse(resourceRetriever.retrieve(requestData, false));
     }
 
     public void update(T updateData, String userId) {

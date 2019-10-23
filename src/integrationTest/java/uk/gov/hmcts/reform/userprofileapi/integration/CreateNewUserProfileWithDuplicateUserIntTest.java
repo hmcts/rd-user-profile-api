@@ -29,10 +29,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRequestHandlerTest;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
@@ -40,6 +38,8 @@ import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
+import uk.gov.hmcts.reform.userprofileapi.resource.ResponseSource;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
@@ -143,15 +143,15 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
 
         mockWithGetSuccess(false);
         mockWithUpdateSuccess();
-        CreateUserProfileData data = buildCreateUserProfileData();
+        UserProfileCreationData data = buildCreateUserProfileData();
 
-        CreateUserProfileResponse createdResource =
+        UserProfileCreationResponse createdResource =
                 userProfileRequestHandlerTest.sendPost(
                 mockMvc,
                 APP_BASE_PATH,
                 data,
                 CREATED,
-                CreateUserProfileResponse.class
+                UserProfileCreationResponse.class
             );
 
         verifyUserProfileCreation(createdResource, CREATED, data, IdamStatus.ACTIVE);
@@ -163,15 +163,15 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
 
         mockWithGetSuccess(false);
         mockWithUpdateSuccess();
-        CreateUserProfileData data = buildCreateUserProfileData();
+        UserProfileCreationData data = buildCreateUserProfileData();
 
-        CreateUserProfileResponse createdResource =
+        UserProfileCreationResponse createdResource =
                 userProfileRequestHandlerTest.sendPost(
                         mockMvc,
                         APP_BASE_PATH,
                         data,
                         CREATED,
-                        CreateUserProfileResponse.class
+                        UserProfileCreationResponse.class
                 );
 
         verifyUserProfileCreation(createdResource, CREATED, data, IdamStatus.ACTIVE);
@@ -185,16 +185,16 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
         mockWithUpdateSuccess();
         auditRepository.deleteAll();
         userProfileRepository.deleteAll();
-        CreateUserProfileData data = buildCreateUserProfileData();
+        UserProfileCreationData data = buildCreateUserProfileData();
 
-        CreateUserProfileResponse createdResource =
-                userProfileRequestHandlerTest.sendPost(
-                        mockMvc,
-                        APP_BASE_PATH,
-                        data,
-                        NOT_FOUND,
-                        CreateUserProfileResponse.class
-                );
+
+        userProfileRequestHandlerTest.sendPost(
+                mockMvc,
+                APP_BASE_PATH,
+                data,
+                NOT_FOUND,
+                UserProfileCreationResponse.class
+        );
 
         verifyUserProfileCreationForFailure(NOT_FOUND);
 
@@ -207,22 +207,22 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
         mockWithUpdateFail();
         auditRepository.deleteAll();
         userProfileRepository.deleteAll();
-        CreateUserProfileData data = buildCreateUserProfileData();
+        UserProfileCreationData data = buildCreateUserProfileData();
 
-        CreateUserProfileResponse createdResource =
+        UserProfileCreationResponse createdResource =
                 userProfileRequestHandlerTest.sendPost(
                         mockMvc,
                         APP_BASE_PATH,
                         data,
                         BAD_REQUEST,
-                        CreateUserProfileResponse.class
+                        UserProfileCreationResponse.class
                 );
 
         verifyUserProfileCreationForFailure(BAD_REQUEST);
 
     }
 
-    private void verifyUserProfileCreation(CreateUserProfileResponse createdResource, HttpStatus idamStatus, CreateUserProfileData data, IdamStatus expectedIdamStatus) {
+    private void verifyUserProfileCreation(UserProfileCreationResponse createdResource, HttpStatus idamStatus, UserProfileCreationData data, IdamStatus expectedIdamStatus) {
 
         assertThat(createdResource.getIdamId()).isNotNull();
         assertThat(createdResource.getIdamId()).isInstanceOf(String.class);

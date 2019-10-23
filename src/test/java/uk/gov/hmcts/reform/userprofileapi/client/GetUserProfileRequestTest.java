@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.junit.Test;
+import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 
 public class GetUserProfileRequestTest {
 
@@ -15,7 +16,7 @@ public class GetUserProfileRequestTest {
 
         List<String> userIds = new ArrayList<String>();
         userIds.add(UUID.randomUUID().toString());
-        GetUserProfilesRequest getUserProfileRequest = new GetUserProfilesRequest(userIds);
+        UserProfileDataRequest getUserProfileRequest = new UserProfileDataRequest(userIds);
 
 
         assertThat(getUserProfileRequest.getUserIds().size()).isEqualTo(1);
@@ -27,7 +28,7 @@ public class GetUserProfileRequestTest {
 
         List<String> userIds = new ArrayList<String>();
         userIds.add(UUID.randomUUID().toString());
-        GetUserProfilesRequest getUserProfileRequest = new GetUserProfilesRequest(null);
+        UserProfileDataRequest getUserProfileRequest = new UserProfileDataRequest(null);
         assertThat(getUserProfileRequest.getUserIds()).isNull();
         getUserProfileRequest.setUserIds(userIds);
         assertThat(getUserProfileRequest.getUserIds()).isNotNull();
