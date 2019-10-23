@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.userprofileapi.service;
 
-import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.resolveStatusAndReturnMessage;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isSameAsExistingUserProfile;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUpdateUserProfileRequestValid;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
@@ -23,7 +22,6 @@ import uk.gov.hmcts.reform.userprofileapi.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.*;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
-import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
@@ -60,17 +58,17 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
 
         HttpStatus status = HttpStatus.OK;
         if (!isUserIdValid(userId, false)) {
-            persistAudit(HttpStatus.NOT_FOUND, ResponseSource.SYNC);
+            auditService.persistAudit(HttpStatus.NOT_FOUND, ResponseSource.SYNC);
             throw new ResourceNotFoundException("userId provided is malformed");
         }
 
         Optional<UserProfile> userProfileOptional = userProfileRepository.findByIdamId(userId);
 
         if (!userProfileOptional.isPresent()) {
-            persistAudit(HttpStatus.NOT_FOUND, ResponseSource.SYNC);
+            auditService.persistAudit(HttpStatus.NOT_FOUND, ResponseSource.SYNC);
             throw new ResourceNotFoundException("could not find user profile for userId: " + userId);
         } else if (!isUpdateUserProfileRequestValid(updateUserProfileData)) {
-            persistAudit(HttpStatus.BAD_REQUEST, ResponseSource.SYNC);
+            auditService.persistAudit(HttpStatus.BAD_REQUEST, ResponseSource.SYNC);
             throw new RequiredFieldMissingException("Update user profile request is not valid for userId: " + userId);
         } else if (!isSameAsExistingUserProfile(updateUserProfileData, userProfileOptional.get())) {
             userProfileOptional.get().setEmail(updateUserProfileData.getEmail().trim());
@@ -85,7 +83,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         } catch (Exception ex) {
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
-        persistAudit(status, userProfileOptional.get(), ResponseSource.SYNC);
+        auditService.persistAudit(status, userProfileOptional.get(), ResponseSource.SYNC);
         return result;
     }
 
@@ -103,7 +101,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
                 addRolesResponse.loadStatusCodes(httpStatus);
             } catch (FeignException ex) {
                 httpStatus = getHttpStatusFromFeignException(ex);
-                persistAudit(httpStatus, userProfile, ResponseSource.API);
+                auditService.persistAudit(httpStatus, userProfile, ResponseSource.API);
                 addRolesResponse.loadStatusCodes(httpStatus);
             }
             userProfileRolesResponse.setAddRolesResponse(addRolesResponse);
@@ -126,7 +124,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
             httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode();
         } catch (FeignException ex) {
             httpStatus = getHttpStatusFromFeignException(ex);
-            persistAudit(httpStatus, userProfile, ResponseSource.API);
+            auditService.persistAudit(httpStatus, userProfile, ResponseSource.API);
         }
         return new DeleteRoleResponse(roleName, httpStatus);
     }
@@ -136,17 +134,6 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
                 ? HttpStatus.INTERNAL_SERVER_ERROR
                 : HttpStatus.valueOf(ex.status());
     }
-
-    private void persistAudit(HttpStatus idamStatus, UserProfile userProfile, ResponseSource responseSource) {
-        Audit audit = new Audit(idamStatus.value(), resolveStatusAndReturnMessage(idamStatus), responseSource, userProfile);
-        auditRepository.save(audit);
-    }
-
-    private void persistAudit(HttpStatus idamStatus, ResponseSource responseSource) {
-        Audit audit = new Audit(idamStatus.value(), resolveStatusAndReturnMessage(idamStatus), responseSource);
-        auditRepository.save(audit);
-    }
-
 
     private UserProfile validateUserStatus(String userId) {
         Optional<UserProfile> userProfileOptional = userProfileRepository.findByIdamId(userId);
