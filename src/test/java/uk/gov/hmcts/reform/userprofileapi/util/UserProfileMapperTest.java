@@ -41,5 +41,4 @@ public class UserProfileMapperTest {
         verify(userProfileMock, times(1)).setLastName(eq(dummyLastName));
     }
 
-
 }
