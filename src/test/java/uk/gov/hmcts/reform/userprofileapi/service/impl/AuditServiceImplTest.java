@@ -9,9 +9,14 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
+import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AuditServiceImplTest {
@@ -38,11 +43,13 @@ public class AuditServiceImplTest {
 
         sut.persistAudit(httpStatusMock, userProfileMock, responseSourceMock);
 
+        verify(auditRepositoryMock, times(1)).save(any(Audit.class));
     }
 
     @Test
     public void testPersistAuditTwoArgs() {
         sut.persistAudit(httpStatusMock, responseSourceMock);
 
+        verify(auditRepositoryMock, times(1)).save(any(Audit.class));
     }
 }

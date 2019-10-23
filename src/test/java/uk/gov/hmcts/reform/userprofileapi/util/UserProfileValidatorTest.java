@@ -161,12 +161,10 @@ public class UserProfileValidatorTest {
 
         UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("test-email-@somewhere.com", "test-first-name", "test-last-name", "PENDING",addRolesToRoleName(), addRolesToRoleName());
 
-        boolean response = UserProfileValidator.isSameAsExistingUserProfile(updateUserProfileData, userProfile);
-        assertThat(response).isTrue();
+        assertThat(updateUserProfileData.isSameAsUserProfile(userProfile)).isTrue();
 
         updateUserProfileData = new UpdateUserProfileData("test-l-@somewhere.com", "test-first-name", "test-last-name", "PENDING",addRolesToRoleName(), addRolesToRoleName());
-        boolean response1 = UserProfileValidator.isSameAsExistingUserProfile(updateUserProfileData, userProfile);
-        assertThat(response1).isFalse();
+        assertThat(updateUserProfileData.isSameAsUserProfile(userProfile)).isFalse();
     }
 
     @Test
@@ -176,12 +174,12 @@ public class UserProfileValidatorTest {
                 .isInstanceOf(NullPointerException.class);
     }
 
-    @Test(expected = Test.None.class)
+    @Test
     public void test_validateCreateUserProfileRequest_no_exception_thrown() {
         UserProfileValidator.validateCreateUserProfileRequest(userProfileData);
     }
 
-    @Test(expected = Test.None.class)
+    @Test
     public void test_validateCreateUserProfileRequest_no_exception_thrown_when_values_are_null() {
         userProfileData.setUserCategory(null);
         userProfileData.setUserType(null);

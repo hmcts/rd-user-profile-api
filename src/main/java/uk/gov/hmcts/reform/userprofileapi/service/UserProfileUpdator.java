@@ -87,11 +87,9 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         }
 
         if (!CollectionUtils.isEmpty(profileData.getRolesDelete())) {
-
             log.info("Delete idam roles for userId :" + userId);
             List<DeleteRoleResponse> deleteRoleResponses = new ArrayList<>();
-            UserProfile finalUserProfile = userProfile;
-            profileData.getRolesDelete().forEach(role -> deleteRoleResponses.add(deleteRolesInIdam(userId, role.getName(), finalUserProfile)));
+            profileData.getRolesDelete().forEach(role -> deleteRoleResponses.add(deleteRolesInIdam(userId, role.getName(), userProfile)));
             userProfileRolesResponse.setDeleteRolesResponse(deleteRoleResponses);
         }
         return userProfileRolesResponse;
