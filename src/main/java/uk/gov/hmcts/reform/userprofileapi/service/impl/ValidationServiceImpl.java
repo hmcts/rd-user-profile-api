@@ -28,8 +28,9 @@ public class ValidationServiceImpl implements ValidationService {
     @Autowired
     private UserProfileRepository userProfileRepository;
 
+
     @Override
-    public Optional<UserProfile> validateUpdate(UpdateUserProfileData updateUserProfileData, String userId) {
+    public UserProfile validateUpdate(UpdateUserProfileData updateUserProfileData, String userId) {
         if (!isUserIdValid(userId, false)) {
             auditService.persistAudit(HttpStatus.NOT_FOUND, ResponseSource.SYNC);
             throw new ResourceNotFoundException("userId provided is malformed");
@@ -47,7 +48,7 @@ public class ValidationServiceImpl implements ValidationService {
             throw new RequiredFieldMissingException("Update user profile request is not valid for userId: " + userId);
         }
 
-        return result;
+        return result.get();
     }
 
 
