@@ -19,6 +19,7 @@ public interface UserProfileMapper {
     static void setEmail(UpdateUserProfileData data, UserProfile userProfile) {
         String email = data.getEmail().trim().toLowerCase();
         if (StringUtils.isNotEmpty(email)) {
+            System.out.println("email:" + email);
             userProfile.setEmail(email);
         }
     }
