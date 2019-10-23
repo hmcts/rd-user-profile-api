@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.userprofileapi.service;
 
-import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isSameAsExistingUserProfile;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUpdateUserProfileRequestValid;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
 
@@ -27,6 +26,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.util.JsonFeignResponseHelper;
+import uk.gov.hmcts.reform.userprofileapi.util.UserProfileMapper;
 
 
 @Service
@@ -56,7 +56,6 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
     @Override
     public Optional<UserProfile> update(UpdateUserProfileData updateUserProfileData, String userId) {
 
-        HttpStatus status = HttpStatus.OK;
         if (!isUserIdValid(userId, false)) {
             auditService.persistAudit(HttpStatus.NOT_FOUND, ResponseSource.SYNC);
             throw new ResourceNotFoundException("userId provided is malformed");
@@ -67,30 +66,34 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         if (!userProfileOptional.isPresent()) {
             auditService.persistAudit(HttpStatus.NOT_FOUND, ResponseSource.SYNC);
             throw new ResourceNotFoundException("could not find user profile for userId: " + userId);
-        } else if (!isUpdateUserProfileRequestValid(updateUserProfileData)) {
-            auditService.persistAudit(HttpStatus.BAD_REQUEST, ResponseSource.SYNC);
-            throw new RequiredFieldMissingException("Update user profile request is not valid for userId: " + userId);
-        } else if (!isSameAsExistingUserProfile(updateUserProfileData, userProfileOptional.get())) {
-            userProfileOptional.get().setEmail(updateUserProfileData.getEmail().trim());
-            userProfileOptional.get().setFirstName(updateUserProfileData.getFirstName().trim());
-            userProfileOptional.get().setLastName(updateUserProfileData.getLastName().trim());
-            userProfileOptional.get().setStatus(IdamStatus.valueOf(updateUserProfileData.getIdamStatus().toUpperCase()));
         }
 
-        Optional<UserProfile> result = Optional.empty();
+        if (!isUpdateUserProfileRequestValid(updateUserProfileData)) {
+            auditService.persistAudit(HttpStatus.BAD_REQUEST, ResponseSource.SYNC);
+            throw new RequiredFieldMissingException("Update user profile request is not valid for userId: " + userId);
+        }
+
+        UserProfileMapper.mapUpdatableFields(updateUserProfileData, userProfileOptional.orElse(null));
+
+        return doPersistUserProfile(userProfileOptional.get());
+    }
+
+    private Optional<UserProfile> doPersistUserProfile(UserProfile userProfile) {
+        UserProfile result = null;
+        HttpStatus status = HttpStatus.OK;
         try {
-            result = Optional.ofNullable(userProfileRepository.save(userProfileOptional.get()));
+            result = userProfileRepository.save(userProfile);
         } catch (Exception ex) {
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
-        auditService.persistAudit(status, userProfileOptional.get(), ResponseSource.SYNC);
-        return result;
+        auditService.persistAudit(status, result, ResponseSource.SYNC);
+        return Optional.ofNullable(result);
     }
 
     @Override
     public UserProfileRolesResponse updateRoles(UpdateUserProfileData profileData, String userId) {
-        UserProfile userProfile = null;
-        HttpStatus httpStatus = null;
+        UserProfile userProfile;
+        HttpStatus httpStatus;
         UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
         userProfile = validateUserStatus(userId);
         if (!CollectionUtils.isEmpty(profileData.getRolesAdd())) {

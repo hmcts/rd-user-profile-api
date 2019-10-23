@@ -66,15 +66,10 @@ public interface UserProfileValidator {
     }
 
     static boolean isSameAsExistingUserProfile(UpdateUserProfileData updateUserProfileData, UserProfile userProfile) {
-
-        boolean isSame = false;
-        if (userProfile.getEmail().equals(updateUserProfileData.getEmail().trim())
+        return userProfile.getEmail().equals(updateUserProfileData.getEmail().trim())
                 && userProfile.getFirstName().equals(updateUserProfileData.getFirstName().trim())
                 && userProfile.getLastName().equals(updateUserProfileData.getLastName().trim())
-                && userProfile.getStatus().toString().equals(updateUserProfileData.getIdamStatus().trim())) {
-            isSame = true;
-        }
-        return isSame;
+                && userProfile.getStatus().toString().equals(updateUserProfileData.getIdamStatus().trim());
     }
 
     static void validateCreateUserProfileRequest(CreateUserProfileData request) {
