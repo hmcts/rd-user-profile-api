@@ -16,10 +16,18 @@ import org.mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.hmcts.reform.userprofileapi.client.*;
+import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder;
 import uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
+import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
+import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileService;
 
 
@@ -38,30 +46,30 @@ public class UserProfileControllerTest {
     @Test
     public void testCreateUserProfile() {
 
-        CreateUserProfileData createUserProfileData = CreateUserProfileDataTestBuilder.buildCreateUserProfileData();
+        UserProfileCreationData userProfileCreationData = CreateUserProfileDataTestBuilder.buildCreateUserProfileData();
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
-        CreateUserProfileResponse expectedBody = new CreateUserProfileResponse(userProfile);
+        UserProfileCreationResponse expectedBody = new UserProfileCreationResponse(userProfile);
 
-        when(userProfileServiceMock.create(createUserProfileData)).thenReturn(expectedBody);
+        when(userProfileServiceMock.create(userProfileCreationData)).thenReturn(expectedBody);
 
-        ResponseEntity<CreateUserProfileResponse> resource = sut.createUserProfile(createUserProfileData);
+        ResponseEntity<UserProfileCreationResponse> resource = sut.createUserProfile(userProfileCreationData);
         assertThat(resource.getBody()).isEqualToComparingFieldByField(expectedBody);
 
-        verify(userProfileServiceMock).create(any(CreateUserProfileData.class));
+        verify(userProfileServiceMock).create(any(UserProfileCreationData.class));
 
     }
 
     @Test
     public void testCreateUserProfileThrowsException() {
-        CreateUserProfileData createUserProfileData = CreateUserProfileDataTestBuilder.buildCreateUserProfileData();
+        UserProfileCreationData userProfileCreationData = CreateUserProfileDataTestBuilder.buildCreateUserProfileData();
         IllegalStateException ex = new IllegalStateException("this is a test exception");
 
-        when(userProfileServiceMock.create(createUserProfileData)).thenThrow(ex);
+        when(userProfileServiceMock.create(userProfileCreationData)).thenThrow(ex);
 
-        assertThatThrownBy(() -> sut.createUserProfile(createUserProfileData))
+        assertThatThrownBy(() -> sut.createUserProfile(userProfileCreationData))
                 .isEqualTo(ex);
 
-        verify(userProfileServiceMock).create(any(CreateUserProfileData.class));
+        verify(userProfileServiceMock).create(any(UserProfileCreationData.class));
     }
 
     @Test
@@ -78,7 +86,7 @@ public class UserProfileControllerTest {
     @Test
     public void testGetUserProfileWithRolesById() {
         String id = "a833c2e2-2c73-4900-96ca-74b1efb37928";
-        GetUserProfileWithRolesResponse responseMock = Mockito.mock(GetUserProfileWithRolesResponse.class);
+        UserProfileWithRolesResponse responseMock = Mockito.mock(UserProfileWithRolesResponse.class);
 
         when(userProfileServiceMock.retrieveWithRoles(any(UserProfileIdentifier.class))).thenReturn(responseMock);
 
@@ -94,7 +102,7 @@ public class UserProfileControllerTest {
     @Test
     public void testGetUserProfileWithRolesByEmail() {
         String email = "test@test.com";
-        GetUserProfileWithRolesResponse responseMock = Mockito.mock(GetUserProfileWithRolesResponse.class);
+        UserProfileWithRolesResponse responseMock = Mockito.mock(UserProfileWithRolesResponse.class);
 
         when(userProfileServiceMock.retrieveWithRoles(any(UserProfileIdentifier.class))).thenReturn(responseMock);
 
@@ -152,9 +160,9 @@ public class UserProfileControllerTest {
         List<String> userIds = new ArrayList<>();
         userIds.add("1");
         userIds.add("2");
-        GetUserProfilesRequest getUserProfilesRequest = mock(GetUserProfilesRequest.class);
-        when(getUserProfilesRequest.getUserIds()).thenReturn(userIds);
-        ResponseEntity<GetUserProfilesResponse> responseEntity = sut.retrieveUserProfiles("false","true", getUserProfilesRequest);
+        UserProfileDataRequest userProfileDataRequest = mock(UserProfileDataRequest.class);
+        when(userProfileDataRequest.getUserIds()).thenReturn(userIds);
+        ResponseEntity<UserProfileDataResponse> responseEntity = sut.retrieveUserProfiles("false","true", userProfileDataRequest);
         assertThat(responseEntity).isNotNull();
 
     }

@@ -23,10 +23,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.resource.ResponseSource;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 @RunWith(SpringRunner.class)
@@ -51,7 +51,7 @@ public class CreateNewUserProfileWithIdamErrorsIntTest  extends AuthorizationEna
     public void should_return_error_and_not_create_user_profile_when_idam_registration_fails() throws Exception {
 
         auditRepository.deleteAll();
-        CreateUserProfileData data = buildCreateUserProfileData();
+        UserProfileCreationData data = buildCreateUserProfileData();
 
         MvcResult result =
                 userProfileRequestHandlerTest.sendPost(
@@ -65,7 +65,7 @@ public class CreateNewUserProfileWithIdamErrorsIntTest  extends AuthorizationEna
 
     }
 
-    private void verifyUserProfileCreation(HttpStatus idamStatus, CreateUserProfileData data) {
+    private void verifyUserProfileCreation(HttpStatus idamStatus, UserProfileCreationData data) {
 
         Optional<UserProfile> optionalUserProfile = userProfileRepository.findByEmail(data.getEmail());
         UserProfile userProfile = optionalUserProfile.orElse(null);

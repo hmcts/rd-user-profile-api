@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.userprofileapi.client;
+package uk.gov.hmcts.reform.userprofileapi.controller.response;
 
 import static java.util.Objects.requireNonNull;
 
@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 
 @Getter
 @NoArgsConstructor
-public class GetUserProfileResponse {
+public class UserProfileResponse {
 
     @JsonProperty ("userIdentifier")
     private String idamId;
@@ -19,8 +19,7 @@ public class GetUserProfileResponse {
     private String lastName;
     private IdamStatus idamStatus;
 
-    public GetUserProfileResponse(UserProfile userProfile) {
-
+    public UserProfileResponse(UserProfile userProfile) {
         requireNonNull(userProfile, "userProfile must not be null");
         this.idamId = userProfile.getIdamId();
         this.email = userProfile.getEmail();

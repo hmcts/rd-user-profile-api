@@ -5,10 +5,10 @@ import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.resolve
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
+import uk.gov.hmcts.reform.userprofileapi.resource.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
 
 @Service

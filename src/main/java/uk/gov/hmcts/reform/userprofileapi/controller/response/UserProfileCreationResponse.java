@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.userprofileapi.client;
+package uk.gov.hmcts.reform.userprofileapi.controller.response;
 
 import static java.util.Objects.requireNonNull;
 
@@ -10,12 +10,12 @@ import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 @Getter
 @Setter
 @NoArgsConstructor
-public class CreateUserProfileResponse {
+public class UserProfileCreationResponse {
 
     private String idamId;
     private Integer idamRegistrationResponse;
 
-    public CreateUserProfileResponse(UserProfile userProfile) {
+    public UserProfileCreationResponse(UserProfile userProfile) {
 
         requireNonNull(userProfile, "userProfile must not be null");
         this.idamId = userProfile.getIdamId();

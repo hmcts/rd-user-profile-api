@@ -9,6 +9,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 
@@ -29,7 +30,7 @@ public class UserProfileResourceTest {
     @Test
     public void should_represent_same_number_of_fields() {
         long numberOfFieldsInDb = 2;
-        long fieldCount = Stream.of(CreateUserProfileResponse.class.getDeclaredFields())
+        long fieldCount = Stream.of(UserProfileCreationResponse.class.getDeclaredFields())
                 .filter(field -> !field.getName().startsWith("$"))
                 .map(Field::getName)
                 .count();
@@ -40,7 +41,7 @@ public class UserProfileResourceTest {
     @Test
     public void should_create_successfully_with_no_args_constructor() {
 
-        CreateUserProfileResponse userProfile = new CreateUserProfileResponse(new UserProfile());
+        UserProfileCreationResponse userProfile = new UserProfileCreationResponse(new UserProfile());
         Arrays.asList(userProfile.getClass().getDeclaredMethods()).forEach(method -> {
             try {
                 if (method.getName().startsWith("get")) {
@@ -58,7 +59,7 @@ public class UserProfileResourceTest {
     public void should_create_from_user_profile_successfully() {
 
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfileWithAllFields();
-        CreateUserProfileResponse userProfileResource = new CreateUserProfileResponse(userProfile);
+        UserProfileCreationResponse userProfileResource = new UserProfileCreationResponse(userProfile);
 
         assertThat(userProfileResource.getIdamId()).isNotNull();
         assertThat(userProfileResource.getIdamRegistrationResponse()).isEqualTo(userProfile.getIdamRegistrationResponse());

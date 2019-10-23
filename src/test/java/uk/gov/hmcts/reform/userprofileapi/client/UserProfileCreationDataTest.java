@@ -7,15 +7,16 @@ import org.junit.Test;
 import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 
-public class CreateUserProfileDataTest {
+public class UserProfileCreationDataTest {
 
     @Test
     public void should_hold_values_after_creation() {
 
-        CreateUserProfileData userProfileData =
-            new CreateUserProfileData(
+        UserProfileCreationData userProfileData =
+            new UserProfileCreationData(
                 "test-email-@somewhere.com",
                 "test-first-name",
                 "test-last-name",
@@ -40,7 +41,7 @@ public class CreateUserProfileDataTest {
         userProfileData.setStatus(null);
         assertThat(userProfileData.getStatus()).isEqualTo(IdamStatus.ACTIVE);
 
-        CreateUserProfileData userProfileData1 = new CreateUserProfileData();
+        UserProfileCreationData userProfileData1 = new UserProfileCreationData();
         assertThat(userProfileData1).isNotNull();
 
     }

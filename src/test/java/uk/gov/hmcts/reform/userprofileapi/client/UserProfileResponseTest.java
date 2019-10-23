@@ -4,10 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.UUID;
 import org.junit.Test;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 
-public class GetUserProfileResponseTest {
+public class UserProfileResponseTest {
 
     @Test
     public void should_hold_values_after_creation() {
@@ -21,16 +22,16 @@ public class GetUserProfileResponseTest {
         userProfile.setLastName("lname");
         userProfile.setEmail("a@hmcts.net");
         userProfile.setStatus(IdamStatus.ACTIVE);
-        GetUserProfileResponse getUserProfileResponse = new GetUserProfileResponse(userProfile);
+        UserProfileResponse userProfileResponse = new UserProfileResponse(userProfile);
 
-        assertThat(getUserProfileResponse.getIdamId()).isEqualTo(idamId);
-        assertThat(getUserProfileResponse.getEmail()).isEqualTo("a@hmcts.net");
-        assertThat(getUserProfileResponse.getFirstName()).isEqualTo("fname");
-        assertThat(getUserProfileResponse.getLastName()).isEqualTo("lname");
-        assertThat(getUserProfileResponse.getIdamStatus()).isEqualTo(IdamStatus.ACTIVE);
+        assertThat(userProfileResponse.getIdamId()).isEqualTo(idamId);
+        assertThat(userProfileResponse.getEmail()).isEqualTo("a@hmcts.net");
+        assertThat(userProfileResponse.getFirstName()).isEqualTo("fname");
+        assertThat(userProfileResponse.getLastName()).isEqualTo("lname");
+        assertThat(userProfileResponse.getIdamStatus()).isEqualTo(IdamStatus.ACTIVE);
 
-        GetUserProfileResponse getUserProfileResponse1 = new GetUserProfileResponse();
-        assertThat(getUserProfileResponse1).isNotNull();
+        UserProfileResponse userProfileResponse1 = new UserProfileResponse();
+        assertThat(userProfileResponse1).isNotNull();
 
 
     }

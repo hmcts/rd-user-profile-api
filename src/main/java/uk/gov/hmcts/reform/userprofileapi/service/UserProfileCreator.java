@@ -10,32 +10,29 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import org.springframework.util.CollectionUtils;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.client.IdamRegisterUserRequest;
-import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants;
+import uk.gov.hmcts.reform.userprofileapi.controller.request.IdamRegisterUserRequest;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-
+import uk.gov.hmcts.reform.userprofileapi.exception.IdamServiceException;
 import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
+import uk.gov.hmcts.reform.userprofileapi.resource.ResponseSource;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 @Service
 @Slf4j
-public class UserProfileCreator implements ResourceCreator<CreateUserProfileData> {
+public class UserProfileCreator implements ResourceCreator<UserProfileCreationData> {
 
     @Value("${auth.idam.client.userid.baseUri:/api/v1/users/}")
     private String sidamGetUri;
@@ -49,7 +46,7 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
     @Autowired
     Map<Map<String, Boolean>, IdamStatus> idamStatusResolverMap;
 
-    public UserProfile create(CreateUserProfileData profileData) {
+    public UserProfile create(UserProfileCreationData profileData) {
 
         // check if user already in UP then
         Optional<UserProfile>  optionalExistingUserProfile = userProfileRepository.findByEmail(profileData.getEmail().toLowerCase());
@@ -73,11 +70,11 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
         }
     }
 
-    public IdamRegisterUserRequest createIdamRegistrationRequest(CreateUserProfileData profileData, String id) {
+    public IdamRegisterUserRequest createIdamRegistrationRequest(UserProfileCreationData profileData, String id) {
         return new IdamRegisterUserRequest(profileData.getEmail(), profileData.getFirstName(), profileData.getLastName(), id, profileData.getRoles());
     }
 
-    private UserProfile persistUserProfileWithAudit(CreateUserProfileData profileData, String userId, String stausMessage, HttpStatus idamStatus) {
+    private UserProfile persistUserProfileWithAudit(UserProfileCreationData profileData, String userId, String stausMessage, HttpStatus idamStatus) {
         UserProfile userProfile = null;
         if (idamStatus.is2xxSuccessful()) {
             userProfile = new UserProfile(profileData, idamStatus);
@@ -97,7 +94,7 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
         return userProfile;
     }
 
-    private UserProfile handleDuplicateUser(CreateUserProfileData profileData, IdamRegistrationInfo idamRegistrationInfo) {
+    private UserProfile handleDuplicateUser(UserProfileCreationData profileData, IdamRegistrationInfo idamRegistrationInfo) {
 
         HttpStatus idamStatus;
         String idamStatusMessage;
@@ -159,7 +156,7 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
         throw new IdamServiceException(message, idamStatus);
     }
 
-    public void updateInputRequestWithLatestSidamUserInfo(CreateUserProfileData profileData, IdamRolesInfo idamRolesInfo) {
+    public void updateInputRequestWithLatestSidamUserInfo(UserProfileCreationData profileData, IdamRolesInfo idamRolesInfo) {
         profileData.setStatus(IdamStatusResolver.resolveIdamStatus(idamStatusResolverMap, idamRolesInfo));
         if (idamRolesInfo.getEmail() != null) {
             profileData.setEmail(idamRolesInfo.getEmail());
@@ -172,7 +169,7 @@ public class UserProfileCreator implements ResourceCreator<CreateUserProfileData
         }
     }
 
-    public Set<String> consolidateRolesFromXuiAndIdam(CreateUserProfileData profileData, IdamRolesInfo idamRolesInfo) {
+    public Set<String> consolidateRolesFromXuiAndIdam(UserProfileCreationData profileData, IdamRolesInfo idamRolesInfo) {
         Optional<List<String>> roles = Optional.ofNullable(idamRolesInfo.getRoles());
         List<String> idamRoles = roles.isPresent() ? roles.get() : new ArrayList<>();
         List<String> xuiRoles = profileData.getRoles();

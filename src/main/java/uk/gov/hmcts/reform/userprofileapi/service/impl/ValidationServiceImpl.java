@@ -7,16 +7,14 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
-import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
+import uk.gov.hmcts.reform.userprofileapi.resource.ResponseSource;
+import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceNotFoundException;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
-
-
 
 
 @Service

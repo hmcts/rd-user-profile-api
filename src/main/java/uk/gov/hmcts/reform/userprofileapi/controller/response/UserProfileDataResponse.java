@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.userprofileapi.client;
+package uk.gov.hmcts.reform.userprofileapi.controller.response;
 
 import static java.util.stream.Collectors.toList;
 
@@ -11,14 +11,14 @@ import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 
 @Getter
 @NoArgsConstructor
-public class GetUserProfilesResponse {
+public class UserProfileDataResponse {
 
     @JsonProperty
-    private List<GetUserProfileWithRolesResponse> userProfiles;
+    private List<UserProfileWithRolesResponse> userProfiles;
 
-    public GetUserProfilesResponse(List<UserProfile> userProfile, boolean rolesRequired) {
+    public UserProfileDataResponse(List<UserProfile> userProfile, boolean rolesRequired) {
         this.userProfiles = userProfile.stream()
-                .map(professionalUser -> new GetUserProfileWithRolesResponse(professionalUser, rolesRequired))
+                .map(professionalUser -> new UserProfileWithRolesResponse(professionalUser, rolesRequired))
                 .collect(toList());
     }
 }

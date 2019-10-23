@@ -19,19 +19,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.reform.userprofileapi.client.IdentifierName;
-import uk.gov.hmcts.reform.userprofileapi.client.UserProfileIdentifier;
 import uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.exception.IdamServiceException;
 import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileQueryProvider;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamServiceException;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamServiceImpl;
+import uk.gov.hmcts.reform.userprofileapi.resource.IdentifierName;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceNotFoundException;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileRetriever;
+import uk.gov.hmcts.reform.userprofileapi.service.impl.IdamServiceImpl;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 @RunWith(MockitoJUnitRunner.class)

@@ -25,8 +25,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
-import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesRequest;
-import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
@@ -124,10 +124,10 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
     public void should_retrieve_multiple_user_profiles_with_showDeleted_true() throws Exception {
 
         mockWithGetSuccess();
-        GetUserProfilesRequest request = new GetUserProfilesRequest(userIds);
+        UserProfileDataRequest request = new UserProfileDataRequest(userIds);
         request.getUserIds().add(UUID.randomUUID().toString());
 
-        GetUserProfilesResponse response = getMultipleUsers(request, OK,"true","true");
+        UserProfileDataResponse response = getMultipleUsers(request, OK,"true","true");
 
         assertThat(response).isNotNull();
         assertThat(response.getUserProfiles().size()).isEqualTo(5);
@@ -162,9 +162,9 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
     @Test
     public void should_retrieve_multiple_user_profiles_with_showDeleted_false() throws Exception {
 
-        GetUserProfilesRequest request = new GetUserProfilesRequest(userIds);
+        UserProfileDataRequest request = new UserProfileDataRequest(userIds);
 
-        GetUserProfilesResponse response = getMultipleUsers(request, OK,"false", "true");
+        UserProfileDataResponse response = getMultipleUsers(request, OK,"false", "true");
 
         assertThat(response).isNotNull();
         assertThat(response.getUserProfiles().size()).isEqualTo(3);
@@ -172,9 +172,9 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
 
     @Test
     public void should_retrieve_a_suspended_user_profiles_with_showDeleted_false() throws Exception {
-        GetUserProfilesRequest request = new GetUserProfilesRequest(suspendedUserId);
+        UserProfileDataRequest request = new UserProfileDataRequest(suspendedUserId);
 
-        GetUserProfilesResponse response = getMultipleUsers(request, OK,"false", "true");
+        UserProfileDataResponse response = getMultipleUsers(request, OK,"false", "true");
 
         assertThat(response).isNotNull();
         assertThat(response.getUserProfiles().size()).isEqualTo(1);
@@ -185,10 +185,10 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
     public void should_retrieve_multiple_user_profiles_with_idam_failure() throws Exception {
 
         mockWithGetFail();
-        GetUserProfilesRequest request = new GetUserProfilesRequest(userIds);
+        UserProfileDataRequest request = new UserProfileDataRequest(userIds);
         request.getUserIds().add(UUID.randomUUID().toString());
 
-        GetUserProfilesResponse response = getMultipleUsers(request, OK, "true", "true");
+        UserProfileDataResponse response = getMultipleUsers(request, OK, "true", "true");
 
         assertThat(response).isNotNull();
         assertThat(response.getUserProfiles().size()).isEqualTo(5);
@@ -226,14 +226,14 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
     @Test
     public void should_return_400_multiple_user_profiles_with_invalid_param() throws Exception {
 
-        GetUserProfilesRequest request = new GetUserProfilesRequest(userIds);
+        UserProfileDataRequest request = new UserProfileDataRequest(userIds);
         getMultipleUsers(request, HttpStatus.BAD_REQUEST, "invalid", "true");
     }
 
     @Test
     public void should_return_400_multiple_user_profiles_with_no_user_ids_in_request() throws Exception {
 
-        GetUserProfilesRequest request = new GetUserProfilesRequest(new ArrayList<String>());
+        UserProfileDataRequest request = new UserProfileDataRequest(new ArrayList<String>());
         getMultipleUsers(request, HttpStatus.BAD_REQUEST, "true", "true");
     }
 
@@ -243,7 +243,7 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
         List<String> userIdList = new ArrayList<String>();
         userIdList.add(UUID.randomUUID().toString());
         userIdList.add(UUID.randomUUID().toString());
-        GetUserProfilesRequest request = new GetUserProfilesRequest(new ArrayList<String>());
+        UserProfileDataRequest request = new UserProfileDataRequest(new ArrayList<String>());
 
         getMultipleUsers(request, HttpStatus.BAD_REQUEST, "true", "true");
     }
@@ -252,10 +252,10 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
     public void should_retrieve_multiple_user_profiles_without_roles() throws Exception {
 
         mockWithGetSuccess();
-        GetUserProfilesRequest request = new GetUserProfilesRequest(userIds);
+        UserProfileDataRequest request = new UserProfileDataRequest(userIds);
         request.getUserIds().add(UUID.randomUUID().toString());
 
-        GetUserProfilesResponse response = getMultipleUsers(request, OK,"true", "false");
+        UserProfileDataResponse response = getMultipleUsers(request, OK,"true", "false");
 
         assertThat(response).isNotNull();
         assertThat(response.getUserProfiles().size()).isEqualTo(5);

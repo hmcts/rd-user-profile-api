@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.userprofileapi.client;
+package uk.gov.hmcts.reform.userprofileapi.controller.request;
 
 import java.util.List;
 import lombok.AllArgsConstructor;

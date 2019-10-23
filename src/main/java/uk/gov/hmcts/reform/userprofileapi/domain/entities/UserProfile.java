@@ -20,11 +20,11 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 
 @Getter
@@ -92,7 +92,7 @@ public class UserProfile {
         //noop
     }
 
-    public UserProfile(CreateUserProfileData data, HttpStatus idamStatus) {
+    public UserProfile(UserProfileCreationData data, HttpStatus idamStatus) {
         this.email = data.getEmail().trim().toLowerCase();
         this.firstName = data.getFirstName().trim();
         this.lastName = data.getLastName().trim();
@@ -121,8 +121,8 @@ public class UserProfile {
 
 
 
-    public void setStatus(CreateUserProfileData createUserProfileData) {
-        this.status = createUserProfileData.getStatus();
+    public void setStatus(UserProfileCreationData userProfileCreationData) {
+        this.status = userProfileCreationData.getStatus();
     }
 
     public void setStatus(IdamStatus status) {

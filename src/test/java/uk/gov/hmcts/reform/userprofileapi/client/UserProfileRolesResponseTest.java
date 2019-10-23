@@ -7,6 +7,9 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.RoleAdditionResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.RoleDeletionResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 
 public class UserProfileRolesResponseTest {
 
@@ -14,18 +17,18 @@ public class UserProfileRolesResponseTest {
     @Test
     public void should_Return_User_profile_Response_With_Setters() {
 
-        AddRoleResponse addRoleResponse = new AddRoleResponse();
-        addRoleResponse.setIdamStatusCode(HttpStatus.OK.toString());
-        addRoleResponse.setIdamMessage("Success");
-        DeleteRoleResponse deleteRoleResponse = new DeleteRoleResponse();
-        deleteRoleResponse.setIdamStatusCode(HttpStatus.OK.toString());
-        deleteRoleResponse.setIdamMessage("success");
-        List<DeleteRoleResponse> deleteRoleResponses = new ArrayList<>();
-        deleteRoleResponses.add(deleteRoleResponse);
+        RoleAdditionResponse roleAdditionResponse = new RoleAdditionResponse();
+        roleAdditionResponse.setIdamStatusCode(HttpStatus.OK.toString());
+        roleAdditionResponse.setIdamMessage("Success");
+        RoleDeletionResponse roleDeletionResponse = new RoleDeletionResponse();
+        roleDeletionResponse.setIdamStatusCode(HttpStatus.OK.toString());
+        roleDeletionResponse.setIdamMessage("success");
+        List<RoleDeletionResponse> roleDeletionRespons = new ArrayList<>();
+        roleDeletionRespons.add(roleDeletionResponse);
 
-        UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse(addRoleResponse,deleteRoleResponses);
+        UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse(roleAdditionResponse, roleDeletionRespons);
 
-        userProfileRolesResponse.setAddRolesResponse(addRoleResponse);
+        userProfileRolesResponse.setAddRolesResponse(roleAdditionResponse);
         assertThat(userProfileRolesResponse.getAddRolesResponse().getIdamStatusCode()).isEqualTo("200 OK");
         assertThat(userProfileRolesResponse.getAddRolesResponse().getIdamMessage()).isEqualTo("Success");
     }
@@ -33,13 +36,13 @@ public class UserProfileRolesResponseTest {
     @Test
     public void should_Return_User_profile_Response_With_Constructor() {
 
-        AddRoleResponse addRoleResponse = new AddRoleResponse(HttpStatus.OK);
+        RoleAdditionResponse roleAdditionResponse = new RoleAdditionResponse(HttpStatus.OK);
 
-        DeleteRoleResponse deleteRoleResponse = new DeleteRoleResponse("pui-case-manager",HttpStatus.OK);
-        List<DeleteRoleResponse> deleteRoleResponses = new ArrayList<>();
-        deleteRoleResponses.add(deleteRoleResponse);
+        RoleDeletionResponse roleDeletionResponse = new RoleDeletionResponse("pui-case-manager",HttpStatus.OK);
+        List<RoleDeletionResponse> roleDeletionRespons = new ArrayList<>();
+        roleDeletionRespons.add(roleDeletionResponse);
 
-        UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse(addRoleResponse,deleteRoleResponses);
+        UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse(roleAdditionResponse, roleDeletionRespons);
 
         assertThat(userProfileRolesResponse.getAddRolesResponse().getIdamStatusCode()).isEqualTo("200");
         assertThat(userProfileRolesResponse.getAddRolesResponse().getIdamMessage()).isEqualTo("11 OK");
