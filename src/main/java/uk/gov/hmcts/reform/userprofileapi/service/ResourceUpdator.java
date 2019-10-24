@@ -11,7 +11,7 @@ public interface ResourceUpdator<T extends RequestData> {
 
     Optional<UserProfile> update(T profileData, String userId);
 
-    AttributeResponse update(T profileData, String userId, String origin);
+    Optional<UserProfile> update(T profileData, String userId, String origin);
 
     UserProfileRolesResponse updateRoles(T profileData, String userId);
 

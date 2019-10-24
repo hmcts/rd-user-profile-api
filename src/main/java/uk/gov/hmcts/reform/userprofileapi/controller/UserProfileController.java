@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -273,15 +274,24 @@ public class UserProfileController {
                                                                       @ApiParam(name = "origin", required = false) @RequestParam (value = "origin", required = false) String origin) {
         log.info("Updating user profile");
         UserProfileRolesResponse userProfileResponse = new UserProfileRolesResponse();
+
+        //If Existing behavor NOT trying to update roles
         if (CollectionUtils.isEmpty(updateUserProfileData.getRolesAdd())
              && CollectionUtils.isEmpty(updateUserProfileData.getRolesDelete())) {
 
-            log.info("Updating user profile without roles");
-            userProfileService.update(updateUserProfileData, userId);
-            // TODO if origin is populated call overloaded service method
-        } else {
+            if(!StringUtils.isEmpty(origin) && "EXUI".equalsIgnoreCase(origin.toUpperCase())) {
+                //TODO find out what other values besides EXUI can be used for origin
+                userProfileService.update(updateUserProfileData, userId, origin);
+            } else {
+                log.info("Updating user profile without roles");
+                userProfileService.update(updateUserProfileData, userId);
+                // TODO if origin is populated call overloaded service method
+            }
+        } else {// New update roles behavior
             UserProfileValidator.validateUserProfileDataAndUserId(updateUserProfileData, userId);
             log.info("Updating user profile with roles");
+
+            //TODO handle update BOTH roles AND origin
             userProfileResponse = userProfileService.updateRoles(updateUserProfileData, userId);
         }
         return ResponseEntity.ok(userProfileResponse);

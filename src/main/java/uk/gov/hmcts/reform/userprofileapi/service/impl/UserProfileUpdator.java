@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.userprofileapi.service.ResourceUpdator;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
 import uk.gov.hmcts.reform.userprofileapi.util.JsonFeignResponseHelper;
 import uk.gov.hmcts.reform.userprofileapi.util.UserProfileMapper;
+import uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator;
 
 @Service
 @Slf4j
@@ -49,8 +50,19 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
     private AuditService auditService;
 
     @Override
-    public AttributeResponse update(UpdateUserProfileData profileData, String userId, String origin) {
-        return null;
+    public Optional<UserProfile> update(UpdateUserProfileData updateUserProfileData, String userId, String origin) {
+
+        UserProfile userProfileOptional = validationService.validateUpdate(updateUserProfileData, userId);
+
+        // TODO add func. test
+        if(!userProfileOptional.getStatus().name().equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
+            idamClient.updateUserDetails(updateUserProfileData, userId);
+        }
+
+        UserProfileMapper.mapUpdatableFields(updateUserProfileData, userProfileOptional);
+
+        return doPersistUserProfile(userProfileOptional, ResponseSource.API);
+
     }
 
     @Override
@@ -58,12 +70,17 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
 
         UserProfile userProfileOptional = validationService.validateUpdate(updateUserProfileData, userId);
 
+        // TODO add func. test
+        if(!userProfileOptional.getStatus().name().equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
+            idamClient.updateUserDetails(updateUserProfileData, userId);
+        }
+
         UserProfileMapper.mapUpdatableFields(updateUserProfileData, userProfileOptional);
 
-        return doPersistUserProfile(userProfileOptional);
+        return doPersistUserProfile(userProfileOptional, ResponseSource.SYNC);
     }
 
-    private Optional<UserProfile> doPersistUserProfile(UserProfile userProfile) {
+    private Optional<UserProfile> doPersistUserProfile(UserProfile userProfile, ResponseSource responseSource) {
         UserProfile result = null;
         HttpStatus status = HttpStatus.OK;
         try {
@@ -71,9 +88,10 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         } catch (Exception ex) {
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
-        auditService.persistAudit(status, result, ResponseSource.SYNC);
+        auditService.persistAudit(status, result, responseSource);
         return Optional.ofNullable(result);
     }
+
 
     @Override
     public UserProfileRolesResponse updateRoles(UpdateUserProfileData profileData, String userId) {

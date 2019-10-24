@@ -15,6 +15,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Transient;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.CreationTimestamp;
@@ -30,6 +31,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
 @SequenceGenerator(name = "user_profile_id_seq", sequenceName = "user_profile_id_seq", allocationSize = 1)
 public class UserProfile {
 
@@ -87,7 +89,6 @@ public class UserProfile {
 
     @Transient
     private String errorStatusCode;
-
 
     public UserProfile(UserProfileCreationData data, HttpStatus idamStatus) {
         this.email = data.getEmail().trim().toLowerCase();
