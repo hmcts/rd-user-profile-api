@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -55,7 +56,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         UserProfile userProfileOptional = validationService.validateUpdate(updateUserProfileData, userId);
 
         // TODO add func. test
-        if(!userProfileOptional.getStatus().name().equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
+        if(userProfileOptional.getStatus().equals(IdamStatus.SUSPENDED) && !userProfileOptional.getStatus().name().equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
             idamClient.updateUserDetails(updateUserProfileData, userId);
         }
 
@@ -71,7 +72,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         UserProfile userProfileOptional = validationService.validateUpdate(updateUserProfileData, userId);
 
         // TODO add func. test
-        if(!userProfileOptional.getStatus().name().equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
+        if(userProfileOptional.getStatus().equals(IdamStatus.SUSPENDED) && !userProfileOptional.getStatus().name().equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
             idamClient.updateUserDetails(updateUserProfileData, userId);
         }
 

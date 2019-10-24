@@ -45,12 +45,13 @@ public class UserProfileService<T extends RequestData> {
         return new UserProfileResponse(resourceRetriever.retrieve(requestData, false));
     }
 
+    //TODO updates should return a common return object
     public void update(T updateData, String userId) {
         resourceUpdator.update(updateData, userId);
     }
 
-    public AttributeResponse update(T updateData, String userId, String origin) {
-        return resourceUpdator.update(updateData, userId, origin);
+    public void update(T updateData, String userId, String origin) {
+        resourceUpdator.update(updateData, userId, origin);
     }
 
     public UserProfileRolesResponse updateRoles(T updateData, String userId) {
