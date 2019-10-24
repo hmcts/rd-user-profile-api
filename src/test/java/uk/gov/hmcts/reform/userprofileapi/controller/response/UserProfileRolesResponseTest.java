@@ -14,17 +14,18 @@ public class UserProfileRolesResponseTest {
         RoleAdditionResponse roleAdditionResponse = new RoleAdditionResponse();
         roleAdditionResponse.setIdamStatusCode(HttpStatus.OK.toString());
         roleAdditionResponse.setIdamMessage("Success");
-        RoleDeletionResponse roleDeletionResponse = new RoleDeletionResponse();
-        roleDeletionResponse.setIdamStatusCode(HttpStatus.OK.toString());
-        roleDeletionResponse.setIdamMessage("success");
-        List<RoleDeletionResponse> roleDeletionRespons = new ArrayList<>();
-        roleDeletionRespons.add(roleDeletionResponse);
+        RoleDeletionResponse deletionResponse = new RoleDeletionResponse();
+        deletionResponse.setIdamStatusCode(HttpStatus.OK.toString());
+        deletionResponse.setIdamMessage("success");
+        List<RoleDeletionResponse> roleDeletionResponseData = new ArrayList<>();
+        roleDeletionResponseData.add(deletionResponse);
 
-        UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse(roleAdditionResponse, roleDeletionRespons);
+        UserProfileResponse userProfileResponse = new UserProfileResponse();
+        userProfileResponse.setDeleteRolesResponse(roleDeletionResponseData);
+        userProfileResponse.setAddRolesResponse(roleAdditionResponse);
 
-        userProfileRolesResponse.setAddRolesResponse(roleAdditionResponse);
-        assertThat(userProfileRolesResponse.getAddRolesResponse().getIdamStatusCode()).isEqualTo("200 OK");
-        assertThat(userProfileRolesResponse.getAddRolesResponse().getIdamMessage()).isEqualTo("Success");
+        assertThat(userProfileResponse.getAddRolesResponse().getIdamStatusCode()).isEqualTo("200 OK");
+        assertThat(userProfileResponse.getAddRolesResponse().getIdamMessage()).isEqualTo("Success");
     }
 
     @Test
@@ -32,19 +33,21 @@ public class UserProfileRolesResponseTest {
 
         RoleAdditionResponse roleAdditionResponse = new RoleAdditionResponse(HttpStatus.OK);
 
-        RoleDeletionResponse roleDeletionResponse = new RoleDeletionResponse("pui-case-manager",HttpStatus.OK);
-        List<RoleDeletionResponse> roleDeletionRespons = new ArrayList<>();
-        roleDeletionRespons.add(roleDeletionResponse);
+        RoleDeletionResponse deletionResponse = new RoleDeletionResponse("pui-case-manager",HttpStatus.OK);
+        List<RoleDeletionResponse> roleDeletionResponseData = new ArrayList<>();
+        roleDeletionResponseData.add(deletionResponse);
 
-        UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse(roleAdditionResponse, roleDeletionRespons);
+        UserProfileResponse userProfileResponse = new UserProfileResponse();
+        userProfileResponse.setAddRolesResponse(roleAdditionResponse);
+        userProfileResponse.setDeleteRolesResponse(roleDeletionResponseData);
 
-        assertThat(userProfileRolesResponse.getAddRolesResponse().getIdamStatusCode()).isEqualTo("200");
-        assertThat(userProfileRolesResponse.getAddRolesResponse().getIdamMessage()).isEqualTo("11 OK");
+        assertThat(userProfileResponse.getAddRolesResponse().getIdamStatusCode()).isEqualTo("200");
+        assertThat(userProfileResponse.getAddRolesResponse().getIdamMessage()).isEqualTo("11 OK");
 
-        assertThat(userProfileRolesResponse.getDeleteRolesResponse()).isNotNull();
-        assertThat(userProfileRolesResponse.getDeleteRolesResponse().get(0).getRoleName()).isEqualTo("pui-case-manager");
-        assertThat(userProfileRolesResponse.getDeleteRolesResponse().get(0).getIdamMessage()).isEqualTo("11 OK");
-        assertThat(userProfileRolesResponse.getDeleteRolesResponse().get(0).getIdamStatusCode()).isEqualTo("200");
+        assertThat(userProfileResponse.getDeleteRolesResponse()).isNotNull();
+        assertThat(userProfileResponse.getDeleteRolesResponse().get(0).getRoleName()).isEqualTo("pui-case-manager");
+        assertThat(userProfileResponse.getDeleteRolesResponse().get(0).getIdamMessage()).isEqualTo("11 OK");
+        assertThat(userProfileResponse.getDeleteRolesResponse().get(0).getIdamStatusCode()).isEqualTo("200");
 
     }
 }

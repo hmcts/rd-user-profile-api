@@ -9,16 +9,16 @@ import java.util.List;
 import java.util.Optional;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.RoleAdditionResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.RoleDeletionResponse;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
@@ -31,7 +31,6 @@ import uk.gov.hmcts.reform.userprofileapi.service.ResourceUpdator;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
 import uk.gov.hmcts.reform.userprofileapi.util.JsonFeignResponseHelper;
 import uk.gov.hmcts.reform.userprofileapi.util.UserProfileMapper;
-import uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator;
 
 @Service
 @Slf4j
@@ -50,35 +49,22 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
     private AuditService auditService;
 
     @Override
-    public Optional<UserProfile> update(UpdateUserProfileData updateUserProfileData, String userId, String origin) {
+    public Optional<UserProfileResponse> update(UpdateUserProfileData updateUserProfileData, String userId, ResponseSource origin) {
 
-        UserProfile userProfileOptional = validationService.validateUpdate(updateUserProfileData, userId);
+        UserProfile userProfile = validationService.validateUpdate(updateUserProfileData, userId);
 
-        // TODO add func. test
-        if(!userProfileOptional.getStatus().name().equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
+        if(userProfile.getStatus().equals(IdamStatus.SUSPENDED)
+                && !userProfile.getStatus().name().equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
             idamClient.updateUserDetails(updateUserProfileData, userId);
         }
 
-        UserProfileMapper.mapUpdatableFields(updateUserProfileData, userProfileOptional);
+        UserProfileMapper.mapUpdatableFields(updateUserProfileData, userProfile);
 
-        return doPersistUserProfile(userProfileOptional, ResponseSource.API);
+        Optional<UserProfile> userProfileOpt = doPersistUserProfile(userProfile, origin);
 
+        return userProfileOpt.map(opt -> new UserProfileResponse(opt, false));
     }
 
-    @Override
-    public Optional<UserProfile> update(UpdateUserProfileData updateUserProfileData, String userId) {
-
-        UserProfile userProfileOptional = validationService.validateUpdate(updateUserProfileData, userId);
-
-        // TODO add func. test
-        if(!userProfileOptional.getStatus().name().equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
-            idamClient.updateUserDetails(updateUserProfileData, userId);
-        }
-
-        UserProfileMapper.mapUpdatableFields(updateUserProfileData, userProfileOptional);
-
-        return doPersistUserProfile(userProfileOptional, ResponseSource.SYNC);
-    }
 
     private Optional<UserProfile> doPersistUserProfile(UserProfile userProfile, ResponseSource responseSource) {
         UserProfile result = null;
@@ -94,8 +80,8 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
 
 
     @Override
-    public UserProfileRolesResponse updateRoles(UpdateUserProfileData profileData, String userId) {
-        UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
+    public UserProfileResponse updateRoles(UpdateUserProfileData profileData, String userId) {
+        UserProfileResponse userProfileResponse = new UserProfileResponse();
         UserProfile userProfile = validateUserStatus(userId);
         if (!CollectionUtils.isEmpty(profileData.getRolesAdd())) {
             log.info("Add idam roles for userId :" + userId);
@@ -109,16 +95,16 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
                 auditService.persistAudit(httpStatus, userProfile, ResponseSource.API);
                 addRolesResponse = new RoleAdditionResponse(httpStatus);
             }
-            userProfileRolesResponse.setAddRolesResponse(addRolesResponse);
+            userProfileResponse.setAddRolesResponse(addRolesResponse);
         }
 
         if (!CollectionUtils.isEmpty(profileData.getRolesDelete())) {
             log.info("Delete idam roles for userId :" + userId);
-            List<RoleDeletionResponse> roleDeletionRespons = new ArrayList<>();
-            profileData.getRolesDelete().forEach(role -> roleDeletionRespons.add(deleteRolesInIdam(userId, role.getName(), userProfile)));
-            userProfileRolesResponse.setDeleteRolesResponse(roleDeletionRespons);
+            List<RoleDeletionResponse> roleDeletionResponse = new ArrayList<>();
+            profileData.getRolesDelete().forEach(role -> roleDeletionResponse.add(deleteRolesInIdam(userId, role.getName(), userProfile)));
+            userProfileResponse.setDeleteRolesResponse(roleDeletionResponse);
         }
-        return userProfileRolesResponse;
+        return userProfileResponse;
     }
 
     private RoleDeletionResponse deleteRolesInIdam(String userId, String roleName, UserProfile userProfile) {

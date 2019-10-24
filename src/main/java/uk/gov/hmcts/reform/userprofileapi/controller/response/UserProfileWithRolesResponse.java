@@ -7,11 +7,13 @@ import java.util.List;
 import lombok.Getter;
 
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 @Getter
+@Setter
 @NoArgsConstructor
 public class UserProfileWithRolesResponse extends UserProfileResponse {
 

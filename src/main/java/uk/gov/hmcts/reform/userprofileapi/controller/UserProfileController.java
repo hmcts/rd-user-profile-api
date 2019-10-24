@@ -32,9 +32,9 @@ import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequ
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdentifierName;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
@@ -213,6 +213,7 @@ public class UserProfileController {
                     code = 500,
                     message = "Internal Server Error"
             )
+
     })
     @GetMapping(
             produces = APPLICATION_JSON_UTF8_VALUE
@@ -269,32 +270,30 @@ public class UserProfileController {
     )
 
     @ResponseBody
-    public ResponseEntity<UserProfileRolesResponse> updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData,
+    public ResponseEntity<UserProfileResponse> updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData,
                                                                       @PathVariable String userId,
                                                                       @ApiParam(name = "origin", required = false) @RequestParam (value = "origin", required = false) String origin) {
         log.info("Updating user profile");
-        UserProfileRolesResponse userProfileResponse = new UserProfileRolesResponse();
+        UserProfileResponse response;
 
         //If Existing behavor NOT trying to update roles
         if (CollectionUtils.isEmpty(updateUserProfileData.getRolesAdd())
              && CollectionUtils.isEmpty(updateUserProfileData.getRolesDelete())) {
 
-            if(!StringUtils.isEmpty(origin) && "EXUI".equalsIgnoreCase(origin.toUpperCase())) {
-                //TODO find out what other values besides EXUI can be used for origin
-                userProfileService.update(updateUserProfileData, userId, origin);
-            } else {
-                log.info("Updating user profile without roles");
-                userProfileService.update(updateUserProfileData, userId);
-                // TODO if origin is populated call overloaded service method
-            }
+            ResponseSource source = StringUtils.isEmpty(origin) || !"EXUI".equalsIgnoreCase(origin.toUpperCase()) ?
+                    ResponseSource.SYNC : ResponseSource.API;
+
+            response = userProfileService.update(updateUserProfileData, userId, source);
+
         } else {// New update roles behavior
             UserProfileValidator.validateUserProfileDataAndUserId(updateUserProfileData, userId);
+
             log.info("Updating user profile with roles");
 
             //TODO handle update BOTH roles AND origin
-            userProfileResponse = userProfileService.updateRoles(updateUserProfileData, userId);
+            response = userProfileService.updateRoles(updateUserProfileData, userId);
         }
-        return ResponseEntity.ok(userProfileResponse);
+        return ResponseEntity.ok().body(response);
     }
 
     @ApiOperation(value = "Retrieving multiple user profiles",

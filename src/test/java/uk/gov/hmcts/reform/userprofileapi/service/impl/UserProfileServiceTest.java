@@ -19,10 +19,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
@@ -61,14 +61,14 @@ public class UserProfileServiceTest {
 
         updateUserProfileData.setRolesAdd(roles);
 
-        userProfileService.update(updateUserProfileData, "1234");
+        userProfileService.update(updateUserProfileData, "1234", ResponseSource.SYNC);
 
-        UserProfileRolesResponse userProfileRolesResponse = mock(UserProfileRolesResponse.class);
+        UserProfileResponse userProfileResponse = mock(UserProfileResponse.class);
 
-        when(resourceUpdator.updateRoles(updateUserProfileData, "1234")).thenReturn(userProfileRolesResponse);
-        userProfileRolesResponse = userProfileService.updateRoles(updateUserProfileData, "1234");
+        when(resourceUpdator.updateRoles(updateUserProfileData, "1234")).thenReturn(userProfileResponse);
+        userProfileResponse = userProfileService.updateRoles(updateUserProfileData, "1234");
 
-        assertThat(userProfileRolesResponse).isNotNull();
+        assertThat(userProfileResponse).isNotNull();
     }
 
     @Test

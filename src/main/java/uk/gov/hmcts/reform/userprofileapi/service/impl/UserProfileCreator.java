@@ -73,7 +73,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
         }
     }
 
-    public IdamRegisterUserRequest createIdamRegistrationRequest(UserProfileCreationData profileData, String id) {
+    private IdamRegisterUserRequest createIdamRegistrationRequest(UserProfileCreationData profileData, String id) {
         return new IdamRegisterUserRequest(profileData.getEmail(), profileData.getFirstName(), profileData.getLastName(), id, profileData.getRoles());
     }
 
