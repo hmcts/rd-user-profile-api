@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.userprofileapi.controller;
 
 import static java.util.Objects.requireNonNull;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.hasDataAndId;
+import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.hasRolesToUpdate;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateCreateUserProfileRequest;
 
@@ -17,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,9 +33,8 @@ import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequ
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdentifierName;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.*;
 import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
@@ -213,6 +213,7 @@ public class UserProfileController {
                     code = 500,
                     message = "Internal Server Error"
             )
+
     })
     @GetMapping(
             produces = APPLICATION_JSON_UTF8_VALUE
@@ -220,7 +221,7 @@ public class UserProfileController {
     @ResponseBody
     public ResponseEntity<UserProfileResponse> getUserProfileByEmail(@ApiParam(name = "email", required = false) @RequestParam (value = "email", required = false) String email,
                                                                      @ApiParam(name = "userId", required = false) @RequestParam (value = "userId", required = false) String userId) {
-        UserProfileResponse response = null;
+        UserProfileResponse response;
         if (email == null && userId == null) {
             return ResponseEntity.badRequest().build();
         } else if (email != null) {
@@ -269,33 +270,35 @@ public class UserProfileController {
     )
 
     @ResponseBody
-    public ResponseEntity<UserProfileRolesResponse> updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData,
-                                                                      @PathVariable String userId,
-                                                                      @ApiParam(name = "origin", required = false) @RequestParam (value = "origin", required = false) String origin) {
+    public ResponseEntity<UserProfileResponse> updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData,
+                                                                 @PathVariable String userId,
+                                                                 @ApiParam(name = "origin", required = false) @RequestParam (value = "origin", required = false) String origin) {
         log.info("Updating user profile");
-        UserProfileRolesResponse userProfileResponse = new UserProfileRolesResponse();
 
-        //If Existing behavor NOT trying to update roles
-        if (CollectionUtils.isEmpty(updateUserProfileData.getRolesAdd())
-             && CollectionUtils.isEmpty(updateUserProfileData.getRolesDelete())) {
+        UserProfileResponse response;
 
-            if(!StringUtils.isEmpty(origin) && "EXUI".equalsIgnoreCase(origin.toUpperCase())) {
-                //TODO find out what other values besides EXUI can be used for origin
-                userProfileService.update(updateUserProfileData, userId, origin);
-            } else {
-                log.info("Updating user profile without roles");
-                userProfileService.update(updateUserProfileData, userId);
-                // TODO if origin is populated call overloaded service method
-            }
-        } else {// New update roles behavior
-            UserProfileValidator.validateUserProfileDataAndUserId(updateUserProfileData, userId);
-            log.info("Updating user profile with roles");
+        ResponseSource source = (StringUtils.isEmpty(origin) || !"EXUI".equalsIgnoreCase(origin.toUpperCase()))
+                ? ResponseSource.SYNC : ResponseSource.API;
 
-            //TODO handle update BOTH roles AND origin
-            userProfileResponse = userProfileService.updateRoles(updateUserProfileData, userId);
+        UserProfileResponse responseTmp = userProfileService.update(updateUserProfileData, userId, source);
+        //response.setIdamStatus(responseTmp.getIdamStatus());
+
+        if (hasDataAndId(updateUserProfileData, userId) && hasRolesToUpdate(updateUserProfileData)) {
+            log.info("updating roles: add:" + updateUserProfileData.getRolesAdd() + " delete:" + updateUserProfileData.getRolesDelete());
+
+            response = userProfileService.updateRoles(updateUserProfileData, userId);
+            responseTmp.setDeleteRolesResponse(response.getDeleteRolesResponse());
+            responseTmp.setAddRolesResponse(response.getAddRolesResponse());
+            responseTmp.setRoles(response.getRoles());
+            //!? responseTmp.setIdamStatus(response.getIdamStatus());
+
+
         }
-        return ResponseEntity.ok(userProfileResponse);
+
+        return ResponseEntity.ok().body(/*response*/responseTmp);
+        //return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
 
     @ApiOperation(value = "Retrieving multiple user profiles",
             authorizations = {
@@ -349,5 +352,7 @@ public class UserProfileController {
         return ResponseEntity.status(HttpStatus.OK).body(userProfileDataResponse);
 
     }
+
+
 
 }

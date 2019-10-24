@@ -3,16 +3,11 @@ package uk.gov.hmcts.reform.userprofileapi.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.Setter;
 import org.apache.commons.lang.RandomStringUtils;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.LanguagePreference;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserCategory;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserType;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.*;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 
-@Setter
 public class CreateUserProfileDataTestBuilder {
 
     private CreateUserProfileDataTestBuilder() {
@@ -20,16 +15,10 @@ public class CreateUserProfileDataTestBuilder {
     }
 
     public static UserProfileCreationData buildCreateUserProfileData() {
-        return new UserProfileCreationData(
-            buildRandomEmail(),
-            RandomStringUtils.randomAlphabetic(20),
-            RandomStringUtils.randomAlphabetic(20),
-            LanguagePreference.EN.toString(),
-            false,
-            false,
-            UserCategory.PROFESSIONAL.toString(),
-            UserType.EXTERNAL.toString(),
-            getIdamRolesJson());
+        return new UserProfileCreationData(buildRandomEmail(), RandomStringUtils.randomAlphabetic(20),
+                RandomStringUtils.randomAlphabetic(20), LanguagePreference.EN.toString(),
+                false, false, UserCategory.PROFESSIONAL.toString(),
+                UserType.EXTERNAL.toString(), getIdamRolesJson());
     }
 
     public static UpdateUserProfileData buildUpdateUserProfileData() {
@@ -42,22 +31,12 @@ public class CreateUserProfileDataTestBuilder {
                 );
     }
 
-    public static UpdateUserProfileData buildUpdateUserProfileDataForUpdatingStatus() {
-        return new UpdateUserProfileData(
-                buildRandomEmail(),
-                RandomStringUtils.randomAlphabetic(20),
-                RandomStringUtils.randomAlphabetic(20),
-                IdamStatus.ACTIVE.toString(),
-                null,null
-        );
-    }
-
     private static String buildRandomEmail() {
         return RandomStringUtils.randomAlphanumeric(20) + "@somewhere.com";
     }
 
     public static List<String> getIdamRolesJson() {
-        List<String> roles = new ArrayList<String>();
+        List<String> roles = new ArrayList<>();
         roles.add("caseworker");
         return roles;
     }

@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.userprofileapi.controller.response;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.resolveStatusAndReturnMessage;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.resolveStatusAndReturnMessage;
 
 public class RoleAdditionResponseTest {
 

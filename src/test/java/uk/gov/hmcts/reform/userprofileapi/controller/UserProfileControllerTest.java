@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
@@ -18,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder;
 import uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder;
@@ -43,6 +45,15 @@ public class UserProfileControllerTest {
     private UserProfileController sut;
 
     private static final String ORIGIN  = "EXUI";
+
+    @Before
+    public void setUp() {
+        UserProfileResponse dummyResponse = new UserProfileResponse();
+        //userProfileService.update(updateUserProfileData, userId, source)
+        when(userProfileServiceMock.update(any(), any(), any())).thenReturn(dummyResponse);
+        when(userProfileServiceMock.updateRoles(any(), any())).thenReturn(dummyResponse);
+
+    }
 
     @Test
     public void testCreateUserProfile() {
@@ -125,7 +136,7 @@ public class UserProfileControllerTest {
         when(updateUserProfileDataMock.getRolesDelete()).thenReturn(null);
         ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId, ORIGIN);
 
-        verify(userProfileServiceMock, times(1)).update(any(), any());
+        verify(userProfileServiceMock, times(1)).update(any(), any(), any());
         ResponseEntity expect = ResponseEntity.status(HttpStatus.OK).build();
         assertThat(actual.getStatusCode().value()).isEqualTo(expect.getStatusCode().value());
     }
@@ -151,7 +162,7 @@ public class UserProfileControllerTest {
         ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId, ORIGIN);
         verify(userProfileServiceMock, times(1)).updateRoles(any(), any());
         ResponseEntity expect = ResponseEntity.status(HttpStatus.OK).build();
-        assertThat(actual).isEqualTo(expect);
+        assertThat(actual.getStatusCodeValue()).isEqualTo(expect.getStatusCodeValue());
 
     }
 
@@ -181,6 +192,6 @@ public class UserProfileControllerTest {
         ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId, ORIGIN);
         verify(userProfileServiceMock, times(1)).updateRoles(any(), any());
         ResponseEntity expect = ResponseEntity.status(HttpStatus.OK).build();
-        assertThat(actual).isEqualTo(expect);
+        assertThat(actual.getStatusCodeValue()).isEqualTo(expect.getStatusCodeValue());
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 
 @Data
 @NoArgsConstructor
+//TODO remove this obj!
 public class RoleAdditionResponse {
 
     private String idamStatusCode;

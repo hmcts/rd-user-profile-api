@@ -23,15 +23,12 @@ import uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.*;
 import uk.gov.hmcts.reform.userprofileapi.exception.IdamServiceException;
+import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
 import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileQueryProvider;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdentifierName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
-import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
-import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileRetriever;
-import uk.gov.hmcts.reform.userprofileapi.service.impl.IdamServiceImpl;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 @RunWith(MockitoJUnitRunner.class)

@@ -7,31 +7,29 @@ import feign.RetryableException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-
-import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.RoleAdditionResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.RoleDeletionResponse;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
+import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
+import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
+import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
-import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceUpdator;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
 import uk.gov.hmcts.reform.userprofileapi.util.JsonFeignResponseHelper;
 import uk.gov.hmcts.reform.userprofileapi.util.UserProfileMapper;
-import uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator;
 
 @Service
 @Slf4j
@@ -50,35 +48,25 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
     private AuditService auditService;
 
     @Override
-    public Optional<UserProfile> update(UpdateUserProfileData updateUserProfileData, String userId, String origin) {
+    public Optional<UserProfileResponse> update(UpdateUserProfileData updateUserProfileData, String userId, ResponseSource origin) {
 
-        UserProfile userProfileOptional = validationService.validateUpdate(updateUserProfileData, userId);
+        //TODO check exception scenarios against business requirements
+        UserProfile userProfile = validationService.validateUpdate(updateUserProfileData, userId);
 
-        // TODO add func. test
-        if(!userProfileOptional.getStatus().name().equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
+        //Determine if status needs to be updated
+        if (userProfile.getStatus().equals(IdamStatus.SUSPENDED)
+                && !userProfile.getStatus().name().equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
             idamClient.updateUserDetails(updateUserProfileData, userId);
         }
 
-        UserProfileMapper.mapUpdatableFields(updateUserProfileData, userProfileOptional);
+        //set valid fields
+        UserProfileMapper.mapUpdatableFields(updateUserProfileData, userProfile);
 
-        return doPersistUserProfile(userProfileOptional, ResponseSource.API);
+        Optional<UserProfile> userProfileOpt = doPersistUserProfile(userProfile, origin);
 
+        return userProfileOpt.map(opt -> new UserProfileResponse(opt, false));
     }
 
-    @Override
-    public Optional<UserProfile> update(UpdateUserProfileData updateUserProfileData, String userId) {
-
-        UserProfile userProfileOptional = validationService.validateUpdate(updateUserProfileData, userId);
-
-        // TODO add func. test
-        if(!userProfileOptional.getStatus().name().equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
-            idamClient.updateUserDetails(updateUserProfileData, userId);
-        }
-
-        UserProfileMapper.mapUpdatableFields(updateUserProfileData, userProfileOptional);
-
-        return doPersistUserProfile(userProfileOptional, ResponseSource.SYNC);
-    }
 
     private Optional<UserProfile> doPersistUserProfile(UserProfile userProfile, ResponseSource responseSource) {
         UserProfile result = null;
@@ -92,33 +80,58 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         return Optional.ofNullable(result);
     }
 
-
     @Override
-    public UserProfileRolesResponse updateRoles(UpdateUserProfileData profileData, String userId) {
-        UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
-        UserProfile userProfile = validateUserStatus(userId);
-        if (!CollectionUtils.isEmpty(profileData.getRolesAdd())) {
-            log.info("Add idam roles for userId :" + userId);
-            RoleAdditionResponse addRolesResponse;
-            HttpStatus httpStatus;
-            try (Response response = idamClient.addUserRoles(profileData.getRolesAdd(), userId)) {
-                httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode();
-                addRolesResponse = new RoleAdditionResponse(httpStatus);
-            } catch (FeignException ex) {
-                httpStatus = getHttpStatusFromFeignException(ex);
-                auditService.persistAudit(httpStatus, userProfile, ResponseSource.API);
-                addRolesResponse = new RoleAdditionResponse(httpStatus);
-            }
-            userProfileRolesResponse.setAddRolesResponse(addRolesResponse);
+    public UserProfileResponse updateRoles(UpdateUserProfileData profileData, String userId) {
+        UserProfileResponse userProfileResponse = new UserProfileResponse();
+
+        UserProfile userProfile = validateUserStatusWithException(userId);
+
+
+
+        //TODO check if response is ok
+        List<String> roleList = profileData.getRolesAdd().stream().map(RoleName::getName).collect(Collectors.toList());
+        userProfileResponse.setRoles(roleList);
+        //TODO refactor
+        userProfileResponse.setAddRolesResponse(new RoleAdditionResponse(HttpStatus.OK));
+        List<RoleDeletionResponse> deletions = new ArrayList<>();
+        userProfileResponse.setDeleteRolesResponse(deletions);
+
+        //assume roles will be set, should fail fast if not
+        Optional<RoleAdditionResponse> roleAdditionResponseOpt = assignRolesAndPersistAudit(profileData, userId, userProfile);
+        if (roleAdditionResponseOpt.isPresent()) {
+            RoleAdditionResponse roleAdditionResponseTmp = new RoleAdditionResponse();
+            roleAdditionResponseTmp.setIdamStatusCode(roleAdditionResponseOpt.get().getIdamStatusCode());
+            roleAdditionResponseTmp.setIdamMessage(roleAdditionResponseOpt.get().getIdamMessage());
+            userProfileResponse.setAddRolesResponse(roleAdditionResponseTmp);
         }
 
-        if (!CollectionUtils.isEmpty(profileData.getRolesDelete())) {
-            log.info("Delete idam roles for userId :" + userId);
-            List<RoleDeletionResponse> roleDeletionRespons = new ArrayList<>();
-            profileData.getRolesDelete().forEach(role -> roleDeletionRespons.add(deleteRolesInIdam(userId, role.getName(), userProfile)));
-            userProfileRolesResponse.setDeleteRolesResponse(roleDeletionRespons);
+
+        log.info("Delete idam roles for userId :" + userId);//TODO remove unnecessary logging
+
+        //TODO overly complex, assume roles deleted fail fast if not
+        List<RoleDeletionResponse> roleDeletionResponse = profileData.getRolesDelete().stream()
+                .map(role -> deleteRolesInIdam(userId, role.getName(), userProfile))
+                .collect(Collectors.toList());
+
+        userProfileResponse.setDeleteRolesResponse(roleDeletionResponse);
+
+        return userProfileResponse;
+    }
+
+    private Optional<RoleAdditionResponse> assignRolesAndPersistAudit(UpdateUserProfileData profileData, String userId, UserProfile userProfile) {
+        if (!CollectionUtils.isEmpty(profileData.getRolesAdd())) {
+            log.info("Add idam roles for userId :" + userId);//TODO remove unnecessary logging
+
+            Optional<HttpStatus> httpStatusOpt;
+            try (Response response = idamClient.addUserRoles(profileData.getRolesAdd(), userId)) {
+                httpStatusOpt = Optional.of(JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode());
+            } catch (FeignException ex) {
+                httpStatusOpt = Optional.of(getHttpStatusFromFeignException(ex));
+                auditService.persistAudit(httpStatusOpt.get(), userProfile, ResponseSource.API);
+            }
+            return Optional.of(new RoleAdditionResponse(httpStatusOpt.orElse(null)));
         }
-        return userProfileRolesResponse;
+        return Optional.of(new RoleAdditionResponse());
     }
 
     private RoleDeletionResponse deleteRolesInIdam(String userId, String roleName, UserProfile userProfile) {
@@ -138,14 +151,13 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
                 : HttpStatus.valueOf(ex.status());
     }
 
-    private UserProfile validateUserStatus(String userId) {
+    private UserProfile validateUserStatusWithException(String userId) {
         Optional<UserProfile> userProfileOptional = userProfileRepository.findByIdamId(userId);
-        if (!userProfileOptional.isPresent()) {
-            throw new ResourceNotFoundException("could not find user profile for userId: or status is not active " + userId);
-        } else if (!IdamStatus.ACTIVE.equals(userProfileOptional.get().getStatus())) {
-            throw new InvalidRequest("UserId status is not active");
+        if (userProfileOptional.isPresent() && null != userProfileOptional.get().getStatus()) {
+            return userProfileOptional.get();
         }
-        return userProfileOptional.get();
+
+        throw new ResourceNotFoundException("could not find user profile for userId: or status is not active " + userId);
     }
 
 }

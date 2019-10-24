@@ -45,13 +45,13 @@ public class IdamClient {
     public String createUser(List<String> roles) {
         //Generating a random user
         String userEmail = nextUserEmail();
-        String firstName = "First";
-        String lastName = "Last";
+        String firstName = "William";
+        String lastName = "Shakespeare";
         String password = "Hmcts123";
 
         String id = UUID.randomUUID().toString();
 
-        List<Role> rolesList = roles.stream().map(role -> new Role(role)).collect(Collectors.toList());
+        List<Role> rolesList = roles.stream().map(Role::new).collect(Collectors.toList());
 
         User user = new User(userEmail, firstName, id, lastName, password, rolesList);
 
