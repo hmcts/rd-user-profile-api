@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 
 @SuppressWarnings("HideUtilityClassConstructor")
 public final class IdamStatusResolver {
@@ -27,6 +27,7 @@ public final class IdamStatusResolver {
     public static final String ACTIVE = "ACTIVE";
     public static final String PENDING = "PENDING";
 
+    //TODO refactor this to an enum and use std valueOf method
     public static String resolveStatusAndReturnMessage(HttpStatus httpStatus) {
         switch (httpStatus) {
             case OK:

@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.userprofileapi.util;
 import org.apache.commons.lang.StringUtils;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 
 public interface UserProfileMapper {
 

@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.userprofileapi.service;
 
 import java.util.Optional;
 
-import uk.gov.hmcts.reform.userprofileapi.AttributeResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
