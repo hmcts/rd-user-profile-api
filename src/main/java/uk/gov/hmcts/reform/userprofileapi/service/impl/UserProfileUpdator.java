@@ -53,8 +53,8 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
 
         UserProfile userProfile = validationService.validateUpdate(updateUserProfileData, userId);
 
-        if(userProfile.getStatus().equals(IdamStatus.SUSPENDED)
-                && !userProfile.getStatus().name().equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
+        if(/*userProfile.getStatus().equals(IdamStatus.SUSPENDED)
+                &&*/ !userProfile.getStatus().name().equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
             idamClient.updateUserDetails(updateUserProfileData, userId);
         }
 
@@ -70,8 +70,8 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
 
         UserProfile userProfile = validationService.validateUpdate(updateUserProfileData, userId);
 
-        if(userProfile.getStatus().equals(IdamStatus.SUSPENDED)
-                && !userProfile.getStatus().name().equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
+        if(/*userProfile.getStatus().equals(IdamStatus.SUSPENDED)
+                &&*/ !userProfile.getStatus().name().equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
             idamClient.updateUserDetails(updateUserProfileData, userId);
         }
 
