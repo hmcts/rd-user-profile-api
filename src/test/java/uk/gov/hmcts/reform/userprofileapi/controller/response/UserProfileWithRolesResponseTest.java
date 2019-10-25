@@ -64,7 +64,7 @@ public class UserProfileWithRolesResponseTest {
         assertThat(sut.getEmail()).isEqualTo(dummyEmail);
         assertThat(sut.getFirstName()).isEqualTo(dummyFirstName);
         assertThat(sut.getLastName()).isEqualTo(dummyLastName);
-        assertThat(sut.getIdamStatus()).isEqualTo(IdamStatus.ACTIVE);
+        assertThat(sut.getIdamStatus()).isEqualTo(IdamStatus.ACTIVE.name());
         assertThat(sut.getIdamMessage()).isEqualTo(dummyErrorMessage);
         assertThat(sut.getIdamStatusCode()).isEqualTo(dummyStatusCode);
         assertThat(sut.getRoles()).isEqualTo(dummyRoles);
@@ -90,7 +90,7 @@ public class UserProfileWithRolesResponseTest {
         assertThat(sut.getEmail()).isEqualTo(dummyEmail);
         assertThat(sut.getFirstName()).isEqualTo(dummyFirstName);
         assertThat(sut.getLastName()).isEqualTo(dummyLastName);
-        assertThat(sut.getIdamStatus()).isEqualTo(IdamStatus.PENDING);
+        assertThat(sut.getIdamStatus()).isEqualTo(IdamStatus.PENDING.name());
         assertThat(sut.getRoles()).isNull();
         assertThat(sut.getIdamMessage()).isEqualTo(dummyErrorMessage);
         assertThat(sut.getIdamStatusCode()).isEqualTo("200");

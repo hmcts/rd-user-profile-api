@@ -22,7 +22,7 @@ public class UserProfileResponse {
     private String email;
     private String firstName;
     private String lastName;
-    private IdamStatus idamStatus;
+    private /*IdamStatus*/String idamStatus;
     private RoleAdditionResponse addRolesResponse;
     private List<RoleDeletionResponse> deleteRolesResponse;
     private List<String> roles;
@@ -33,7 +33,7 @@ public class UserProfileResponse {
         this.email = userProfile.getEmail();
         this.firstName = userProfile.getFirstName();
         this.lastName = userProfile.getLastName();
-        this.idamStatus = userProfile.getStatus();
+        this.idamStatus = null != userProfile.getStatus() ? userProfile.getStatus().name() : "";
     }
 
     public UserProfileResponse(UserProfile userProfile, boolean rolesRequired) {

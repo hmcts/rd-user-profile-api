@@ -35,7 +35,7 @@ public class UserProfileResponseTest {
         assertThat(userProfileResponse.getEmail()).isEqualTo(dummyEmail);
         assertThat(userProfileResponse.getFirstName()).isEqualTo(dummyFirstName);
         assertThat(userProfileResponse.getLastName()).isEqualTo(dummyLastName);
-        assertThat(userProfileResponse.getIdamStatus()).isEqualTo(IdamStatus.ACTIVE);
+        assertThat(userProfileResponse.getIdamStatus()).isEqualTo(IdamStatus.ACTIVE.name());
     }
 
     @Test

@@ -217,7 +217,7 @@ public class UserProfileUpdatorTest {
         assertThat(response.getEmail()).isEqualTo(dummyEmail);
         assertThat(response.getFirstName()).isEqualTo(dummyFirstName);
         assertThat(response.getLastName()).isEqualTo(dummyLastName);
-        assertThat(response.getIdamStatus()).isEqualTo(IdamStatus.ACTIVE);
+        assertThat(response.getIdamStatus()).isEqualTo(IdamStatus.ACTIVE.name());
 
         verify(userProfileRepositoryMock,times(1)).save(any(UserProfile.class));
 
