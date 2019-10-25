@@ -49,38 +49,22 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
     private AuditService auditService;
 
     @Override
-    public Optional<UserProfileResponse> update(UpdateUserProfileData updateUserProfileData, String userId, String origin) {
+    public Optional<UserProfileResponse> update(UpdateUserProfileData updateUserProfileData, String userId, ResponseSource origin) {
 
         UserProfile userProfile = validationService.validateUpdate(updateUserProfileData, userId);
 
-        if(/*userProfile.getStatus().equals(IdamStatus.SUSPENDED)
-                &&*/ !userProfile.getStatus().name().equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
+        if(userProfile.getStatus().equals(IdamStatus.SUSPENDED)
+                && !userProfile.getStatus().name().equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
             idamClient.updateUserDetails(updateUserProfileData, userId);
         }
 
         UserProfileMapper.mapUpdatableFields(updateUserProfileData, userProfile);
 
-        Optional<UserProfile> userProfileOpt = doPersistUserProfile(userProfile, ResponseSource.API);
+        Optional<UserProfile> userProfileOpt = doPersistUserProfile(userProfile, origin);
 
         return userProfileOpt.map(opt -> new UserProfileResponse(opt, false));
     }
 
-    @Override
-    public Optional<UserProfileResponse> update(UpdateUserProfileData updateUserProfileData, String userId) {
-
-        UserProfile userProfile = validationService.validateUpdate(updateUserProfileData, userId);
-
-        if(/*userProfile.getStatus().equals(IdamStatus.SUSPENDED)
-                &&*/ !userProfile.getStatus().name().equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
-            idamClient.updateUserDetails(updateUserProfileData, userId);
-        }
-
-        UserProfileMapper.mapUpdatableFields(updateUserProfileData, userProfile);
-
-        Optional<UserProfile> userProfileOpt = doPersistUserProfile(userProfile, ResponseSource.SYNC);
-
-        return userProfileOpt.map(opt -> new UserProfileResponse(opt, false));
-    }
 
     private Optional<UserProfile> doPersistUserProfile(UserProfile userProfile, ResponseSource responseSource) {
         UserProfile result = null;

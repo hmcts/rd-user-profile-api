@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreatio
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceCreator;
@@ -43,12 +44,7 @@ public class UserProfileService<T extends RequestData> {
         return new UserProfileResponse(resourceRetriever.retrieve(requestData, false));
     }
 
-    //TODO updates should return a common return object
-    public UserProfileResponse update(T updateData, String userId) {
-        return resourceUpdator.update(updateData, userId).orElse(new UserProfileResponse());
-    }
-
-    public UserProfileResponse update(T updateData, String userId, String origin) {
+    public UserProfileResponse update(T updateData, String userId, ResponseSource origin) {
         return resourceUpdator.update(updateData, userId, origin).orElse(new UserProfileResponse());
     }
 

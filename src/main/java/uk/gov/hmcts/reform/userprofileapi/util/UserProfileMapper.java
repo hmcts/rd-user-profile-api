@@ -7,14 +7,13 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 
 public interface UserProfileMapper {
 
-    static UserProfile mapUpdatableFields(UpdateUserProfileData updateUserProfileData, UserProfile userProfile) {
+    static void mapUpdatableFields(UpdateUserProfileData updateUserProfileData, UserProfile userProfile) {
         if (!updateUserProfileData.isSameAsUserProfile(userProfile)) {
             setEmail(updateUserProfileData, userProfile);
             setFirstName(updateUserProfileData, userProfile);
             setLastName(updateUserProfileData, userProfile);
             setStatus(updateUserProfileData, userProfile);
         }
-        return userProfile;
     }
 
     static void setEmail(UpdateUserProfileData data, UserProfile userProfile) {

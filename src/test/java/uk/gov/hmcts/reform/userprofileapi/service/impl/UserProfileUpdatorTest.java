@@ -33,6 +33,7 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.RoleDeletionRespon
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.exception.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
@@ -211,7 +212,7 @@ public class UserProfileUpdatorTest {
 
         when(validationServiceMock.validateUpdate(any(), any())).thenReturn(userProfileMock);
 
-        UserProfileResponse response = sut.update(updateUserProfileData, userId).orElse(null);
+        UserProfileResponse response = sut.update(updateUserProfileData, userId, ResponseSource.SYNC).orElse(null);
 
         assertThat(response).isNotNull();
         assertThat(response.getEmail()).isEqualTo(dummyEmail);
@@ -231,7 +232,7 @@ public class UserProfileUpdatorTest {
 
         when(validationServiceMock.validateUpdate(any(), any())).thenThrow(ResourceNotFoundException.class);
 
-        sut.update(updateUserProfileData,"invalid");
+        sut.update(updateUserProfileData,"invalid", ResponseSource.SYNC);
         //TODO verify auditService independently
     }
 
@@ -242,7 +243,7 @@ public class UserProfileUpdatorTest {
 
         when(validationServiceMock.validateUpdate(any(), any())).thenThrow(ResourceNotFoundException.class);
 
-        sut.update(updateUserProfileData, userId);
+        sut.update(updateUserProfileData, userId, ResponseSource.SYNC);
     }
 
     @Test(expected = RequiredFieldMissingException.class)
@@ -252,7 +253,7 @@ public class UserProfileUpdatorTest {
 
         when(validationServiceMock.validateUpdate(any(), eq(userId))).thenThrow(RequiredFieldMissingException.class);
 
-        sut.update(updateUserProfileData, userId);
+        sut.update(updateUserProfileData, userId, ResponseSource.SYNC);
     }
 
     @Test(expected = ResourceNotFoundException.class)
@@ -280,7 +281,7 @@ public class UserProfileUpdatorTest {
         when(validationServiceMock.validateUpdate(any(), any())).thenThrow(ResourceNotFoundException.class);
 
 
-        sut.update(updateUserProfileData, "");
+        sut.update(updateUserProfileData, "", ResponseSource.SYNC);
     }
 
     private UserProfileResponse addRoles() throws Exception {
