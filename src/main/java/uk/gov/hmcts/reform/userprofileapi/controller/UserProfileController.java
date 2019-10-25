@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.userprofileapi.controller;
 
 import static java.util.Objects.requireNonNull;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.hasRolesToUpdate;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateCreateUserProfileRequest;
 
@@ -17,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -281,18 +281,15 @@ public class UserProfileController {
 
         response = userProfileService.update(updateUserProfileData, userId, source);
 
-
-        if (! (CollectionUtils.isEmpty(updateUserProfileData.getRolesAdd())
-                && CollectionUtils.isEmpty(updateUserProfileData.getRolesDelete()))) {// New update roles behavior
+        if (hasRolesToUpdate(updateUserProfileData)) {
             UserProfileValidator.validateUserProfileDataAndUserId(updateUserProfileData, userId);
-
-            log.info("Updating user profile with roles");
-
-            //TODO handle update BOTH roles AND origin
-            response = userProfileService.updateRoles(updateUserProfileData, userId);
+            UserProfileResponse responseTmp = userProfileService.updateRoles(updateUserProfileData, userId);
+            response.setAddRolesResponse(responseTmp.getAddRolesResponse());
+            response.setDeleteRolesResponse(responseTmp.getDeleteRolesResponse());
         }
         return ResponseEntity.ok().body(response);
     }
+
 
     @ApiOperation(value = "Retrieving multiple user profiles",
             authorizations = {
@@ -346,5 +343,7 @@ public class UserProfileController {
         return ResponseEntity.status(HttpStatus.OK).body(userProfileDataResponse);
 
     }
+
+
 
 }

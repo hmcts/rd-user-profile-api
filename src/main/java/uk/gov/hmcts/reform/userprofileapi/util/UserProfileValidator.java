@@ -125,4 +125,9 @@ public interface UserProfileValidator {
             throw new RequiredFieldMissingException("No userId or roles in the request");
         }
     }
+
+    static boolean hasRolesToUpdate(UpdateUserProfileData data) {
+        return !(CollectionUtils.isEmpty(data.getRolesAdd())
+                && CollectionUtils.isEmpty(data.getRolesDelete()));
+    }
 }
