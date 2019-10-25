@@ -143,36 +143,6 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
 
         assertThat(actual.getIdamStatus()).isEqualTo(IdamStatus.SUSPENDED);
         LOG.info("user updated to:" + actual.getIdamStatus());
-
-
-        /////////////////////// AC2 suspended to active
-
-        //update from active to suspended
-        userProfileData = new UpdateUserProfileData();
-        userProfileData.setFirstName("firstName");
-        userProfileData.setLastName("lastName");
-        userProfileData.setEmail(email);
-        userProfileData.setIdamStatus(IdamStatus.ACTIVE.name());
-        //TODO should return a more generic result NOT one specific to role updation
-        //! UserProfileRolesResponse updatedStatusResponse =
-        testRequestHandler.sendPut(
-                userProfileData,
-                HttpStatus.OK,
-                requestUri + "/" + resource.getIdamId() + "?origin=exui", UserProfileRolesResponse.class);
-
-        //verify update
-        actual =
-                testRequestHandler.sendGet(
-                        requestUri + "?email=" + email.toLowerCase(),
-                        UserProfileResponse.class
-                );
-
-        assertThat(actual.getIdamId()).isNotNull();
-        LOG.info("2/2 retrieved user with updated status for idamId:" + actual.getIdamId());
-
-        //? assertThat(actual.getIdamStatus()).isEqualTo(IdamStatus.ACTIVE);
-        LOG.info("2/2 user updated to:" + actual.getIdamStatus());
-
     }
 
     //@Test
@@ -190,55 +160,19 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
                         UserProfileResponse.class
                 );
 
-        LOG.info(String.format("created and retrieved user with email:[%s]", resource.getEmail()));
+        LOG.info("get Userprofile response::" + resource);
+        LOG.info("before addroles call");
+        UpdateUserProfileData userRProfileData = new UpdateUserProfileData();
+        userRProfileData.setFirstName("firstName");
+        userRProfileData.setLastName("lastName");
+        userRProfileData.setEmail(email);
+        userRProfileData.setIdamStatus(IdamStatus.SUSPENDED.name());
+        UserProfileRolesResponse updatedStatusResponse =
+                testRequestHandler.sendPut(
+                        userRProfileData,
+                        HttpStatus.OK,
+                        requestUri + "/" + resource.getIdamId() + "?origin=exui", UserProfileRolesResponse.class);
 
-        //update from active to suspended
-        UpdateUserProfileData userProfileData = new UpdateUserProfileData();
-        userProfileData.setFirstName("firstName");
-        userProfileData.setLastName("lastName");
-        userProfileData.setEmail(email);
-        userProfileData.setIdamStatus(IdamStatus.SUSPENDED.name());
-        testRequestHandler.sendPut(
-                userProfileData,
-                HttpStatus.OK,
-                requestUri + "/" + resource.getIdamId() + "?origin=exui", UserProfileRolesResponse.class);
-
-        UserProfileResponse actual =
-                testRequestHandler.sendGet(
-                        requestUri + "?email=" + email.toLowerCase(),
-                        UserProfileResponse.class
-                );
-
-        assertThat(actual.getIdamId()).isNotNull();
-        LOG.info("1/2 retrieved user with updated status for idamId:" + actual.getIdamId());
-
-        assertThat(actual.getIdamStatus()).isEqualTo(IdamStatus.SUSPENDED);
-        LOG.info("1/2 user updated to:" + actual.getIdamStatus());
-
-        //update from active to suspended
-        userProfileData = new UpdateUserProfileData();
-        userProfileData.setFirstName("firstName");
-        userProfileData.setLastName("lastName");
-        userProfileData.setEmail(email);
-        userProfileData.setIdamStatus(IdamStatus.ACTIVE.name());
-        //TODO should return a more generic result NOT one specific to role updation
-        //! UserProfileRolesResponse updatedStatusResponse =
-        testRequestHandler.sendPut(
-                userProfileData,
-                HttpStatus.OK,
-                requestUri + "/" + resource.getIdamId() + "?origin=exui", UserProfileRolesResponse.class);
-
-        //verify update
-        actual =
-                testRequestHandler.sendGet(
-                        requestUri + "?email=" + email.toLowerCase(),
-                        UserProfileResponse.class
-                );
-
-        assertThat(actual.getIdamId()).isNotNull();
-        LOG.info("2/2 retrieved user with updated status for idamId:" + actual.getIdamId());
-
-        assertThat(actual.getIdamStatus()).isEqualTo(IdamStatus.ACTIVE);
-        LOG.info("2/2 user updated to:" + actual.getIdamStatus());
+        LOG.info("after Status update call" + updatedStatusResponse);
     }
 }

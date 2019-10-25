@@ -28,8 +28,7 @@ public class UserProfileWithRolesResponse extends UserProfileResponse {
         idamStatusCode = " ";
         idamMessage = IdamStatusResolver.NO_IDAM_CALL;
         if (rolesRequired) {
-            //TODO dbg added suspended
-            if ( (IdamStatus.ACTIVE == userProfile.getStatus() || IdamStatus.SUSPENDED == userProfile.getStatus()) && !userProfile.getRoles().isEmpty()) {
+            if (IdamStatus.ACTIVE == userProfile.getStatus() && userProfile.getRoles().size() > 0) {
                 roles = userProfile.getRoles();
             }
             idamStatusCode = userProfile.getErrorStatusCode();

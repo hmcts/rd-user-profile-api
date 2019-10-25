@@ -50,8 +50,7 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
 
     public UserProfile getRolesFromIdam(UserProfile userProfile, boolean isMultiUserGet) {
 
-        //TODO dbg adding suspended to getRoles
-        if (IdamStatus.ACTIVE == userProfile.getStatus() || IdamStatus.SUSPENDED == userProfile.getStatus() ) {
+        if (IdamStatus.ACTIVE == userProfile.getStatus()) {
             IdamRolesInfo idamRolesInfo = idamService.fetchUserById(userProfile.getIdamId());
             if (idamRolesInfo.getResponseStatusCode().is2xxSuccessful()) {
                 persistAudit(idamRolesInfo, userProfile);
@@ -78,7 +77,7 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
 
     public List<UserProfile> retrieveMultipleProfiles(UserProfileIdentifier identifier, boolean showDeleted, boolean rolesRequired) {
         //get all users from UP DB
-        List<UserProfile> userProfiles = querySupplier.getProfilesByIds(identifier, showDeleted).orElse(new ArrayList<>());
+        List<UserProfile> userProfiles = querySupplier.getProfilesByIds(identifier, showDeleted).orElse(new ArrayList<UserProfile>());
         if (CollectionUtils.isEmpty(userProfiles)) {
             throw new ResourceNotFoundException("Could not find resource");
         }
