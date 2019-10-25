@@ -31,7 +31,6 @@ import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.RoleAdditionResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.RoleDeletionResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.exception.RequiredFieldMissingException;
@@ -46,7 +45,6 @@ import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
-import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileUpdator;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserProfileUpdatorTest {
@@ -129,12 +127,12 @@ public class UserProfileUpdatorTest {
 
         updateUserProfileData.setRolesAdd(roles);
 
-        UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
+        UserProfileResponse userProfileResponse = new UserProfileResponse();
         RoleAdditionResponse roleAdditionResponse = new RoleAdditionResponse();
         roleAdditionResponse.setIdamStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.toString());
         roleAdditionResponse.setIdamMessage("Failure");
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        String body = mapper.writeValueAsString(userProfileRolesResponse);
+        String body = mapper.writeValueAsString(userProfileResponse);
 
         when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
         when(idamFeignClientMock.addUserRoles(updateUserProfileData.getRolesAdd(), "1234")).thenReturn(Response.builder().request(mock(Request.class)).body(body, Charset.defaultCharset()).status(500).build());
@@ -158,7 +156,7 @@ public class UserProfileUpdatorTest {
         List<RoleDeletionResponse> rolesResponse = new ArrayList<RoleDeletionResponse>();
         rolesResponse.add(roleDeletionResponse);
 
-        UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
+        UserProfileResponse userProfileRolesResponse = new UserProfileResponse();
         userProfileRolesResponse.setDeleteRolesResponse(rolesResponse);
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         String body = mapper.writeValueAsString(userProfileRolesResponse);
@@ -181,7 +179,7 @@ public class UserProfileUpdatorTest {
 
         updateUserProfileData.setRolesAdd(roles);
 
-        UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
+        UserProfileResponse userProfileRolesResponse = new UserProfileResponse();
         RoleAdditionResponse roleAdditionResponse = new RoleAdditionResponse();
         roleAdditionResponse.setIdamStatusCode(HttpStatus.OK.toString());
         roleAdditionResponse.setIdamMessage("Success");
@@ -267,7 +265,7 @@ public class UserProfileUpdatorTest {
 
         updateUserProfileData.setRolesAdd(roles);
 
-        UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
+        UserProfileResponse userProfileRolesResponse = new UserProfileResponse();
         RoleAdditionResponse roleAdditionResponse = new RoleAdditionResponse();
         roleAdditionResponse.setIdamStatusCode(HttpStatus.OK.toString());
         roleAdditionResponse.setIdamMessage("Success");
@@ -278,19 +276,6 @@ public class UserProfileUpdatorTest {
 
     @Test(expected = ResourceNotFoundException.class)
     public void userProfileRolesResponse_update_invalid_user() {
-        /*RoleName roleName1 = new RoleName("pui-case-manager");
-        RoleName roleName2 = new RoleName("pui-case-organisation");
-        Set<RoleName> roles = new HashSet<>();
-        roles.add(roleName1);
-        roles.add(roleName2);
-
-        updateUserProfileData.setRolesAdd(roles);
-
-        UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
-        RoleAdditionResponse addRoleResponse = new RoleAdditionResponse();
-        addRoleResponse.setIdamStatusCode(HttpStatus.OK.toString());
-        addRoleResponse.setIdamMessage("Success");
-        userProfileRolesResponse.setAddRolesResponse(addRoleResponse);*/
 
         when(validationServiceMock.validateUpdate(any(), any())).thenThrow(ResourceNotFoundException.class);
 
@@ -307,13 +292,13 @@ public class UserProfileUpdatorTest {
 
         updateUserProfileData.setRolesAdd(roles);
 
-        UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
+        UserProfileResponse userProfileResponse = new UserProfileResponse();
         RoleAdditionResponse roleAdditionResponse = new RoleAdditionResponse();
         roleAdditionResponse.setIdamStatusCode(HttpStatus.OK.toString());
         roleAdditionResponse.setIdamMessage("Success");
-        userProfileRolesResponse.setAddRolesResponse(roleAdditionResponse);
+        userProfileResponse.setAddRolesResponse(roleAdditionResponse);
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        String body = mapper.writeValueAsString(userProfileRolesResponse);
+        String body = mapper.writeValueAsString(userProfileResponse);
 
         when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
         when(idamFeignClientMock.addUserRoles(updateUserProfileData.getRolesAdd(), "1234")).thenReturn(Response.builder().request(mock(Request.class)).body(body, Charset.defaultCharset()).status(200).build());
@@ -329,7 +314,6 @@ public class UserProfileUpdatorTest {
         roles.add(roleName1);
 
         updateUserProfileData.setRolesDelete(roles);
-        UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
         RoleDeletionResponse roleDeletionResponse = new RoleDeletionResponse();
         roleDeletionResponse.setRoleName("pui-case-manager");
         roleDeletionResponse.setIdamStatusCode(HttpStatus.OK.toString());

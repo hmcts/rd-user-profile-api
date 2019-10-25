@@ -32,7 +32,6 @@ import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequ
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdentifierName;
 import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;

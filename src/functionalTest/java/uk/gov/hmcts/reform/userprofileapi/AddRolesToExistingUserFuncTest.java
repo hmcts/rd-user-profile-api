@@ -65,11 +65,11 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
                 );
 
         LOG.info("before addroles call");
-        UserProfileRolesResponse resource1 =
+        UserProfileResponse resource1 =
                 testRequestHandler.sendPut(
                         userRProfileData,
                             HttpStatus.OK,
-                           requestUri + "/" + resource.getIdamId(), UserProfileRolesResponse.class);
+                           requestUri + "/" + resource.getIdamId(), UserProfileResponse.class);
 
         LOG.info("after addroles call" + resource1);
 
@@ -108,11 +108,11 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         userProfileData.setLastName("lastName");
         userProfileData.setEmail(email);
         userProfileData.setIdamStatus(IdamStatus.SUSPENDED.name());
-        UserProfileRolesResponse updatedStatusResponse =
+        UserProfileResponse updatedStatusResponse =
                 testRequestHandler.sendPut(
                         userProfileData,
                         HttpStatus.OK,
-                        requestUri + "/" + resource.getIdamId() + "?origin=exui", UserProfileRolesResponse.class);
+                        requestUri + "/" + resource.getIdamId() + "?origin=exui", UserProfileResponse.class);
 
         //!? LOG.info("after Status update call" + updatedStatusResponse);
 
@@ -167,11 +167,11 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         userRProfileData.setLastName("lastName");
         userRProfileData.setEmail(email);
         userRProfileData.setIdamStatus(IdamStatus.SUSPENDED.name());
-        UserProfileRolesResponse updatedStatusResponse =
+        UserProfileResponse updatedStatusResponse =
                 testRequestHandler.sendPut(
                         userRProfileData,
                         HttpStatus.OK,
-                        requestUri + "/" + resource.getIdamId() + "?origin=exui", UserProfileRolesResponse.class);
+                        requestUri + "/" + resource.getIdamId() + "?origin=exui", UserProfileResponse.class);
 
         LOG.info("after Status update call" + updatedStatusResponse);
     }
