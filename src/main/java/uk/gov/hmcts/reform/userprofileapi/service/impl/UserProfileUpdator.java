@@ -56,7 +56,6 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
 
         UserProfile userProfile = validationService.validateUpdate(updateUserProfileData, userId);
 
-        // TODO add func. test
         if(userProfile.getStatus().equals(IdamStatus.SUSPENDED)
                 && !userProfile.getStatus().name().equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
             idamClient.updateUserDetails(updateUserProfileData, userId);
@@ -65,8 +64,8 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         UserProfileMapper.mapUpdatableFields(updateUserProfileData, userProfile);
 
         Optional<UserProfile> userProfileOpt = doPersistUserProfile(userProfile, ResponseSource.API);
-        return Optional.ofNullable(new UserProfileResponse(userProfileOpt.get(), false));
 
+        return userProfileOpt.map(opt -> new UserProfileResponse(opt, false));
     }
 
     @Override
@@ -74,7 +73,6 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
 
         UserProfile userProfile = validationService.validateUpdate(updateUserProfileData, userId);
 
-        // TODO add func. test
         if(userProfile.getStatus().equals(IdamStatus.SUSPENDED)
                 && !userProfile.getStatus().name().equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
             idamClient.updateUserDetails(updateUserProfileData, userId);
@@ -83,7 +81,8 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         UserProfileMapper.mapUpdatableFields(updateUserProfileData, userProfile);
 
         Optional<UserProfile> userProfileOpt = doPersistUserProfile(userProfile, ResponseSource.SYNC);
-        return Optional.ofNullable(new UserProfileResponse(userProfileOpt.get(), false));
+
+        return userProfileOpt.map(opt -> new UserProfileResponse(opt, false));
     }
 
     private Optional<UserProfile> doPersistUserProfile(UserProfile userProfile, ResponseSource responseSource) {

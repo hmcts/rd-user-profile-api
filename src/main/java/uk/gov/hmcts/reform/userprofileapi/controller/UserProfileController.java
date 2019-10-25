@@ -274,7 +274,7 @@ public class UserProfileController {
                                                                       @PathVariable String userId,
                                                                       @ApiParam(name = "origin", required = false) @RequestParam (value = "origin", required = false) String origin) {
         log.info("Updating user profile");
-        UserProfileResponse response = null;
+        UserProfileResponse response;
 
         //If Existing behavor NOT trying to update roles
         if (CollectionUtils.isEmpty(updateUserProfileData.getRolesAdd())
