@@ -86,7 +86,53 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
     }
 
     @Test
-    public void rdcc_418_should_update_user_status_from_active_to_suspended() throws Exception {
+    public void rdcc_418_1_should_update_user_status_from_active_to_suspended() throws Exception {
+        UserProfileCreationData data = createUserProfileData();
+        List<String> roles = new ArrayList<>();
+        roles.add(puiUserManager);
+        String email = idamClient.createUser(roles);
+
+        data.setEmail(email);
+        createUserProfile(data, HttpStatus.CREATED);
+        UserProfileResponse resource =
+                testRequestHandler.sendGet(
+                        requestUri + "?email=" + email.toLowerCase(),
+                        UserProfileResponse.class
+                );
+
+        LOG.info(String.format("created and retrieved user with email:[%s]", resource.getEmail()));
+
+        //update from active to suspended
+        UpdateUserProfileData userProfileData = new UpdateUserProfileData();
+        userProfileData.setFirstName("firstName");
+        userProfileData.setLastName("lastName");
+        userProfileData.setEmail(email);
+        userProfileData.setIdamStatus(IdamStatus.SUSPENDED.name());
+        UserProfileRolesResponse updatedStatusResponse =
+                testRequestHandler.sendPut(
+                        userProfileData,
+                        HttpStatus.OK,
+                        requestUri + "/" + resource.getIdamId() + "?origin=exui", UserProfileRolesResponse.class);
+
+        LOG.info("after Status update call" + updatedStatusResponse);
+
+        //get the updated user
+        UserProfileWithRolesResponse actual =
+                testRequestHandler.sendGet(
+                        "/v1/userprofile/" + resource.getIdamId() + "/roles",
+                        UserProfileWithRolesResponse.class
+                );
+        LOG.info("Roles addroles call" + actual);
+        assertThat(actual.getRoles().size()).isNotNull();
+        assertThat(actual.getRoles().size()).isEqualTo(3);
+        assertThat(actual.getRoles().contains("caseworker,pui-case-manager,pui-user-manager"));
+
+        LOG.info("status updated to:" + actual.getIdamStatus());
+        assertThat(actual.getIdamStatus()).isEqualTo(IdamStatus.SUSPENDED);
+    }
+
+    //@Test
+    public void rdcc_418_2_should_update_user_status_from_suspended_to_active() throws Exception {
         UserProfileCreationData data = createUserProfileData();
         List<String> roles = new ArrayList<>();
         roles.add(puiUserManager);
