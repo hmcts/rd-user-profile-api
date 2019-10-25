@@ -114,24 +114,6 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
                         HttpStatus.OK,
                         requestUri + "/" + resource.getIdamId() + "?origin=exui", UserProfileResponse.class);
 
-        //!? LOG.info("after Status update call" + updatedStatusResponse);
-
-        /*
-        //!TODO Roles NOT currently being updated when status is updated
-        //get the updated user for roles
-        UserProfileWithRolesResponse actual =
-                testRequestHandler.sendGet(
-                        "/v1/userprofile/" + resource.getIdamId() + "/roles",
-                        UserProfileWithRolesResponse.class
-                );
-        LOG.info("Roles addroles call" + actual);
-        assertThat(actual.getRoles().size()).isNotNull();
-        assertThat(actual.getRoles().size()).isEqualTo(3);
-        assertThat(actual.getRoles().contains("caseworker,pui-case-manager,pui-user-manager"));
-
-        assertThat(actual.getIdamStatus()).isNotNull();
-        LOG.info("status updated to:" + actual.getIdamStatus());*/
-
         UserProfileResponse actual =
                 testRequestHandler.sendGet(
                         requestUri + "?email=" + email.toLowerCase(),
@@ -141,7 +123,7 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         assertThat(actual.getIdamId()).isNotNull();
         LOG.info("retrieved user with updated status for idamId:" + actual.getIdamId());
 
-        assertThat(actual.getIdamStatus()).isEqualTo(IdamStatus.SUSPENDED);
+        assertThat(actual.getIdamStatus()).isEqualTo(IdamStatus.SUSPENDED.name());
         LOG.info("user updated to:" + actual.getIdamStatus());
     }
 

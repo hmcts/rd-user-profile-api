@@ -22,7 +22,7 @@ public class UserProfileResponse {
     private String email;
     private String firstName;
     private String lastName;
-    private /*IdamStatus*/String idamStatus;
+    private String idamStatus;
     private RoleAdditionResponse addRolesResponse;
     private List<RoleDeletionResponse> deleteRolesResponse;
     private List<String> roles;
@@ -38,9 +38,6 @@ public class UserProfileResponse {
 
     public UserProfileResponse(UserProfile userProfile, boolean rolesRequired) {
         this(userProfile);
-        //super(userProfile);//TODO remove inheritance
-        //damStatusCode = " ";
-        //idamMessage = IdamStatusResolver.NO_IDAM_CALL;
         if (rolesRequired) {
             if (IdamStatus.ACTIVE == userProfile.getStatus() && userProfile.getRoles().size() > 0) {
                 roles = userProfile.getRoles();
