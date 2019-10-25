@@ -220,11 +220,10 @@ public class UserProfileController {
     @ResponseBody
     public ResponseEntity<UserProfileResponse> getUserProfileByEmail(@ApiParam(name = "email", required = false) @RequestParam (value = "email", required = false) String email,
                                                                      @ApiParam(name = "userId", required = false) @RequestParam (value = "userId", required = false) String userId) {
-        UserProfileResponse response = null;
+        UserProfileResponse response;
         if (email == null && userId == null) {
             return ResponseEntity.badRequest().build();
         } else if (email != null) {
-
             log.info("Getting user profile with email: {}", email);
 
             response =
@@ -283,7 +282,6 @@ public class UserProfileController {
                 //TODO find out what other values besides EXUI can be used for origin
                 userProfileService.update(updateUserProfileData, userId, origin);
             } else {
-                log.info("Updating user profile without roles");
                 userProfileService.update(updateUserProfileData, userId);
                 // TODO if origin is populated call overloaded service method
             }
