@@ -276,16 +276,14 @@ public class UserProfileController {
         log.info("Updating user profile");
         UserProfileResponse response;
 
-        //If Existing behavor NOT trying to update roles
-        if (CollectionUtils.isEmpty(updateUserProfileData.getRolesAdd())
-             && CollectionUtils.isEmpty(updateUserProfileData.getRolesDelete())) {
+        ResponseSource source = StringUtils.isEmpty(origin) || !"EXUI".equalsIgnoreCase(origin.toUpperCase()) ?
+                ResponseSource.SYNC : ResponseSource.API;
 
-            ResponseSource source = StringUtils.isEmpty(origin) || !"EXUI".equalsIgnoreCase(origin.toUpperCase()) ?
-                    ResponseSource.SYNC : ResponseSource.API;
+        response = userProfileService.update(updateUserProfileData, userId, source);
 
-            response = userProfileService.update(updateUserProfileData, userId, source);
 
-        } else {// New update roles behavior
+        if (! (CollectionUtils.isEmpty(updateUserProfileData.getRolesAdd())
+                && CollectionUtils.isEmpty(updateUserProfileData.getRolesDelete()))) {// New update roles behavior
             UserProfileValidator.validateUserProfileDataAndUserId(updateUserProfileData, userId);
 
             log.info("Updating user profile with roles");
