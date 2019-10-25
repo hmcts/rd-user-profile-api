@@ -213,6 +213,7 @@ public class UserProfileController {
                     code = 500,
                     message = "Internal Server Error"
             )
+
     })
     @GetMapping(
             produces = APPLICATION_JSON_UTF8_VALUE
@@ -269,11 +270,11 @@ public class UserProfileController {
     )
 
     @ResponseBody
-    public ResponseEntity<UserProfileRolesResponse> updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData,
+    public ResponseEntity<UserProfileResponse> updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData,
                                                                       @PathVariable String userId,
                                                                       @ApiParam(name = "origin", required = false) @RequestParam (value = "origin", required = false) String origin) {
         log.info("Updating user profile");
-        UserProfileRolesResponse userProfileResponse = new UserProfileRolesResponse();
+        UserProfileResponse response = null;
 
         //If Existing behavor NOT trying to update roles
         if (CollectionUtils.isEmpty(updateUserProfileData.getRolesAdd())
@@ -292,9 +293,9 @@ public class UserProfileController {
             log.info("Updating user profile with roles");
 
             //TODO handle update BOTH roles AND origin
-            userProfileResponse = userProfileService.updateRoles(updateUserProfileData, userId);
+            response = userProfileService.updateRoles(updateUserProfileData, userId);
         }
-        return ResponseEntity.ok(userProfileResponse);
+        return ResponseEntity.ok/*().body*/(response);
     }
 
     @ApiOperation(value = "Retrieving multiple user profiles",

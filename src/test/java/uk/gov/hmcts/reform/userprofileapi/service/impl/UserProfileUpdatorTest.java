@@ -30,6 +30,7 @@ import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.RoleAdditionResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.RoleDeletionResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
@@ -85,7 +86,7 @@ public class UserProfileUpdatorTest {
     @Test
     public void updateRolesForAdd() throws Exception {
 
-        UserProfileRolesResponse response = addRoles();
+        UserProfileResponse response = addRoles();
 
         assertThat(response).isNotNull();
         assertThat(response.getAddRolesResponse().getIdamStatusCode()).isEqualTo("200");
@@ -94,7 +95,7 @@ public class UserProfileUpdatorTest {
     @Test
     public void updateRolesForAddAndDelete() throws Exception {
 
-        UserProfileRolesResponse response;
+        UserProfileResponse response;
         response = addRoles();
 
         assertThat(response).isNotNull();
@@ -110,7 +111,7 @@ public class UserProfileUpdatorTest {
 
     @Test
     public void updateRolesForDelete() throws Exception {
-        UserProfileRolesResponse response1 = deleteRoles();
+        UserProfileResponse response1 = deleteRoles();
 
         assertThat(response1).isNotNull();
         assertThat(response1.getDeleteRolesResponse().size()).isEqualTo(1);
@@ -138,7 +139,7 @@ public class UserProfileUpdatorTest {
         when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
         when(idamFeignClientMock.addUserRoles(updateUserProfileData.getRolesAdd(), "1234")).thenReturn(Response.builder().request(mock(Request.class)).body(body, Charset.defaultCharset()).status(500).build());
 
-        UserProfileRolesResponse response = sut.updateRoles(updateUserProfileData, userProfile.getIdamId());
+        UserProfileResponse response = sut.updateRoles(updateUserProfileData, userProfile.getIdamId());
         assertThat(response.getAddRolesResponse().getIdamStatusCode()).isEqualTo("500");
     }
 
@@ -165,7 +166,7 @@ public class UserProfileUpdatorTest {
         when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
         when(idamFeignClientMock.deleteUserRole("1234", "pui-case-manager")).thenReturn(Response.builder().request(mock(Request.class)).body(body, Charset.defaultCharset()).status(500).build());
 
-        UserProfileRolesResponse response = sut.updateRoles(updateUserProfileData, userProfile.getIdamId());
+        UserProfileResponse response = sut.updateRoles(updateUserProfileData, userProfile.getIdamId());
         assertThat(response.getDeleteRolesResponse().get(0).getIdamStatusCode()).isEqualTo("500");
     }
 
@@ -297,7 +298,7 @@ public class UserProfileUpdatorTest {
         sut.update(updateUserProfileData, "");
     }
 
-    private UserProfileRolesResponse addRoles() throws Exception {
+    private UserProfileResponse addRoles() throws Exception {
         RoleName roleName1 = new RoleName("pui-case-manager");
         RoleName roleName2 = new RoleName("pui-case-organisation");
         Set<RoleName> roles = new HashSet<>();
@@ -317,12 +318,12 @@ public class UserProfileUpdatorTest {
         when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
         when(idamFeignClientMock.addUserRoles(updateUserProfileData.getRolesAdd(), "1234")).thenReturn(Response.builder().request(mock(Request.class)).body(body, Charset.defaultCharset()).status(200).build());
 
-        UserProfileRolesResponse response = sut.updateRoles(updateUserProfileData, userProfile.getIdamId());
+        UserProfileResponse response = sut.updateRoles(updateUserProfileData, userProfile.getIdamId());
 
         return response;
     }
 
-    private UserProfileRolesResponse deleteRoles() throws Exception {
+    private UserProfileResponse deleteRoles() throws Exception {
         RoleName roleName1 = new RoleName("pui-case-manager");
         Set<RoleName> roles = new HashSet<>();
         roles.add(roleName1);
@@ -345,7 +346,7 @@ public class UserProfileUpdatorTest {
 
         when(idamFeignClientMock.deleteUserRole("1234", "pui-case-manager")).thenReturn(response);
 
-        UserProfileRolesResponse response1 = sut.updateRoles(updateUserProfileData, userProfile.getIdamId());
+        UserProfileResponse response1 = sut.updateRoles(updateUserProfileData, userProfile.getIdamId());
         return response1;
     }
 

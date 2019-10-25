@@ -63,12 +63,12 @@ public class UserProfileServiceTest {
 
         userProfileService.update(updateUserProfileData, "1234");
 
-        UserProfileRolesResponse userProfileRolesResponse = mock(UserProfileRolesResponse.class);
+        UserProfileResponse userProfileResponse = mock(UserProfileResponse.class);
 
-        when(resourceUpdator.updateRoles(updateUserProfileData, "1234")).thenReturn(userProfileRolesResponse);
-        userProfileRolesResponse = userProfileService.updateRoles(updateUserProfileData, "1234");
+        when(resourceUpdator.updateRoles(updateUserProfileData, "1234")).thenReturn(userProfileResponse);
+        userProfileResponse = userProfileService.updateRoles(updateUserProfileData, "1234");
 
-        assertThat(userProfileRolesResponse).isNotNull();
+        assertThat(userProfileResponse).isNotNull();
     }
 
     @Test

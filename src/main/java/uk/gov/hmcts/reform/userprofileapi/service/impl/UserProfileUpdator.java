@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.RoleAdditionResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.RoleDeletionResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
@@ -95,8 +96,8 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
 
 
     @Override
-    public UserProfileRolesResponse updateRoles(UpdateUserProfileData profileData, String userId) {
-        UserProfileRolesResponse userProfileRolesResponse = new UserProfileRolesResponse();
+    public UserProfileResponse updateRoles(UpdateUserProfileData profileData, String userId) {
+        UserProfileResponse userProfileResponse = new UserProfileResponse();
         UserProfile userProfile = validateUserStatus(userId);
         if (!CollectionUtils.isEmpty(profileData.getRolesAdd())) {
             log.info("Add idam roles for userId :" + userId);
@@ -110,16 +111,16 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
                 auditService.persistAudit(httpStatus, userProfile, ResponseSource.API);
                 addRolesResponse = new RoleAdditionResponse(httpStatus);
             }
-            userProfileRolesResponse.setAddRolesResponse(addRolesResponse);
+            userProfileResponse.setAddRolesResponse(addRolesResponse);
         }
 
         if (!CollectionUtils.isEmpty(profileData.getRolesDelete())) {
             log.info("Delete idam roles for userId :" + userId);
             List<RoleDeletionResponse> roleDeletionRespons = new ArrayList<>();
             profileData.getRolesDelete().forEach(role -> roleDeletionRespons.add(deleteRolesInIdam(userId, role.getName(), userProfile)));
-            userProfileRolesResponse.setDeleteRolesResponse(roleDeletionRespons);
+            userProfileResponse.setDeleteRolesResponse(roleDeletionRespons);
         }
-        return userProfileRolesResponse;
+        return  userProfileResponse;
     }
 
     private RoleDeletionResponse deleteRolesInIdam(String userId, String roleName, UserProfile userProfile) {
