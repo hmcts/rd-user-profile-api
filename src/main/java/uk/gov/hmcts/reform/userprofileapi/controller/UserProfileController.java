@@ -279,7 +279,7 @@ public class UserProfileController {
         if (CollectionUtils.isEmpty(updateUserProfileData.getRolesAdd())
              && CollectionUtils.isEmpty(updateUserProfileData.getRolesDelete())) {
 
-            if(true || !StringUtils.isEmpty(origin) && "EXUI".equalsIgnoreCase(origin.toUpperCase())) {
+            if(!StringUtils.isEmpty(origin) && "EXUI".equalsIgnoreCase(origin.toUpperCase())) {
                 //TODO find out what other values besides EXUI can be used for origin
                 response = userProfileService.update(updateUserProfileData, userId, origin);
             } else {
