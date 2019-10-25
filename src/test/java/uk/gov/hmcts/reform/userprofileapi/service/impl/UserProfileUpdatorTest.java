@@ -213,13 +213,13 @@ public class UserProfileUpdatorTest {
 
         when(validationServiceMock.validateUpdate(any(), any())).thenReturn(userProfileMock);
 
-        Optional<UserProfile> response = sut.update(updateUserProfileData, userId);
+        UserProfileResponse response = sut.update(updateUserProfileData, userId).orElse(null);
 
         assertThat(response).isNotNull();
-        assertThat(response.get().getEmail()).isEqualTo(dummyEmail);
-        assertThat(response.get().getFirstName()).isEqualTo(dummyFirstName);
-        assertThat(response.get().getLastName()).isEqualTo(dummyLastName);
-        assertThat(response.get().getStatus()).isEqualTo(IdamStatus.ACTIVE);
+        assertThat(response.getEmail()).isEqualTo(dummyEmail);
+        assertThat(response.getFirstName()).isEqualTo(dummyFirstName);
+        assertThat(response.getLastName()).isEqualTo(dummyLastName);
+        assertThat(response.getIdamStatus()).isEqualTo(IdamStatus.ACTIVE);
 
         verify(userProfileRepositoryMock,times(1)).save(any(UserProfile.class));
 

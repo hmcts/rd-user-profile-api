@@ -52,34 +52,38 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
     private AuditService auditService;
 
     @Override
-    public Optional<UserProfile> update(UpdateUserProfileData updateUserProfileData, String userId, String origin) {
+    public Optional<UserProfileResponse> update(UpdateUserProfileData updateUserProfileData, String userId, String origin) {
 
-        UserProfile userProfileOptional = validationService.validateUpdate(updateUserProfileData, userId);
+        UserProfile userProfile = validationService.validateUpdate(updateUserProfileData, userId);
 
         // TODO add func. test
-        if(userProfileOptional.getStatus().equals(IdamStatus.SUSPENDED) && !userProfileOptional.getStatus().name().equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
+        if(userProfile.getStatus().equals(IdamStatus.SUSPENDED)
+                && !userProfile.getStatus().name().equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
             idamClient.updateUserDetails(updateUserProfileData, userId);
         }
 
-        UserProfileMapper.mapUpdatableFields(updateUserProfileData, userProfileOptional);
+        UserProfileMapper.mapUpdatableFields(updateUserProfileData, userProfile);
 
-        return doPersistUserProfile(userProfileOptional, ResponseSource.API);
+        Optional<UserProfile> userProfileOpt = doPersistUserProfile(userProfile, ResponseSource.API);
+        return Optional.ofNullable(new UserProfileResponse(userProfileOpt.get(), false));
 
     }
 
     @Override
-    public Optional<UserProfile> update(UpdateUserProfileData updateUserProfileData, String userId) {
+    public Optional<UserProfileResponse> update(UpdateUserProfileData updateUserProfileData, String userId) {
 
-        UserProfile userProfileOptional = validationService.validateUpdate(updateUserProfileData, userId);
+        UserProfile userProfile = validationService.validateUpdate(updateUserProfileData, userId);
 
         // TODO add func. test
-        if(userProfileOptional.getStatus().equals(IdamStatus.SUSPENDED) && !userProfileOptional.getStatus().name().equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
+        if(userProfile.getStatus().equals(IdamStatus.SUSPENDED)
+                && !userProfile.getStatus().name().equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
             idamClient.updateUserDetails(updateUserProfileData, userId);
         }
 
-        UserProfileMapper.mapUpdatableFields(updateUserProfileData, userProfileOptional);
+        UserProfileMapper.mapUpdatableFields(updateUserProfileData, userProfile);
 
-        return doPersistUserProfile(userProfileOptional, ResponseSource.SYNC);
+        Optional<UserProfile> userProfileOpt = doPersistUserProfile(userProfile, ResponseSource.SYNC);
+        return Optional.ofNullable(new UserProfileResponse(userProfileOpt.get(), false));
     }
 
     private Optional<UserProfile> doPersistUserProfile(UserProfile userProfile, ResponseSource responseSource) {

@@ -10,9 +10,9 @@ import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
 
 public interface ResourceUpdator<T extends RequestData> {
 
-    Optional<UserProfile> update(T profileData, String userId);
+    Optional<UserProfileResponse> update(T profileData, String userId);
 
-    Optional<UserProfile> update(T profileData, String userId, String origin);
+    Optional<UserProfileResponse> update(T profileData, String userId, String origin);
 
     UserProfileResponse updateRoles(T profileData, String userId);
 

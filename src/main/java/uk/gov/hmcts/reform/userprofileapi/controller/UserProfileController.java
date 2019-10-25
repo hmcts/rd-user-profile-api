@@ -282,10 +282,10 @@ public class UserProfileController {
 
             if(!StringUtils.isEmpty(origin) && "EXUI".equalsIgnoreCase(origin.toUpperCase())) {
                 //TODO find out what other values besides EXUI can be used for origin
-                userProfileService.update(updateUserProfileData, userId, origin);
+                response = userProfileService.update(updateUserProfileData, userId, origin);
             } else {
                 log.info("Updating user profile without roles");
-                userProfileService.update(updateUserProfileData, userId);
+                response = userProfileService.update(updateUserProfileData, userId);
                 // TODO if origin is populated call overloaded service method
             }
         } else {// New update roles behavior
@@ -295,7 +295,7 @@ public class UserProfileController {
             //TODO handle update BOTH roles AND origin
             response = userProfileService.updateRoles(updateUserProfileData, userId);
         }
-        return ResponseEntity.ok/*().body*/(response);
+        return ResponseEntity.ok().body(response);
     }
 
     @ApiOperation(value = "Retrieving multiple user profiles",
