@@ -50,7 +50,8 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
 
     public UserProfile getRolesFromIdam(UserProfile userProfile, boolean isMultiUserGet) {
 
-        if (IdamStatus.ACTIVE == userProfile.getStatus()) {
+        //TODO dbg adding suspended to getRoles
+        if (IdamStatus.ACTIVE == userProfile.getStatus() || IdamStatus.SUSPENDED == userProfile.getStatus() ) {
             IdamRolesInfo idamRolesInfo = idamService.fetchUserById(userProfile.getIdamId());
             if (idamRolesInfo.getResponseStatusCode().is2xxSuccessful()) {
                 persistAudit(idamRolesInfo, userProfile);

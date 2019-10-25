@@ -143,9 +143,39 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
 
         assertThat(actual.getIdamStatus()).isEqualTo(IdamStatus.SUSPENDED);
         LOG.info("user updated to:" + actual.getIdamStatus());
+
+
+        /////////////////////// AC2 suspended to active
+
+        //update from active to suspended
+        userProfileData = new UpdateUserProfileData();
+        userProfileData.setFirstName("firstName");
+        userProfileData.setLastName("lastName");
+        userProfileData.setEmail(email);
+        userProfileData.setIdamStatus(IdamStatus.ACTIVE.name());
+        //TODO should return a more generic result NOT one specific to role updation
+        //! UserProfileRolesResponse updatedStatusResponse =
+        testRequestHandler.sendPut(
+                userProfileData,
+                HttpStatus.OK,
+                requestUri + "/" + resource.getIdamId() + "?origin=exui", UserProfileRolesResponse.class);
+
+        //verify update
+        actual =
+                testRequestHandler.sendGet(
+                        requestUri + "?email=" + email.toLowerCase(),
+                        UserProfileResponse.class
+                );
+
+        assertThat(actual.getIdamId()).isNotNull();
+        LOG.info("2/2 retrieved user with updated status for idamId:" + actual.getIdamId());
+
+        //? assertThat(actual.getIdamStatus()).isEqualTo(IdamStatus.ACTIVE);
+        LOG.info("2/2 user updated to:" + actual.getIdamStatus());
+
     }
 
-    @Test
+    //@Test
     public void rdcc_418_2_should_update_user_status_from_suspended_to_active() throws Exception {
         UserProfileCreationData data = createUserProfileData();
         List<String> roles = new ArrayList<>();
