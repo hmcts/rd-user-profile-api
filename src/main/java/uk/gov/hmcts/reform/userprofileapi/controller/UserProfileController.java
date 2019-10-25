@@ -274,19 +274,21 @@ public class UserProfileController {
                                                                       @PathVariable String userId,
                                                                       @ApiParam(name = "origin", required = false) @RequestParam (value = "origin", required = false) String origin) {
         log.info("Updating user profile");
-        UserProfileResponse response;
+        UserProfileResponse response = new UserProfileResponse();
+
+        if (hasRolesToUpdate(updateUserProfileData)) {
+            UserProfileValidator.validateUserProfileDataAndUserId(updateUserProfileData, userId);
+            response = userProfileService.updateRoles(updateUserProfileData, userId);
+            //response.setAddRolesResponse(responseTmp.getAddRolesResponse());
+            //response.setDeleteRolesResponse(responseTmp.getDeleteRolesResponse());
+        }
 
         ResponseSource source = StringUtils.isEmpty(origin) || !"EXUI".equalsIgnoreCase(origin.toUpperCase()) ?
                 ResponseSource.SYNC : ResponseSource.API;
 
-        response = userProfileService.update(updateUserProfileData, userId, source);
+        UserProfileResponse responseTmp = userProfileService.update(updateUserProfileData, userId, source);
+        response.setIdamStatus(responseTmp.getIdamStatus());
 
-        if (hasRolesToUpdate(updateUserProfileData)) {
-            UserProfileValidator.validateUserProfileDataAndUserId(updateUserProfileData, userId);
-            UserProfileResponse responseTmp = userProfileService.updateRoles(updateUserProfileData, userId);
-            response.setAddRolesResponse(responseTmp.getAddRolesResponse());
-            response.setDeleteRolesResponse(responseTmp.getDeleteRolesResponse());
-        }
         return ResponseEntity.ok().body(response);
     }
 
