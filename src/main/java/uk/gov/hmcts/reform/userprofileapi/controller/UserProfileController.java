@@ -275,13 +275,13 @@ public class UserProfileController {
                                                                  @ApiParam(name = "origin", required = false) @RequestParam (value = "origin", required = false) String origin) {
         log.info("Updating user profile");
 
-        UserProfileResponse response = new UserProfileResponse();
+        UserProfileResponse response;
 
         ResponseSource source = (StringUtils.isEmpty(origin) || !"EXUI".equalsIgnoreCase(origin.toUpperCase()))
                 ? ResponseSource.SYNC : ResponseSource.API;
 
         UserProfileResponse responseTmp = userProfileService.update(updateUserProfileData, userId, source);
-        response.setIdamStatus(responseTmp.getIdamStatus());
+        //response.setIdamStatus(responseTmp.getIdamStatus());
 
         if (hasDataAndId(updateUserProfileData, userId) && hasRolesToUpdate(updateUserProfileData)) {
             log.info("updating roles: add:" + updateUserProfileData.getRolesAdd() + " delete:" + updateUserProfileData.getRolesDelete());
@@ -289,7 +289,8 @@ public class UserProfileController {
             response = userProfileService.updateRoles(updateUserProfileData, userId);
             responseTmp.setDeleteRolesResponse(response.getDeleteRolesResponse());
             responseTmp.setAddRolesResponse(response.getAddRolesResponse());
-            responseTmp.setIdamStatus(response.getIdamStatus());
+            responseTmp.setRoles(response.getRoles());
+            //!? responseTmp.setIdamStatus(response.getIdamStatus());
 
 
         }

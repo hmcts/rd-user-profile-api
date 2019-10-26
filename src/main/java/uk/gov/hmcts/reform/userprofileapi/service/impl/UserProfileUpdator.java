@@ -4,6 +4,7 @@ import feign.FeignException;
 import feign.Response;
 import feign.RetryableException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -85,13 +86,18 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
 
         UserProfile userProfile = validateUserStatusWithException(userId);
 
-        Optional<RoleAdditionResponse> roleAdditionResponseOpt = assignRolesAndPersistAudit(profileData, userId, userProfile);
+
 
         //TODO check if response is ok
         List<String> roleList = profileData.getRolesAdd().stream().map(RoleName::getName).collect(Collectors.toList());
         userProfileResponse.setRoles(roleList);
+        //TODO refactor
+        userProfileResponse.setAddRolesResponse(new RoleAdditionResponse(HttpStatus.OK));
+        List<RoleDeletionResponse> deletions = new ArrayList<>();
+        userProfileResponse.setDeleteRolesResponse(deletions);
 
         //assume roles will be set, should fail fast if not
+        Optional<RoleAdditionResponse> roleAdditionResponseOpt = assignRolesAndPersistAudit(profileData, userId, userProfile);
         if (roleAdditionResponseOpt.isPresent()) {
             RoleAdditionResponse roleAdditionResponseTmp = new RoleAdditionResponse();
             roleAdditionResponseTmp.setIdamStatusCode(roleAdditionResponseOpt.get().getIdamStatusCode());

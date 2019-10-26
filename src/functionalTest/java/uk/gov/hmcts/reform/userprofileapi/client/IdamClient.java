@@ -51,7 +51,7 @@ public class IdamClient {
 
         String id = UUID.randomUUID().toString();
 
-        List<Role> rolesList = roles.stream().map(role -> new Role(role)).collect(Collectors.toList());
+        List<Role> rolesList = roles.stream().map(Role::new).collect(Collectors.toList());
 
         User user = new User(userEmail, firstName, id, lastName, password, rolesList);
 
