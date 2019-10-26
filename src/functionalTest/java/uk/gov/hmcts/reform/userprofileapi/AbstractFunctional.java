@@ -50,13 +50,8 @@ public class AbstractFunctional {
 
 
     protected UserProfileCreationResponse createUserProfile(UserProfileCreationData userProfileCreationData, HttpStatus expectedStatus) throws Exception {
-
-        UserProfileCreationResponse resource = testRequestHandler.sendPost(
-                userProfileCreationData,
-                expectedStatus,
-                requestUri,
-                UserProfileCreationResponse.class
-        );
+        UserProfileCreationResponse resource = testRequestHandler.sendPost(userProfileCreationData, expectedStatus,
+                requestUri, UserProfileCreationResponse.class);
         verifyCreateUserProfile(resource);
         return resource;
     }

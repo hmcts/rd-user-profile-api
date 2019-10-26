@@ -43,6 +43,10 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
     @Test
     public void should_update_user_profile_with_roles_successfully() throws Exception {
         UserProfileCreationData data = createUserProfileData();
+        data.setFirstName("April");//TODO tbc if required for update
+        data.setLastName("O'Neil");//TODO tbc if requried for update
+        data.setStatus(IdamStatus.ACTIVE);//TODO tbc if requried for update
+
         List<String> roles = new ArrayList<>();
         roles.add(puiUserManager);
         String email = idamClient.createUser(roles);

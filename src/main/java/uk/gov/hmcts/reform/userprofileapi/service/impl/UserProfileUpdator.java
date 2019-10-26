@@ -48,6 +48,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
     @Override
     public Optional<UserProfileResponse> update(UpdateUserProfileData updateUserProfileData, String userId, ResponseSource origin) {
 
+        //TODO check exception scenarios against business requirements
         UserProfile userProfile = validationService.validateUpdate(updateUserProfileData, userId);
 
         //Determine if status needs to be updated
