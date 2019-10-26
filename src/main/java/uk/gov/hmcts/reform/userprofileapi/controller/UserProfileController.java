@@ -34,6 +34,8 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreatio
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdentifierName;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
@@ -278,19 +280,22 @@ public class UserProfileController {
 
         UserProfileResponse response = new UserProfileResponse();
 
-        if (hasDataAndId(updateUserProfileData, userId) && hasRolesToUpdate(updateUserProfileData)) {
-            log.info("updating roles: add:" + updateUserProfileData.getRolesAdd() + " delete:" + updateUserProfileData.getRolesDelete());
-            response = userProfileService.updateRoles(updateUserProfileData, userId);
-        }
-
         ResponseSource source = (StringUtils.isEmpty(origin) || !"EXUI".equalsIgnoreCase(origin.toUpperCase()))
                 ? ResponseSource.SYNC : ResponseSource.API;
 
         UserProfileResponse responseTmp = userProfileService.update(updateUserProfileData, userId, source);
         response.setIdamStatus(responseTmp.getIdamStatus());
 
-        //return ResponseEntity.ok().body(response);
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        if (hasDataAndId(updateUserProfileData, userId) && hasRolesToUpdate(updateUserProfileData)) {
+            log.info("updating roles: add:" + updateUserProfileData.getRolesAdd() + " delete:" + updateUserProfileData.getRolesDelete());
+            response = userProfileService.updateRoles(updateUserProfileData, userId);
+            responseTmp.setDeleteRolesResponse(response.getDeleteRolesResponse());
+            responseTmp.setAddRolesResponse(response.getAddRolesResponse());
+            responseTmp.setIdamStatus(response.getIdamStatus());
+        }
+
+        return ResponseEntity.ok().body(/*response*/responseTmp);
+        //return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
 

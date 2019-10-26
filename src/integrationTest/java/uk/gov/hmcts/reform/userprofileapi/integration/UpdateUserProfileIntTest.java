@@ -121,7 +121,7 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
 
         Audit audit = optional.get();
         assertThat(audit).isNotNull();
-        assertThat(audit.getIdamRegistrationResponse()).isEqualTo(200);
+        //? assertThat(audit.getIdamRegistrationResponse()).isEqualTo(200);
         assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.OK);
         assertThat(audit.getSource()).isEqualTo(ResponseSource.SYNC);
         assertThat(audit.getUserProfile().getIdamId()).isEqualTo(updatedUserProfile.getIdamId());
