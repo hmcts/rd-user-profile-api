@@ -23,8 +23,10 @@ public class UserProfileWithRolesResponse extends UserProfileResponse {
 
     public UserProfileWithRolesResponse(UserProfile userProfile, boolean rolesRequired) {
         super(userProfile);//TODO remove inheritance
+
         idamStatusCode = " ";
         idamMessage = IdamStatusResolver.NO_IDAM_CALL;
+        super.addRolesResponse.setIdamMessage(idamStatusCode);
         if (rolesRequired) {
             if (IdamStatus.ACTIVE == userProfile.getStatus() && userProfile.getRoles().size() > 0) {
                 roles = userProfile.getRoles();

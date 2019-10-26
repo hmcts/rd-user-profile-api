@@ -73,7 +73,7 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
                         UserProfileResponse.class
                 );
 
-        log.info("before addroles call");
+        log.info("should_update_user_profile_with_roles_successfully::before addroles call");
         UserProfileResponse resource1 =
                 testRequestHandler.sendPut(
                         userProfileData,
