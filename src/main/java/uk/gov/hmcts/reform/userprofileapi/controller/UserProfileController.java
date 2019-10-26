@@ -275,9 +275,11 @@ public class UserProfileController {
                                                                  @PathVariable String userId,
                                                                  @ApiParam(name = "origin", required = false) @RequestParam (value = "origin", required = false) String origin) {
         log.info("Updating user profile");
+
         UserProfileResponse response = new UserProfileResponse();
 
         if (hasDataAndId(updateUserProfileData, userId) && hasRolesToUpdate(updateUserProfileData)) {
+            log.info("updating roles: add:" + updateUserProfileData.getRolesAdd() + " delete:" + updateUserProfileData.getRolesDelete());
             response = userProfileService.updateRoles(updateUserProfileData, userId);
         }
 
@@ -287,7 +289,8 @@ public class UserProfileController {
         UserProfileResponse responseTmp = userProfileService.update(updateUserProfileData, userId, source);
         response.setIdamStatus(responseTmp.getIdamStatus());
 
-        return ResponseEntity.ok().body(response);
+        //return ResponseEntity.ok().body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
 

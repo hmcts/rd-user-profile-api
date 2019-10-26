@@ -46,8 +46,7 @@ public class UpdateUserProfileData implements RequestData {
     public boolean isSameAsUserProfile(UserProfile userProfile) {
         return null != userProfile && userProfile.getEmail().trim().equalsIgnoreCase(this.getEmail().trim())
                 && userProfile.getFirstName().trim().equals(this.getFirstName().trim())
-                && userProfile.getLastName().trim().equals(this.getLastName().trim())
-                && userProfile.getStatus().toString().equals(this.getIdamStatus().trim());
+                && userProfile.getLastName().trim().equals(this.getLastName().trim());
     }
 
 }

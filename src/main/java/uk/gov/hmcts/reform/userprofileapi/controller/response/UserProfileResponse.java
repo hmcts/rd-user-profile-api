@@ -21,7 +21,7 @@ public class UserProfileResponse {
     private String idamStatus;
     private RoleAdditionResponse addRolesResponse;
     private List<RoleDeletionResponse> deleteRolesResponse;
-    private List<String> roles;
+    protected List<String> roles;
 
     public UserProfileResponse(UserProfile userProfile) {
         requireNonNull(userProfile, "userProfile must not be null");

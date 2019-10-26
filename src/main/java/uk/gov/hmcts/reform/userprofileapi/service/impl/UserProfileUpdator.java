@@ -110,7 +110,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
             }
             return Optional.of(new RoleAdditionResponse(httpStatusOpt.orElse(null)));
         }
-        return Optional.empty();
+        return Optional.of(new RoleAdditionResponse());
     }
 
     private RoleDeletionResponse deleteRolesInIdam(String userId, String roleName, UserProfile userProfile) {

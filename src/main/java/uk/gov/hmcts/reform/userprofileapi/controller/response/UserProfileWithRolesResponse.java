@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.userprofileapi.controller.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.List;
-
 import lombok.Getter;
 
 import lombok.NoArgsConstructor;
@@ -16,8 +14,6 @@ import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 @Setter
 @NoArgsConstructor
 public class UserProfileWithRolesResponse extends UserProfileResponse {
-
-    private List<String> roles;
 
     @JsonProperty
     private String idamStatusCode;
@@ -37,4 +33,11 @@ public class UserProfileWithRolesResponse extends UserProfileResponse {
             idamMessage = userProfile.getErrorMessage();
         }
     }
+
+    public String toString() {
+        return "roles:" + roles
+                + "\n idamStatusCode" + idamStatusCode
+                + "\n idamMessage" + idamMessage;
+    }
+
 }
