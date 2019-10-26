@@ -4,7 +4,6 @@ import feign.FeignException;
 import feign.Response;
 import feign.RetryableException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
