@@ -9,7 +9,7 @@ buildscript {
 
 plugins {
     id 'application'
-    //id 'checkstyle'
+    id 'checkstyle'
     id 'jacoco'
     id 'pmd'
     id 'com.github.ben-manes.versions' version '0.20.0'
@@ -119,12 +119,12 @@ configurations {
     functionalTestRuntime.extendsFrom testRuntime
 }
 
-//checkstyle {
-//    maxWarnings = 0
-//    toolVersion = '8.10.1'
-//    // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
-//    configDir = new File(rootDir, 'config/checkstyle')
-//}
+checkstyle {
+    maxWarnings = 0
+    toolVersion = '8.10.1'
+    // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
+    configDir = new File(rootDir, 'config/checkstyle')
+}
 
 pmd {
     toolVersion = "6.12.0"

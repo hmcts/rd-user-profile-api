@@ -283,8 +283,8 @@ public class UserProfileController {
             //response.setDeleteRolesResponse(responseTmp.getDeleteRolesResponse());
         }
 
-        ResponseSource source = StringUtils.isEmpty(origin) || !"EXUI".equalsIgnoreCase(origin.toUpperCase()) ?
-                ResponseSource.SYNC : ResponseSource.API;
+        ResponseSource source = (StringUtils.isEmpty(origin) || !"EXUI".equalsIgnoreCase(origin.toUpperCase()))
+                ? ResponseSource.SYNC : ResponseSource.API;
 
         UserProfileResponse responseTmp = userProfileService.update(updateUserProfileData, userId, source);
         response.setIdamStatus(responseTmp.getIdamStatus());
