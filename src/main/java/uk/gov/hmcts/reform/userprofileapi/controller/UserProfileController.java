@@ -285,10 +285,13 @@ public class UserProfileController {
 
         if (hasDataAndId(updateUserProfileData, userId) && hasRolesToUpdate(updateUserProfileData)) {
             log.info("updating roles: add:" + updateUserProfileData.getRolesAdd() + " delete:" + updateUserProfileData.getRolesDelete());
+
             response = userProfileService.updateRoles(updateUserProfileData, userId);
             responseTmp.setDeleteRolesResponse(response.getDeleteRolesResponse());
             responseTmp.setAddRolesResponse(response.getAddRolesResponse());
             responseTmp.setIdamStatus(response.getIdamStatus());
+
+
         }
 
         return ResponseEntity.ok().body(/*response*/responseTmp);

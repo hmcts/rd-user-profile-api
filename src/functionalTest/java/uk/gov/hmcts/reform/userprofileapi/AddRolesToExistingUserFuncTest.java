@@ -55,7 +55,8 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         data.setEmail(email);
         UserProfileCreationResponse dataTmp = createUserProfile(data, HttpStatus.CREATED);
 
-        RoleName role1 = new RoleName(/*puiCaseManager*/"pui-case-manager");
+        RoleName role1 = new RoleName(/*puiCaseManager*/"pui-finance-manager");
+        //Roles to add
         Set<RoleName> rolesName = new HashSet<>();
         rolesName.add(role1);
         UpdateUserProfileData userProfileData = new UpdateUserProfileData();

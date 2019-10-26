@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
+import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceUpdator;
@@ -86,9 +87,22 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
 
         Optional<RoleAdditionResponse> roleAdditionResponseOpt = assignRolesAndPersistAudit(profileData, userId, userProfile);
 
-        roleAdditionResponseOpt.ifPresent(userProfileResponse::setAddRolesResponse);
+        //TODO check if response is ok
+        List<String> roleList = profileData.getRolesAdd().stream().map(RoleName::getName).collect(Collectors.toList());
+        userProfileResponse.setRoles(roleList);
+
+        //assume roles will be set, should fail fast if not
+        if (roleAdditionResponseOpt.isPresent()) {
+            RoleAdditionResponse roleAdditionResponseTmp = new RoleAdditionResponse();
+            roleAdditionResponseTmp.setIdamStatusCode(roleAdditionResponseOpt.get().getIdamStatusCode());
+            roleAdditionResponseTmp.setIdamMessage(roleAdditionResponseOpt.get().getIdamMessage());
+            userProfileResponse.setAddRolesResponse(roleAdditionResponseTmp);
+        }
+
 
         log.info("Delete idam roles for userId :" + userId);//TODO remove unnecessary logging
+
+        //TODO overly complex, assume roles deleted fail fast if not
         List<RoleDeletionResponse> roleDeletionResponse = profileData.getRolesDelete().stream()
                 .map(role -> deleteRolesInIdam(userId, role.getName(), userProfile))
                 .collect(Collectors.toList());
