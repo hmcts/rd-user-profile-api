@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.userprofileapi.controller;
 
 import static java.util.Objects.requireNonNull;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.hasDataAndId;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.hasRolesToUpdate;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateCreateUserProfileRequest;
@@ -221,7 +222,7 @@ public class UserProfileController {
     @ResponseBody
     public ResponseEntity<UserProfileResponse> getUserProfileByEmail(@ApiParam(name = "email", required = false) @RequestParam (value = "email", required = false) String email,
                                                                      @ApiParam(name = "userId", required = false) @RequestParam (value = "userId", required = false) String userId) {
-        UserProfileResponse response = null;
+        UserProfileResponse response;
         if (email == null && userId == null) {
             return ResponseEntity.badRequest().build();
         } else if (email != null) {
@@ -271,16 +272,13 @@ public class UserProfileController {
 
     @ResponseBody
     public ResponseEntity<UserProfileResponse> updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData,
-                                                                      @PathVariable String userId,
-                                                                      @ApiParam(name = "origin", required = false) @RequestParam (value = "origin", required = false) String origin) {
+                                                                 @PathVariable String userId,
+                                                                 @ApiParam(name = "origin", required = false) @RequestParam (value = "origin", required = false) String origin) {
         log.info("Updating user profile");
         UserProfileResponse response = new UserProfileResponse();
 
-        if (hasRolesToUpdate(updateUserProfileData)) {
-            UserProfileValidator.validateUserProfileDataAndUserId(updateUserProfileData, userId);
+        if (hasDataAndId(updateUserProfileData, userId) && hasRolesToUpdate(updateUserProfileData)) {
             response = userProfileService.updateRoles(updateUserProfileData, userId);
-            //response.setAddRolesResponse(responseTmp.getAddRolesResponse());
-            //response.setDeleteRolesResponse(responseTmp.getDeleteRolesResponse());
         }
 
         ResponseSource source = (StringUtils.isEmpty(origin) || !"EXUI".equalsIgnoreCase(origin.toUpperCase()))

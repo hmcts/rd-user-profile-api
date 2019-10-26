@@ -7,6 +7,7 @@ import feign.RetryableException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,11 +51,13 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
 
         UserProfile userProfile = validationService.validateUpdate(updateUserProfileData, userId);
 
+        //Determine if status needs to be updated
         if (userProfile.getStatus().equals(IdamStatus.SUSPENDED)
                 && !userProfile.getStatus().name().equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
             idamClient.updateUserDetails(updateUserProfileData, userId);
         }
 
+        //set valid fields
         UserProfileMapper.mapUpdatableFields(updateUserProfileData, userProfile);
 
         Optional<UserProfile> userProfileOpt = doPersistUserProfile(userProfile, origin);
@@ -75,37 +78,40 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         return Optional.ofNullable(result);
     }
 
-
     @Override
     public UserProfileResponse updateRoles(UpdateUserProfileData profileData, String userId) {
         UserProfileResponse userProfileResponse = new UserProfileResponse();
 
-        //TODO rename
-        UserProfile userProfile = validateUserStatus(userId);
+        UserProfile userProfile = validateUserStatusWithException(userId);
 
-        //TODO refactor
-        if (!CollectionUtils.isEmpty(profileData.getRolesAdd())) {
-            log.info("Add idam roles for userId :" + userId);
-            RoleAdditionResponse addRolesResponse;
-            HttpStatus httpStatus;
-            try (Response response = idamClient.addUserRoles(profileData.getRolesAdd(), userId)) {
-                httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode();
-                addRolesResponse = new RoleAdditionResponse(httpStatus);
-            } catch (FeignException ex) {
-                httpStatus = getHttpStatusFromFeignException(ex);
-                auditService.persistAudit(httpStatus, userProfile, ResponseSource.API);
-                addRolesResponse = new RoleAdditionResponse(httpStatus);
-            }
-            userProfileResponse.setAddRolesResponse(addRolesResponse);
-        }
+        Optional<RoleAdditionResponse> roleAdditionResponseOpt = assignRolesAndPersistAudit(profileData, userId, userProfile);
 
-        if (!CollectionUtils.isEmpty(profileData.getRolesDelete())) {
-            log.info("Delete idam roles for userId :" + userId);
-            List<RoleDeletionResponse> roleDeletionResponse = new ArrayList<>();
-            profileData.getRolesDelete().forEach(role -> roleDeletionResponse.add(deleteRolesInIdam(userId, role.getName(), userProfile)));
-            userProfileResponse.setDeleteRolesResponse(roleDeletionResponse);
-        }
+        roleAdditionResponseOpt.ifPresent(userProfileResponse::setAddRolesResponse);
+
+        log.info("Delete idam roles for userId :" + userId);//TODO remove unnecessary logging
+        List<RoleDeletionResponse> roleDeletionResponse = profileData.getRolesDelete().stream()
+                .map(role -> deleteRolesInIdam(userId, role.getName(), userProfile))
+                .collect(Collectors.toList());
+
+        userProfileResponse.setDeleteRolesResponse(roleDeletionResponse);
+
         return userProfileResponse;
+    }
+
+    private Optional<RoleAdditionResponse> assignRolesAndPersistAudit(UpdateUserProfileData profileData, String userId, UserProfile userProfile) {
+        if (!CollectionUtils.isEmpty(profileData.getRolesAdd())) {
+            log.info("Add idam roles for userId :" + userId);//TODO remove unnecessary logging
+
+            Optional<HttpStatus> httpStatusOpt;
+            try (Response response = idamClient.addUserRoles(profileData.getRolesAdd(), userId)) {
+                httpStatusOpt = Optional.of(JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode());
+            } catch (FeignException ex) {
+                httpStatusOpt = Optional.of(getHttpStatusFromFeignException(ex));
+                auditService.persistAudit(httpStatusOpt.get(), userProfile, ResponseSource.API);
+            }
+            return Optional.of(new RoleAdditionResponse(httpStatusOpt.get()));
+        }
+        return Optional.empty();
     }
 
     private RoleDeletionResponse deleteRolesInIdam(String userId, String roleName, UserProfile userProfile) {
@@ -125,16 +131,13 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
                 : HttpStatus.valueOf(ex.status());
     }
 
-    private UserProfile validateUserStatus(String userId) {
+    private UserProfile validateUserStatusWithException(String userId) {
         Optional<UserProfile> userProfileOptional = userProfileRepository.findByIdamId(userId);
-        if (!userProfileOptional.isPresent()) {
-            throw new ResourceNotFoundException("could not find user profile for userId: or status is not active " + userId);
+        if (userProfileOptional.isPresent() && null != userProfileOptional.get().getStatus()) {
+            return userProfileOptional.get();
         }
-        //TODO Status now being updated
-        /*else if (!IdamStatus.ACTIVE.equals(userProfileOptional.get().getStatus())) {
-            throw new InvalidRequest("UserId status is not active");
-        }*/
-        return userProfileOptional.get();
+
+        throw new ResourceNotFoundException("could not find user profile for userId: or status is not active " + userId);
     }
 
 }

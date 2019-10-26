@@ -108,17 +108,20 @@ public interface UserProfileValidator {
         }
     }
 
+    //TODO remove this
     static void validateUserProfileDataAndUserId(UpdateUserProfileData userProfileData, String userId) {
 
         if (null == userProfileData) {
-
             throw new RequiredFieldMissingException("No Request Body in the request");
-        } else if (StringUtils.isBlank(userId)
-                || (!CollectionUtils.isEmpty(userProfileData.getRolesAdd()) && userProfileData.getRolesAdd().isEmpty())
-                || (!CollectionUtils.isEmpty(userProfileData.getRolesDelete()) && userProfileData.getRolesDelete().isEmpty())) {
-
-            throw new RequiredFieldMissingException("No userId or roles in the request");
         }
+
+        if (StringUtils.isBlank(userId)) {
+            throw new RequiredFieldMissingException("No userId in the request");
+        }
+    }
+
+    static boolean hasDataAndId(UpdateUserProfileData userProfileData, String userId) {
+        return null != userProfileData && StringUtils.isNotBlank(userId);
     }
 
     static boolean hasRolesToUpdate(UpdateUserProfileData data) {
