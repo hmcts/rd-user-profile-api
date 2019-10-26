@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.userprofileapi;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import io.restassured.RestAssured;
 
 import java.util.ArrayList;
@@ -18,8 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.client.IdamClient;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
@@ -42,7 +41,63 @@ public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
 
     @Test
     public void should_delete_user_profile_with_roles_successfully() throws Exception {
+        final String firstName = "April";
+        final String lastName = "O'Neil";
+
         UserProfileCreationData data = createUserProfileData();
+        data.setFirstName(firstName);//TODO tbc if required for update
+        data.setLastName(lastName);//TODO tbc if requried for update
+        data.setStatus(IdamStatus.ACTIVE);//TODO tbc if requried for update
+
+        List<String> roles = new ArrayList<>();
+        roles.add(/*puiUserManager*/"pui-user-manager");
+        roles.add("pui-case-manager");
+        String email = idamClient.createUser(roles);
+
+        data.setEmail(email);
+        data.setEmailCommsConsent(false);
+        data.setLanguagePreference("EN");
+        data.setPostalCommsConsent(false);
+        data.setRoles(roles);
+
+        UserProfileCreationResponse dataTmp = createUserProfile(data, HttpStatus.CREATED);
+        log.info("UserProfileCreationResponse:" + dataTmp);
+
+
+        //Roles to add
+        Set<RoleName> rolesName = new HashSet<>();
+        UpdateUserProfileData userProfileData = new UpdateUserProfileData();
+        userProfileData.setEmail(email);
+        userProfileData.setFirstName(firstName);
+        userProfileData.setLastName(lastName);
+        userProfileData.setIdamStatus(IdamStatus.SUSPENDED.name());
+        userProfileData.setRolesAdd(rolesName);
+        Set<RoleName> rolesDelete = new HashSet<>();
+
+        RoleName role1 = new RoleName(/*puiCaseManager*/"pui-user-manager");
+        rolesDelete.add(role1);
+
+        userProfileData.setRolesDelete(rolesDelete);
+
+        log.info("updating user with payload:" + userProfileData);
+
+        UserProfileResponse resource =
+                testRequestHandler.sendGet(
+                        requestUri + "?email=" + email.toLowerCase(),
+                        UserProfileResponse.class
+                );
+
+        log.info("get resp:" + resource);
+
+        log.info("should_update_user_profile_with_roles_successfully::before addroles call");
+        UserProfileResponse resource1 =
+                testRequestHandler.sendPut(
+                        userProfileData,
+                        HttpStatus.OK,
+                        requestUri + "/" + resource.getIdamId(), UserProfileResponse.class);
+
+        log.info("after addroles call" + resource1);
+        /*UserProfileCreationData data = createUserProfileData();
         List<String> roles = new ArrayList<>();
         roles.add(puiUserManager);
         String email = idamClient.createUser(roles);
@@ -105,6 +160,6 @@ public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
         assertThat(resourceForDeleteCheck.getRoles().size()).isEqualTo(2);
         assertThat(resourceForDeleteCheck.getRoles().contains("caseworker,pui-user-manager"));
         assertThat(!resourceForDeleteCheck.getRoles().contains(puiOrgManager));
-
+        */
     }
 }
