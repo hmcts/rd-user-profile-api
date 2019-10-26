@@ -32,7 +32,7 @@ public interface UserProfileValidator {
     //TODO refactor and remove this!
     static boolean isUpdateUserProfileRequestValid(UpdateUserProfileData updateUserProfileData) {
         return validateUpdateUserProfileRequestFields(updateUserProfileData)
-                /*&& validateUserProfileRequestWithException(updateUserProfileData)*/;
+                && validateUserProfileRequestWithException(updateUserProfileData);
     }
 
     //TODO refactor and remove this!

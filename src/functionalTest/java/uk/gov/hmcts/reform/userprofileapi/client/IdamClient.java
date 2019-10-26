@@ -45,8 +45,8 @@ public class IdamClient {
     public String createUser(List<String> roles) {
         //Generating a random user
         String userEmail = nextUserEmail();
-        String firstName = "First";
-        String lastName = "Last";
+        String firstName = "William";
+        String lastName = "Shakespeare";
         String password = "Hmcts123";
 
         String id = UUID.randomUUID().toString();

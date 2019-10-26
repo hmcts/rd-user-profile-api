@@ -5,14 +5,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Set;
 
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 
 @NoArgsConstructor
-@Getter
-@Setter
+@Data
 public class UpdateUserProfileData implements RequestData {
 
     private String email;

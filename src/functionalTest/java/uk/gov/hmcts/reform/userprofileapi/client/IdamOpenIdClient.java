@@ -40,8 +40,8 @@ public class IdamOpenIdClient {
     public String createUser(List<String> roles) {
         //Generating a random user
         String userEmail = nextUserEmail();
-        String firstName = "First";
-        String lastName = "Last";
+        String firstName = "James";
+        String lastName = "Joyce";
         String password = "Hmcts123";
 
         String id = UUID.randomUUID().toString();

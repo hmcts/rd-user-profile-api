@@ -6,6 +6,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import java.util.ArrayList;
 import java.util.List;
+
+import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -21,6 +23,7 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreatio
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
+@Slf4j
 @RunWith(SpringIntegrationSerenityRunner.class)
 public class CreateUserProfileFuncTest extends AbstractFunctional {
 
@@ -51,7 +54,7 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
     @Test
     public void should_create_user_profile_for_duplicate_idam_user_and_verify_successfully_for_prd_roles() throws Exception {
 
-        List<String> xuiuRoles = new ArrayList();
+        List<String> xuiuRoles = new ArrayList<>();
         xuiuRoles.add("pui-user-manager");
         xuiuRoles.add("pui-case-manager");
 
@@ -92,7 +95,7 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
         //create user profile in UP with PRD-ADMIN token for above user with same email with "pui-user-manager" roles
         UserProfileCreationData data = createUserProfileData();
         data.setEmail(email);
-        List<String> xuiRoles = new ArrayList();
+        List<String> xuiRoles = new ArrayList<>();
         xuiRoles.add("pui-user-manager");
         xuiRoles.add("pui-case-manager");
         data.setRoles(xuiRoles);
@@ -118,7 +121,7 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
         json.put("extra-field1", randomAlphabetic(20));
         json.put("extra-field2", randomAlphabetic(20));
 
-        LOG.info("json output {} ", json.toString());
+        log.info("json output {} ", json.toString());
 
         testRequestHandler.sendPost(json.toString(), HttpStatus.CREATED, requestUri);
     }
