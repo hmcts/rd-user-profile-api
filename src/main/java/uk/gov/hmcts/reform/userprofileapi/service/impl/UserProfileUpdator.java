@@ -81,7 +81,11 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
     @Override
     public UserProfileResponse updateRoles(UpdateUserProfileData profileData, String userId) {
         UserProfileResponse userProfileResponse = new UserProfileResponse();
+
+        //TODO rename
         UserProfile userProfile = validateUserStatus(userId);
+
+        //TODO refactor
         if (!CollectionUtils.isEmpty(profileData.getRolesAdd())) {
             log.info("Add idam roles for userId :" + userId);
             RoleAdditionResponse addRolesResponse;
@@ -127,9 +131,11 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         Optional<UserProfile> userProfileOptional = userProfileRepository.findByIdamId(userId);
         if (!userProfileOptional.isPresent()) {
             throw new ResourceNotFoundException("could not find user profile for userId: or status is not active " + userId);
-        } else if (!IdamStatus.ACTIVE.equals(userProfileOptional.get().getStatus())) {
-            throw new InvalidRequest("UserId status is not active");
         }
+        //TODO Status now being updated
+        /*else if (!IdamStatus.ACTIVE.equals(userProfileOptional.get().getStatus())) {
+            throw new InvalidRequest("UserId status is not active");
+        }*/
         return userProfileOptional.get();
     }
 
