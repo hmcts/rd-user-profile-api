@@ -108,7 +108,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
                 httpStatusOpt = Optional.of(getHttpStatusFromFeignException(ex));
                 auditService.persistAudit(httpStatusOpt.get(), userProfile, ResponseSource.API);
             }
-            return Optional.of(new RoleAdditionResponse(httpStatusOpt.get()));
+            return Optional.of(new RoleAdditionResponse(httpStatusOpt.orElse(null)));
         }
         return Optional.empty();
     }
