@@ -26,13 +26,19 @@ public class UserProfileWithRolesResponse extends UserProfileResponse {
 
         idamStatusCode = " ";
         idamMessage = IdamStatusResolver.NO_IDAM_CALL;
-        super.addRolesResponse.setIdamMessage(idamStatusCode);
+        super.addRolesResponse.setIdamMessage(idamMessage);
+        super.addRolesResponse.setIdamStatusCode(idamStatusCode);
+
         if (rolesRequired) {
             if (IdamStatus.ACTIVE == userProfile.getStatus() && userProfile.getRoles().size() > 0) {
                 roles = userProfile.getRoles();
+
             }
             idamStatusCode = userProfile.getErrorStatusCode();
             idamMessage = userProfile.getErrorMessage();
+            super.addRolesResponse.setIdamMessage(idamMessage);
+            super.addRolesResponse.setIdamStatusCode(idamStatusCode);
+
         }
     }
 

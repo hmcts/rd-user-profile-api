@@ -34,11 +34,13 @@ public class UserProfileResponse {
         this.idamStatus = null != userProfile.getStatus() ? userProfile.getStatus().name() : "";
         addRolesResponse = new RoleAdditionResponse();
         deleteRolesResponse = new ArrayList<>();
+        roles = userProfile.getRoles();
     }
 
     public UserProfileResponse(UserProfile userProfile, boolean rolesRequired) {
         this(userProfile);
         if (rolesRequired) {
+            //TODO validate biz criteria regarding when to update based on status
             if (/*IdamStatus.ACTIVE == userProfile.getStatus() && */userProfile.getRoles().size() > 0) {
                 roles = userProfile.getRoles();
             }
