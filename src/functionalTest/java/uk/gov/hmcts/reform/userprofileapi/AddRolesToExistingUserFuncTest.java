@@ -50,7 +50,7 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         data.setStatus(IdamStatus.ACTIVE);//TODO tbc if requried for update
 
         List<String> roles = new ArrayList<>();
-        roles.add(/*puiUserManager*/"pui-user-manager");
+        roles.add(puiUserManager);
         String email = idamClient.createUser(roles);
 
         data.setEmail(email);
@@ -62,7 +62,20 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         UserProfileCreationResponse dataTmp = createUserProfile(data, HttpStatus.CREATED);
         log.info("UserProfileCreationResponse:" + dataTmp);
 
-        RoleName role1 = new RoleName(/*puiCaseManager*/"pui-finance-manager");
+        UserProfileResponse resource =
+                testRequestHandler.sendGet(
+                        requestUri + "?email=" + email.toLowerCase(),
+                        UserProfileResponse.class
+                );
+
+        assertThat(resource.getEmail()).isNotNull();
+        assertThat(resource.getFirstName()).isEqualTo(firstName);
+        assertThat(resource.getRoles().size()).isEqualTo(1);
+
+        log.info("should_update_user_profile_with_roles_successfully::\nget resp:" + resource + " email:" + resource.getEmail());
+        log.info(" roles" + resource.getRoles() + " addRoles" + resource.getAddRolesResponse() + " deleteRole" + resource.getDeleteRolesResponse());
+
+        RoleName role1 = new RoleName(puiFinanceManager);
         //Roles to add
         Set<RoleName> rolesName = new HashSet<>();
         rolesName.add(role1);
@@ -77,13 +90,7 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
 
         log.info("updating user with payload:" + userProfileData);
 
-        UserProfileResponse resource =
-                testRequestHandler.sendGet(
-                        requestUri + "?email=" + email.toLowerCase(),
-                        UserProfileResponse.class
-                );
 
-        log.info("get resp:" + resource);
 
         log.info("should_update_user_profile_with_roles_successfully::before addroles call");
         UserProfileResponse resource1 =

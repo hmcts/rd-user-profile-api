@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 
 import java.util.ArrayList;
@@ -44,14 +46,15 @@ public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
         final String firstName = "April";
         final String lastName = "O'Neil";
 
+        //Create initial user
         UserProfileCreationData data = createUserProfileData();
         data.setFirstName(firstName);//TODO tbc if required for update
         data.setLastName(lastName);//TODO tbc if requried for update
         data.setStatus(IdamStatus.ACTIVE);//TODO tbc if requried for update
 
         List<String> roles = new ArrayList<>();
-        roles.add(/*puiUserManager*/"pui-user-manager");
-        roles.add("pui-case-manager");
+        roles.add(puiUserManager);
+        roles.add(puiCaseManager);
         String email = idamClient.createUser(roles);
 
         data.setEmail(email);
@@ -63,6 +66,8 @@ public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
         UserProfileCreationResponse dataTmp = createUserProfile(data, HttpStatus.CREATED);
         log.info("UserProfileCreationResponse:" + dataTmp);
 
+        assertThat(dataTmp.getIdamId()).isNotNull();
+        assertThat(dataTmp.getIdamRegistrationResponse()).isEqualTo(200);
 
         //Roles to add
         Set<RoleName> rolesName = new HashSet<>();
@@ -74,7 +79,7 @@ public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
         userProfileData.setRolesAdd(rolesName);
         Set<RoleName> rolesDelete = new HashSet<>();
 
-        RoleName role1 = new RoleName(/*puiCaseManager*/"pui-user-manager");
+        RoleName role1 = new RoleName(puiUserManager);
         rolesDelete.add(role1);
 
         userProfileData.setRolesDelete(rolesDelete);
@@ -89,6 +94,11 @@ public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
 
         log.info("get resp:" + resource);
 
+        assertThat(resource.getEmail()).isNotNull();
+        assertThat(resource.getEmail()).isEqualTo(email.toLowerCase());
+        assertThat(resource.getDeleteRolesResponse().size()).isZero();
+        assertThat(resource.getAddRolesResponse().getIdamStatusCode()).isNull();
+
         log.info("should_update_user_profile_with_roles_successfully::before addroles call");
         UserProfileResponse resource1 =
                 testRequestHandler.sendPut(
@@ -97,6 +107,11 @@ public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
                         requestUri + "/" + resource.getIdamId(), UserProfileResponse.class);
 
         log.info("after addroles call" + resource1);
+
+        //TODO add assertions
+        //TODO SEND PUT
+        //TODO add assertions
+
         /*UserProfileCreationData data = createUserProfileData();
         List<String> roles = new ArrayList<>();
         roles.add(puiUserManager);
