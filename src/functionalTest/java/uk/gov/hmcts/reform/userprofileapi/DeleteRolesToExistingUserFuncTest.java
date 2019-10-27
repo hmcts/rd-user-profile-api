@@ -108,9 +108,23 @@ public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
 
         log.info("after addroles call" + resource1);
 
-        //TODO add assertions
-        //TODO SEND PUT
-        //TODO add assertions
+        assertThat(resource1.getFirstName()).isEqualTo(firstName);
+        assertThat(resource1.getRoles().contains(puiUserManager)).isTrue();
+        assertThat(resource1.getRoles().contains(puiCaseManager)).isTrue();
+
+        //get user with roles added
+        UserProfileResponse actual =
+                testRequestHandler.sendGet(
+                        requestUri + "?email=" + email.toLowerCase(),
+                        UserProfileResponse.class
+                );
+
+        log.info("actual (result with roles)" + actual);
+        log.info("actual.getAddRolesResponse():" + actual.getAddRolesResponse());
+
+        assertThat(actual.getFirstName()).isEqualTo(firstName);
+        assertThat(actual.getRoles().size()).isEqualTo(2);
+        assertThat(actual.getAddRolesResponse().getIdamStatusCode()).isNotNull();
 
         /*UserProfileCreationData data = createUserProfileData();
         List<String> roles = new ArrayList<>();
