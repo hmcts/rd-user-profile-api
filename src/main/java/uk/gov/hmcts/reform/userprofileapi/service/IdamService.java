@@ -24,6 +24,4 @@ public interface IdamService {
 
     IdamRolesInfo addUserRoles(Set roleRequest, String userId);
 
-    AttributeResponse updateUserDetails(UpdatedUserDetails updateUserDetails, String userId);
-
 }

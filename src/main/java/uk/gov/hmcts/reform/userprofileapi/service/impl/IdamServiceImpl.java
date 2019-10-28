@@ -95,21 +95,6 @@ public class IdamServiceImpl implements IdamService {
         return new IdamRolesInfo(httpStatus);
     }
 
-    @Override
-    public AttributeResponse updateUserDetails(UpdatedUserDetails updateUserDetails, String userId) {
-        log.info("Update user details for userId :" + userId);
-        HttpStatus httpStatus = null;
-        Response response;
-        try {
-            response = idamClient.updateUserDetails(updateUserDetails, userId);
-            httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode();
-        } catch (FeignException ex) {
-            log.error("SIDAM call failed:", ex);
-            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-        }
-        return new AttributeResponse(httpStatus);
-    }
-
     public HttpStatus gethttpStatusFromFeignException(FeignException ex) {
         return (ex instanceof RetryableException)
                 ? HttpStatus.INTERNAL_SERVER_ERROR
