@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -14,10 +15,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.exception.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
@@ -67,16 +66,14 @@ public class ValidationServiceImplTest {
 
     @Test
     public void testValidateUpdate() {
-        sut.validateUpdate(updateUserProfileDataMock, userId);
-
+        UserProfile up = sut.validateUpdate(updateUserProfileDataMock, userId);
         verify(userProfileRepositoryMock, times(1)).findByIdamId(userId);
+        assertThat(up).isInstanceOf(UserProfile.class);
     }
 
     @Test(expected = ResourceNotFoundException.class)
     public void testValidateUpdateWithoutId() {
         sut.validateUpdate(updateUserProfileDataMock, "");
-
-        verify(auditServiceMock, times(1)).persistAudit(HttpStatus.NOT_FOUND, ResponseSource.SYNC);
     }
 
     @Test(expected = ResourceNotFoundException.class)
@@ -87,7 +84,6 @@ public class ValidationServiceImplTest {
     @Test(expected = RequiredFieldMissingException.class)
     public void testValidateUpdateWithInvalidEmail() {
         when(updateUserProfileDataMock.getEmail()).thenReturn(invalidEmail);
-
         sut.validateUpdate(updateUserProfileDataMock, userIdInvalidEmail);
     }
 
