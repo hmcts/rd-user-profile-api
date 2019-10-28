@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.userprofileapi.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
-import static uk.gov.hmcts.reform.userprofileapi.constant.UserProfileConstant.ORIGIN;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -28,7 +27,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
-import uk.gov.hmcts.reform.userprofileapi.service.UserProfileService;
+import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileService;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -42,6 +41,8 @@ public class UserProfileControllerTest {
 
     @InjectMocks
     private UserProfileController sut;
+
+    private static final String ORIGIN  = "EXUI";
 
     @Test
     public void testCreateUserProfile() {
@@ -124,7 +125,7 @@ public class UserProfileControllerTest {
         when(updateUserProfileDataMock.getRolesDelete()).thenReturn(null);
         ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId, ORIGIN);
 
-        verify(userProfileServiceMock, times(1)).update(any(), any());
+        verify(userProfileServiceMock, times(1)).update(any(), any(), any());
         ResponseEntity expect = ResponseEntity.status(HttpStatus.OK).build();
         assertThat(actual.getStatusCode().value()).isEqualTo(expect.getStatusCode().value());
     }

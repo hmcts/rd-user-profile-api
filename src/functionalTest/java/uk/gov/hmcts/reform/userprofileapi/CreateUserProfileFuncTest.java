@@ -124,7 +124,7 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
     }
 
     @Test
-    public void should_return_409_when_attempting_to_add_duplicate_emails() throws Exception {
+    public void should_return_400_when_attempting_to_add_duplicate_emails() throws Exception {
 
         UserProfileCreationData data = createUserProfileData();
 

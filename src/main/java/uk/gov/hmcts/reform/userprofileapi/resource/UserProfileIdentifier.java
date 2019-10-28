@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.resource;
 
 import java.util.List;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdentifierName;
 
 public class UserProfileIdentifier implements RequestData {
 
