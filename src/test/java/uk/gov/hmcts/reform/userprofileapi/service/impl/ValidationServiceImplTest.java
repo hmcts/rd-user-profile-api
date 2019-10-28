@@ -72,11 +72,10 @@ public class ValidationServiceImplTest {
         verify(userProfileRepositoryMock, times(1)).findByIdamId(userId);
     }
 
-    @Test( expected = ResourceNotFoundException.class)
+    @Test(expected = ResourceNotFoundException.class)
     public void testValidateUpdateWithoutId() {
         sut.validateUpdate(updateUserProfileDataMock, "");
 
-        //auditService.persistAudit(HttpStatus.NOT_FOUND, ResponseSource.SYNC);
         verify(auditServiceMock, times(1)).persistAudit(HttpStatus.NOT_FOUND, ResponseSource.SYNC);
     }
 
