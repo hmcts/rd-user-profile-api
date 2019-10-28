@@ -36,7 +36,7 @@ public class UserProfileResponse {
     public UserProfileResponse(UserProfile userProfile, boolean rolesRequired) {
         this(userProfile);
         if (rolesRequired) {
-            if (IdamStatus.ACTIVE == userProfile.getStatus() && userProfile.getRoles().size() > 0) {
+            if (IdamStatus.ACTIVE == userProfile.getStatus() && !userProfile.getRoles().isEmpty()) {
                 roles = userProfile.getRoles();
             }
             addRolesResponse.setIdamStatusCode(userProfile.getErrorStatusCode());

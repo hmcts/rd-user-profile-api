@@ -14,17 +14,14 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 public interface UserProfileValidator {
 
-    String EMAIL_REGEX = "^.*[@].*[.].*$";
-
-    static boolean isUserIdValid(String userId, boolean throwException) {
-        boolean valid = true;
+    static boolean isUserIdValid(String userId, boolean hasExceptionThrown) {
         if (StringUtils.isBlank(userId)) {
-            valid = false;
-            if (throwException) {
+            if (hasExceptionThrown) {
                 throw new ResourceNotFoundException("userId is null or blank.");
             }
+            return false;
         }
-        return valid;
+        return true;
     }
 
     static boolean isUpdateUserProfileRequestValid(UpdateUserProfileData updateUserProfileData) {
@@ -50,7 +47,7 @@ public interface UserProfileValidator {
                 || isBlankOrSizeInvalid(updateUserProfileData.getFirstName(), 255)
                 || isBlankOrSizeInvalid(updateUserProfileData.getLastName(), 255)
                 || isBlankOrSizeInvalid(updateUserProfileData.getIdamStatus(), 255)
-                || !updateUserProfileData.getEmail().matches(EMAIL_REGEX));
+                || !updateUserProfileData.getEmail().matches(RegEx.EMAIL.getContent()));
     }
 
     static boolean isBlankOrSizeInvalid(String fieldValue, int validSize) {
