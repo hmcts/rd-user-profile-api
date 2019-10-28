@@ -4,10 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.getIdamRolesJson;
 
 import org.junit.Test;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.LanguagePreference;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserCategory;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserType;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.*;
 
 public class UserProfileCreationDataTest {
 

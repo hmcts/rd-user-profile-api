@@ -9,24 +9,22 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.client.*;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.*;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
-import uk.gov.hmcts.reform.userprofileapi.resource.*;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.*;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
+import uk.gov.hmcts.reform.userprofileapi.resource.*;
 
+@Slf4j
 @RunWith(SpringIntegrationSerenityRunner.class)
 public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
-
-    private static final Logger LOG = LoggerFactory.getLogger(AddRolesToExistingUserFuncTest.class);
 
     @Autowired
     protected TestConfigProperties configProperties;
@@ -64,21 +62,21 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
                         UserProfileResponse.class
                 );
 
-        LOG.info("before addroles call");
+        log.info("before addroles call");
         UserProfileResponse resource1 =
                 testRequestHandler.sendPut(
                         userRProfileData,
                             HttpStatus.OK,
                            requestUri + "/" + resource.getIdamId(), UserProfileResponse.class);
 
-        LOG.info("after addroles call" + resource1);
+        log.info("after addroles call" + resource1);
 
         UserProfileWithRolesResponse resource2 =
                 testRequestHandler.sendGet(
                         "/v1/userprofile/" + resource.getIdamId() + "/roles",
                         UserProfileWithRolesResponse.class
                 );
-        LOG.info("Roles addroles call" + resource2);
+        log.info("Roles addroles call" + resource2);
         assertThat(resource2.getRoles().size()).isNotNull();
         assertThat(resource2.getRoles().size()).isEqualTo(3);
         assertThat(resource2.getRoles().contains("caseworker,pui-case-manager,pui-user-manager"));
@@ -100,7 +98,7 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
                         UserProfileResponse.class
                 );
 
-        LOG.info(String.format("created and retrieved user with email:[%s]", resource.getEmail()));
+        log.info(String.format("created and retrieved user with email:[%s]", resource.getEmail()));
 
         //update from active to suspended
         UpdateUserProfileData userProfileData = new UpdateUserProfileData();
@@ -121,10 +119,10 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
                 );
 
         assertThat(actual.getIdamId()).isNotNull();
-        LOG.info("retrieved user with updated status for idamId:" + actual.getIdamId());
+        log.info("retrieved user with updated status for idamId:" + actual.getIdamId());
 
         assertThat(actual.getIdamStatus()).isEqualTo(IdamStatus.SUSPENDED.name());
-        LOG.info("user updated to:" + actual.getIdamStatus());
+        log.info("user updated to:" + actual.getIdamStatus());
     }
 
     //@Test
@@ -142,8 +140,8 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
                         UserProfileResponse.class
                 );
 
-        LOG.info("get Userprofile response::" + resource);
-        LOG.info("before addroles call");
+        log.info("get Userprofile response::" + resource);
+        log.info("before addroles call");
         UpdateUserProfileData userRProfileData = new UpdateUserProfileData();
         userRProfileData.setFirstName("firstName");
         userRProfileData.setLastName("lastName");
@@ -155,6 +153,6 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
                         HttpStatus.OK,
                         requestUri + "/" + resource.getIdamId() + "?origin=exui", UserProfileResponse.class);
 
-        LOG.info("after Status update call" + updatedStatusResponse);
+        log.info("after Status update call" + updatedStatusResponse);
     }
 }

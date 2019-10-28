@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.userprofileapi.controller.advice;
 
-import org.junit.Test;
-
 import static java.time.LocalTime.now;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.Test;
 
 public class ErrorResponseTest {
 
