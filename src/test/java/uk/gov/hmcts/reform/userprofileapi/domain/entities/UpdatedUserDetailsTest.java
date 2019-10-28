@@ -10,12 +10,13 @@ public class UpdatedUserDetailsTest {
     public void testUpdate() {
         final String forename = "April";
         final String surname = "O'Neil";
-        UpdatedUserDetails sut = new UpdatedUserDetails(forename, "O'Neil", true);
+        final boolean active = true;
+        UpdatedUserDetails sut = new UpdatedUserDetails(forename, "O'Neil", active);
 
         assertThat(sut.getForename()).isEqualTo(forename);
         assertThat(sut.getSurname()).isEqualTo(surname);
+        assertThat(sut.getActive()).isEqualTo(active);
         assertThat(sut.active).isTrue();
-
     }
 
 }
