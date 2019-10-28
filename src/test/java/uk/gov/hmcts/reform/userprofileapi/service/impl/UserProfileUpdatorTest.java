@@ -219,10 +219,10 @@ public class UserProfileUpdatorTest {
         assertThat(response.getIdamStatus()).isEqualTo(IdamStatus.ACTIVE.name());
 
         verify(userProfileRepositoryMock,times(1)).save(any(UserProfile.class));
+        verify(auditServiceMock, times(1)).persistAudit(eq(HttpStatus.OK), any(UserProfile.class), any());
 
         //  TODO verify in separate auditService test
         //! verify(auditRepositoryMock,times(1)).save(any(Audit.class));
-
     }
 
     @Test(expected = ResourceNotFoundException.class)
