@@ -14,8 +14,8 @@ public class ExceptionServiceImpl implements ExceptionService {
         throwCustomRuntimeException(className, msg, HttpStatus.OK);
     }
 
-    public void throwCustomRuntimeException(String className, String msg, HttpStatus httpStatus){
-        switch(className) {
+    public void throwCustomRuntimeException(String className, String msg, HttpStatus httpStatus) {
+        switch (className) {
             case "IdamServiceException" : throw new IdamServiceException(msg, httpStatus);
             case "RequiredFieldMissingException" : throw new RequiredFieldMissingException(msg);
             case "ResourceNotFoundException" : throw new ResourceNotFoundException(msg);

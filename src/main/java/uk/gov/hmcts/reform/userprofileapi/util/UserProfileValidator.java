@@ -86,6 +86,8 @@ public interface UserProfileValidator {
                     case USERCATEGORY:
                         UserCategory.valueOf(value);
                         break;
+                    default:
+                        break; //TODO this might not be best for this
                 }
             } catch (IllegalArgumentException ex) {
                 throw new RequiredFieldMissingException(name + " has invalid value : " + value);

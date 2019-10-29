@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.userprofileapi.service.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
+import java.util.Optional;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -17,8 +19,6 @@ import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.service.ExceptionService;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationHelperService;
-
-import java.util.Optional;
 
 
 @RunWith(MockitoJUnitRunner.class)
