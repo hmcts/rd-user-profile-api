@@ -6,4 +6,6 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 public interface ValidationService {
 
     UserProfile validateUpdate(UpdateUserProfileData updateUserProfileData, String userId);
+
+    boolean isValidForUserDetailUpdate(UpdateUserProfileData updateUserProfileData, UserProfile userProfile);
 }

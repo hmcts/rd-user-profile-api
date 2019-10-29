@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
+// TODO remove this and put in a validaiton service
 public interface UserProfileValidator {
 
     static boolean isUserIdValid(String userId, boolean hasExceptionThrown) {
@@ -34,12 +35,13 @@ public interface UserProfileValidator {
     static boolean validateUserProfileRequestWithException(UpdateUserProfileData updateUserProfileData) {
         try {
             validateEnumField(STATUS.name(), updateUserProfileData.getIdamStatus().toUpperCase());
+            return true;
         } catch (Exception ex) {
-            //TODO log exception
+            //TODO log exception?
             return false;
         }
-        return true;
     }
+
 
     static boolean validateUpdateUserProfileRequestFields(UpdateUserProfileData updateUserProfileData) {
         return !(null == updateUserProfileData.getEmail()
@@ -67,16 +69,23 @@ public interface UserProfileValidator {
     }
 
     static void validateEnumField(String name, String value) {
+        UserProfileField field = UserProfileField.valueOf(name.toUpperCase());
+
         if (null != value) {
             try {
-                if (name.equals(STATUS.name())) {
-                    IdamStatus.valueOf(value);
-                } else if (name.equals(LANGUAGEPREFERENCE.name())) {
-                    LanguagePreference.valueOf(value);
-                } else if (name.equals(USERTYPE.name())) {
-                    UserType.valueOf(value);
-                } else if (name.equals(USERCATEGORY.name())) {
-                    UserCategory.valueOf(value);
+                switch (field) {
+                    case STATUS:
+                        IdamStatus.valueOf(value);
+                        break;
+                    case LANGUAGEPREFERENCE:
+                        LanguagePreference.valueOf(value);
+                        break;
+                    case USERTYPE:
+                        UserType.valueOf(value);
+                        break;
+                    case USERCATEGORY:
+                        UserCategory.valueOf(value);
+                        break;
                 }
             } catch (IllegalArgumentException ex) {
                 throw new RequiredFieldMissingException(name + " has invalid value : " + value);
@@ -86,7 +95,7 @@ public interface UserProfileValidator {
 
     static boolean validateAndReturnBooleanForParam(String param) {
 
-        boolean isValid = false;
+        boolean isValid;
         if (null == param) {
             throw new RequiredFieldMissingException("param has invalid value : " + param);
         } else if ("true".equalsIgnoreCase(param)) {

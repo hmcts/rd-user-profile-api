@@ -51,8 +51,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
 
         UserProfile userProfile = validationService.validateUpdate(updateUserProfileData, userId);
 
-        if (userProfile.getStatus().equals(IdamStatus.SUSPENDED)
-                && !userProfile.getStatus().name().equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
+        if (validationService.isValidForUserDetailUpdate(updateUserProfileData, userProfile)) {
             idamClient.updateUserDetails(updateUserProfileData, userId);
         }
 
