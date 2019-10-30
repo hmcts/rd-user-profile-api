@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.ExceptionType;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.exception.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
@@ -51,7 +52,7 @@ public class ValidationHelperServiceTest {
     @Test(expected = ResourceNotFoundException.class)
     public void testValidateUserIdException() {
 
-        doThrow(ResourceNotFoundException.class).when(exceptionServiceMock).throwCustomRuntimeException(any(String.class), any(String.class));
+        doThrow(ResourceNotFoundException.class).when(exceptionServiceMock).throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
 
         sut.validateUserIdWithException("");
     }
@@ -59,7 +60,7 @@ public class ValidationHelperServiceTest {
     @Test
     public void testValidateUserIdPersistAuditOnException() {
 
-        doNothing().when(exceptionServiceMock).throwCustomRuntimeException(any(String.class), any(String.class));
+        doNothing().when(exceptionServiceMock).throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
 
         sut.validateUserIdWithException("");
 
@@ -79,7 +80,7 @@ public class ValidationHelperServiceTest {
     public void testValidateUserIsPresentWithException() {
 
 
-        doThrow(ResourceNotFoundException.class).when(exceptionServiceMock).throwCustomRuntimeException(any(String.class), any(String.class));
+        doThrow(ResourceNotFoundException.class).when(exceptionServiceMock).throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
 
         sut.validateUserIsPresentWithException(Optional.empty(), "f56e5539-a8f7-4ae6-b378-cc1077b72dcc");
     }
@@ -87,7 +88,7 @@ public class ValidationHelperServiceTest {
     @Test
     public void testValidateUserIsPresentWithExceptionPersistAuditOnException() {
 
-        doNothing().when(exceptionServiceMock).throwCustomRuntimeException(any(String.class), any(String.class));
+        doNothing().when(exceptionServiceMock).throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
 
         sut.validateUserIsPresentWithException(Optional.empty(), "f56e5539-a8f7-4ae6-b378-cc1015b72dcc");
 
@@ -120,7 +121,7 @@ public class ValidationHelperServiceTest {
     public void testValidateUpdateUserProfileRequestValidException() {
         when(updateUserProfileDataMock.getEmail()).thenReturn(null);
 
-        doThrow(RequiredFieldMissingException.class).when(exceptionServiceMock).throwCustomRuntimeException(any(String.class), any(String.class));
+        doThrow(RequiredFieldMissingException.class).when(exceptionServiceMock).throwCustomRuntimeException(eq(ExceptionType.RequiredFieldMissingException), any(String.class));
 
         sut.validateUpdateUserProfileRequestValid(updateUserProfileDataMock, "f56e5539-a8f7-4ae6-b378-cc1015b72dcc");
     }
@@ -129,7 +130,7 @@ public class ValidationHelperServiceTest {
     public void testValidateUpdateUserProfileRequestValidPersistAuditOnException() {
         when(updateUserProfileDataMock.getEmail()).thenReturn(null);
 
-        doNothing().when(exceptionServiceMock).throwCustomRuntimeException(any(String.class), any(String.class));
+        doNothing().when(exceptionServiceMock).throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
 
         sut.validateUpdateUserProfileRequestValid(updateUserProfileDataMock, "f56e5539-a8f7-4ae6-b378-cc1015b72dcc");
 

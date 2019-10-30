@@ -88,24 +88,6 @@ public class UserProfileUpdatorTest {
         userProfile.setId((long)1234);
 
         userId = UUID.randomUUID().toString();
-
-        /*when(userProfileRepositoryMock.save(any(UserProfile.class))).thenReturn(userProfileMock);
-        when(userProfileMock.getEmail()).thenReturn(dummyEmail);
-        when(userProfileMock.getFirstName()).thenReturn(dummyFirstName);
-        when(userProfileMock.getLastName()).thenReturn(dummyLastName);
-        when(userProfileMock.getStatus()).thenReturn(IdamStatus.ACTIVE);
-        when(validationServiceMock.validateUpdate(any(), any())).thenReturn(userProfileMock);
-
-        UserProfileResponse response = sut.update(updateUserProfileData, userId, ResponseSource.SYNC).orElse(null);
-
-        assertThat(response).isNotNull();
-        assertThat(response.getEmail()).isEqualTo(dummyEmail);
-        assertThat(response.getFirstName()).isEqualTo(dummyFirstName);
-        assertThat(response.getLastName()).isEqualTo(dummyLastName);
-        assertThat(response.getIdamStatus()).isEqualTo(IdamStatus.ACTIVE.name());
-
-        verify(userProfileRepositoryMock,times(1)).save(any(UserProfile.class));
-        verify(auditServiceMock, times(1)).persistAudit(eq(HttpStatus.OK), any(UserProfile.class), any());*/
     }
 
     @Test

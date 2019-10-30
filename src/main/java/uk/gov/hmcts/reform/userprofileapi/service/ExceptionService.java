@@ -1,11 +1,12 @@
 package uk.gov.hmcts.reform.userprofileapi.service;
 
 import org.springframework.http.HttpStatus;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.ExceptionType;
 
 public interface ExceptionService {
 
-    void throwCustomRuntimeException(String className, String msg);
+    void throwCustomRuntimeException(ExceptionType className, String msg);
 
-    void throwCustomRuntimeException(String className, String msg, HttpStatus httpStatus);
+    void throwCustomRuntimeException(ExceptionType className, String msg, HttpStatus httpStatus);
 
 }

@@ -38,7 +38,7 @@ public class ValidationServiceImpl implements ValidationService {
 
         validationHelperService.validateUpdateUserProfileRequestValid(updateUserProfileData, userId);
 
-        return result.get();
+        return result.orElse(new UserProfile());
     }
 
     @Override
