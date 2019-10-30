@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
@@ -117,17 +119,18 @@ public class UserProfileRetrieverTest {
 
     }
 
-    /*public List<UserProfile> retrieveMultipleProfiles(UserProfileIdentifier identifier, boolean showDeleted) {
-        //get all users from UP DB
-        List<UserProfile> userProfiles =
-                querySupplier.getProfilesByIds(identifier, showDeleted).orElse(new ArrayList<UserProfile>());
-        if (CollectionUtils.isEmpty(userProfiles)) {
-            throw new ResourceNotFoundException("Could not find resource");
-        }
-        //get roles from sidam for each user
-        List<UserProfile> userProfilesWithRoles = userProfiles.stream().map(profile -> getRolesFromIdam(profile, true)).collect(Collectors.toList());
-        return userProfilesWithRoles;
-    }*/
+//    @Test
+//    public List<UserProfile> retrieve_Multiple_Profiles(UserProfileIdentifier identifier, boolean showDeleted) {
+//        //get all users from UP DB
+//        List<UserProfile> userProfiles =
+//                querySupplier.getProfilesByIds(identifier, showDeleted).orElse(new ArrayList<UserProfile>());
+//        if (CollectionUtils.isEmpty(userProfiles)) {
+//            throw new ResourceNotFoundException("Could not find resource");
+//        }
+//        //get roles from sidam for each user
+//        List<UserProfile> userProfilesWithRoles = userProfiles.stream().map(profile -> userProfileRetriever.getRolesFromIdam(profile, true)).collect(Collectors.toList());
+//        return userProfilesWithRoles;
+//    }
 
     @Test
     public void should_retrieve_Multiple_Profiles() {
@@ -159,10 +162,12 @@ public class UserProfileRetrieverTest {
         assertThat(getUserProfile1.getEmail()).isEqualTo(up1.getEmail());
         assertThat(getUserProfile1.getFirstName()).isEqualTo(up1.getFirstName());
         assertThat(getUserProfile1.getLastName()).isEqualTo(up1.getLastName());
+        assertThat(getUserProfile1.getRoles()).isEqualTo(up1.getRoles());
+        assertThat(getUserProfile1.getErrorMessage()).isEqualTo(up1.getErrorMessage());
+        assertThat(getUserProfile1.getErrorStatusCode()).isEqualTo(up1.getErrorStatusCode());
     }
 
     @Test
-
     public void should_throw_404_when_no_profiles_found_in_db() {
 
         UserProfileIdentifier identifier = mock(UserProfileIdentifier.class);

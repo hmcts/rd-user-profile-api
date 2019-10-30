@@ -61,6 +61,8 @@ public class ValidationServiceImplTest {
         when(userProfileMock.getStatus()).thenReturn(dummyIdamStatus);
 
         when(userProfileRepositoryMock.findByIdamId(eq(userId))).thenReturn(Optional.of(userProfileMock));
+
+        when(updateUserProfileDataMock.getIdamStatus()).thenReturn(IdamStatus.ACTIVE.name());
     }
 
     @Test
@@ -75,27 +77,25 @@ public class ValidationServiceImplTest {
         assertThat(actual.getStatus()).isEqualTo(dummyIdamStatus);
     }
 
-    //@Test//(expected = ResourceNotFoundException.class)
-    public void testValidateUpdateWithoutIdWithException() {
-        String invalidId = "";
-        when(validationHelperServiceMock.validateUserIdWithException(eq(invalidId))).thenThrow(new ResourceNotFoundException(""));
-        sut.validateUpdate(updateUserProfileDataMock, invalidId);
-    }
-
-    //@Test//(expected = ResourceNotFoundException.class)
-    public void testValidateUpdateWithEmptyUserProfile() {
-        sut.validateUpdate(updateUserProfileDataMock, userIdNotFound);
-    }
-
-    //@Test//(expected = RequiredFieldMissingException.class)
-    public void testValidateUpdateWithInvalidEmail() {
-        when(updateUserProfileDataMock.getEmail()).thenReturn(invalidEmail);
-        sut.validateUpdate(updateUserProfileDataMock, userIdInvalidEmail);
+    /*4
+    @Override
+45
+    public boolean isValidForUserDetailUpdate(UpdateUserProfileData updateUserProfileData, UserProfile userProfile) {
+46	2
+        return userProfile.getStatus().equals(IdamStatus.SUSPENDED) && !userProfile.getStatus().name().equalsIgnoreCase(updateUserProfileData.getIdamStatus());
+48
+    }*/
+    @Test
+    public void testIsValidForUserDetailUpdateHappyPath() {
+        assertThat(sut.isValidForUserDetailUpdate(updateUserProfileDataMock, userProfileMock)).isTrue();
+        verify(userProfileMock, times(2)).getStatus();
+        verify(updateUserProfileDataMock, times(1)).getIdamStatus();
     }
 
     @Test
-    public void testIsValidForUserDetailUpdate() {
-        sut.isValidForUserDetailUpdate(updateUserProfileDataMock, userProfileMock);
+    public void testIsValidForUserDetailUpdateSadPath() {
+        when(updateUserProfileDataMock.getIdamStatus()).thenReturn(IdamStatus.SUSPENDED.name());
+        assertThat(sut.isValidForUserDetailUpdate(updateUserProfileDataMock, userProfileMock)).isFalse();
         verify(userProfileMock, times(2)).getStatus();
         verify(updateUserProfileDataMock, times(1)).getIdamStatus();
     }
