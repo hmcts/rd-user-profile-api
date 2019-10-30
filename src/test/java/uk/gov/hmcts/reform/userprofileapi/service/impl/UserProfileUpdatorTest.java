@@ -23,7 +23,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 
@@ -60,6 +59,9 @@ public class UserProfileUpdatorTest {
     @Mock
     private AuditService auditServiceMock;
 
+    @Mock
+    private UserProfile userProfileMock;
+
     private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.ACCEPTED);
 
     private UserProfileCreationData userProfileCreationData = CreateUserProfileDataTestBuilder.buildCreateUserProfileData();
@@ -73,11 +75,19 @@ public class UserProfileUpdatorTest {
     @InjectMocks
     private UserProfileUpdator sut;
 
+    private final String dummyEmail = "email@net.com";
+    private final String dummyFirstName = "april";
+    private final String dummyLastName = "o'neil";
+
+    private String userId;
+
     @Before
     public void setUp() {
         userProfile.setStatus(IdamStatus.ACTIVE);
         userProfile.setIdamId("1234");
         userProfile.setId((long)1234);
+
+        userId = UUID.randomUUID().toString();
     }
 
     @Test
@@ -193,12 +203,6 @@ public class UserProfileUpdatorTest {
     @Test
     public void should_update_user_profile_successfully() {
 
-        UserProfile userProfileMock = Mockito.mock(UserProfile.class);
-
-        final String dummyEmail = "email@net.com";
-        final String dummyFirstName = "april";
-        final String dummyLastName = "o'neil";
-
         String userId = UUID.randomUUID().toString();
 
         when(userProfileRepositoryMock.save(any(UserProfile.class))).thenReturn(userProfileMock);
@@ -219,10 +223,45 @@ public class UserProfileUpdatorTest {
         assertThat(response.getIdamStatus()).isEqualTo(IdamStatus.ACTIVE.name());
 
         verify(userProfileRepositoryMock,times(1)).save(any(UserProfile.class));
+        verify(auditServiceMock, times(1)).persistAudit(eq(HttpStatus.OK), any(UserProfile.class), any());
 
         //  TODO verify in separate auditService test
         //! verify(auditRepositoryMock,times(1)).save(any(Audit.class));
+    }
 
+    @Test
+    public void should_update_idam_user_details_successfully() {
+
+        String userId = UUID.randomUUID().toString();
+
+        when(userProfileRepositoryMock.save(any(UserProfile.class))).thenReturn(userProfileMock);
+
+        when(userProfileMock.getEmail()).thenReturn(dummyEmail);
+        when(userProfileMock.getFirstName()).thenReturn(dummyFirstName);
+        when(userProfileMock.getLastName()).thenReturn(dummyLastName);
+        when(userProfileMock.getStatus()).thenReturn(IdamStatus.SUSPENDED);
+
+        when(validationServiceMock.validateUpdate(any(), any())).thenReturn(userProfileMock);
+        when(validationServiceMock.isValidForUserDetailUpdate(eq(updateUserProfileData), any(UserProfile.class))).thenReturn(true);
+
+        UserProfileResponse response = sut.update(updateUserProfileData, userId, ResponseSource.SYNC).orElse(null);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getEmail()).isEqualTo(dummyEmail);
+        assertThat(response.getFirstName()).isEqualTo(dummyFirstName);
+        assertThat(response.getLastName()).isEqualTo(dummyLastName);
+        assertThat(response.getIdamStatus()).isEqualTo(IdamStatus.SUSPENDED.name());
+        assertThat(updateUserProfileData.getIdamStatus()).isEqualTo(IdamStatus.ACTIVE.name());
+
+        verify(userProfileMock,times(2)).getStatus();
+        verify(userProfileRepositoryMock,times(1)).save(any(UserProfile.class));
+        verify(auditServiceMock, times(1)).persistAudit(eq(HttpStatus.OK), any(UserProfile.class), any());
+        verify(validationServiceMock, times(1)).isValidForUserDetailUpdate(any(UpdateUserProfileData.class),any(UserProfile.class));
+        verify(idamFeignClientMock, times(1)).updateUserDetails(any(UpdateUserProfileData.class),eq(userId));
+        //verify(updateUserProfileData, times(1)).getIdamStatus();
+
+        //  TODO verify in separate auditService test
+        //! verify(auditRepositoryMock,times(1)).save(any(Audit.class));
     }
 
     @Test(expected = ResourceNotFoundException.class)

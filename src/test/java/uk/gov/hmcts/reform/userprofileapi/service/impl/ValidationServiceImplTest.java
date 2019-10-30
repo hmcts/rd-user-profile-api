@@ -1,9 +1,8 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 import java.util.Optional;
 
@@ -12,17 +11,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
-import uk.gov.hmcts.reform.userprofileapi.exception.RequiredFieldMissingException;
-import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
+import uk.gov.hmcts.reform.userprofileapi.service.ValidationHelperService;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
 
 
@@ -39,6 +34,8 @@ public class ValidationServiceImplTest {
     private final String userIdInvalidEmail = "g45e5528-a8f7-4ae6-b378-cc1015b72ddd";
     private final String invalidEmail = "fakeemail.com";
 
+    private final IdamStatus dummyIdamStatus = IdamStatus.SUSPENDED;
+
     @Mock
     private AuditService auditServiceMock;
 
@@ -48,47 +45,50 @@ public class ValidationServiceImplTest {
     @Mock
     private UpdateUserProfileData updateUserProfileDataMock;
 
+    @Mock
+    private ValidationHelperService validationHelperServiceMock;
+
+    @Mock
+    private UserProfile userProfileMock;
+
     @InjectMocks
     private ValidationService sut = new ValidationServiceImpl();
 
     @Before
     public void setUp() {
-        UserProfile dummyUserProfile = Mockito.mock(UserProfile.class);
-        UserProfile fakeEmailUserProfile = Mockito.mock(UserProfile.class);
 
-        when(userProfileRepositoryMock.findByIdamId(eq(userId))).thenReturn(Optional.of(dummyUserProfile));
-        when(userProfileRepositoryMock.findByIdamId(eq(userIdNotFound))).thenReturn(Optional.empty());
-        when(userProfileRepositoryMock.findByIdamId(eq(userIdInvalidEmail))).thenReturn(Optional.of(fakeEmailUserProfile));
-        when(updateUserProfileDataMock.getEmail()).thenReturn(dummyEmail);
-        when(updateUserProfileDataMock.getFirstName()).thenReturn(dummyFirstName);
-        when(updateUserProfileDataMock.getLastName()).thenReturn(dummyLastName);
+        when(userProfileMock.getStatus()).thenReturn(dummyIdamStatus);
+
+        when(userProfileRepositoryMock.findByIdamId(eq(userId))).thenReturn(Optional.of(userProfileMock));
+
         when(updateUserProfileDataMock.getIdamStatus()).thenReturn(IdamStatus.ACTIVE.name());
     }
 
     @Test
-    public void testValidateUpdate() {
-        sut.validateUpdate(updateUserProfileDataMock, userId);
-
-        verify(userProfileRepositoryMock, times(1)).findByIdamId(userId);
-    }
-
-    @Test(expected = ResourceNotFoundException.class)
     public void testValidateUpdateWithoutId() {
-        sut.validateUpdate(updateUserProfileDataMock, "");
 
-        verify(auditServiceMock, times(1)).persistAudit(HttpStatus.NOT_FOUND, ResponseSource.SYNC);
+        when(validationHelperServiceMock.validateUserIdWithException(eq(userId))).thenReturn(true);
+
+        when(validationHelperServiceMock.validateUpdateUserProfileRequestValid(updateUserProfileDataMock,userId)).thenReturn(true);
+
+        UserProfile actual = sut.validateUpdate(updateUserProfileDataMock, userId);
+
+        assertThat(actual.getStatus()).isEqualTo(dummyIdamStatus);
     }
 
-    @Test(expected = ResourceNotFoundException.class)
-    public void testValidateUpdateWithEmptyUserProfile() {
-        sut.validateUpdate(updateUserProfileDataMock, userIdNotFound);
+    @Test
+    public void testIsValidForUserDetailUpdateHappyPath() {
+        assertThat(sut.isValidForUserDetailUpdate(updateUserProfileDataMock, userProfileMock)).isTrue();
+        verify(userProfileMock, times(2)).getStatus();
+        verify(updateUserProfileDataMock, times(1)).getIdamStatus();
     }
 
-    @Test(expected = RequiredFieldMissingException.class)
-    public void testValidateUpdateWithInvalidEmail() {
-        when(updateUserProfileDataMock.getEmail()).thenReturn(invalidEmail);
-
-        sut.validateUpdate(updateUserProfileDataMock, userIdInvalidEmail);
+    @Test
+    public void testIsValidForUserDetailUpdateSadPath() {
+        when(updateUserProfileDataMock.getIdamStatus()).thenReturn(IdamStatus.SUSPENDED.name());
+        assertThat(sut.isValidForUserDetailUpdate(updateUserProfileDataMock, userProfileMock)).isFalse();
+        verify(userProfileMock, times(2)).getStatus();
+        verify(updateUserProfileDataMock, times(1)).getIdamStatus();
     }
 
 

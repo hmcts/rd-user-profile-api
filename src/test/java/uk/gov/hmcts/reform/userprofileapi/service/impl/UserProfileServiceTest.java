@@ -72,6 +72,11 @@ public class UserProfileServiceTest {
     }
 
     @Test
+    public void testUpdate() {
+        assertThat(userProfileService.update(null,null,null)).isInstanceOf(UserProfileResponse.class);
+    }
+
+    @Test
     public void should_call_creator_create_method_successfully() {
 
         UserProfileCreationData userProfileData = mock(UserProfileCreationData.class);

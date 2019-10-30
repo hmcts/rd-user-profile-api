@@ -117,7 +117,8 @@ public class UserProfileRetrieverTest {
 
     }
 
-    /*public List<UserProfile> retrieveMultipleProfiles(UserProfileIdentifier identifier, boolean showDeleted) {
+    /*@Test
+    public List<UserProfile> retrieve_Multiple_Profiles(UserProfileIdentifier identifier, boolean showDeleted) {
         //get all users from UP DB
         List<UserProfile> userProfiles =
                 querySupplier.getProfilesByIds(identifier, showDeleted).orElse(new ArrayList<UserProfile>());
@@ -125,7 +126,7 @@ public class UserProfileRetrieverTest {
             throw new ResourceNotFoundException("Could not find resource");
         }
         //get roles from sidam for each user
-        List<UserProfile> userProfilesWithRoles = userProfiles.stream().map(profile -> getRolesFromIdam(profile, true)).collect(Collectors.toList());
+        List<UserProfile> userProfilesWithRoles = userProfiles.stream().map(profile -> userProfileRetriever.getRolesFromIdam(profile, true)).collect(Collectors.toList());
         return userProfilesWithRoles;
     }*/
 
@@ -159,10 +160,12 @@ public class UserProfileRetrieverTest {
         assertThat(getUserProfile1.getEmail()).isEqualTo(up1.getEmail());
         assertThat(getUserProfile1.getFirstName()).isEqualTo(up1.getFirstName());
         assertThat(getUserProfile1.getLastName()).isEqualTo(up1.getLastName());
+        assertThat(getUserProfile1.getRoles()).isEqualTo(up1.getRoles());
+        assertThat(getUserProfile1.getErrorMessage()).isEqualTo(up1.getErrorMessage());
+        assertThat(getUserProfile1.getErrorStatusCode()).isEqualTo(up1.getErrorStatusCode());
     }
 
     @Test
-
     public void should_throw_404_when_no_profiles_found_in_db() {
 
         UserProfileIdentifier identifier = mock(UserProfileIdentifier.class);
