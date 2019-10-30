@@ -12,7 +12,6 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +19,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
-import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
@@ -119,18 +117,18 @@ public class UserProfileRetrieverTest {
 
     }
 
-//    @Test
-//    public List<UserProfile> retrieve_Multiple_Profiles(UserProfileIdentifier identifier, boolean showDeleted) {
-//        //get all users from UP DB
-//        List<UserProfile> userProfiles =
-//                querySupplier.getProfilesByIds(identifier, showDeleted).orElse(new ArrayList<UserProfile>());
-//        if (CollectionUtils.isEmpty(userProfiles)) {
-//            throw new ResourceNotFoundException("Could not find resource");
-//        }
-//        //get roles from sidam for each user
-//        List<UserProfile> userProfilesWithRoles = userProfiles.stream().map(profile -> userProfileRetriever.getRolesFromIdam(profile, true)).collect(Collectors.toList());
-//        return userProfilesWithRoles;
-//    }
+    /*@Test
+    public List<UserProfile> retrieve_Multiple_Profiles(UserProfileIdentifier identifier, boolean showDeleted) {
+        //get all users from UP DB
+        List<UserProfile> userProfiles =
+                querySupplier.getProfilesByIds(identifier, showDeleted).orElse(new ArrayList<UserProfile>());
+        if (CollectionUtils.isEmpty(userProfiles)) {
+            throw new ResourceNotFoundException("Could not find resource");
+        }
+        //get roles from sidam for each user
+        List<UserProfile> userProfilesWithRoles = userProfiles.stream().map(profile -> userProfileRetriever.getRolesFromIdam(profile, true)).collect(Collectors.toList());
+        return userProfilesWithRoles;
+    }*/
 
     @Test
     public void should_retrieve_Multiple_Profiles() {

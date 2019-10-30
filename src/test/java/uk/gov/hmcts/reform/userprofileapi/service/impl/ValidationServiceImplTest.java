@@ -14,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
-import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
@@ -77,14 +76,6 @@ public class ValidationServiceImplTest {
         assertThat(actual.getStatus()).isEqualTo(dummyIdamStatus);
     }
 
-    /*4
-    @Override
-45
-    public boolean isValidForUserDetailUpdate(UpdateUserProfileData updateUserProfileData, UserProfile userProfile) {
-46	2
-        return userProfile.getStatus().equals(IdamStatus.SUSPENDED) && !userProfile.getStatus().name().equalsIgnoreCase(updateUserProfileData.getIdamStatus());
-48
-    }*/
     @Test
     public void testIsValidForUserDetailUpdateHappyPath() {
         assertThat(sut.isValidForUserDetailUpdate(updateUserProfileDataMock, userProfileMock)).isTrue();
