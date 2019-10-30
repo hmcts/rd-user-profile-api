@@ -121,7 +121,7 @@ public class ValidationHelperServiceTest {
     public void testValidateUpdateUserProfileRequestValidException() {
         when(updateUserProfileDataMock.getEmail()).thenReturn(null);
 
-        doThrow(RequiredFieldMissingException.class).when(exceptionServiceMock).throwCustomRuntimeException(eq(ExceptionType.RequiredFieldMissingException), any(String.class));
+        doThrow(RequiredFieldMissingException.class).when(exceptionServiceMock).throwCustomRuntimeException(eq(ExceptionType.REQUIREDFIELDMISSINGEXCEPTION), any(String.class));
 
         sut.validateUpdateUserProfileRequestValid(updateUserProfileDataMock, "f56e5539-a8f7-4ae6-b378-cc1015b72dcc");
     }
