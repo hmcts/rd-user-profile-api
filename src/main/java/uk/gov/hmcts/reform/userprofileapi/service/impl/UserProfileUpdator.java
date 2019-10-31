@@ -48,7 +48,6 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
 
     @Override
     public Optional<UserProfileResponse> update(UpdateUserProfileData updateUserProfileData, String userId, ResponseSource origin) {
-
         UserProfile userProfile = validationService.validateUpdate(updateUserProfileData, userId);
 
         if (validationService.isValidForUserDetailUpdate(updateUserProfileData, userProfile)) {
