@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.userprofileapi.resource;
 
-import static uk.gov.hmcts.reform.userprofileapi.constant.UserProfileConstant.EMAIL_REGEX;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -13,14 +11,14 @@ import javax.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 
 @Setter
 @Getter
 @NoArgsConstructor
 public class UserProfileCreationData implements RequestData {
 
-    @Email(regexp = EMAIL_REGEX)
+    @Email(regexp = "^.*[@].*[.].*$")
     @NotBlank (message = "email must not be null or blank")
     private String email;
 

@@ -15,21 +15,20 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Transient;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
-import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
-import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
-import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.*;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
 
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
 @SequenceGenerator(name = "user_profile_id_seq", sequenceName = "user_profile_id_seq", allocationSize = 1)
 public class UserProfile {
 
@@ -88,10 +87,6 @@ public class UserProfile {
     @Transient
     private String errorStatusCode;
 
-    public UserProfile() {
-        //noop
-    }
-
     public UserProfile(UserProfileCreationData data, HttpStatus idamStatus) {
         this.email = data.getEmail().trim().toLowerCase();
         this.firstName = data.getFirstName().trim();
@@ -106,19 +101,6 @@ public class UserProfile {
         this.userType = UserType.valueOf(data.getUserType());
         this.idamRegistrationResponse = idamStatus.value();
     }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
 
 
     public void setStatus(UserProfileCreationData userProfileCreationData) {

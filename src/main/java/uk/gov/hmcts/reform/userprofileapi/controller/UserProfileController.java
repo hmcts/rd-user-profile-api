@@ -12,34 +12,22 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
 import javax.validation.Valid;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
-import uk.gov.hmcts.reform.userprofileapi.resource.IdentifierName;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.*;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.*;
 import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
-import uk.gov.hmcts.reform.userprofileapi.service.UserProfileService;
+import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileService;
 import uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator;
 
 
@@ -212,6 +200,7 @@ public class UserProfileController {
                     code = 500,
                     message = "Internal Server Error"
             )
+
     })
     @GetMapping(
             produces = APPLICATION_JSON_UTF8_VALUE
@@ -219,7 +208,7 @@ public class UserProfileController {
     @ResponseBody
     public ResponseEntity<UserProfileResponse> getUserProfileByEmail(@ApiParam(name = "email", required = false) @RequestParam (value = "email", required = false) String email,
                                                                      @ApiParam(name = "userId", required = false) @RequestParam (value = "userId", required = false) String userId) {
-        UserProfileResponse response = null;
+        UserProfileResponse response;
         if (email == null && userId == null) {
             return ResponseEntity.badRequest().build();
         } else if (email != null) {
@@ -268,24 +257,30 @@ public class UserProfileController {
     )
 
     @ResponseBody
-    public ResponseEntity<UserProfileRolesResponse> updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData,
-                                                                      @PathVariable String userId,
-                                                                      @ApiParam(name = "origin", required = false) @RequestParam (value = "origin", required = false) String origin) {
-
+    public ResponseEntity<UserProfileResponse> updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData,
+                                                                 @PathVariable String userId,
+                                                                 @ApiParam(name = "origin", required = false) @RequestParam (value = "origin", required = false) String origin) {
         log.info("Updating user profile");
-        UserProfileRolesResponse userProfileResponse = new UserProfileRolesResponse();
+
+        UserProfileResponse response;
+
+        //If Existing behavor NOT trying to update roles
         if (CollectionUtils.isEmpty(updateUserProfileData.getRolesAdd())
              && CollectionUtils.isEmpty(updateUserProfileData.getRolesDelete())) {
 
-            log.info("Updating user profile without roles");
-            userProfileService.update(updateUserProfileData, userId);
-            // TODO if origin is populated call overloaded service method
-        } else {
+            ResponseSource source = (StringUtils.isEmpty(origin) || !"EXUI".equalsIgnoreCase(origin.toUpperCase()))
+                    ? ResponseSource.SYNC : ResponseSource.API;
+
+            response = userProfileService.update(updateUserProfileData, userId, source);
+
+        } else { // New update roles behavior
             UserProfileValidator.validateUserProfileDataAndUserId(updateUserProfileData, userId);
+
             log.info("Updating user profile with roles");
-            userProfileResponse = userProfileService.updateRoles(updateUserProfileData, userId);
+
+            response = userProfileService.updateRoles(updateUserProfileData, userId);
         }
-        return ResponseEntity.ok(userProfileResponse);
+        return ResponseEntity.ok().body(response);
     }
 
     @ApiOperation(value = "Retrieving multiple user profiles",

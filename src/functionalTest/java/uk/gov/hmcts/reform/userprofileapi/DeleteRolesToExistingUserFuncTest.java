@@ -20,7 +20,6 @@ import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.client.IdamClient;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
@@ -66,11 +65,11 @@ public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
                 );
 
         LOG.info("before addroles call");
-        UserProfileRolesResponse resource1 =
+        UserProfileResponse resource1 =
                 testRequestHandler.sendPut(
                         userProfileData,
                             HttpStatus.OK,
-                           requestUri + "/" + resource.getIdamId(), UserProfileRolesResponse.class);
+                           requestUri + "/" + resource.getIdamId(), UserProfileResponse.class);
 
         LOG.info("after addroles call" + resource1);
 
@@ -89,11 +88,11 @@ public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
         UpdateUserProfileData userProfileDataDelete = new UpdateUserProfileData();
         userProfileDataDelete.setRolesDelete(rolesDelete);
 
-        UserProfileRolesResponse deleteResourceResp =
+        UserProfileResponse deleteResourceResp =
                 testRequestHandler.sendDelete(
                         userProfileDataDelete,
                         HttpStatus.OK,
-                        requestUri + "/" + resource.getIdamId(), UserProfileRolesResponse.class);
+                        requestUri + "/" + resource.getIdamId(), UserProfileResponse.class);
 
         LOG.info("after DeleteRole call" + deleteResourceResp);
 

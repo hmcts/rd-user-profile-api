@@ -10,7 +10,7 @@ import java.util.UUID;
 import org.assertj.core.util.Lists;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 
 public class UserProfileTestDataBuilder {
 

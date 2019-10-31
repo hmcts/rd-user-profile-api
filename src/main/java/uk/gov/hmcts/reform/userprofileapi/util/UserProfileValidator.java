@@ -1,34 +1,28 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.userprofileapi.constant.UserProfileConstant.*;
+import static uk.gov.hmcts.reform.userprofileapi.domain.enums.UserProfileField.*;
 
 import org.apache.commons.lang.StringUtils;
-
 import org.springframework.util.CollectionUtils;
-
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
-import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
-import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
-import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
-import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
-import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.*;
+import uk.gov.hmcts.reform.userprofileapi.exception.RequiredFieldMissingException;
+import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
-import uk.gov.hmcts.reform.userprofileapi.service.ResourceNotFoundException;
 
+// TODO remove this and put in a validaiton service
 public interface UserProfileValidator {
 
-    static boolean isUserIdValid(String userId, boolean throwException) {
-        boolean valid = true;
+    static boolean isUserIdValid(String userId, boolean hasExceptionThrown) {
         if (StringUtils.isBlank(userId)) {
-            valid = false;
-            if (throwException) {
+            if (hasExceptionThrown) {
                 throw new ResourceNotFoundException("userId is null or blank.");
             }
+            return false;
         }
-        return valid;
+        return true;
     }
 
     static boolean isUpdateUserProfileRequestValid(UpdateUserProfileData updateUserProfileData) {
@@ -40,13 +34,14 @@ public interface UserProfileValidator {
 
     static boolean validateUserProfileRequestWithException(UpdateUserProfileData updateUserProfileData) {
         try {
-            validateEnumField(STATUS, updateUserProfileData.getIdamStatus().toUpperCase());
+            validateEnumField(STATUS.name(), updateUserProfileData.getIdamStatus().toUpperCase());
+            return true;
         } catch (Exception ex) {
-            //TODO log exception
+            //TODO log exception?
             return false;
         }
-        return true;
     }
+
 
     static boolean validateUpdateUserProfileRequestFields(UpdateUserProfileData updateUserProfileData) {
         return !(null == updateUserProfileData.getEmail()
@@ -54,7 +49,7 @@ public interface UserProfileValidator {
                 || isBlankOrSizeInvalid(updateUserProfileData.getFirstName(), 255)
                 || isBlankOrSizeInvalid(updateUserProfileData.getLastName(), 255)
                 || isBlankOrSizeInvalid(updateUserProfileData.getIdamStatus(), 255)
-                || !updateUserProfileData.getEmail().matches(EMAIL_REGEX));
+                || !updateUserProfileData.getEmail().matches(RegEx.EMAIL.getContent()));
     }
 
     static boolean isBlankOrSizeInvalid(String fieldValue, int validSize) {
@@ -66,31 +61,33 @@ public interface UserProfileValidator {
         return isInvalid;
     }
 
-    static boolean isSameAsExistingUserProfile(UpdateUserProfileData updateUserProfileData, UserProfile userProfile) {
-        return userProfile.getEmail().equals(updateUserProfileData.getEmail().trim())
-                && userProfile.getFirstName().equals(updateUserProfileData.getFirstName().trim())
-                && userProfile.getLastName().equals(updateUserProfileData.getLastName().trim())
-                && userProfile.getStatus().toString().equals(updateUserProfileData.getIdamStatus().trim());
-    }
-
     static void validateCreateUserProfileRequest(UserProfileCreationData request) {
         requireNonNull(request, "createUserProfileData cannot be null");
 
-        validateEnumField(USER_TYPE, request.getUserType());
-        validateEnumField(USER_CATEGORY, request.getUserCategory());
+        validateEnumField(USERTYPE.name(), request.getUserType());
+        validateEnumField(USERCATEGORY.name(), request.getUserCategory());
     }
 
     static void validateEnumField(String name, String value) {
+        UserProfileField field = UserProfileField.valueOf(name.toUpperCase());
+
         if (null != value) {
             try {
-                if (name.equals(STATUS)) {
-                    IdamStatus.valueOf(value);
-                } else if (name.equals(LANGUAGE_PREFERENCE)) {
-                    LanguagePreference.valueOf(value);
-                } else if (name.equals(USER_TYPE)) {
-                    UserType.valueOf(value);
-                } else if (name.equals(USER_CATEGORY)) {
-                    UserCategory.valueOf(value);
+                switch (field) {
+                    case STATUS:
+                        IdamStatus.valueOf(value);
+                        break;
+                    case LANGUAGEPREFERENCE:
+                        LanguagePreference.valueOf(value);
+                        break;
+                    case USERTYPE:
+                        UserType.valueOf(value);
+                        break;
+                    case USERCATEGORY:
+                        UserCategory.valueOf(value);
+                        break;
+                    default:
+                        break; //TODO this might not be best for this
                 }
             } catch (IllegalArgumentException ex) {
                 throw new RequiredFieldMissingException(name + " has invalid value : " + value);
@@ -100,7 +97,7 @@ public interface UserProfileValidator {
 
     static boolean validateAndReturnBooleanForParam(String param) {
 
-        boolean isValid = false;
+        boolean isValid;
         if (null == param) {
             throw new RequiredFieldMissingException("param has invalid value : " + param);
         } else if ("true".equalsIgnoreCase(param)) {

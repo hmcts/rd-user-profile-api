@@ -1,19 +1,14 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
-import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUpdateUserProfileRequestValid;
-import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
-
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
-import uk.gov.hmcts.reform.userprofileapi.resource.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
-import uk.gov.hmcts.reform.userprofileapi.service.ResourceNotFoundException;
+import uk.gov.hmcts.reform.userprofileapi.service.ValidationHelperService;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
 
 
@@ -26,27 +21,30 @@ public class ValidationServiceImpl implements ValidationService {
     @Autowired
     private UserProfileRepository userProfileRepository;
 
+    @Autowired
+    private ValidationHelperService validationHelperService;
+
 
     @Override
     public UserProfile validateUpdate(UpdateUserProfileData updateUserProfileData, String userId) {
-        if (!isUserIdValid(userId, false)) {
-            auditService.persistAudit(HttpStatus.NOT_FOUND, ResponseSource.SYNC);
-            throw new ResourceNotFoundException("userId provided is malformed");
-        }
+        // validate input
+        validationHelperService.validateUserIdWithException(userId);
 
+        // retrieve user by id
         Optional<UserProfile> result = userProfileRepository.findByIdamId(userId);
 
-        if (!result.isPresent()) {
-            auditService.persistAudit(HttpStatus.NOT_FOUND, ResponseSource.SYNC);
-            throw new ResourceNotFoundException("could not find user profile for userId: " + userId);
-        }
+        // validate with exception that user is well-formed
+        validationHelperService.validateUserIsPresentWithException(result, userId);
 
-        if (!isUpdateUserProfileRequestValid(updateUserProfileData)) {
-            auditService.persistAudit(HttpStatus.BAD_REQUEST, ResponseSource.SYNC);
-            throw new RequiredFieldMissingException("Update user profile request is not valid for userId: " + userId);
-        }
+        validationHelperService.validateUpdateUserProfileRequestValid(updateUserProfileData, userId);
 
-        return result.get();
+        return result.orElse(new UserProfile());
+    }
+
+    @Override
+    public boolean isValidForUserDetailUpdate(UpdateUserProfileData updateUserProfileData, UserProfile userProfile) {
+        return userProfile.getStatus().equals(IdamStatus.SUSPENDED)
+                && !userProfile.getStatus().name().equalsIgnoreCase(updateUserProfileData.getIdamStatus());
     }
 
 
