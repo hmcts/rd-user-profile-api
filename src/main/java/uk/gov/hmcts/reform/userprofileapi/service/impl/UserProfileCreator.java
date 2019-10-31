@@ -188,7 +188,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
     public Set<Map<String,String>> createIdamRolesRequest(Set<String> rolesToUpdate) {
         Set<Map<String, String>> roles = new HashSet<>();
         rolesToUpdate.forEach(role -> {
-            Map<String, String> rolesMap = new HashMap<String, String>();
+            Map<String, String> rolesMap = new HashMap<>();
             rolesMap.put("name", role);
             roles.add(rolesMap);
         });

@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
-// TODO remove this and put in a validaiton service
+// tbc remove this and put in a validaiton service
 public interface UserProfileValidator {
 
     static boolean isUserIdValid(String userId, boolean hasExceptionThrown) {
@@ -37,7 +37,7 @@ public interface UserProfileValidator {
             validateEnumField(STATUS.name(), updateUserProfileData.getIdamStatus().toUpperCase());
             return true;
         } catch (Exception ex) {
-            //TODO log exception?
+            //tbc log exception?
             return false;
         }
     }
@@ -87,7 +87,7 @@ public interface UserProfileValidator {
                         UserCategory.valueOf(value);
                         break;
                     default:
-                        break; //TODO this might not be best for this
+                        break; //tbc refactor this might not be best for this
                 }
             } catch (IllegalArgumentException ex) {
                 throw new RequiredFieldMissingException(name + " has invalid value : " + value);
