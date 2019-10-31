@@ -260,7 +260,7 @@ public class UserProfileUpdatorTest {
         verify(idamFeignClientMock, times(1)).updateUserDetails(any(UpdateUserProfileData.class),eq(userId));
         //verify(updateUserProfileData, times(1)).getIdamStatus();
 
-        //  TODO verify in separate auditService test
+        //  tbc verify in separate auditService test
         //! verify(auditRepositoryMock,times(1)).save(any(Audit.class));
     }
 
@@ -270,7 +270,7 @@ public class UserProfileUpdatorTest {
         when(validationServiceMock.validateUpdate(any(), any())).thenThrow(ResourceNotFoundException.class);
 
         sut.update(updateUserProfileData,"invalid", ResponseSource.SYNC);
-        //TODO verify auditService independently
+        //tbc verify auditService independently
     }
 
     @Test(expected = ResourceNotFoundException.class)

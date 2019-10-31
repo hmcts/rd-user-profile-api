@@ -25,7 +25,7 @@ public class UserProfileWithRolesResponse extends UserProfileResponse {
     private String idamMessage;
 
     public UserProfileWithRolesResponse(UserProfile userProfile, boolean rolesRequired) {
-        super(userProfile);//TBC remove inheritance
+        super(userProfile);//tbc remove inheritance
         idamStatusCode = " ";
         idamMessage = IdamStatusResolver.NO_IDAM_CALL;
         if (rolesRequired) {
