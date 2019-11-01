@@ -38,8 +38,7 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         idamClient = new IdamClient(configProperties);
     }
 
-    @Test
-    @Ignore
+    //@Test//tdd ignoring for now
     public void should_update_user_profile_with_roles_successfully() throws Exception {
 
 
