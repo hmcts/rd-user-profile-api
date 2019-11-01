@@ -11,6 +11,7 @@ import java.util.Set;
 
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -43,6 +44,7 @@ public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
     }
 
     @Test
+    @Ignore
     public void should_delete_user_profile_with_roles_successfully() throws Exception {
         UserProfileCreationData data = createUserProfileData();
         List<String> roles = new ArrayList<>();
