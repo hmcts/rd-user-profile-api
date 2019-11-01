@@ -19,12 +19,10 @@ import uk.gov.hmcts.reform.userprofileapi.controller.request.UpdateUserDetails;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.RoleAdditionResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.RoleDeletionResponse;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserProfileField;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
@@ -77,7 +75,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         validationService.isValidForUserDetailUpdate(updateUserProfileData, userProfile, source);
         UpdateUserDetails updateUserDetails = UserProfileMapper.mapIdamUpdateStatusRequest(updateUserProfileData);
         AttributeResponse attributeResponse = idamService.updateUserDetails(updateUserDetails, userId);
-        if((HttpStatus.valueOf(attributeResponse.getIdamStatusCode()).is2xxSuccessful())) {
+        if ((HttpStatus.valueOf(attributeResponse.getIdamStatusCode()).is2xxSuccessful())) {
             UserProfileMapper.mapUpdatableFields(updateUserProfileData, userProfile, true);
             doPersistUserProfile(userProfile, source);
         }

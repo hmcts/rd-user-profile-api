@@ -100,7 +100,7 @@ public class UserProfileValidatorTest {
 
         assertThat(updateUserProfileData.isSameAsUserProfile(userProfile)).isTrue();
 
-        updateUserProfileData = new UpdateUserProfileData("test-l-@somewhere.com", "test-first-name", "test-last-name", "PENDING",addRolesToRoleName(), addRolesToRoleName());
+        updateUserProfileData = new UpdateUserProfileData("test-email-@somewhere.com1", "test-first-name1", "test-last-name", "PENDING",addRolesToRoleName(), addRolesToRoleName());
         assertThat(updateUserProfileData.isSameAsUserProfile(userProfile)).isFalse();
     }
 

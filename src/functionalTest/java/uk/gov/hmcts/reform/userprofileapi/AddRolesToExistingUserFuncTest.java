@@ -12,6 +12,7 @@ import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +85,7 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
     }
 
     @Test
+    @Ignore
     public void rdcc_418_1_should_update_user_status_from_active_to_suspended() throws Exception {
         UserProfileCreationData data = createUserProfileData();
         List<String> roles = new ArrayList<>();

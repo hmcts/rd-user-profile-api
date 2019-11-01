@@ -33,7 +33,7 @@ public interface UserProfileMapper {
     }
 
     static void setEmail(UpdateUserProfileData data, UserProfile userProfile, boolean isExuiUpdate) {
-        if(!isExuiUpdate) {
+        if (!isExuiUpdate) {
             String email = data.getEmail();
             if (StringUtils.isNotEmpty(email)) {
                 userProfile.setEmail(email.trim().toLowerCase());
@@ -50,14 +50,14 @@ public interface UserProfileMapper {
 
     static void setLastName(UpdateUserProfileData data, UserProfile userProfile) {
         String lastName = data.getLastName();
-        if (StringUtils.isBlank(lastName)) {
+        if (!StringUtils.isBlank(lastName)) {
             userProfile.setLastName(lastName.trim());
         }
     }
 
     static void setStatus(UpdateUserProfileData data, UserProfile userProfile) {
         String idamStatus = data.getIdamStatus();
-        if (StringUtils.isBlank(idamStatus)) {
+        if (!StringUtils.isBlank(idamStatus)) {
             userProfile.setStatus(IdamStatus.valueOf(idamStatus.toUpperCase()));
         }
     }

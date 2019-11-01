@@ -33,6 +33,7 @@ public interface UserProfileValidator {
             return false;
         }
     }
+
     static boolean isBlankOrSizeInvalid(String fieldValue, int validSize) {
 
         boolean isInvalid = false;

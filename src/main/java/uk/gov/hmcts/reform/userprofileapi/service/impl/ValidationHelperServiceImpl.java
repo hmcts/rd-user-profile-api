@@ -1,10 +1,9 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
-import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateUserProfileStatus;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
+import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateUserProfileStatus;
 
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -56,7 +55,7 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
 
     @Override
     public boolean validateUserStatusBeforeUpdate(UpdateUserProfileData updateUserProfileData, UserProfile userProfile, ResponseSource source) {
-        if (IdamStatus.PENDING == userProfile.getStatus() || IdamStatus.PENDING.toString() == updateUserProfileData.getIdamStatus()) {
+        if (IdamStatus.PENDING == userProfile.getStatus() || IdamStatus.PENDING.toString().equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
             auditService.persistAudit(HttpStatus.BAD_REQUEST, source);
             final String exceptionMsg = String.format("User is PENDING or input status is PENDING and only be changed to ACTIVE or SUSPENDED for userId: %s", userProfile.getIdamId());
             exceptionService.throwCustomRuntimeException(ExceptionType.RequiredFieldMissingException, exceptionMsg);

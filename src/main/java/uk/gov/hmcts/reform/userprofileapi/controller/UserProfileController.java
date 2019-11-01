@@ -260,29 +260,22 @@ public class UserProfileController {
     )
 
     @ResponseBody
-    public ResponseEntity<UserProfileRolesResponse> updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData,
+    public ResponseEntity updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData,
                                                                  @PathVariable String userId,
                                                                  @ApiParam(name = "origin", required = false) @RequestParam (value = "origin", required = false) String origin) {
-        log.info("Updating user profile");
-
-        UserProfileRolesResponse userProfileResponse = new UserProfileRolesResponse();
-
-        //If Existing behavor NOT trying to update roles
         if (CollectionUtils.isEmpty(updateUserProfileData.getRolesAdd())
              && CollectionUtils.isEmpty(updateUserProfileData.getRolesDelete())) {
-
+            log.info("Updating user profile details");
             AttributeResponse attributeResponse = userProfileService.update(updateUserProfileData, userId, origin);
-            userProfileResponse.setAttributeResponse(attributeResponse);
-            return ResponseEntity.status(Integer.valueOf(attributeResponse.getIdamStatusCode())).body(userProfileResponse);
+            return ResponseEntity.status(Integer.valueOf(attributeResponse.getIdamStatusCode())).body(attributeResponse);
 
         } else { // New update roles behavior
+            log.info("Updating user roles");
             UserProfileValidator.validateUserProfileDataAndUserId(updateUserProfileData, userId);
-
-            log.info("Updating user profile with roles");
-
-            userProfileResponse = userProfileService.updateRoles(updateUserProfileData, userId);
+            UserProfileRolesResponse userProfileResponse = userProfileService.updateRoles(updateUserProfileData, userId);
+            return ResponseEntity.ok().body(userProfileResponse);
         }
-        return ResponseEntity.ok().body(userProfileResponse);
+
     }
 
     @ApiOperation(value = "Retrieving multiple user profiles",
