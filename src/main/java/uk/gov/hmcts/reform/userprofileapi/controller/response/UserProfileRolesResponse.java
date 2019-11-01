@@ -12,7 +12,7 @@ import lombok.Setter;
 public class UserProfileRolesResponse {
 
 
-    @JsonProperty("UpdateStatusResponse")
+    @JsonProperty("updateStatusResponse")
     private AttributeResponse attributeResponse;
     private RoleAdditionResponse roleAdditionResponse;
     private List<RoleDeletionResponse> roleDeletionResponse;
