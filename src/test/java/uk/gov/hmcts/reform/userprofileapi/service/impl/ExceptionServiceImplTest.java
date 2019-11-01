@@ -18,35 +18,35 @@ public class ExceptionServiceImplTest {
     @Test(expected = ResourceNotFoundException.class)
     public void testThrowRuntimeException() {
 
-        sut.throwCustomRuntimeException(ExceptionType.ResourceNotFoundException,"ResourceNotFoundException Message");
+        sut.throwCustomRuntimeException(ExceptionType.RESOURCENOTFOUNDEXCEPTION,"ResourceNotFoundException Message");
 
     }
 
     @Test(expected = IdamServiceException.class)
     public void testThrowIdamServiceException() {
 
-        sut.throwCustomRuntimeException(ExceptionType.IdamServiceException,"IdamServiceException Message");
+        sut.throwCustomRuntimeException(ExceptionType.IDAMSERVICEEXCEPTION,"IdamServiceException Message");
 
     }
 
     @Test(expected = RequiredFieldMissingException.class)
     public void testThrowRequiredFieldMissingException() {
 
-        sut.throwCustomRuntimeException(ExceptionType.RequiredFieldMissingException,"RequiredFieldMissingException Message");
+        sut.throwCustomRuntimeException(ExceptionType.REQUIREDFIELDMISSINGEXCEPTION,"RequiredFieldMissingException Message");
 
     }
 
     @Test(expected = UndefinedException.class)
     public void testThrowDefaultException() {
 
-        sut.throwCustomRuntimeException(ExceptionType.UndefinedException,"ExceptionNotFound Message");
+        sut.throwCustomRuntimeException(ExceptionType.UNDEFINDEDEXCEPTION,"ExceptionNotFound Message");
 
     }
 
     @Test(expected = ResourceNotFoundException.class)
     public void testOverloadedException() {
 
-        sut.throwCustomRuntimeException(ExceptionType.ResourceNotFoundException,"ResourceNotFoundException Message", HttpStatus.ACCEPTED);
+        sut.throwCustomRuntimeException(ExceptionType.RESOURCENOTFOUNDEXCEPTION,"ResourceNotFoundException Message", HttpStatus.ACCEPTED);
 
     }
 

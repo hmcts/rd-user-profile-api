@@ -29,8 +29,8 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
     public boolean validateUserIdWithException(String userId) {
         if (!isUserIdValid(userId, false)) {
             auditService.persistAudit(HttpStatus.NOT_FOUND, ResponseSource.SYNC);
-            final String exceptionMsg = String.format("ResourceNotFoundException - userId provided is malformed: %s", userId);
-            exceptionService.throwCustomRuntimeException(ExceptionType.ResourceNotFoundException, exceptionMsg);
+            final String exceptionMsg = String.format("%s - userId provided is malformed: %s", ExceptionType.RESOURCENOTFOUNDEXCEPTION, userId);
+            exceptionService.throwCustomRuntimeException(ExceptionType.RESOURCENOTFOUNDEXCEPTION, exceptionMsg);
         }
         return true;
     }
@@ -38,8 +38,8 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
     public boolean validateUserIsPresentWithException(Optional<UserProfile> userProfile, String userId) {
         if (!userProfile.isPresent()) {
             auditService.persistAudit(HttpStatus.NOT_FOUND, ResponseSource.SYNC);
-            final String exceptionMsg = String.format("ResourceNotFoundException - could not find user profile for userId: %s", userId);
-            exceptionService.throwCustomRuntimeException(ExceptionType.ResourceNotFoundException, exceptionMsg);
+            final String exceptionMsg = String.format("%s - could not find user profile for userId: %s", ExceptionType.RESOURCENOTFOUNDEXCEPTION, userId);
+            exceptionService.throwCustomRuntimeException(ExceptionType.RESOURCENOTFOUNDEXCEPTION, exceptionMsg);
         }
         return true;
     }

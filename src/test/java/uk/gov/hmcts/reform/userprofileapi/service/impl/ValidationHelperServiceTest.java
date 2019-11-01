@@ -112,7 +112,7 @@ public class ValidationHelperServiceTest {
     @Test(expected = RequiredFieldMissingException.class)
     public void testValidateUpdateUserProfileRequestValidException() {
 
-        doThrow(RequiredFieldMissingException.class).when(exceptionServiceMock).throwCustomRuntimeException(eq(ExceptionType.RequiredFieldMissingException), any(String.class));
+        doThrow(RequiredFieldMissingException.class).when(exceptionServiceMock).throwCustomRuntimeException(eq(ExceptionType.REQUIREDFIELDMISSINGEXCEPTION), any(String.class));
 
         sut.validateUpdateUserProfileRequestValid(updateUserProfileDataMock, "f56e5539-a8f7-4ae6-b378-cc1015b72dcc", ResponseSource.API);
     }
