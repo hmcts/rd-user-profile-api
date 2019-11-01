@@ -19,6 +19,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
@@ -61,9 +62,9 @@ public class UserProfileServiceTest {
 
         updateUserProfileData.setRolesAdd(roles);
 
-        userProfileService.update(updateUserProfileData, "1234", ResponseSource.SYNC);
+        userProfileService.update(updateUserProfileData, "1234", "EXUI");
 
-        UserProfileResponse userProfileResponse = mock(UserProfileResponse.class);
+        UserProfileRolesResponse userProfileResponse = mock(UserProfileRolesResponse.class);
 
         when(resourceUpdator.updateRoles(updateUserProfileData, "1234")).thenReturn(userProfileResponse);
         userProfileResponse = userProfileService.updateRoles(updateUserProfileData, "1234");

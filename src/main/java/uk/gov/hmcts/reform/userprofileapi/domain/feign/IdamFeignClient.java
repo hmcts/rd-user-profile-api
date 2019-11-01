@@ -50,7 +50,7 @@ public interface IdamFeignClient {
 
     @PatchMapping(value = "/api/v1/users/{userId}")
     @RequestLine("PATCH /api/v1/users/{userId}")
-    @Headers({"Content-Type: application/json", "X-HTTP-Method-Override: PATCH"})
+    @Headers({"Content-Type: application/json"})
     public Response updateUserDetails(@RequestBody Object updateUserDetails, @PathVariable("userId") String userId);
 
 

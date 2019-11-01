@@ -22,6 +22,7 @@ public class UserProfileResponse {
     private String idamStatus;
     private RoleAdditionResponse addRolesResponse;
     private List<RoleDeletionResponse> deleteRolesResponse;
+    private AttributeResponse attributeResponse;
     private List<String> roles;
 
     public UserProfileResponse(UserProfile userProfile) {

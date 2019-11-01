@@ -107,7 +107,7 @@ public class ValidationHelperServiceTest {
         when(updateUserProfileDataMock.getLastName()).thenReturn(dummyLastName);
         when(updateUserProfileDataMock.getIdamStatus()).thenReturn("SUSPENDED");
 
-        boolean actual = sut.validateUpdateUserProfileRequestValid(updateUserProfileDataMock, "f56e5539-a8f7-4ae6-b378-cc1015b72dcc");
+        boolean actual = sut.validateUpdateUserProfileRequestValid(updateUserProfileDataMock, "f56e5539-a8f7-4ae6-b378-cc1015b72dcc", ResponseSource.API);
 
         verify(updateUserProfileDataMock, times(3)).getEmail();
         verify(updateUserProfileDataMock, times(1)).getFirstName();
@@ -123,7 +123,7 @@ public class ValidationHelperServiceTest {
 
         doThrow(RequiredFieldMissingException.class).when(exceptionServiceMock).throwCustomRuntimeException(eq(ExceptionType.RequiredFieldMissingException), any(String.class));
 
-        sut.validateUpdateUserProfileRequestValid(updateUserProfileDataMock, "f56e5539-a8f7-4ae6-b378-cc1015b72dcc");
+        sut.validateUpdateUserProfileRequestValid(updateUserProfileDataMock, "f56e5539-a8f7-4ae6-b378-cc1015b72dcc", ResponseSource.API);
     }
 
     @Test
@@ -132,7 +132,8 @@ public class ValidationHelperServiceTest {
 
         doNothing().when(exceptionServiceMock).throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
 
-        sut.validateUpdateUserProfileRequestValid(updateUserProfileDataMock, "f56e5539-a8f7-4ae6-b378-cc1015b72dcc");
+        sut.validateUpdateUserProfileRequestValid(updateUserProfileDataMock, "f56e5539-a8f7-4ae6-b378-cc1015b72dcc", ResponseSource.API
+        );
 
         verify(updateUserProfileDataMock, times(1)).getEmail();
         verify(auditServiceMock, times(1)).persistAudit(eq(HttpStatus.BAD_REQUEST), eq(ResponseSource.SYNC));

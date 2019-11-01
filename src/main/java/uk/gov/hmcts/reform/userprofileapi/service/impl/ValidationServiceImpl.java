@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserProfileField;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
@@ -26,7 +28,7 @@ public class ValidationServiceImpl implements ValidationService {
 
 
     @Override
-    public UserProfile validateUpdate(UpdateUserProfileData updateUserProfileData, String userId) {
+    public UserProfile validateUpdate(UpdateUserProfileData updateUserProfileData, String userId, ResponseSource source) {
         // validate input
         validationHelperService.validateUserIdWithException(userId);
 
@@ -36,16 +38,18 @@ public class ValidationServiceImpl implements ValidationService {
         // validate with exception that user is well-formed
         validationHelperService.validateUserIsPresentWithException(result, userId);
 
-        validationHelperService.validateUpdateUserProfileRequestValid(updateUserProfileData, userId);
+        validationHelperService.validateUpdateUserProfileRequestValid(updateUserProfileData, userId, source);
 
         return result.orElse(new UserProfile());
     }
 
     @Override
-    public boolean isValidForUserDetailUpdate(UpdateUserProfileData updateUserProfileData, UserProfile userProfile) {
-        return userProfile.getStatus().equals(IdamStatus.SUSPENDED)
-                && !userProfile.getStatus().name().equalsIgnoreCase(updateUserProfileData.getIdamStatus());
+    public boolean isValidForUserDetailUpdate(UpdateUserProfileData updateUserProfileData, UserProfile userProfile, ResponseSource source) {
+        return validationHelperService.validateUserStatusBeforeUpdate(updateUserProfileData, userProfile, source);
     }
 
+    public boolean isExuiUpdateRequest(String origin) {
+        return UserProfileField.EXUI.name().equalsIgnoreCase(origin);
+    }
 
 }

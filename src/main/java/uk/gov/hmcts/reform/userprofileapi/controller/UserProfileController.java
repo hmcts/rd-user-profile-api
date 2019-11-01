@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.*;
@@ -27,6 +26,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
+import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
 import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileService;
 import uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator;
 
@@ -48,6 +48,9 @@ public class UserProfileController {
 
     @Autowired
     private IdamService idamService;
+
+    @Autowired
+    private ValidationService validationService;
 
 
     @ApiOperation(value = "Create a User Profile",
@@ -257,30 +260,29 @@ public class UserProfileController {
     )
 
     @ResponseBody
-    public ResponseEntity<UserProfileResponse> updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData,
+    public ResponseEntity<UserProfileRolesResponse> updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData,
                                                                  @PathVariable String userId,
                                                                  @ApiParam(name = "origin", required = false) @RequestParam (value = "origin", required = false) String origin) {
         log.info("Updating user profile");
 
-        UserProfileResponse response;
+        UserProfileRolesResponse userProfileResponse = new UserProfileRolesResponse();
 
         //If Existing behavor NOT trying to update roles
         if (CollectionUtils.isEmpty(updateUserProfileData.getRolesAdd())
              && CollectionUtils.isEmpty(updateUserProfileData.getRolesDelete())) {
 
-            ResponseSource source = (StringUtils.isEmpty(origin) || !"EXUI".equalsIgnoreCase(origin.toUpperCase()))
-                    ? ResponseSource.SYNC : ResponseSource.API;
-
-            response = userProfileService.update(updateUserProfileData, userId, source);
+            AttributeResponse attributeResponse = userProfileService.update(updateUserProfileData, userId, origin);
+            userProfileResponse.setAttributeResponse(attributeResponse);
+            return ResponseEntity.status(Integer.valueOf(attributeResponse.getIdamStatusCode())).body(userProfileResponse);
 
         } else { // New update roles behavior
             UserProfileValidator.validateUserProfileDataAndUserId(updateUserProfileData, userId);
 
             log.info("Updating user profile with roles");
 
-            response = userProfileService.updateRoles(updateUserProfileData, userId);
+            userProfileResponse = userProfileService.updateRoles(updateUserProfileData, userId);
         }
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.ok().body(userProfileResponse);
     }
 
     @ApiOperation(value = "Retrieving multiple user profiles",

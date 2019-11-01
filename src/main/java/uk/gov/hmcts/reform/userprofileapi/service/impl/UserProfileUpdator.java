@@ -13,18 +13,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
+import uk.gov.hmcts.reform.userprofileapi.controller.request.UpdateUserDetails;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.RoleAdditionResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.RoleDeletionResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserProfileField;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceUpdator;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
 import uk.gov.hmcts.reform.userprofileapi.util.JsonFeignResponseHelper;
@@ -41,29 +47,45 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
     private IdamFeignClient idamClient;
 
     @Autowired
+    private IdamService idamService;
+
+    @Autowired
     private ValidationService validationService;
 
     @Autowired
     private AuditService auditService;
 
     @Override
-    public Optional<UserProfileResponse> update(UpdateUserProfileData updateUserProfileData, String userId, ResponseSource origin) {
+    public AttributeResponse update(UpdateUserProfileData updateUserProfileData, String userId, String origin) {
 
-        UserProfile userProfile = validationService.validateUpdate(updateUserProfileData, userId);
+        AttributeResponse attributeResponse = new AttributeResponse(HttpStatus.OK);
+        boolean isExuiUpdate = validationService.isExuiUpdateRequest(origin);
+        ResponseSource source = (StringUtils.isEmpty(origin) || !isExuiUpdate) ? ResponseSource.SYNC : ResponseSource.API;
 
-        if (validationService.isValidForUserDetailUpdate(updateUserProfileData, userProfile)) {
-            idamClient.updateUserDetails(updateUserProfileData, userId);
+        UserProfile userProfile = validationService.validateUpdate(updateUserProfileData, userId, source);
+
+        if (isExuiUpdate) {
+            attributeResponse = updateSidamAndUserProfile(updateUserProfileData, userProfile, source, userId);
+        } else {
+            UserProfileMapper.mapUpdatableFields(updateUserProfileData, userProfile, false);
+            doPersistUserProfile(userProfile, source);
         }
+        return attributeResponse;
+    }
 
-        UserProfileMapper.mapUpdatableFields(updateUserProfileData, userProfile);
-
-        Optional<UserProfile> userProfileOpt = doPersistUserProfile(userProfile, origin);
-
-        return userProfileOpt.map(opt -> new UserProfileResponse(opt, false));
+    public AttributeResponse updateSidamAndUserProfile(UpdateUserProfileData updateUserProfileData, UserProfile userProfile, ResponseSource source, String userId) {
+        validationService.isValidForUserDetailUpdate(updateUserProfileData, userProfile, source);
+        UpdateUserDetails updateUserDetails = UserProfileMapper.mapIdamUpdateStatusRequest(updateUserProfileData);
+        AttributeResponse attributeResponse = idamService.updateUserDetails(updateUserDetails, userId);
+        if((HttpStatus.valueOf(attributeResponse.getIdamStatusCode()).is2xxSuccessful())) {
+            UserProfileMapper.mapUpdatableFields(updateUserProfileData, userProfile, true);
+            doPersistUserProfile(userProfile, source);
+        }
+        return attributeResponse;
     }
 
 
-    private Optional<UserProfile> doPersistUserProfile(UserProfile userProfile, ResponseSource responseSource) {
+    private void doPersistUserProfile(UserProfile userProfile, ResponseSource responseSource) {
         UserProfile result = null;
         HttpStatus status = HttpStatus.OK;
         try {
@@ -72,13 +94,15 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
         auditService.persistAudit(status, result, responseSource);
-        return Optional.ofNullable(result);
+        if (!status.is2xxSuccessful()) {
+            throw new RuntimeException("Error while persisting user profile");
+        }
     }
 
 
     @Override
-    public UserProfileResponse updateRoles(UpdateUserProfileData profileData, String userId) {
-        UserProfileResponse userProfileResponse = new UserProfileResponse();
+    public UserProfileRolesResponse updateRoles(UpdateUserProfileData profileData, String userId) {
+        UserProfileRolesResponse userProfileResponse = new UserProfileRolesResponse();
         UserProfile userProfile = validateUserStatus(userId);
         if (!CollectionUtils.isEmpty(profileData.getRolesAdd())) {
             log.info("Add idam roles for userId :" + userId);
@@ -92,14 +116,14 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
                 auditService.persistAudit(httpStatus, userProfile, ResponseSource.API);
                 addRolesResponse = new RoleAdditionResponse(httpStatus);
             }
-            userProfileResponse.setAddRolesResponse(addRolesResponse);
+            userProfileResponse.setRoleAdditionResponse(addRolesResponse);
         }
 
         if (!CollectionUtils.isEmpty(profileData.getRolesDelete())) {
             log.info("Delete idam roles for userId :" + userId);
             List<RoleDeletionResponse> roleDeletionResponse = new ArrayList<>();
             profileData.getRolesDelete().forEach(role -> roleDeletionResponse.add(deleteRolesInIdam(userId, role.getName(), userProfile)));
-            userProfileResponse.setDeleteRolesResponse(roleDeletionResponse);
+            userProfileResponse.setRoleDeletionResponse(roleDeletionResponse);
         }
         return userProfileResponse;
     }

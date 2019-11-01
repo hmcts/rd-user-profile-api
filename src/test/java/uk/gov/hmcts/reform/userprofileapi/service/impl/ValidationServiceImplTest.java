@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
@@ -69,16 +70,16 @@ public class ValidationServiceImplTest {
 
         when(validationHelperServiceMock.validateUserIdWithException(eq(userId))).thenReturn(true);
 
-        when(validationHelperServiceMock.validateUpdateUserProfileRequestValid(updateUserProfileDataMock,userId)).thenReturn(true);
+        when(validationHelperServiceMock.validateUpdateUserProfileRequestValid(updateUserProfileDataMock,userId, ResponseSource.API)).thenReturn(true);
 
-        UserProfile actual = sut.validateUpdate(updateUserProfileDataMock, userId);
+        UserProfile actual = sut.validateUpdate(updateUserProfileDataMock, userId, ResponseSource.API);
 
         assertThat(actual.getStatus()).isEqualTo(dummyIdamStatus);
     }
 
     @Test
     public void testIsValidForUserDetailUpdateHappyPath() {
-        assertThat(sut.isValidForUserDetailUpdate(updateUserProfileDataMock, userProfileMock)).isTrue();
+        assertThat(sut.isValidForUserDetailUpdate(updateUserProfileDataMock, userProfileMock, ResponseSource.API)).isTrue();
         verify(userProfileMock, times(2)).getStatus();
         verify(updateUserProfileDataMock, times(1)).getIdamStatus();
     }
@@ -86,7 +87,7 @@ public class ValidationServiceImplTest {
     @Test
     public void testIsValidForUserDetailUpdateSadPath() {
         when(updateUserProfileDataMock.getIdamStatus()).thenReturn(IdamStatus.SUSPENDED.name());
-        assertThat(sut.isValidForUserDetailUpdate(updateUserProfileDataMock, userProfileMock)).isFalse();
+        assertThat(sut.isValidForUserDetailUpdate(updateUserProfileDataMock, userProfileMock, ResponseSource.API)).isFalse();
         verify(userProfileMock, times(2)).getStatus();
         verify(updateUserProfileDataMock, times(1)).getIdamStatus();
     }

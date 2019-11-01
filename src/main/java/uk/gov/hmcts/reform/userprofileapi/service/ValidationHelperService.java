@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.userprofileapi.service;
 import java.util.Optional;
 
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 
 public interface ValidationHelperService {
@@ -11,5 +12,7 @@ public interface ValidationHelperService {
 
     boolean validateUserIsPresentWithException(Optional<UserProfile> userProfile, String userId);
 
-    boolean validateUpdateUserProfileRequestValid(UpdateUserProfileData updateUserProfileData, String userId);
+    boolean validateUpdateUserProfileRequestValid(UpdateUserProfileData updateUserProfileData, String userId, ResponseSource source);
+
+    boolean validateUserStatusBeforeUpdate(UpdateUserProfileData updateUserProfileData, UserProfile userProfile, ResponseSource source);
 }
