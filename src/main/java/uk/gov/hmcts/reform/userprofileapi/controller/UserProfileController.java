@@ -263,16 +263,19 @@ public class UserProfileController {
     public ResponseEntity updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData,
                                                                  @PathVariable String userId,
                                                                  @ApiParam(name = "origin", required = false) @RequestParam (value = "origin", required = false) String origin) {
+        UserProfileRolesResponse userProfileResponse = null;
         if (CollectionUtils.isEmpty(updateUserProfileData.getRolesAdd())
              && CollectionUtils.isEmpty(updateUserProfileData.getRolesDelete())) {
             log.info("Updating user profile details");
             AttributeResponse attributeResponse = userProfileService.update(updateUserProfileData, userId, origin);
-            return ResponseEntity.status(Integer.valueOf(attributeResponse.getIdamStatusCode())).body(attributeResponse);
+            userProfileResponse = new UserProfileRolesResponse();
+            userProfileResponse.setAttributeResponse(attributeResponse);
+            return ResponseEntity.status(Integer.valueOf(attributeResponse.getIdamStatusCode())).body(userProfileResponse);
 
         } else { // New update roles behavior
             log.info("Updating user roles");
             UserProfileValidator.validateUserProfileDataAndUserId(updateUserProfileData, userId);
-            UserProfileRolesResponse userProfileResponse = userProfileService.updateRoles(updateUserProfileData, userId);
+            userProfileResponse = userProfileService.updateRoles(updateUserProfileData, userId);
             return ResponseEntity.ok().body(userProfileResponse);
         }
 
