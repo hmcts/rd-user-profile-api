@@ -57,7 +57,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
     public AttributeResponse update(UpdateUserProfileData updateUserProfileData, String userId, String origin) {
 
         AttributeResponse attributeResponse = new AttributeResponse(HttpStatus.OK);
-        boolean isExuiUpdate = validationService.isExuiUpdateRequest(origin);
+        boolean isExuiUpdate = validationService.isApiUpdateRequest(origin);
         ResponseSource source = (StringUtils.isEmpty(origin) || !isExuiUpdate) ? ResponseSource.SYNC : ResponseSource.API;
 
         UserProfile userProfile = validationService.validateUpdate(updateUserProfileData, userId, source);

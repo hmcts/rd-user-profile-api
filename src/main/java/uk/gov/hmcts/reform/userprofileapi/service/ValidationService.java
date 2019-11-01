@@ -10,5 +10,5 @@ public interface ValidationService {
 
     boolean isValidForUserDetailUpdate(UpdateUserProfileData updateUserProfileData, UserProfile userProfile, ResponseSource source);
 
-    boolean isExuiUpdateRequest(String origin);
+    boolean isApiUpdateRequest(String origin);
 }

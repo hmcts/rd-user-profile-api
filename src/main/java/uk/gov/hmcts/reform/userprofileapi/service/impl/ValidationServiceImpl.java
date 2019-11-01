@@ -3,9 +3,9 @@ package uk.gov.hmcts.reform.userprofileapi.service.impl;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.domain.entities.*;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.CreationChannel;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserProfileField;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
@@ -47,8 +47,9 @@ public class ValidationServiceImpl implements ValidationService {
         return validationHelperService.validateUserStatusBeforeUpdate(updateUserProfileData, userProfile, source);
     }
 
-    public boolean isExuiUpdateRequest(String origin) {
-        return UserProfileField.EXUI.name().equalsIgnoreCase(origin);
+    @Override
+    public boolean isApiUpdateRequest(String origin) {
+        return !CreationChannel.SYNC.name().equalsIgnoreCase(origin);
     }
 
 }
