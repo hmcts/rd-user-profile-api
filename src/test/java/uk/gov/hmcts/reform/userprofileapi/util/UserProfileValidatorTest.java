@@ -55,21 +55,6 @@ public class UserProfileValidatorTest {
     }
 
     @Test
-    public void test_isUpdateUserProfileRequestValid() {
-
-        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("som@org.com", "fanme", "lname", "ACTIVE", addRolesToRoleName(), addRolesToRoleName());
-        //boolean response = UserProfileValidator.isUpdateUserProfileRequestValid(updateUserProfileData);
-        //assertThat(response).isTrue();
-    }
-
-    @Test
-    public void test_validateUpdateUserProfileRequestFields() {
-        UpdateUserProfileData updateUserProfileDataWithInvalidEmail = new UpdateUserProfileData("somorg.com", "fanme", "lname", "ACTIVE", addRolesToRoleName(),addRolesToRoleName());
-        //boolean response1 = UserProfileValidator.validateUpdateUserProfileRequestFields(updateUserProfileDataWithInvalidEmail);
-        //assertThat(response1).isFalse();
-    }
-
-    @Test
     public void test_isBlankOrSizeInvalid() {
 
         boolean response = UserProfileValidator.isBlankOrSizeInvalid("", 5);

@@ -270,7 +270,7 @@ public class UserProfileController {
             AttributeResponse attributeResponse = userProfileService.update(updateUserProfileData, userId, origin);
             userProfileResponse = new UserProfileRolesResponse();
             userProfileResponse.setAttributeResponse(attributeResponse);
-            return ResponseEntity.status(Integer.valueOf(attributeResponse.getIdamStatusCode())).body(userProfileResponse);
+            return ResponseEntity.status(attributeResponse.getIdamStatusCode()).body(userProfileResponse);
 
         } else { // New update roles behavior
             log.info("Updating user roles");
