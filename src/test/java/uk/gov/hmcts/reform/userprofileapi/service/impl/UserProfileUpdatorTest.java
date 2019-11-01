@@ -19,7 +19,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -45,6 +44,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
+import uk.gov.hmcts.reform.userprofileapi.service.ValidationHelperService;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -64,6 +64,9 @@ public class UserProfileUpdatorTest {
 
     @Mock
     private UserProfile userProfileMock;
+
+    @Mock
+    private ValidationHelperService validationHelperServiceMock;
 
     private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.ACCEPTED);
 
@@ -217,6 +220,8 @@ public class UserProfileUpdatorTest {
 
         when(validationServiceMock.validateUpdate(any(), any(), any())).thenReturn(userProfileMock);
 
+        when(validationHelperServiceMock.validateUserPersistedWithException(any())).thenReturn(true);
+
         AttributeResponse response = sut.update(updateUserProfileData, userId, EXUI);
 
         assertThat(response).isNotNull();
@@ -229,7 +234,6 @@ public class UserProfileUpdatorTest {
     }
 
     @Test
-    @Ignore
     public void should_update_idam_user_details_successfully() {
 
         String userId = UUID.randomUUID().toString();
@@ -238,26 +242,18 @@ public class UserProfileUpdatorTest {
 
         when(userProfileMock.getEmail()).thenReturn(dummyEmail);
         when(userProfileMock.getFirstName()).thenReturn(dummyFirstName);
-        when(userProfileMock.getLastName()).thenReturn(dummyLastName);
-        when(userProfileMock.getStatus()).thenReturn(IdamStatus.SUSPENDED);
 
+        when(validationServiceMock.isExuiUpdateRequest(any())).thenReturn(false);
         when(validationServiceMock.validateUpdate(any(), any(), any())).thenReturn(userProfileMock);
-        when(validationServiceMock.isValidForUserDetailUpdate(eq(updateUserProfileData), any(UserProfile.class), ResponseSource.API)).thenReturn(true);
 
         AttributeResponse response = sut.update(updateUserProfileData, userId, EXUI);
 
         assertThat(response).isNotNull();
         assertThat(updateUserProfileData.getIdamStatus()).isEqualTo(IdamStatus.ACTIVE.name());
 
-        verify(userProfileMock,times(2)).getStatus();
         verify(userProfileRepositoryMock,times(1)).save(any(UserProfile.class));
         verify(auditServiceMock, times(1)).persistAudit(eq(HttpStatus.OK), any(UserProfile.class), any());
-        verify(validationServiceMock, times(1)).isValidForUserDetailUpdate(any(UpdateUserProfileData.class),any(UserProfile.class), ResponseSource.API);
-        verify(idamFeignClientMock, times(1)).updateUserDetails(any(UpdateUserProfileData.class),eq(userId));
-        //verify(updateUserProfileData, times(1)).getIdamStatus();
-
-        //  tbc verify in separate auditService test
-        //! verify(auditRepositoryMock,times(1)).save(any(Audit.class));
+        //tbc improve test
     }
 
     @Test(expected = ResourceNotFoundException.class)

@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UpdateUserDetails;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
@@ -30,6 +29,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceUpdator;
+import uk.gov.hmcts.reform.userprofileapi.service.ValidationHelperService;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
 import uk.gov.hmcts.reform.userprofileapi.util.JsonFeignResponseHelper;
 import uk.gov.hmcts.reform.userprofileapi.util.UserProfileMapper;
@@ -51,14 +51,17 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
     private ValidationService validationService;
 
     @Autowired
+    ValidationHelperService validationHelperService;
+
+    @Autowired
     private AuditService auditService;
 
     @Override
     public AttributeResponse update(UpdateUserProfileData updateUserProfileData, String userId, String origin) {
 
         AttributeResponse attributeResponse = new AttributeResponse(HttpStatus.OK);
-        boolean isExuiUpdate = validationService.isApiUpdateRequest(origin);
-        ResponseSource source = (StringUtils.isEmpty(origin) || !isExuiUpdate) ? ResponseSource.SYNC : ResponseSource.API;
+        boolean isExuiUpdate = validationService.isExuiUpdateRequest(origin);
+        ResponseSource source = (!isExuiUpdate) ? ResponseSource.SYNC : ResponseSource.API;
 
         UserProfile userProfile = validationService.validateUpdate(updateUserProfileData, userId, source);
 
@@ -92,9 +95,8 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
             status = HttpStatus.INTERNAL_SERVER_ERROR;
         }
         auditService.persistAudit(status, result, responseSource);
-        if (!status.is2xxSuccessful()) {
-            throw new RuntimeException("Error while persisting user profile");
-        }
+
+        validationHelperService.validateUserPersistedWithException(status);
     }
 
 

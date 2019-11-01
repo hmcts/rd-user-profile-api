@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
+import static uk.gov.hmcts.reform.userprofileapi.domain.enums.ExceptionType.ERRORPERSISTINGEXCEPTION;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateUserProfileStatus;
 
@@ -59,6 +60,14 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
             auditService.persistAudit(HttpStatus.BAD_REQUEST, source);
             final String exceptionMsg = String.format("User is PENDING or input status is PENDING and only be changed to ACTIVE or SUSPENDED for userId: %s", userProfile.getIdamId());
             exceptionService.throwCustomRuntimeException(ExceptionType.REQUIREDFIELDMISSINGEXCEPTION, exceptionMsg);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean validateUserPersistedWithException(HttpStatus status) {
+        if (!status.is2xxSuccessful()) {
+            exceptionService.throwCustomRuntimeException(ERRORPERSISTINGEXCEPTION, "Error while persisting user profile");
         }
         return true;
     }

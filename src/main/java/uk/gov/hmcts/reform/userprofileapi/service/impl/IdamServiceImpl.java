@@ -98,7 +98,7 @@ public class IdamServiceImpl implements IdamService {
     @Override
     public AttributeResponse updateUserDetails(UpdateUserDetails updateUserDetails, String userId) {
         log.info("Update user details for userId :" + userId);
-        HttpStatus httpStatus;
+        HttpStatus httpStatus = null;
         Response response;
         try {
             response = idamClient.updateUserDetails(updateUserDetails, userId);

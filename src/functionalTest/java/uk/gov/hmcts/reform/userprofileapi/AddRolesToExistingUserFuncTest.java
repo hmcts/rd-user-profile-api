@@ -12,6 +12,7 @@ import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,8 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         idamClient = new IdamClient(configProperties);
     }
 
-    //@Test//tdd ignoring for now
+    @Test
+    @Ignore
     public void should_update_user_profile_with_roles_successfully() throws Exception {
 
 

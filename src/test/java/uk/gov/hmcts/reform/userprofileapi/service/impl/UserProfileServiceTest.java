@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.userprofileapi.service.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -10,7 +12,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -31,9 +32,6 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceUpdator;
-import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileCreator;
-import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileRetriever;
-import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserProfileServiceTest {
@@ -45,7 +43,7 @@ public class UserProfileServiceTest {
     private UserProfileRetriever userProfileRetriever;
 
     @Mock
-    private ResourceUpdator<UpdateUserProfileData> resourceUpdator;
+    private ResourceUpdator<UpdateUserProfileData> resourceUpdatorMock;
 
     @InjectMocks
     private UserProfileService<RequestData> userProfileService;
@@ -67,16 +65,20 @@ public class UserProfileServiceTest {
 
         UserProfileRolesResponse userProfileResponse = mock(UserProfileRolesResponse.class);
 
-        when(resourceUpdator.updateRoles(updateUserProfileData, "1234")).thenReturn(userProfileResponse);
+        when(resourceUpdatorMock.updateRoles(updateUserProfileData, "1234")).thenReturn(userProfileResponse);
         userProfileResponse = userProfileService.updateRoles(updateUserProfileData, "1234");
 
         assertThat(userProfileResponse).isNotNull();
     }
 
     @Test
-    @Ignore
     public void testUpdate() {
+        AttributeResponse attributeResponseMock = Mockito.mock(AttributeResponse.class);
+        when(resourceUpdatorMock.update(any(), any(), any())).thenReturn(attributeResponseMock);
+
         assertThat(userProfileService.update(null,null,null)).isInstanceOf(AttributeResponse.class);
+
+        verify(resourceUpdatorMock, times(1)).update(any(), any(), any());
     }
 
     @Test
@@ -92,7 +94,7 @@ public class UserProfileServiceTest {
         UserProfileCreationResponse resource = userProfileService.create(userProfileData);
 
         assertThat(resource).isEqualToComparingFieldByField(expected);
-        Mockito.verify(userProfileCreator).create(any(UserProfileCreationData.class));
+        verify(userProfileCreator).create(any(UserProfileCreationData.class));
 
     }
 
