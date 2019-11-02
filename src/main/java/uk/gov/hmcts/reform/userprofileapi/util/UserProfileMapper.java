@@ -18,18 +18,14 @@ public interface UserProfileMapper {
     }
 
     static UpdateUserDetails mapIdamUpdateStatusRequest(UpdateUserProfileData updateUserProfileData) {
-        UpdateUserDetails data = new UpdateUserDetails(updateUserProfileData.getFirstName(), updateUserProfileData.getLastName(), deriveStatusFlag(updateUserProfileData));
-        return data;
+        return new UpdateUserDetails(updateUserProfileData.getFirstName(), updateUserProfileData.getLastName(), deriveStatusFlag(updateUserProfileData));
     }
 
     static boolean deriveStatusFlag(UpdateUserProfileData data) {
-
-        Boolean deriveStatusFlag = null;
         if (null !=  data.getIdamStatus()) {
-            deriveStatusFlag = IdamStatus.ACTIVE.toString().equalsIgnoreCase(data.getIdamStatus()) ? true : false;
+            return IdamStatus.ACTIVE.toString().equalsIgnoreCase(data.getIdamStatus());
         }
-        return deriveStatusFlag;
-
+        return false;
     }
 
     static void setEmail(UpdateUserProfileData data, UserProfile userProfile, boolean isExuiUpdate) {

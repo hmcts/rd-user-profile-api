@@ -108,17 +108,21 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         userProfileData.setLastName("lastName");
         userProfileData.setEmail(email);
         userProfileData.setIdamStatus(IdamStatus.SUSPENDED.name());
-        UserProfileWithRolesResponse updatedStatusResponse =
+        UserProfileResponse updatedStatusResponse =
                 testRequestHandler.sendPut(
                         userProfileData,
                         HttpStatus.OK,
-                        requestUri + "/" + resource.getIdamId() + "?origin=exui", UserProfileWithRolesResponse.class);
+                        requestUri + "/" + resource.getIdamId() + "?origin=exui", UserProfileResponse.class);
 
         UserProfileResponse actual =
                 testRequestHandler.sendGet(
                         requestUri + "?email=" + email.toLowerCase(),
                         UserProfileResponse.class
                 );
+
+        assertThat(updatedStatusResponse).isNotNull();
+
+        assertThat(actual).isNotNull();
 
         assertThat(actual.getIdamId()).isNotNull();
         log.info("retrieved user with updated status for idamId:" + actual.getIdamId());
