@@ -174,7 +174,7 @@ public class UserProfileUpdatorTest {
         rolesResponse.add(roleDeletionResponse);
 
         UserProfileResponse userProfileRolesResponse = new UserProfileResponse();
-        userProfileRolesResponse.setDeleteRolesResponse(rolesResponse);
+        userProfileRolesResponse.setRoleDeletionResponse(rolesResponse);
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         String body = mapper.writeValueAsString(userProfileRolesResponse);
 
@@ -299,7 +299,7 @@ public class UserProfileUpdatorTest {
         RoleAdditionResponse roleAdditionResponse = new RoleAdditionResponse();
         roleAdditionResponse.setIdamStatusCode(HttpStatus.OK.toString());
         roleAdditionResponse.setIdamMessage("Success");
-        userProfileRolesResponse.setAddRolesResponse(roleAdditionResponse);
+        userProfileRolesResponse.setRoleAdditionResponse(roleAdditionResponse);
 
         sut.updateRoles(updateUserProfileData, "1567");
     }
@@ -326,7 +326,7 @@ public class UserProfileUpdatorTest {
         RoleAdditionResponse roleAdditionResponse = new RoleAdditionResponse();
         roleAdditionResponse.setIdamStatusCode(HttpStatus.OK.toString());
         roleAdditionResponse.setIdamMessage("Success");
-        userProfileResponse.setAddRolesResponse(roleAdditionResponse);
+        userProfileResponse.setRoleAdditionResponse(roleAdditionResponse);
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         String body = mapper.writeValueAsString(userProfileResponse);
 

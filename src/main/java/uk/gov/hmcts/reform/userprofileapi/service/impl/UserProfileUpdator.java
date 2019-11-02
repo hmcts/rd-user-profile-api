@@ -106,17 +106,17 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         UserProfile userProfile = validateUserStatus(userId);
         if (!CollectionUtils.isEmpty(profileData.getRolesAdd())) {
             log.info("Add idam roles for userId :" + userId);
-            RoleAdditionResponse addRolesResponse;
+            RoleAdditionResponse roleAdditionResponse;
             HttpStatus httpStatus;
             try (Response response = idamClient.addUserRoles(profileData.getRolesAdd(), userId)) {
                 httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode();
-                addRolesResponse = new RoleAdditionResponse(httpStatus);
+                roleAdditionResponse = new RoleAdditionResponse(httpStatus);
             } catch (FeignException ex) {
                 httpStatus = getHttpStatusFromFeignException(ex);
                 auditService.persistAudit(httpStatus, userProfile, ResponseSource.API);
-                addRolesResponse = new RoleAdditionResponse(httpStatus);
+                roleAdditionResponse = new RoleAdditionResponse(httpStatus);
             }
-            userProfileResponse.setRoleAdditionResponse(addRolesResponse);
+            userProfileResponse.setRoleAdditionResponse(roleAdditionResponse);
         }
 
         if (!CollectionUtils.isEmpty(profileData.getRolesDelete())) {

@@ -17,8 +17,8 @@ public class UserProfileRolesResponse {
     private RoleAdditionResponse roleAdditionResponse;
     private List<RoleDeletionResponse> roleDeletionResponse;
 
-    public UserProfileRolesResponse(RoleAdditionResponse addRolesResponse, List<RoleDeletionResponse> deleteRolesResponse) {
-        this.roleAdditionResponse = addRolesResponse;
-        this.roleDeletionResponse = deleteRolesResponse;
+    public UserProfileRolesResponse(RoleAdditionResponse roleAdditionResponse, List<RoleDeletionResponse> roleDeletionResponse) {
+        this.roleAdditionResponse = roleAdditionResponse;
+        this.roleDeletionResponse = roleDeletionResponse;
     }
 }

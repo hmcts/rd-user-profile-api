@@ -56,7 +56,7 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
 
     @Override
     public boolean validateUserStatusBeforeUpdate(UpdateUserProfileData updateUserProfileData, UserProfile userProfile, ResponseSource source) {
-        if (IdamStatus.PENDING == userProfile.getStatus() || IdamStatus.PENDING.toString().equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
+        if (IdamStatus.PENDING == userProfile.getStatus() || IdamStatus.PENDING.name().equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
             auditService.persistAudit(HttpStatus.BAD_REQUEST, source);
             final String exceptionMsg = String.format("User is PENDING or input status is PENDING and only be changed to ACTIVE or SUSPENDED for userId: %s", userProfile.getIdamId());
             exceptionService.throwCustomRuntimeException(ExceptionType.REQUIREDFIELDMISSINGEXCEPTION, exceptionMsg);
