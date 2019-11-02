@@ -86,7 +86,7 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
     }
 
     @Test
-    public void rdcc_418_1_should_update_user_status_from_active_to_suspended() throws Exception {
+    public void rdcc_418_ac1_should_update_user_status_from_active_to_suspended() throws Exception {
         UserProfileCreationData data = createUserProfileData();
         List<String> roles = new ArrayList<>();
         roles.add(puiUserManager);
@@ -108,11 +108,11 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         userProfileData.setLastName("lastName");
         userProfileData.setEmail(email);
         userProfileData.setIdamStatus(IdamStatus.SUSPENDED.name());
-        UserProfileResponse updatedStatusResponse =
+        UserProfileWithRolesResponse updatedStatusResponse =
                 testRequestHandler.sendPut(
                         userProfileData,
                         HttpStatus.OK,
-                        requestUri + "/" + resource.getIdamId() + "?origin=exui", UserProfileResponse.class);
+                        requestUri + "/" + resource.getIdamId() + "?origin=exui", UserProfileWithRolesResponse.class);
 
         UserProfileResponse actual =
                 testRequestHandler.sendGet(
@@ -136,10 +136,10 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
 
         data.setEmail(email);
         createUserProfile(data, HttpStatus.CREATED);
-        UserProfileResponse resource =
+        UserProfileWithRolesResponse resource =
                 testRequestHandler.sendGet(
                         requestUri + "?email=" + email.toLowerCase(),
-                        UserProfileResponse.class
+                        UserProfileWithRolesResponse.class
                 );
 
         log.info("get Userprofile response::" + resource);
@@ -149,11 +149,11 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         userRProfileData.setLastName("lastName");
         userRProfileData.setEmail(email);
         userRProfileData.setIdamStatus(IdamStatus.SUSPENDED.name());
-        UserProfileResponse updatedStatusResponse =
+        UserProfileWithRolesResponse updatedStatusResponse =
                 testRequestHandler.sendPut(
                         userRProfileData,
                         HttpStatus.OK,
-                        requestUri + "/" + resource.getIdamId() + "?origin=exui", UserProfileResponse.class);
+                        requestUri + "/" + resource.getIdamId() + "?origin=exui", UserProfileWithRolesResponse.class);
 
         log.info("after Status update call" + updatedStatusResponse);
     }
