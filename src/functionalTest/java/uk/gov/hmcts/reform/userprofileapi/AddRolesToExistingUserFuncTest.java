@@ -12,7 +12,6 @@ import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +39,6 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
     }
 
     @Test
-    @Ignore
     public void should_update_user_profile_with_roles_successfully() throws Exception {
 
 
@@ -106,18 +104,17 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         UpdateUserProfileData userProfileData = new UpdateUserProfileData();
         userProfileData.setFirstName("firstName");
         userProfileData.setLastName("lastName");
-        userProfileData.setEmail(email);
         userProfileData.setIdamStatus(IdamStatus.SUSPENDED.name());
-        UserProfileResponse updatedStatusResponse =
+        UserProfileRolesResponse updatedStatusResponse =
                 testRequestHandler.sendPut(
                         userProfileData,
                         HttpStatus.OK,
-                        requestUri + "/" + resource.getIdamId() + "?origin=exui", UserProfileResponse.class);
+                        requestUri + "/" + resource.getIdamId() + "?origin=exui", UserProfileRolesResponse.class);
 
-        UserProfileResponse actual =
+        UserProfileWithRolesResponse actual =
                 testRequestHandler.sendGet(
-                        requestUri + "?email=" + email.toLowerCase(),
-                        UserProfileResponse.class
+                        "/v1/userprofile/" + resource.getIdamId() + "/roles",
+                        UserProfileWithRolesResponse.class
                 );
 
         assertThat(updatedStatusResponse).isNotNull();
@@ -131,8 +128,8 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         log.info("user updated to:" + actual.getIdamStatus());
     }
 
-    //@Test
-    public void rdcc_418_2_should_update_user_status_from_suspended_to_active() throws Exception {
+    @Test
+    public void rdcc_418_ac2_should_update_user_status_from_suspended_to_active() throws Exception {
         UserProfileCreationData data = createUserProfileData();
         List<String> roles = new ArrayList<>();
         roles.add(puiUserManager);
@@ -140,25 +137,66 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
 
         data.setEmail(email);
         createUserProfile(data, HttpStatus.CREATED);
-        UserProfileWithRolesResponse resource =
+        UserProfileResponse resource =
                 testRequestHandler.sendGet(
                         requestUri + "?email=" + email.toLowerCase(),
+                        UserProfileResponse.class
+                );
+
+        log.info(String.format("created and retrieved user with email:[%s]", resource.getEmail()));
+
+        //update from active to suspended
+        UpdateUserProfileData userProfileData = new UpdateUserProfileData();
+        userProfileData.setFirstName("firstName");
+        userProfileData.setLastName("lastName");
+        userProfileData.setIdamStatus(IdamStatus.SUSPENDED.name());
+        UserProfileRolesResponse updatedStatusResponse =
+                testRequestHandler.sendPut(
+                        userProfileData,
+                        HttpStatus.OK,
+                        requestUri + "/" + resource.getIdamId() + "?origin=exui", UserProfileRolesResponse.class);
+
+        UserProfileWithRolesResponse actual =
+                testRequestHandler.sendGet(
+                        "/v1/userprofile/" + resource.getIdamId() + "/roles",
                         UserProfileWithRolesResponse.class
                 );
 
-        log.info("get Userprofile response::" + resource);
-        log.info("before addroles call");
-        UpdateUserProfileData userRProfileData = new UpdateUserProfileData();
-        userRProfileData.setFirstName("firstName");
-        userRProfileData.setLastName("lastName");
-        userRProfileData.setEmail(email);
-        userRProfileData.setIdamStatus(IdamStatus.SUSPENDED.name());
-        UserProfileWithRolesResponse updatedStatusResponse =
-                testRequestHandler.sendPut(
-                        userRProfileData,
-                        HttpStatus.OK,
-                        requestUri + "/" + resource.getIdamId() + "?origin=exui", UserProfileWithRolesResponse.class);
+        assertThat(updatedStatusResponse).isNotNull();
 
-        log.info("after Status update call" + updatedStatusResponse);
+        assertThat(actual).isNotNull();
+
+        assertThat(actual.getIdamId()).isNotNull();
+        log.info("retrieved user with updated status for idamId:" + actual.getIdamId());
+
+        assertThat(actual.getIdamStatus()).isEqualTo(IdamStatus.SUSPENDED.name());
+        log.info("user updated to:" + actual.getIdamStatus());
+
+        //making same user to ACTIVE from SUSPENDED
+
+        UpdateUserProfileData userProfileData1 = new UpdateUserProfileData();
+        userProfileData1.setIdamStatus(IdamStatus.ACTIVE.name());
+        UserProfileRolesResponse updatedStatusResponse1 =
+                testRequestHandler.sendPut(
+                        userProfileData1,
+                        HttpStatus.OK,
+                        requestUri + "/" + resource.getIdamId() + "?origin=exui", UserProfileRolesResponse.class);
+
+        UserProfileWithRolesResponse actual1 =
+                testRequestHandler.sendGet(
+                        "/v1/userprofile/" + resource.getIdamId() + "/roles",
+                        UserProfileWithRolesResponse.class
+                );
+
+        assertThat(updatedStatusResponse1).isNotNull();
+
+        assertThat(actual1).isNotNull();
+
+        assertThat(actual1.getIdamId()).isNotNull();
+        log.info("retrieved user with updated status for idamId:" + actual1.getIdamId());
+
+        assertThat(actual1.getIdamStatus()).isEqualTo(IdamStatus.ACTIVE.name());
+        log.info("user updated to:" + actual1.getIdamStatus());
     }
+
 }
