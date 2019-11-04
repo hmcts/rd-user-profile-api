@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UserProfileRolesResponse {
 
-    @JsonProperty("updateStatusResponse")
+    @JsonProperty("statusUpdateResponse")
     private AttributeResponse attributeResponse;
     private RoleAdditionResponse roleAdditionResponse;
     private List<RoleDeletionResponse> roleDeletionResponse;
