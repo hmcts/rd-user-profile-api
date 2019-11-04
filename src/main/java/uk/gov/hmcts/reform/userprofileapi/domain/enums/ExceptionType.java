@@ -7,7 +7,8 @@ public enum ExceptionType {
     RESOURCENOTFOUNDEXCEPTION("ResourceNotFoundException"),
     REQUIREDFIELDMISSINGEXCEPTION("RequiredFieldMissingException"),
     IDAMSERVICEEXCEPTION("IdamServiceException"),
-    UNDEFINDEDEXCEPTION("UndefinedException");
+    UNDEFINDEDEXCEPTION("UndefinedException"),
+    ERRORPERSISTINGEXCEPTION("ErrorPersistingException");
 
     private String content;
 

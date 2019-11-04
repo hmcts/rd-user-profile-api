@@ -25,31 +25,13 @@ public interface UserProfileValidator {
         return true;
     }
 
-    static boolean isUpdateUserProfileRequestValid(UpdateUserProfileData updateUserProfileData) {
-        if (validateUpdateUserProfileRequestFields(updateUserProfileData)) {
-            return validateUserProfileRequestWithException(updateUserProfileData);
-        }
-        return false;
-    }
-
-    static boolean validateUserProfileRequestWithException(UpdateUserProfileData updateUserProfileData) {
+    static boolean validateUserProfileStatus(UpdateUserProfileData updateUserProfileData) {
         try {
             validateEnumField(STATUS.name(), updateUserProfileData.getIdamStatus().toUpperCase());
             return true;
         } catch (Exception ex) {
-            //tbc log exception?
             return false;
         }
-    }
-
-
-    static boolean validateUpdateUserProfileRequestFields(UpdateUserProfileData updateUserProfileData) {
-        return !(null == updateUserProfileData.getEmail()
-                || isBlankOrSizeInvalid(updateUserProfileData.getEmail(), 255)
-                || isBlankOrSizeInvalid(updateUserProfileData.getFirstName(), 255)
-                || isBlankOrSizeInvalid(updateUserProfileData.getLastName(), 255)
-                || isBlankOrSizeInvalid(updateUserProfileData.getIdamStatus(), 255)
-                || !updateUserProfileData.getEmail().matches(RegEx.EMAIL.getContent()));
     }
 
     static boolean isBlankOrSizeInvalid(String fieldValue, int validSize) {
@@ -60,6 +42,7 @@ public interface UserProfileValidator {
         }
         return isInvalid;
     }
+
 
     static void validateCreateUserProfileRequest(UserProfileCreationData request) {
         requireNonNull(request, "createUserProfileData cannot be null");

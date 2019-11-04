@@ -208,56 +208,6 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
 
     }
 
-    @Test
-    public void should_return_400_when_fields_are_blank_or_having_only_whitespaces() throws Exception {
-
-        UserProfile persistedUserProfile = userProfileMap.get("user");
-        String idamId = persistedUserProfile.getIdamId();
-        List<String> mandatoryFieldList =
-                Lists.newArrayList(
-                        "email",
-                        "firstName",
-                        "lastName",
-                        "idamStatus"
-                );
-
-        new JSONObject(
-                objectMapper.writeValueAsString(
-                        buildUpdateUserProfileData()
-                )
-        );
-
-        mandatoryFieldList.forEach(s -> {
-
-            try {
-
-                JSONObject jsonObject =
-                        new JSONObject(objectMapper.writeValueAsString(buildUpdateUserProfileData()));
-
-                jsonObject.put(s,"");
-
-                mockMvc.perform(put(APP_BASE_PATH  + SLASH + idamId)
-                        .content(jsonObject.toString())
-                        .contentType(APPLICATION_JSON_UTF8))
-                        .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
-                        .andReturn();
-
-                jsonObject.put(s," ");
-
-                mockMvc.perform(put(APP_BASE_PATH + SLASH + idamId)
-                        .content(jsonObject.toString())
-                        .contentType(APPLICATION_JSON_UTF8))
-                        .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
-                        .andReturn();
-
-            } catch (Exception e) {
-                Assertions.fail("could not run test correctly", e);
-            }
-
-        });
-
-    }
-
     //@Test
     public void should_return_200_and_update_user_profile_resource_with_valid_email() throws Exception {
 
@@ -271,40 +221,6 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
                 APP_BASE_PATH + SLASH + idamId,
                 data,
                 OK
-        );
-
-    }
-
-    @Test
-    public void should_return_400_and_update_user_profile_resource_with_valid_email() throws Exception {
-
-        UserProfile persistedUserProfile = userProfileMap.get("user");
-        String idamId = persistedUserProfile.getIdamId();
-        UpdateUserProfileData data = buildUpdateUserProfileData();
-        data.setEmail("a.adisongmail.com");
-
-        userProfileRequestHandlerTest.sendPut(
-                mockMvc,
-                APP_BASE_PATH + SLASH + idamId,
-                data,
-                BAD_REQUEST
-        );
-
-    }
-
-    @Test
-    public void should_return_400_and_update_user_profile_resource_with_valid_email_1() throws Exception {
-
-        UserProfile persistedUserProfile = userProfileMap.get("user");
-        String idamId = persistedUserProfile.getIdamId();
-        UpdateUserProfileData data = buildUpdateUserProfileData();
-        data.setEmail("a.adison@gmailcom");
-
-        userProfileRequestHandlerTest.sendPut(
-                mockMvc,
-                APP_BASE_PATH + SLASH + idamId,
-                data,
-                BAD_REQUEST
         );
 
     }

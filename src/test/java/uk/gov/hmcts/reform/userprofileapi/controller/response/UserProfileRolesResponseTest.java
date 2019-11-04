@@ -21,11 +21,11 @@ public class UserProfileRolesResponseTest {
         roleDeletionResponseData.add(deletionResponse);
 
         UserProfileResponse userProfileResponse = new UserProfileResponse();
-        userProfileResponse.setDeleteRolesResponse(roleDeletionResponseData);
-        userProfileResponse.setAddRolesResponse(roleAdditionResponse);
+        userProfileResponse.setRoleDeletionResponse(roleDeletionResponseData);
+        userProfileResponse.setRoleAdditionResponse(roleAdditionResponse);
 
-        assertThat(userProfileResponse.getAddRolesResponse().getIdamStatusCode()).isEqualTo("200 OK");
-        assertThat(userProfileResponse.getAddRolesResponse().getIdamMessage()).isEqualTo("Success");
+        assertThat(userProfileResponse.getRoleAdditionResponse().getIdamStatusCode()).isEqualTo("200 OK");
+        assertThat(userProfileResponse.getRoleAdditionResponse().getIdamMessage()).isEqualTo("Success");
     }
 
     @Test
@@ -38,16 +38,16 @@ public class UserProfileRolesResponseTest {
         roleDeletionResponseData.add(deletionResponse);
 
         UserProfileResponse userProfileResponse = new UserProfileResponse();
-        userProfileResponse.setAddRolesResponse(roleAdditionResponse);
-        userProfileResponse.setDeleteRolesResponse(roleDeletionResponseData);
+        userProfileResponse.setRoleAdditionResponse(roleAdditionResponse);
+        userProfileResponse.setRoleDeletionResponse(roleDeletionResponseData);
 
-        assertThat(userProfileResponse.getAddRolesResponse().getIdamStatusCode()).isEqualTo("200");
-        assertThat(userProfileResponse.getAddRolesResponse().getIdamMessage()).isEqualTo("11 OK");
+        assertThat(userProfileResponse.getRoleAdditionResponse().getIdamStatusCode()).isEqualTo("200");
+        assertThat(userProfileResponse.getRoleAdditionResponse().getIdamMessage()).isEqualTo("11 OK");
 
-        assertThat(userProfileResponse.getDeleteRolesResponse()).isNotNull();
-        assertThat(userProfileResponse.getDeleteRolesResponse().get(0).getRoleName()).isEqualTo("pui-case-manager");
-        assertThat(userProfileResponse.getDeleteRolesResponse().get(0).getIdamMessage()).isEqualTo("11 OK");
-        assertThat(userProfileResponse.getDeleteRolesResponse().get(0).getIdamStatusCode()).isEqualTo("200");
+        assertThat(userProfileResponse.getRoleDeletionResponse()).isNotNull();
+        assertThat(userProfileResponse.getRoleDeletionResponse().get(0).getRoleName()).isEqualTo("pui-case-manager");
+        assertThat(userProfileResponse.getRoleDeletionResponse().get(0).getIdamMessage()).isEqualTo("11 OK");
+        assertThat(userProfileResponse.getRoleDeletionResponse().get(0).getIdamStatusCode()).isEqualTo("200");
 
     }
 }
