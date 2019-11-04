@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.IdamRegisterUserRequest;
+import uk.gov.hmcts.reform.userprofileapi.controller.request.UpdateUserDetails;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamUserResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
@@ -91,6 +93,21 @@ public class IdamServiceImpl implements IdamService {
         }
 
         return new IdamRolesInfo(httpStatus);
+    }
+
+    @Override
+    public AttributeResponse updateUserDetails(UpdateUserDetails updateUserDetails, String userId) {
+        log.info("Update user details for userId :" + userId);
+        HttpStatus httpStatus = null;
+        Response response;
+        try {
+            response = idamClient.updateUserDetails(updateUserDetails, userId);
+            httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode();
+        } catch (FeignException ex) {
+            log.error("SIDAM call failed:", ex);
+            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+        return new AttributeResponse(httpStatus);
     }
 
     public HttpStatus gethttpStatusFromFeignException(FeignException ex) {

@@ -16,6 +16,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
@@ -115,6 +116,7 @@ public class UserProfileControllerTest {
     public void testUpdateUserProfile() {
 
         UpdateUserProfileData updateUserProfileDataMock = Mockito.mock(UpdateUserProfileData.class);
+        AttributeResponse attributeResponseMock =  Mockito.mock(AttributeResponse.class);
         UserProfile userProfileMock = Mockito.mock(UserProfile.class);
 
         ResponseEntity responseEntityMock = Mockito.mock(ResponseEntity.class);
@@ -123,6 +125,8 @@ public class UserProfileControllerTest {
 
         when(updateUserProfileDataMock.getRolesAdd()).thenReturn(null);
         when(updateUserProfileDataMock.getRolesDelete()).thenReturn(null);
+        when(userProfileServiceMock.update(any(), any(), any())).thenReturn(attributeResponseMock);
+        when(attributeResponseMock.getIdamStatusCode()).thenReturn(200);
         ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId, ORIGIN);
 
         verify(userProfileServiceMock, times(1)).update(any(), any(), any());
