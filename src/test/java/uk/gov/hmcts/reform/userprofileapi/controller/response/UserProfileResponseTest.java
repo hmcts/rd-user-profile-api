@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.userprofileapi.controller.response;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -18,6 +20,8 @@ public class UserProfileResponseTest {
         final String dummyEmail = "april.oneil@noreply.com";
         final String dummyFirstName = "APRIL";
         final String dummyLastName = "O'NEIL";
+        List<String> roles = new ArrayList<>();
+        roles.add("pui-case-manager");
 
         UserProfile userProfileMock = Mockito.mock(UserProfile.class);
 
@@ -27,6 +31,9 @@ public class UserProfileResponseTest {
         when(userProfileMock.getFirstName()).thenReturn(dummyFirstName);
         when(userProfileMock.getLastName()).thenReturn(dummyLastName);
         when(userProfileMock.getStatus()).thenReturn(IdamStatus.ACTIVE);
+        when(userProfileMock.getRoles()).thenReturn(roles);
+        when(userProfileMock.getErrorMessage()).thenReturn("someErrorMessage");
+        when(userProfileMock.getErrorStatusCode()).thenReturn("200");
 
         UserProfileResponse userProfileResponse = new UserProfileResponse(userProfileMock);
 
@@ -36,6 +43,15 @@ public class UserProfileResponseTest {
         assertThat(userProfileResponse.getFirstName()).isEqualTo(dummyFirstName);
         assertThat(userProfileResponse.getLastName()).isEqualTo(dummyLastName);
         assertThat(userProfileResponse.getIdamStatus()).isEqualTo(IdamStatus.ACTIVE.name());
+
+        UserProfileResponse userProfileResponse1 = new UserProfileResponse(userProfileMock, false);
+        assertThat(userProfileResponse).isNotNull();
+        assertThat(userProfileResponse.getIdamId()).isEqualTo(dummyIdamId);
+        assertThat(userProfileResponse.getEmail()).isEqualTo(dummyEmail);
+        assertThat(userProfileResponse.getFirstName()).isEqualTo(dummyFirstName);
+        assertThat(userProfileResponse.getLastName()).isEqualTo(dummyLastName);
+        assertThat(userProfileResponse.getIdamStatus()).isEqualTo(IdamStatus.ACTIVE.name());
+
     }
 
     @Test

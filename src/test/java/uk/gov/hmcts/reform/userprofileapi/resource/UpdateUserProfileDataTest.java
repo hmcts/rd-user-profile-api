@@ -7,6 +7,8 @@ import java.util.*;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import uk.gov.hmcts.reform.userprofileapi.controller.UserProfileController;
+import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 
 public class UpdateUserProfileDataTest {
 
@@ -25,5 +27,17 @@ public class UpdateUserProfileDataTest {
         updateUserProfileData.setRolesDelete(roles);
         assertThat(updateUserProfileData.getRolesAdd().size()).isEqualTo(2);
         assertThat(updateUserProfileData.getRolesDelete().size()).isEqualTo(2);
+    }
+
+    @Test
+    public void test_isSameAsUserProfile() {
+        UserProfile userProfile = new UserProfile();
+        userProfile.setStatus(IdamStatus.ACTIVE);
+        userProfile.setFirstName("fname");
+        userProfile.setLastName("lname");
+        userProfile.setEmail("email");
+        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("email", "fname", "lname", "ACTIVE", new HashSet<RoleName>(), new HashSet<RoleName>());
+        assertThat(updateUserProfileData.isSameAsUserProfile(userProfile)).isTrue();
+
     }
 }

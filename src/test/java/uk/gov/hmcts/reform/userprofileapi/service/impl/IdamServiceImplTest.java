@@ -17,6 +17,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.IdamRegisterUserRequest;
+import uk.gov.hmcts.reform.userprofileapi.controller.request.UpdateUserDetails;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
@@ -173,6 +175,42 @@ public class IdamServiceImplTest {
         verify(idamFeignClientMock, times(1)).addUserRoles(roleRequest, userId);
         verify(responseMock, times(1)).headers();
         verify(responseMock, times(2)).status();
+
+        assertThat(result).isNotNull();
+    }
+
+    @Test
+    public void testUpdateUserDetails() {
+        UpdateUserDetails updateUserDetailsMock = Mockito.mock(UpdateUserDetails.class);
+
+        Response responseMock = Mockito.mock(Response.class);
+
+        when(idamFeignClientMock.updateUserDetails(updateUserDetailsMock, userId)).thenReturn(responseMock);
+        when(responseMock.headers()).thenReturn(headerData);
+
+        when(responseMock.status()).thenReturn(StatusCode.OK.getStatus());
+
+        AttributeResponse result = sut.updateUserDetails(updateUserDetailsMock, userId);
+
+        verify(idamFeignClientMock, times(1)).updateUserDetails(updateUserDetailsMock, userId);
+        verify(responseMock, times(1)).headers();
+        verify(responseMock, times(2)).status();
+
+        assertThat(result).isNotNull();
+    }
+
+    @Test
+    public void testUpdateUserDetails_withFailure() {
+        UpdateUserDetails updateUserDetailsMock = Mockito.mock(UpdateUserDetails.class);
+
+        Response responseMock = Mockito.mock(Response.class);
+        FeignException feignExceptionMock = Mockito.mock(FeignException.class);
+
+        when(idamFeignClientMock.updateUserDetails(updateUserDetailsMock, userId)).thenThrow(feignExceptionMock);
+
+        AttributeResponse result = sut.updateUserDetails(updateUserDetailsMock, userId);
+
+        verify(idamFeignClientMock, times(1)).updateUserDetails(updateUserDetailsMock, userId);
 
         assertThat(result).isNotNull();
     }
