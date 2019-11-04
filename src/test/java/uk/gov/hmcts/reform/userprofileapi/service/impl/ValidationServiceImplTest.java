@@ -86,5 +86,9 @@ public class ValidationServiceImplTest {
         assertThat(sut.isValidForUserDetailUpdate(updateUserProfileDataMock, userProfileMock, ResponseSource.API)).isFalse();
     }
 
+    @Test
+    public void testIsExuiUpdateRequest() {
+        assertThat(sut.isExuiUpdateRequest(ResponseSource.EXUI.name())).isTrue();
+    }
 
 }

@@ -5,6 +5,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ExceptionType;
+import uk.gov.hmcts.reform.userprofileapi.exception.ErrorPersistingException;
 import uk.gov.hmcts.reform.userprofileapi.exception.IdamServiceException;
 import uk.gov.hmcts.reform.userprofileapi.exception.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
@@ -47,6 +48,13 @@ public class ExceptionServiceImplTest {
     public void testOverloadedException() {
 
         sut.throwCustomRuntimeException(ExceptionType.RESOURCENOTFOUNDEXCEPTION,"ResourceNotFoundException Message", HttpStatus.ACCEPTED);
+
+    }
+
+    @Test(expected = ErrorPersistingException.class)
+    public void testErrorPersistingException() {
+
+        sut.throwCustomRuntimeException(ExceptionType.ERRORPERSISTINGEXCEPTION,"Error while persisting user profile", HttpStatus.ACCEPTED);
 
     }
 

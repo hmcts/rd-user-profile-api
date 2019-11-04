@@ -44,6 +44,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
+import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationHelperService;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
 
@@ -66,6 +67,12 @@ public class UserProfileUpdatorTest {
     private UserProfile userProfileMock;
 
     @Mock
+    private IdamService idamServiceMock;
+
+    @Mock
+    private AttributeResponse attributeResponseMock;
+
+    @Mock
     private ValidationHelperService validationHelperServiceMock;
 
     private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.ACCEPTED);
@@ -79,6 +86,8 @@ public class UserProfileUpdatorTest {
     private final IdamFeignClient idamFeignClientMock = mock(IdamFeignClient.class);
 
     public static final String EXUI = "EXUI";
+
+    public static final String SYNC = "sync";
 
     @InjectMocks
     private UserProfileUpdator sut;
@@ -234,6 +243,29 @@ public class UserProfileUpdatorTest {
     }
 
     @Test
+    public void should_update_user_profile_successfully_for_sync() {
+
+        String userId = UUID.randomUUID().toString();
+
+        when(userProfileRepositoryMock.save(any(UserProfile.class))).thenReturn(userProfileMock);
+
+        when(userProfileMock.getEmail()).thenReturn(dummyEmail);
+        when(userProfileMock.getFirstName()).thenReturn(dummyFirstName);
+
+        when(validationServiceMock.validateUpdate(any(), any(), any())).thenReturn(userProfileMock);
+
+        when(validationHelperServiceMock.validateUserPersistedWithException(any())).thenReturn(true);
+
+        AttributeResponse response = sut.update(updateUserProfileData, userId, SYNC);
+
+        assertThat(response).isNotNull();
+
+        verify(userProfileRepositoryMock,times(1)).save(any(UserProfile.class));
+        verify(auditServiceMock, times(1)).persistAudit(eq(HttpStatus.OK), any(UserProfile.class), any());
+
+    }
+
+    @Test
     public void should_update_idam_user_details_successfully() {
 
         String userId = UUID.randomUUID().toString();
@@ -362,6 +394,18 @@ public class UserProfileUpdatorTest {
 
         UserProfileRolesResponse response1 = sut.updateRoles(updateUserProfileData, userProfile.getIdamId());
         return response1;
+    }
+
+    @Test
+    public void test_updateSidamAndUserProfile() {
+
+        String userId = UUID.randomUUID().toString();
+        when(userProfileMock.getEmail()).thenReturn("email");
+        when(attributeResponseMock.getIdamStatusCode()).thenReturn(200);
+        when(idamServiceMock.updateUserDetails(any(), any())).thenReturn(attributeResponseMock);
+        when(userProfileRepositoryMock.save(any())).thenReturn(userProfileMock);
+        AttributeResponse response = sut.updateSidamAndUserProfile(updateUserProfileData, userProfileMock, ResponseSource.API, userId);
+        assertThat(response).isNotNull();
     }
 
 }

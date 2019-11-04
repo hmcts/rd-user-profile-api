@@ -14,6 +14,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ExceptionType;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.exception.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
@@ -36,6 +37,7 @@ public class ValidationHelperServiceTest {
 
     @Mock
     private ExceptionService exceptionServiceMock;
+
 
     @InjectMocks
     private ValidationHelperService sut = new ValidationHelperServiceImpl();
@@ -127,5 +129,51 @@ public class ValidationHelperServiceTest {
 
         verify(auditServiceMock, times(1)).persistAudit(eq(HttpStatus.BAD_REQUEST), eq(ResponseSource.API));
     }
+
+    @Test(expected = Test.None.class)
+    public void testvalidateUserStatusBeforeUpdate_scenario1() {
+
+        when(userProfileMock.getStatus()).thenReturn(IdamStatus.PENDING);
+
+        sut.validateUserStatusBeforeUpdate(updateUserProfileDataMock, userProfileMock, ResponseSource.API);
+
+        verify(auditServiceMock, times(1)).persistAudit(eq(HttpStatus.BAD_REQUEST), eq(ResponseSource.API));
+    }
+
+    @Test(expected = Test.None.class)
+    public void testvalidateUserStatusBeforeUpdate_scenario2() {
+
+        when(userProfileMock.getStatus()).thenReturn(IdamStatus.ACTIVE);
+        when(updateUserProfileDataMock.getIdamStatus()).thenReturn(IdamStatus.PENDING.name());
+
+        sut.validateUserStatusBeforeUpdate(updateUserProfileDataMock, userProfileMock, ResponseSource.API);
+
+        verify(auditServiceMock, times(1)).persistAudit(eq(HttpStatus.BAD_REQUEST), eq(ResponseSource.API));
+    }
+
+    @Test(expected = Test.None.class)
+    public void testvalidateUserStatusBeforeUpdate_scenario3() {
+
+        when(userProfileMock.getStatus()).thenReturn(IdamStatus.ACTIVE);
+        when(updateUserProfileDataMock.getIdamStatus()).thenReturn(IdamStatus.ACTIVE.name());
+
+        assertThat(sut.validateUserStatusBeforeUpdate(updateUserProfileDataMock, userProfileMock, ResponseSource.API)).isTrue();
+
+    }
+
+    @Test(expected = Test.None.class)
+    public void testvalidateUserPersistedWithException_scenario1() {
+
+        HttpStatus status = HttpStatus.OK;
+        assertThat(sut.validateUserPersistedWithException(status)).isTrue();
+    }
+
+    @Test(expected = Test.None.class)
+    public void testvalidateUserPersistedWithException_scenario2() {
+
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        assertThat(sut.validateUserPersistedWithException(status)).isTrue();
+    }
+
 
 }

@@ -36,13 +36,6 @@ public class UserProfileResponse {
 
     public UserProfileResponse(UserProfile userProfile, boolean rolesRequired) {
         this(userProfile);
-        if (rolesRequired) {
-            if (IdamStatus.ACTIVE == userProfile.getStatus() && !userProfile.getRoles().isEmpty()) {
-                roles = userProfile.getRoles();
-            }
-            roleAdditionResponse.setIdamStatusCode(userProfile.getErrorStatusCode());
-            roleAdditionResponse.setIdamMessage(userProfile.getErrorMessage());
-        }
     }
 }
 
