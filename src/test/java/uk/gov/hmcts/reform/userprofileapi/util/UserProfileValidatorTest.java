@@ -125,6 +125,16 @@ public class UserProfileValidatorTest {
     }
 
     @Test
+    public void test_validateUserProfileStatus() {
+        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("test-email-@somewhere.com", "test-first-name", "test-last-name", "PENDING",addRolesToRoleName(), addRolesToRoleName());
+        assertThat(UserProfileValidator.validateUserProfileStatus(updateUserProfileData)).isTrue();
+
+        UpdateUserProfileData updateUserProfileData1 = new UpdateUserProfileData("test-email-@somewhere.com", "test-first-name", "test-last-name", "PENING",addRolesToRoleName(), addRolesToRoleName());
+        assertThat(UserProfileValidator.validateUserProfileStatus(updateUserProfileData1)).isFalse();
+
+    }
+
+    @Test
     public void test_validateAndReturnBooleanForParam() {
 
         assertThat(UserProfileValidator.validateAndReturnBooleanForParam("true")).isTrue();

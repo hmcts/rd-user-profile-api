@@ -91,6 +91,8 @@ public class UserProfileUpdatorTest {
 
     public static final String EXUI = "EXUI";
 
+    public static final String SYNC = "sync";
+
     @InjectMocks
     private UserProfileUpdator sut;
 
@@ -242,6 +244,29 @@ public class UserProfileUpdatorTest {
 
         //  TODO verify in separate auditService test
         //! verify(auditRepositoryMock,times(1)).save(any(Audit.class));
+    }
+
+    @Test
+    public void should_update_user_profile_successfully_for_sync() {
+
+        String userId = UUID.randomUUID().toString();
+
+        when(userProfileRepositoryMock.save(any(UserProfile.class))).thenReturn(userProfileMock);
+
+        when(userProfileMock.getEmail()).thenReturn(dummyEmail);
+        when(userProfileMock.getFirstName()).thenReturn(dummyFirstName);
+
+        when(validationServiceMock.validateUpdate(any(), any(), any())).thenReturn(userProfileMock);
+
+        when(validationHelperServiceMock.validateUserPersistedWithException(any())).thenReturn(true);
+
+        AttributeResponse response = sut.update(updateUserProfileData, userId, SYNC);
+
+        assertThat(response).isNotNull();
+
+        verify(userProfileRepositoryMock,times(1)).save(any(UserProfile.class));
+        verify(auditServiceMock, times(1)).persistAudit(eq(HttpStatus.OK), any(UserProfile.class), any());
+
     }
 
     @Test
