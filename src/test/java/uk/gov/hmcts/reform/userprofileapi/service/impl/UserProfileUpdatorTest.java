@@ -23,13 +23,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.powermock.api.mockito.PowerMockito;
 import org.springframework.http.HttpStatus;
 
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
-import uk.gov.hmcts.reform.userprofileapi.controller.request.UpdateUserDetails;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.RoleAdditionResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.RoleDeletionResponse;
@@ -50,7 +47,6 @@ import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationHelperService;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
-import uk.gov.hmcts.reform.userprofileapi.util.UserProfileMapper;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserProfileUpdatorTest {
@@ -404,21 +400,10 @@ public class UserProfileUpdatorTest {
     public void test_updateSidamAndUserProfile() {
 
         String userId = UUID.randomUUID().toString();
-        //UserProfileMapper userProfileMapperMock = PowerMockito.mock(UserProfileMapper.class);
-        UpdateUserDetails updateUserDetailsMock = mock(UpdateUserDetails.class);
-
-        when(userProfileMock.getStatus()).thenReturn(IdamStatus.ACTIVE);
-        when(userProfileMock.getFirstName()).thenReturn("fname");
-        when(userProfileMock.getLastName()).thenReturn("lname");
         when(userProfileMock.getEmail()).thenReturn("email");
-        when(userProfileMock.getStatus()).thenReturn(IdamStatus.ACTIVE);
         when(attributeResponseMock.getIdamStatusCode()).thenReturn(200);
         when(idamServiceMock.updateUserDetails(any(), any())).thenReturn(attributeResponseMock);
-        when(validationServiceMock.validateUpdate(any(), any(), any())).thenThrow(ResourceNotFoundException.class);
         when(userProfileRepositoryMock.save(any())).thenReturn(userProfileMock);
-
-        //when(auditServiceMock.persistAudit(HttpStatus.OK, userProfileMock,ResponseSource.API)).thenReturn();
-
         AttributeResponse response = sut.updateSidamAndUserProfile(updateUserProfileData, userProfileMock, ResponseSource.API, userId);
         assertThat(response).isNotNull();
     }
