@@ -80,7 +80,7 @@ public class IdamClient {
 
         String codeAuthorization = Base64.getEncoder().encodeToString((userEmail + ":" + password).getBytes());
 
-        log.info("User Authorization code::" + codeAuthorization);
+        //log.info("User Authorization code::" + codeAuthorization);
 
         Map<String, String> authorizeParams = new HashMap<>();
         authorizeParams.put("client_id", testConfig.getClientId());
@@ -88,7 +88,7 @@ public class IdamClient {
         authorizeParams.put("response_type", "code");
         authorizeParams.put("scope", "openid profile roles manage-user create-user search-user");
 
-        log.info("authorizeParams::" + authorizeParams);
+        //log.info("authorizeParams::" + authorizeParams);
 
         Response authorizeResponse = RestAssured
                 .given()

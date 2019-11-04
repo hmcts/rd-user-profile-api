@@ -66,17 +66,17 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         UserProfileRolesResponse resource1 =
                 testRequestHandler.sendPut(
                         userRProfileData,
-                            HttpStatus.OK,
-                           requestUri + "/" + resource.getIdamId(), UserProfileRolesResponse.class);
+                        HttpStatus.OK,
+                        requestUri + "/" + resource.getIdamId(), UserProfileRolesResponse.class);
 
-        log.info("after addroles call" + resource1);
+        log.info("after addroles call");
 
         UserProfileWithRolesResponse resource2 =
                 testRequestHandler.sendGet(
                         "/v1/userprofile/" + resource.getIdamId() + "/roles",
                         UserProfileWithRolesResponse.class
                 );
-        log.info("Roles addroles call" + resource2);
+        log.info("Roles addroles call");
         assertThat(resource2.getRoles().size()).isNotNull();
         assertThat(resource2.getRoles().size()).isEqualTo(3);
         assertThat(resource2.getRoles().contains("caseworker,pui-case-manager,pui-user-manager"));
@@ -91,20 +91,23 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         String email = idamClient.createUser(roles);
 
         data.setEmail(email);
-        createUserProfile(data, HttpStatus.CREATED);
-        UserProfileResponse resource =
-                testRequestHandler.sendGet(
-                        requestUri + "?email=" + email.toLowerCase(),
-                        UserProfileResponse.class
-                );
-
-        log.info(String.format("created and retrieved user with email:[%s]", resource.getEmail()));
 
         //update from active to suspended
         UpdateUserProfileData userProfileData = new UpdateUserProfileData();
         userProfileData.setFirstName("firstName");
         userProfileData.setLastName("lastName");
         userProfileData.setIdamStatus(IdamStatus.SUSPENDED.name());
+        createUserProfile(data, HttpStatus.CREATED);
+
+        UserProfileResponse resource =
+                testRequestHandler.sendGet(
+                        requestUri + "?email=" + email.toLowerCase(),
+                        UserProfileResponse.class
+                );
+
+        log.info("created and retrieved user by email");
+
+
         UserProfileRolesResponse updatedStatusResponse =
                 testRequestHandler.sendPut(
                         userProfileData,
@@ -122,7 +125,7 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         assertThat(actual).isNotNull();
 
         assertThat(actual.getIdamId()).isNotNull();
-        log.info("retrieved user with updated status for idamId:" + actual.getIdamId());
+        log.info("retrieved user with updated status");
 
         assertThat(actual.getIdamStatus()).isEqualTo(IdamStatus.SUSPENDED.name());
         log.info("user updated to:" + actual.getIdamStatus());
@@ -137,19 +140,21 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
 
         data.setEmail(email);
         createUserProfile(data, HttpStatus.CREATED);
-        UserProfileResponse resource =
-                testRequestHandler.sendGet(
-                        requestUri + "?email=" + email.toLowerCase(),
-                        UserProfileResponse.class
-                );
 
-        log.info(String.format("created and retrieved user with email:[%s]", resource.getEmail()));
-
-        //update from active to suspended
         UpdateUserProfileData userProfileData = new UpdateUserProfileData();
         userProfileData.setFirstName("firstName");
         userProfileData.setLastName("lastName");
+
         userProfileData.setIdamStatus(IdamStatus.SUSPENDED.name());
+        UserProfileResponse resource =
+                testRequestHandler.sendGet(
+                        requestUri + "?email=" + email.toLowerCase(),
+                        UserProfileResponse.class);
+
+        log.info("created and retrieved user by email");
+
+        //update from active to suspended
+
         UserProfileRolesResponse updatedStatusResponse =
                 testRequestHandler.sendPut(
                         userProfileData,
@@ -167,7 +172,7 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         assertThat(actual).isNotNull();
 
         assertThat(actual.getIdamId()).isNotNull();
-        log.info("retrieved user with updated status for idamId:" + actual.getIdamId());
+        log.info("retrieved user with updated status");
 
         assertThat(actual.getIdamStatus()).isEqualTo(IdamStatus.SUSPENDED.name());
         log.info("user updated to:" + actual.getIdamStatus());
@@ -193,7 +198,7 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         assertThat(actual1).isNotNull();
 
         assertThat(actual1.getIdamId()).isNotNull();
-        log.info("retrieved user with updated status for idamId:" + actual1.getIdamId());
+        log.info("retrieved user with updated status");
 
         assertThat(actual1.getIdamStatus()).isEqualTo(IdamStatus.ACTIVE.name());
         log.info("user updated to:" + actual1.getIdamStatus());

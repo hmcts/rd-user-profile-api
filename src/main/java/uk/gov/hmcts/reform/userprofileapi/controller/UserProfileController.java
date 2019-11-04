@@ -92,7 +92,6 @@ public class UserProfileController {
         validateCreateUserProfileRequest(userProfileCreationData);
 
         UserProfileCreationResponse resource = userProfileService.create(userProfileCreationData);
-        log.info("idamid:" + resource.getIdamId() + " idamRegistrationResponse:" + resource.getIdamRegistrationResponse());
         return ResponseEntity.status(HttpStatus.CREATED).body(resource);
 
     }
@@ -131,7 +130,7 @@ public class UserProfileController {
     )
     @ResponseBody
     public ResponseEntity<UserProfileWithRolesResponse> getUserProfileWithRolesById(@PathVariable String id) {
-        log.info("Getting user profile with id: {}", id);
+        log.info("Getting user profile by id");
         isUserIdValid(id, true);
         UserProfileWithRolesResponse response = userProfileService.retrieveWithRoles(new UserProfileIdentifier(IdentifierName.UUID, id));
         return ResponseEntity.ok(response);
@@ -173,7 +172,7 @@ public class UserProfileController {
     )
     @ResponseBody
     public ResponseEntity<UserProfileWithRolesResponse> getUserProfileWithRolesByEmail(@RequestParam String email) {
-        log.info("Getting user profile with email: {}", email);
+        log.info("Getting user profile by email");
 
         requireNonNull(email, "email cannot be null");
         UserProfileWithRolesResponse response = userProfileService.retrieveWithRoles(new UserProfileIdentifier(IdentifierName.EMAIL, email.toLowerCase()));
@@ -216,7 +215,7 @@ public class UserProfileController {
             return ResponseEntity.badRequest().build();
         } else if (email != null) {
 
-            log.info("Getting user profile with email: {}", email);
+            log.info("Getting user profile by email");
 
             response =
                     userProfileService.retrieve(
