@@ -55,7 +55,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
         Optional<UserProfile>  optionalExistingUserProfile = userProfileRepository.findByEmail(profileData.getEmail().toLowerCase());
         UserProfile userProfile = optionalExistingUserProfile.orElse(null);
         if (null != userProfile) {
-            log.info("User already exist in UP for user email : " + profileData.getEmail());
+            //User already exist in UP for given user email
             persistAuditAndThrowIdamException(IdamStatusResolver.resolveStatusAndReturnMessage(HttpStatus.CONFLICT), HttpStatus.CONFLICT, userProfile);
         }
 
@@ -65,7 +65,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
         if (idamRegistrationInfo.isSuccessFromIdam()) {
             return persistUserProfileWithAudit(profileData, userId, idamRegistrationInfo.getStatusMessage(), idamRegistrationInfo.getIdamRegistrationResponse());
         } else if (idamRegistrationInfo.isDuplicateUser()) {
-            log.info("User already exist in sidam for eamil : " + profileData.getEmail());
+            //User already exist in sidam for given email
             return handleDuplicateUser(profileData, idamRegistrationInfo);
         } else {
             persistAudit(idamRegistrationInfo.getStatusMessage(), idamStatus, null);
@@ -111,7 +111,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
             //get userId from location header
             userIdUri = idamRegistrationInfo.getResponse().getHeaders().getLocation();
             userId = userIdUri != null ? userIdUri.toString().substring(sidamGetUri.length()) : null;
-            log.error("Received existing idam userId : " + userId);
+            log.error("Received existing idam user");
             // search with id to get roles
             idamRolesInfo = idamService.fetchUserById(userId);
             idamStatus = idamRolesInfo.getResponseStatusCode();
@@ -129,7 +129,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
                     idamStatus = idamRolesInfo.getResponseStatusCode();
                     idamStatusMessage = idamRolesInfo.getStatusMessage();
                     if (!idamRolesInfo.isSuccessFromIdam()) {
-                        log.error("failed sidam add roles POST call for userId : " + userId);
+                        log.error("failed sidam add roles POST call for the given userId");
                         persistAuditAndThrowIdamException(idamStatusMessage, idamStatus, null);
                     }
                 }
@@ -138,7 +138,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
                 idamStatusMessage = IdamStatusResolver.resolveStatusAndReturnMessage(idamStatus);
                 userProfile = persistUserProfileWithAudit(profileData, userId, idamStatusMessage, idamStatus);
             } else {
-                log.error("failed sidam GET call for userId : " + userId);
+                log.error("failed sidam GET call for the given userId");
                 persistAuditAndThrowIdamException(idamStatusMessage, idamStatus, null);
             }
         } else {

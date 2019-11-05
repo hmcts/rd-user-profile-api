@@ -105,7 +105,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         UserProfileRolesResponse userProfileResponse = new UserProfileRolesResponse();
         UserProfile userProfile = validateUserStatus(userId);
         if (!CollectionUtils.isEmpty(profileData.getRolesAdd())) {
-            log.info("Add idam roles for userId :" + userId);
+            //Add idam roles for the given userId
             RoleAdditionResponse roleAdditionResponse;
             HttpStatus httpStatus;
             try (Response response = idamClient.addUserRoles(profileData.getRolesAdd(), userId)) {
@@ -120,7 +120,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         }
 
         if (!CollectionUtils.isEmpty(profileData.getRolesDelete())) {
-            log.info("Delete idam roles for userId :" + userId);
+            //Delete idam roles for the given userId
             List<RoleDeletionResponse> roleDeletionResponse = new ArrayList<>();
             profileData.getRolesDelete().forEach(role -> roleDeletionResponse.add(deleteRolesInIdam(userId, role.getName(), userProfile)));
             userProfileResponse.setRoleDeletionResponse(roleDeletionResponse);

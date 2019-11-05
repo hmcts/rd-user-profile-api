@@ -87,12 +87,11 @@ public class UserProfileController {
     )
     @ResponseBody
     public ResponseEntity<UserProfileCreationResponse> createUserProfile(@Valid @RequestBody UserProfileCreationData userProfileCreationData) {
-        log.info("Creating new User Profile");
+        //Creating new User Profile
 
         validateCreateUserProfileRequest(userProfileCreationData);
 
         UserProfileCreationResponse resource = userProfileService.create(userProfileCreationData);
-        log.info("idamid:" + resource.getIdamId() + " idamRegistrationResponse:" + resource.getIdamRegistrationResponse());
         return ResponseEntity.status(HttpStatus.CREATED).body(resource);
 
     }
@@ -131,7 +130,7 @@ public class UserProfileController {
     )
     @ResponseBody
     public ResponseEntity<UserProfileWithRolesResponse> getUserProfileWithRolesById(@PathVariable String id) {
-        log.info("Getting user profile with id: {}", id);
+        //Getting user profile by id
         isUserIdValid(id, true);
         UserProfileWithRolesResponse response = userProfileService.retrieveWithRoles(new UserProfileIdentifier(IdentifierName.UUID, id));
         return ResponseEntity.ok(response);
@@ -173,7 +172,7 @@ public class UserProfileController {
     )
     @ResponseBody
     public ResponseEntity<UserProfileWithRolesResponse> getUserProfileWithRolesByEmail(@RequestParam String email) {
-        log.info("Getting user profile with email: {}", email);
+        //Getting user profile by email
 
         requireNonNull(email, "email cannot be null");
         UserProfileWithRolesResponse response = userProfileService.retrieveWithRoles(new UserProfileIdentifier(IdentifierName.EMAIL, email.toLowerCase()));
@@ -216,7 +215,7 @@ public class UserProfileController {
             return ResponseEntity.badRequest().build();
         } else if (email != null) {
 
-            log.info("Getting user profile with email: {}", email);
+            //Getting user profile by email
 
             response =
                     userProfileService.retrieve(
@@ -266,14 +265,14 @@ public class UserProfileController {
         UserProfileRolesResponse userProfileResponse = null;
         if (CollectionUtils.isEmpty(updateUserProfileData.getRolesAdd())
              && CollectionUtils.isEmpty(updateUserProfileData.getRolesDelete())) {
-            log.info("Updating user profile details");
+            //Updating user profile details
             AttributeResponse attributeResponse = userProfileService.update(updateUserProfileData, userId, origin);
             userProfileResponse = new UserProfileRolesResponse();
             userProfileResponse.setAttributeResponse(attributeResponse);
             return ResponseEntity.status(attributeResponse.getIdamStatusCode()).body(userProfileResponse);
 
         } else { // New update roles behavior
-            log.info("Updating user roles");
+            //Updating user roles
             UserProfileValidator.validateUserProfileDataAndUserId(updateUserProfileData, userId);
             userProfileResponse = userProfileService.updateRoles(updateUserProfileData, userId);
             return ResponseEntity.ok().body(userProfileResponse);
@@ -323,7 +322,7 @@ public class UserProfileController {
     public ResponseEntity<UserProfileDataResponse> retrieveUserProfiles(@ApiParam(name = "showdeleted", required = true)@RequestParam (value = "showdeleted", required = true) String showDeleted,
                                                                         @ApiParam(name = "rolesRequired", required = true)@RequestParam (value = "rolesRequired", required = true) String rolesRequired,
                                                                         @RequestBody UserProfileDataRequest userProfileDataRequest) {
-        log.info("Retrieving multiple user profiles");
+        //Retrieving multiple user profiles
 
         boolean showDeletedBoolean = UserProfileValidator.validateAndReturnBooleanForParam(showDeleted);
         boolean rolesRequiredBoolean = UserProfileValidator.validateAndReturnBooleanForParam(rolesRequired);
