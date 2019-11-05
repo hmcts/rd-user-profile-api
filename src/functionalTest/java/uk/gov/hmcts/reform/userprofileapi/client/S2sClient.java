@@ -25,7 +25,7 @@ public class S2sClient {
     public S2sClient(String s2sUrl, String microserviceName, String microserviceKey) {
         this.s2sUrl = s2sUrl;
         this.microserviceName = microserviceName;
-        //log.info("Configured S2S secret: " + microserviceKey.substring(0, 2) + "************" + microserviceKey.substring(14));
+        log.info("Configured S2S secret: " + microserviceKey.substring(0, 2) + "************" + microserviceKey.substring(14));
         this.microserviceKey = microserviceKey;
     }
 
@@ -52,7 +52,7 @@ public class S2sClient {
         assertThat(response.getStatusCode()).isEqualTo(200);
 
         String jwtToken = response.getBody().asString();
-        log.debug("Got JWT from S2S service");
+        log.debug("Got JWT from S2S service: ", jwtToken);
         return jwtToken;
     }
 }

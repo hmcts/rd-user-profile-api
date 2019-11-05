@@ -118,6 +118,8 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
         json.put("extra-field1", randomAlphabetic(20));
         json.put("extra-field2", randomAlphabetic(20));
 
+        LOG.info("json output {} ", json.toString());
+
         testRequestHandler.sendPost(json.toString(), HttpStatus.CREATED, requestUri);
     }
 

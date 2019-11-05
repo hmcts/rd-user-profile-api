@@ -55,6 +55,7 @@ public class FuncTestRequestHandler {
     }
 
     public Response sendPost(String jsonBody, HttpStatus expectedStatus, String path) {
+        log.info("User object to be created : {}", jsonBody);
         return withAuthenticatedRequest()
                 .body(jsonBody)
                 .post(path)
@@ -119,6 +120,8 @@ public class FuncTestRequestHandler {
         String s2sToken = getS2sToken();
         String bearerToken = getBearerToken();
 
+        log.info("S2S Token : {}, Bearer Token : {}", s2sToken, bearerToken);
+
         return SerenityRest
             .given()
             //.headers(authorizationHeadersProvider.getServiceAuthorization())
@@ -141,6 +144,8 @@ public class FuncTestRequestHandler {
         String s2sToken = getS2sToken();
         String bearerToken = getBearerToken();
 
+        log.info("S2S Token : {}, Bearer Token : {}", s2sToken, bearerToken);
+
         log.info("Base Url : {}", baseUrl);
 
         return SerenityRest.given()
@@ -158,7 +163,7 @@ public class FuncTestRequestHandler {
     }
 
     private String getS2sToken() {
-        //log.info("S2s Base url : {}, Microservice : {}, Secret : {}", s2sBaseUrl, s2sMicroservice, s2sSecret);
+        log.info("S2s Base url : {}, Microservice : {}, Secret : {}", s2sBaseUrl, s2sMicroservice, s2sSecret);
         S2sClient client = new S2sClient(s2sBaseUrl, s2sMicroservice, s2sSecret);
         return client.getS2sToken();
     }

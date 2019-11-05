@@ -72,14 +72,14 @@ public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
                             HttpStatus.OK,
                            requestUri + "/" + resource.getIdamId(), UserProfileRolesResponse.class);
 
-        LOG.info("after addroles call");
+        LOG.info("after addroles call" + resource1);
 
         UserProfileWithRolesResponse resource2 =
                 testRequestHandler.sendGet(
                         "/v1/userprofile/" + resource.getIdamId() + "/roles",
                         UserProfileWithRolesResponse.class
                 );
-        LOG.info("Roles addroles call");
+        LOG.info("Roles addroles call" + resource2);
         assertThat(resource2.getRoles().size()).isNotNull();
         assertThat(resource2.getRoles().size()).isEqualTo(3);
         RoleName roleDelete = new RoleName(puiOrgManager);
@@ -95,7 +95,7 @@ public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
                         HttpStatus.OK,
                         requestUri + "/" + resource.getIdamId(), UserProfileRolesResponse.class);
 
-        LOG.info("after DeleteRole call");
+        LOG.info("after DeleteRole call" + deleteResourceResp);
 
 
         UserProfileWithRolesResponse resourceForDeleteCheck =
@@ -103,7 +103,7 @@ public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
                         "/v1/userprofile/" + resource.getIdamId() + "/roles",
                         UserProfileWithRolesResponse.class
                 );
-        LOG.info("Roles addroles call");
+        LOG.info("Roles addroles call" + resource2);
         assertThat(resourceForDeleteCheck.getRoles().size()).isNotNull();
         assertThat(resourceForDeleteCheck.getRoles().size()).isEqualTo(2);
         assertThat(resourceForDeleteCheck.getRoles().contains("caseworker,pui-user-manager"));
