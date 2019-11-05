@@ -55,7 +55,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
         Optional<UserProfile>  optionalExistingUserProfile = userProfileRepository.findByEmail(profileData.getEmail().toLowerCase());
         UserProfile userProfile = optionalExistingUserProfile.orElse(null);
         if (null != userProfile) {
-            log.info("User already exist in UP for given user email");
+            //User already exist in UP for given user email
             persistAuditAndThrowIdamException(IdamStatusResolver.resolveStatusAndReturnMessage(HttpStatus.CONFLICT), HttpStatus.CONFLICT, userProfile);
         }
 
@@ -65,7 +65,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
         if (idamRegistrationInfo.isSuccessFromIdam()) {
             return persistUserProfileWithAudit(profileData, userId, idamRegistrationInfo.getStatusMessage(), idamRegistrationInfo.getIdamRegistrationResponse());
         } else if (idamRegistrationInfo.isDuplicateUser()) {
-            log.info("User already exist in sidam for given email");
+            //User already exist in sidam for given email
             return handleDuplicateUser(profileData, idamRegistrationInfo);
         } else {
             persistAudit(idamRegistrationInfo.getStatusMessage(), idamStatus, null);
