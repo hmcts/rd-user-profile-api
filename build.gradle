@@ -305,8 +305,8 @@ dependencies {
 
     testCompile group: 'com.h2database', name: 'h2'
     testCompile "com.github.tomakehurst:wiremock:2.19.0"
-    testCompile group: 'org.mockito', name: 'mockito-core', version: '3.1.0'
-    testCompile group: 'org.mockito', name: 'mockito-inline', version: '3.1.0'
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '2.21.0'
+    testCompile group: 'org.mockito', name: 'mockito-inline', version: '2.8.9'
     testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '1.7.4'
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
 
@@ -385,8 +385,8 @@ bootJar {
 pact {
     publish {
         pactDirectory = 'target/pacts'
-        //pactBrokerUrl = 'http://localhost:9292'
-        pactBrokerUrl = 'https://pact-broker.platform.hmcts.net'
+        pactBrokerUrl = 'http://localhost:9292'
+        //pactBrokerUrl = 'https://pact-broker.platform.hmcts.net'
         tags = ['Dev']
         //version = project.pactVersion
     }
