@@ -385,8 +385,8 @@ bootJar {
 pact {
     publish {
         pactDirectory = 'target/pacts'
-        pactBrokerUrl = 'http://localhost:9292'
-        //pactBrokerUrl = 'https://pact-broker.platform.hmcts.net'
+        //pactBrokerUrl = 'http://localhost:9292'
+        pactBrokerUrl = 'https://pact-broker.platform.hmcts.net'
         tags = ['Dev']
         //version = project.pactVersion
     }
