@@ -130,6 +130,9 @@ Authorization :  Bearer copy IDAM access token
 
 ### Contract testing with pact
 
+To generate the json inside target/pacts directory you need to run the tests first.
+This file is not committed to the repo.
+
 To publish against remote broker:
 `./gradlew pactPublish`
 

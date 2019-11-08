@@ -165,9 +165,9 @@ public class IdamConsumerTest {
 
         return new PactDslJsonBody()
                 .stringType("id", "a833c2e2-2c73-4900-96ca-74b1efb37928")
-                .stringType("forename", "Jack")
-                .stringType("surname", "Skellington")
-                .stringType("email", "jack@spookmail.com")
+                .stringType("forename", "Seymore")
+                .stringType("surname", "Skinner")
+                .stringType("email", "leeroy@jenkins.com")
                 .booleanType("accountStatus", true)
                 .object("roles", array);
     }
