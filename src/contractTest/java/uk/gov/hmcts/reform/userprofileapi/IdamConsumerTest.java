@@ -15,10 +15,8 @@ import groovy.util.logging.Slf4j;
 import io.restassured.RestAssured;
 import io.restassured.config.EncoderConfig;
 import io.restassured.parsing.Parser;
-
-import java.util.Map;
-
 import io.restassured.response.Response;
+import java.util.Map;
 import net.serenitybdd.rest.SerenityRest;
 import org.json.JSONArray;
 import org.json.JSONException;
