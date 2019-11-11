@@ -227,7 +227,6 @@ public class IdamConsumerTest {
                         .extract()
                         .response();
 
-        //JSONObject response = new JSONObject(actualResponseBody);
         assertThat(actualResponseBody.getStatusCode()).isEqualTo(201);
     }
 }
