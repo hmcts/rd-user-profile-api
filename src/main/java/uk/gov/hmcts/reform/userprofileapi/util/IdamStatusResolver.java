@@ -55,8 +55,8 @@ public final class IdamStatusResolver {
     public static IdamStatus resolveIdamStatus(Map<Map<String, Boolean>, IdamStatus> statusResolver, IdamRolesInfo idamRolesInfo) {
 
         Map<String, Boolean> statusMap = new HashMap<>();
-        statusMap.put(ACTIVE, idamRolesInfo.getActive() == null ? false : idamRolesInfo.getActive());
-        statusMap.put(PENDING, idamRolesInfo.getPending() == null ? false : idamRolesInfo.getPending());
+        statusMap.put(ACTIVE, idamRolesInfo.getActive() == null ? Boolean.FALSE : idamRolesInfo.getActive());
+        statusMap.put(PENDING, idamRolesInfo.getPending() == null ? Boolean.FALSE : idamRolesInfo.getPending());
 
         return statusResolver.get(statusMap) != null ? statusResolver.get(statusMap) : IdamStatus.SUSPENDED;
     }
