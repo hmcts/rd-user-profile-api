@@ -47,7 +47,7 @@ public class IdamConsumerTest {
     }
 
     @Test
-    @Pact(provider = "Idam_api", consumer = "rd_user_profile_api__idam_api")
+    @Pact(provider = "Idam_api", consumer = "rd_user_profile_api__Idam_api")
     public RequestResponsePact executeGetUserDetailsAndGet200(PactDslWithProvider builder) {
 
         Map<String, String> headers = Maps.newHashMap();
@@ -103,7 +103,7 @@ public class IdamConsumerTest {
     }
 
     @Test
-    @Pact(provider = "Idam_api", consumer = "rd_user_profile_api__idam_api")
+    @Pact(provider = "Idam_api", consumer = "rd_user_profile_api__Idam_api")
     public RequestResponsePact executeGetUserAndGet200(PactDslWithProvider builder) {
 
         Map<String, String> headers = Maps.newHashMap();
@@ -188,7 +188,7 @@ public class IdamConsumerTest {
     }
 
     @Test
-    @Pact(provider = "Idam_api", consumer = "rd_user_profile_api__idam_api")
+    @Pact(provider = "Idam_api", consumer = "rd_user_profile_api__Idam_api")
     public RequestResponsePact executePostRegistrationAndGet201(PactDslWithProvider builder) {
 
         Map<String, String> headers = Maps.newHashMap();

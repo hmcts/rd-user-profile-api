@@ -156,3 +156,12 @@ The pact contract(s) should be published
 
 Remember to return the localhost back to the remote broker
 
+### 'No tasks available' when running Pact tests
+`Step 1: Go to where u can edit configurations for the tests here..`
+![pact1](readme-images/pact1.png?raw=true "Step 1")
+
+`Step 2: Press the plus to add a new Junit test class..`
+![pact1](readme-images/pact2.png?raw=true "Step 2")
+
+`Step 3: Then setup the configuration like so, making sure the path to the test class is correct..`
+![pact1](readme-images/pact3.png?raw=true "Step 3")
