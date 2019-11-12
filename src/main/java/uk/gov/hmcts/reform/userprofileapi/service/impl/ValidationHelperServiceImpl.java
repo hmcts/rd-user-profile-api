@@ -51,8 +51,14 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
     public boolean validateUpdateUserProfileRequestValid(UpdateUserProfileData updateUserProfileData, String userId, ResponseSource source) {
         if (!validateUserProfileStatus(updateUserProfileData)) {
             auditService.persistAudit(HttpStatus.BAD_REQUEST, source);
-            final String exceptionMsg = String.format("RequiredFieldMissingException - Update user profile request has invalid status " + updateUserProfileData.getIdamStatus() + " for userId: %s", userId);
-            exceptionService.throwCustomRuntimeException(ExceptionType.REQUIREDFIELDMISSINGEXCEPTION, exceptionMsg);
+
+            final StringBuilder exceptionMsg = new StringBuilder();
+            exceptionMsg.append("RequiredFieldMissingException - Update user profile request has invalid status ");
+            exceptionMsg.append(updateUserProfileData.getIdamStatus());
+            exceptionMsg.append(" for userId: ");
+            exceptionMsg.append(userId);
+            
+            exceptionService.throwCustomRuntimeException(ExceptionType.REQUIREDFIELDMISSINGEXCEPTION, exceptionMsg.toString());
         }
         log.error("User status provided is correct");
         return true;

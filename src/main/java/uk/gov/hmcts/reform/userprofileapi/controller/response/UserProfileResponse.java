@@ -33,9 +33,5 @@ public class UserProfileResponse {
         this.lastName = userProfile.getLastName();
         this.idamStatus = null != userProfile.getStatus() ? userProfile.getStatus().name() : "";
     }
-
-    public UserProfileResponse(UserProfile userProfile, boolean rolesRequired) {
-        this(userProfile);
-    }
 }
 
