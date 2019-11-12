@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public class AttributeResponse {
-
     private Integer idamStatusCode;
     private String idamMessage;
 
