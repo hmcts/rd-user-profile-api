@@ -1,15 +1,16 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
-import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUpdateUserProfileRequestValid;
+import static uk.gov.hmcts.reform.userprofileapi.domain.enums.ExceptionType.ERRORPERSISTINGEXCEPTION;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
+import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateUserProfileStatus;
 
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ExceptionType;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
@@ -44,14 +45,30 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
         return true;
     }
 
-    public boolean validateUpdateUserProfileRequestValid(UpdateUserProfileData updateUserProfileData, String userId) {
-        if (!isUpdateUserProfileRequestValid(updateUserProfileData)) {
-            auditService.persistAudit(HttpStatus.BAD_REQUEST, ResponseSource.SYNC);
-            final String exceptionMsg = String.format("%s - Update user profile request is not valid for userId: %s",
-                    ExceptionType.REQUIREDFIELDMISSINGEXCEPTION.getContent(), userId);
+    public boolean validateUpdateUserProfileRequestValid(UpdateUserProfileData updateUserProfileData, String userId, ResponseSource source) {
+        if (!validateUserProfileStatus(updateUserProfileData)) {
+            auditService.persistAudit(HttpStatus.BAD_REQUEST, source);
+            final String exceptionMsg = String.format("RequiredFieldMissingException - Update user profile request is not valid for userId: %s", userId);
             exceptionService.throwCustomRuntimeException(ExceptionType.REQUIREDFIELDMISSINGEXCEPTION, exceptionMsg);
         }
         return true;
     }
 
+    @Override
+    public boolean validateUserStatusBeforeUpdate(UpdateUserProfileData updateUserProfileData, UserProfile userProfile, ResponseSource source) {
+        if (IdamStatus.PENDING == userProfile.getStatus() || IdamStatus.PENDING.name().equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
+            auditService.persistAudit(HttpStatus.BAD_REQUEST, source);
+            final String exceptionMsg = String.format("User is PENDING or input status is PENDING and only be changed to ACTIVE or SUSPENDED for userId: %s", userProfile.getIdamId());
+            exceptionService.throwCustomRuntimeException(ExceptionType.REQUIREDFIELDMISSINGEXCEPTION, exceptionMsg);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean validateUserPersistedWithException(HttpStatus status) {
+        if (!status.is2xxSuccessful()) {
+            exceptionService.throwCustomRuntimeException(ERRORPERSISTINGEXCEPTION, "Error while persisting user profile");
+        }
+        return true;
+    }
 }

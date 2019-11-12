@@ -20,8 +20,9 @@ public class UserProfileResponse {
     private String firstName;
     private String lastName;
     private String idamStatus;
-    private RoleAdditionResponse addRolesResponse;
-    private List<RoleDeletionResponse> deleteRolesResponse;
+    private RoleAdditionResponse roleAdditionResponse;
+    private List<RoleDeletionResponse> roleDeletionResponse;
+    private AttributeResponse attributeResponse;
     private List<String> roles;
 
     public UserProfileResponse(UserProfile userProfile) {
@@ -39,8 +40,8 @@ public class UserProfileResponse {
             if (IdamStatus.ACTIVE == userProfile.getStatus() && !userProfile.getRoles().isEmpty()) {
                 roles = userProfile.getRoles();
             }
-            addRolesResponse.setIdamStatusCode(userProfile.getErrorStatusCode());
-            addRolesResponse.setIdamMessage(userProfile.getErrorMessage());
+            roleAdditionResponse.setIdamStatusCode(userProfile.getErrorStatusCode());
+            roleAdditionResponse.setIdamMessage(userProfile.getErrorMessage());
         }
     }
 }

@@ -33,7 +33,7 @@ public class UserProfileMapperTest {
 
     @Test
     public void mapUpdatableFields() {
-        UserProfileMapper.mapUpdatableFields(updateUserProfileDataMock, userProfileMock);
+        UserProfileMapper.mapUpdatableFields(updateUserProfileDataMock, userProfileMock, false);
 
         verify(updateUserProfileDataMock, times(1)).isSameAsUserProfile(any());
         verify(userProfileMock, times(1)).setEmail(eq(dummyEmail));

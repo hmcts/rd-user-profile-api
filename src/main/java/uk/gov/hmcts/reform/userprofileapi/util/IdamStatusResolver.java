@@ -21,13 +21,13 @@ public final class IdamStatusResolver {
     public static final String NOT_FOUND = "16 Resource not found";
     public static final String USER_EXISTS = "17 User with this email already exists";
     public static final String UNKNOWN = "18 Unknown error from Idam";
-    public static final String NO_IDAM_CALL = "19 No call made to SIDAM to get the user roles as user status is ‘Pending’";
+    public static final String NO_IDAM_CALL = "19 No call made to SIDAM to get the user roles as user status is not ‘ACTIVE’";
     public static final String NO_CONTENT = "20 User Role Deleted";
 
     public static final String ACTIVE = "ACTIVE";
     public static final String PENDING = "PENDING";
 
-    //TODO refactor this to an enum and use std valueOf method
+    //tbc refactor this to an enum and use std valueOf method
     public static String resolveStatusAndReturnMessage(HttpStatus httpStatus) {
         switch (httpStatus) {
             case OK:
