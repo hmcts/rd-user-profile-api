@@ -1,8 +1,5 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
@@ -51,13 +48,21 @@ public final class IdamStatusResolver {
         }
     }
 
+    public static IdamStatus resolveIdamStatus(IdamRolesInfo idamRolesInfo) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(null == idamRolesInfo.getPending() || !idamRolesInfo.getPending());
+        sb.append(null == idamRolesInfo.getActive() || !idamRolesInfo.getActive());
 
-    public static IdamStatus resolveIdamStatus(Map<Map<String, Boolean>, IdamStatus> statusResolver, IdamRolesInfo idamRolesInfo) {
+        switch (sb.toString().toLowerCase()) {
+            case "falsetrue":
+                return IdamStatus.PENDING;
 
-        Map<String, Boolean> statusMap = new HashMap<>();
-        statusMap.put(ACTIVE, idamRolesInfo.getActive() == null ? Boolean.FALSE : idamRolesInfo.getActive());
-        statusMap.put(PENDING, idamRolesInfo.getPending() == null ? Boolean.FALSE : idamRolesInfo.getPending());
+            case "truefalse":
+                return IdamStatus.ACTIVE;
 
-        return statusResolver.get(statusMap) != null ? statusResolver.get(statusMap) : IdamStatus.SUSPENDED;
+            default:
+                return IdamStatus.SUSPENDED;
+        }
     }
+
 }
