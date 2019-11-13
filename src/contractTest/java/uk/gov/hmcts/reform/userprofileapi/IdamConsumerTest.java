@@ -35,11 +35,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 public class IdamConsumerTest {
 
-    private static final String EMAIL = "jack@spookmail.com";
+    private static final String EMAIL = "seymore@skinner.com";
     private static final String ID = "a833c2e2-2c73-4900-96ca-74b1efb37928";
 
     private static final String IDAM_POST_USER_REGISTRATION_URL = "/api/v1/users/registration";
-    //private static final String IDAM_GET_USER_BY_EMAIL_URL = "/api/v1/users?email=";
     private static final String IDAM_USER_BY_ID_URL = "/api/v1/users/" + ID;
     private static final String IDAM_USER_ROLES_BY_ID_URL = "/api/v1/users/" + ID + "/roles";
     private static final String ACCESS_TOKEN = "eyJ0eXAiOiJKV1QiLCJ6aXAiOiJOT05FIiwia2lkIjoiRm8rQXAybThDT3ROb290ZjF4TWg0bGc3MFlBPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJmcmVnLXRlc3QtdXNlci1ZOHlqVURSeWpyQGZlZW1haWwuY29tIiwiYXV0aF9sZXZlbCI6MCwiYXVkaXRUcmFja2luZ0lkIjoiYTU2MDliYjYtYzEzYi00MjQ0LTg3ODItNDNmZGViMDZlMDBjIiwiaXNzIjoiaHR0cHM6Ly9mb3JnZXJvY2stYW0uc2VydmljZS5jb3JlLWNvbXB1dGUtaWRhbS1hYXQuaW50ZXJuYWw6ODQ0My9vcGVuYW0vb2F1dGgyL2htY3RzIiwidG9rZW5OYW1lIjoiYWNjZXNzX3Rva2VuIiwidG9rZW5fdHlwZSI6IkJlYXJlciIsImF1dGhHcmFudElkIjoiYWNjNmUyYTAtMWExYi00OGM3LWJmZGItNzI1NjllM2E1NjkzIiwiYXVkIjoicmQtcHJvZmVzc2lvbmFsLWFwaSIsIm5iZiI6MTU2OTQ0MTkxMSwiZ3JhbnRfdHlwZSI6ImF1dGhvcml6YXRpb25fY29kZSIsInNjb3BlIjpbIm9wZW5pZCIsInByb2ZpbGUiLCJyb2xlcyIsImNyZWF0ZS11c2VyIiwibWFuYWdlLXVzZXIiXSwiYXV0aF90aW1lIjoxNTY5NDQxOTExMDAwLCJyZWFsbSI6Ii9obWN0cyIsImV4cCI6MTU2OTQ1NjMxMSwiaWF0IjoxNTY5NDQxOTExLCJleHBpcmVzX2luIjoxNDQwMCwianRpIjoiY2Q5MWM0NjQtMzU0Zi00N2I2LTkwYTUtNWY2Y2U3NGUwYTY5In0.aLobAYYCxkmryzKV1stmag63h-ndxrDjO4462YERcLDIXVmvFJNXfdPRg9U8WGv0GkOrSkHVJ7tbdLQySnOVYulXkPl71g5MqU7ZuEQvHaBpfW9exBCfP-pw8kWyMUck-rB00tkEX7ZpS6euQM0WVbdczPnClxR3tWwktPfN-bCo6PPwqiMkC1DgTmjQBMtjgP1nEiJM7Kocqb2X3OCItf4lps1_nSG68jI98fwaLn8WQgk1sw9eebskChXDfpmIyreeGFWpHNpdFqOFfYEC5FnSgXHQw7Eu-hc5RofPZzKFrbwZHC31t5guK9Wq8zn9Xwe6743g4ozm3EHN8fsjVQ"; //todo
@@ -50,7 +49,6 @@ public class IdamConsumerTest {
         RestAssured.config().encoderConfig(new EncoderConfig("UTF-8", "UTF-8"));
     }
 
-    // POST /registration
     @Test
     @Pact(provider = "Idam_api", consumer = "rd_user_profile_api__Idam_api")
     public RequestResponsePact executePostRegistrationAndGet201(PactDslWithProvider builder) {
@@ -92,62 +90,6 @@ public class IdamConsumerTest {
         assertThat(actualResponseBody.getStatusCode()).isEqualTo(201);
     }
 
-    /*// GET /api/v1/users?email={mock@email}
-    @Test
-    @Pact(provider = "Idam_api", consumer = "rd_user_profile_api__Idam_api")
-    public RequestResponsePact executeGetUserByEmailAndGet200(PactDslWithProvider builder) {
-
-        Map<String, String> headers = Maps.newHashMap();
-        headers.put(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN);
-
-        return builder
-                .given("Idam successfully returns user")
-                .uponReceiving("Provider receives a GET /api/v1/users?email={mock@email} request from an RD - USER PROFILE API")
-                .path(IDAM_GET_USER_BY_EMAIL_URL + EMAIL)
-                .method(HttpMethod.GET.toString())
-                .headers(headers)
-                .willRespondWith()
-                .status(HttpStatus.OK.value())
-                .body(createUserResponseWithEmail())
-                .toPact();
-    }
-
-    @Test
-    @PactTestFor(pactMethod = "executeGetUserByEmailAndGet200")
-    public void should_get_user_from_elastic_search_using_email(MockServer mockServer) throws JSONException {
-
-        Map<String, String> headers = Maps.newHashMap();
-        headers.put(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN);
-
-        String actualResponseBody =
-                SerenityRest
-                        .given()
-                        .headers(headers)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
-                        .when()
-                        .get(mockServer.getUrl() + IDAM_GET_USER_BY_EMAIL_URL + EMAIL)
-                        .then()
-                        .statusCode(200)
-                        .and()
-                        .extract()
-                        .body()
-                        .asString();
-
-        JSONObject response = new JSONObject(actualResponseBody);
-
-        assertThat(actualResponseBody).isNotNull();
-        assertThat(response).hasNoNullFieldsOrProperties();
-        assertThat(response.getString("forename")).isNotBlank();
-        assertThat(response.getString("surname")).isNotBlank();
-
-        JSONArray rolesArr = new JSONArray(response.getString("roles"));
-
-        assertThat(rolesArr).isNotNull();
-        assertThat(rolesArr.length()).isNotZero();
-        assertThat(rolesArr.get(0).toString()).isNotBlank();
-    }*/
-
-    // GET /api/v1/users/{userId}
     @Test
     @Pact(provider = "Idam_api", consumer = "rd_user_profile_api__Idam_api")
     public RequestResponsePact executeGetUserByIdAndGet200(PactDslWithProvider builder) {
@@ -203,7 +145,6 @@ public class IdamConsumerTest {
 
     }
 
-    // PUT /api/v1/users/{userId}/roles
     @Test
     @Pact(provider = "Idam_api", consumer = "rd_user_profile_api__Idam_api")
     public RequestResponsePact executePutUserRolesAndGet200(PactDslWithProvider builder) {
@@ -257,7 +198,6 @@ public class IdamConsumerTest {
         assertThat(rolesArr.get(0).toString()).isNotBlank();
     }
 
-    //POST /api/v1/users/{userId}/roles
     @Test
     @Pact(provider = "Idam_api", consumer = "rd_user_profile_api__Idam_api")
     public RequestResponsePact executePostUserRolesAndGet200(PactDslWithProvider builder) {
@@ -311,7 +251,6 @@ public class IdamConsumerTest {
         assertThat(rolesArr.get(0).toString()).isNotBlank();
     }
 
-    //DELETE /api/v1/users/{userId}/roles/{roleName}
     @Test
     @Pact(provider = "Idam_api", consumer = "rd_user_profile_api__Idam_api")
     public RequestResponsePact executeDeleteUserRoleAndGet200(PactDslWithProvider builder) {
@@ -365,7 +304,6 @@ public class IdamConsumerTest {
         assertThat(rolesArr.get(0).toString()).isEqualTo("pui-organisation-manager");
     }
 
-    // PATCH /api/v1/users/{userId}
     @Test
     @Pact(provider = "Idam_api", consumer = "rd_user_profile_api__Idam_api")
     public RequestResponsePact executePatchUserDetailsAndGet200(PactDslWithProvider builder) {
