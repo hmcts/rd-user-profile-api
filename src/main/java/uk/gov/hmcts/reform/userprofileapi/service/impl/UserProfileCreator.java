@@ -160,7 +160,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
     }
 
     public void updateInputRequestWithLatestSidamUserInfo(UserProfileCreationData profileData, IdamRolesInfo idamRolesInfo) {
-        profileData.setStatus(IdamStatusResolver.resolveIdamStatus(idamStatusResolverMap, idamRolesInfo));
+        profileData.setStatus(IdamStatusResolver.resolveIdamStatus(idamRolesInfo));
         if (idamRolesInfo.getEmail() != null) {
             profileData.setEmail(idamRolesInfo.getEmail());
         }
