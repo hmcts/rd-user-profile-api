@@ -164,7 +164,6 @@ public class UserProfileCreatorTest {
         Mockito.when(idamService.addUserRoles(any(), Mockito.anyString())).thenReturn(idamRolesInfo);
 
         Map<Map<String, Boolean>, IdamStatus> idamStatusMap = createDecisionMap();
-        ReflectionTestUtils.setField(userProfileCreator, "idamStatusResolverMap", idamStatusMap);
         ReflectionTestUtils.setField(userProfileCreator, "sidamGetUri", "/api/v1/users/");
 
         UserProfile responseUserProfile = userProfileCreator.create(userProfileCreationData);
@@ -200,7 +199,6 @@ public class UserProfileCreatorTest {
         Mockito.when(idamService.addUserRoles(any(), Mockito.anyString())).thenReturn(idamRolesInfo);
 
         Map<Map<String, Boolean>, IdamStatus> idamStatusMap = createDecisionMap();
-        ReflectionTestUtils.setField(userProfileCreator, "idamStatusResolverMap", idamStatusMap);
         ReflectionTestUtils.setField(userProfileCreator, "sidamGetUri", "/api/v1/users/");
 
         UserProfile responseUserProfile = userProfileCreator.create(userProfileCreationData);
@@ -214,7 +212,6 @@ public class UserProfileCreatorTest {
 
         Map<Map<String, Boolean>, IdamStatus> idamStatusMap = createDecisionMap();
 
-        ReflectionTestUtils.setField(userProfileCreator, "idamStatusResolverMap", idamStatusMap);
         Mockito.when(idamRolesInfo.getEmail()).thenReturn("any@emai");
         Mockito.when(idamRolesInfo.getForename()).thenReturn("fname");
         Mockito.when(idamRolesInfo.getSurname()).thenReturn("lastName");
@@ -236,7 +233,6 @@ public class UserProfileCreatorTest {
 
         Map<Map<String, Boolean>, IdamStatus> idamStatusMap = createDecisionMap();
 
-        ReflectionTestUtils.setField(userProfileCreator, "idamStatusResolverMap", idamStatusMap);
         Mockito.when(idamRolesInfo.getEmail()).thenReturn("any@emai");
         Mockito.when(idamRolesInfo.getForename()).thenReturn("fname");
         Mockito.when(idamRolesInfo.getSurname()).thenReturn("lastName");
