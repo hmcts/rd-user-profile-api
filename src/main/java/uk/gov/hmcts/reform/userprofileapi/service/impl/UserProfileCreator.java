@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.exception.IdamServiceException;
 import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
@@ -46,8 +45,6 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
     private UserProfileRepository userProfileRepository;
     @Autowired
     private AuditRepository auditRepository;
-    @Autowired
-    Map<Map<String, Boolean>, IdamStatus> idamStatusResolverMap;
 
     public UserProfile create(UserProfileCreationData profileData) {
 
