@@ -1576,5 +1576,6 @@
    ]]></notes>
         <sha1>e5778e3273f8201bf9e0ff65fb8118f37b84beba</sha1>
         <cpe>cpe:/a:phantomjs:phantomjs</cpe>
+        <cve>CVE-2019-17221</cve>
     </suppress>
 </suppressions>
