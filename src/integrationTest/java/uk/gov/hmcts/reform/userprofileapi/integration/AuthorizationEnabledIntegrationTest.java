@@ -17,9 +17,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
-import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesRequest;
-import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesResponse;
 import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRequestHandlerTest;
+import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
 import uk.gov.hmcts.reform.userprofileapi.integration.util.TestUserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
@@ -98,20 +98,35 @@ public class AuthorizationEnabledIntegrationTest {
                                 + "  \"forename\": \"Super\","
                                 + "  \"surname\": \"User\","
                                 + "  \"email\": \"super.user@hmcts.net\","
-                                + "  \"locked\": \"false\","
+                                + "  \"pending\": \"false\","
+                                + "  \"roles\": ["
+                                + "    \"pui-organisation-manager\""
+                                + "  ]"
+                                + "}")));
+
+        idamService.stubFor(get(urlMatching("/api/v1/users/.*"))
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withStatus(200)
+                        .withBody("{"
+                                + "  \"active\": \"false\","
+                                + "  \"forename\": \"Suspended\","
+                                + "  \"surname\": \"User\","
+                                + "  \"email\": \"super.user@hmcts.net\","
+                                + "  \"pending\": \"false\","
                                 + "  \"roles\": ["
                                 + "    \"pui-organisation-manager\""
                                 + "  ]"
                                 + "}")));
     }
 
-    public GetUserProfilesResponse getMultipleUsers(GetUserProfilesRequest request, HttpStatus expectedStatus, String showDeleted) throws Exception {
+    public UserProfileDataResponse getMultipleUsers(UserProfileDataRequest request, HttpStatus expectedStatus, String showDeleted, String rolesRequired) throws Exception {
         return userProfileRequestHandlerTest.sendPost(
                 mockMvc,
-                APP_BASE_PATH + SLASH + "users?" + "showdeleted=" + showDeleted,
+                APP_BASE_PATH + SLASH + "users?showdeleted=" + showDeleted + "&rolesRequired=" + rolesRequired,
                 request,
                 expectedStatus,
-                GetUserProfilesResponse.class
+                UserProfileDataResponse.class
         );
     }
 }

@@ -13,8 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
-import uk.gov.hmcts.reform.userprofileapi.service.ResourceNotFoundException;
+import uk.gov.hmcts.reform.userprofileapi.exception.RequiredFieldMissingException;
+import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserProfileControllerAdviceTest {

@@ -1,17 +1,9 @@
-FROM hmcts/cnp-java-base:openjdk-8u181-jre-alpine3.8-1.0
+ARG APP_INSIGHTS_AGENT_VERSION=2.5.1-BETA
+FROM hmctspublic.azurecr.io/base/java:openjdk-8-distroless-1.2
 
-# Mandatory!
-ENV APP rd-user-profile-api.jar
-ENV APPLICATION_TOTAL_MEMORY 512M
-ENV APPLICATION_SIZE_ON_DISK_IN_MB 48
-
-# Optional
-ENV JAVA_OPTS ""
-
-COPY build/libs/$APP /opt/app/
-
-WORKDIR /opt/app
-
-HEALTHCHECK --interval=10s --timeout=10s --retries=12 CMD http_proxy="" wget -q --spider http://localhost:8091/health || exit 1
+COPY lib/AI-Agent.xml /opt/app/
+COPY build/libs/rd-user-profile-api.jar /opt/app/
 
 EXPOSE 8091
+
+CMD [ "rd-user-profile-api.jar" ]

@@ -10,8 +10,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class TestConfigProperties {
 
-    @Value("${test.url}")
-    public String baseTestUrl;
+    @Value("${idam.auth.clientSecret}")
+    public String clientSecret;
 
     @Value("${generated.user.email.pattern}")
     public String generatedUserEmailPattern;
@@ -28,7 +28,7 @@ public class TestConfigProperties {
     @Value("${idam.auth.redirectUrl}")
     public String oauthRedirectUrl;
 
-    @Value("${idam.auth.clientId:rd-professional-api}")
+    @Value("${idam.auth.clientId:xuiwebapp}")
     public String clientId;
 
 }

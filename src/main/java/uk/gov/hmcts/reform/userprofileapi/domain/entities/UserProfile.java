@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.userprofileapi.domain.entities;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -16,21 +15,20 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Transient;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
-import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
-import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
-import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.*;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
 @SequenceGenerator(name = "user_profile_id_seq", sequenceName = "user_profile_id_seq", allocationSize = 1)
 public class UserProfile {
 
@@ -38,7 +36,7 @@ public class UserProfile {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_profile_id_seq")
     private Long id;
 
-    private UUID idamId;
+    private String idamId;
 
     @Column(name = "email_address")
     private String email;
@@ -81,23 +79,19 @@ public class UserProfile {
     private List<Audit> responses = new ArrayList<>();
 
     @Transient
-    private List<String> roles = new ArrayList<String>();
+    private List<String> roles = new ArrayList<>();
 
     @Transient
     private String errorMessage;
 
     @Transient
-    private int errorStatusCode;
+    private String errorStatusCode;
 
-    public UserProfile() {
-        //noop
-    }
-
-    public UserProfile(CreateUserProfileData data, HttpStatus idamStatus) {
-
+    public UserProfile(UserProfileCreationData data, HttpStatus idamStatus) {
         this.email = data.getEmail().trim().toLowerCase();
         this.firstName = data.getFirstName().trim();
         this.lastName = data.getLastName().trim();
+
         if (StringUtils.isNotBlank(data.getLanguagePreference())) {
             this.languagePreference = LanguagePreference.valueOf(data.getLanguagePreference());
         }
@@ -106,6 +100,15 @@ public class UserProfile {
         this.userCategory = UserCategory.valueOf(data.getUserCategory());
         this.userType = UserType.valueOf(data.getUserType());
         this.idamRegistrationResponse = idamStatus.value();
+    }
+
+
+    public void setStatus(UserProfileCreationData userProfileCreationData) {
+        this.status = userProfileCreationData.getStatus();
+    }
+
+    public void setStatus(IdamStatus status) {
+        this.status = status;
     }
 
     public void setRoles(IdamRolesInfo idamrolesInfo) {

@@ -1,76 +1,37 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.userprofileapi.domain.enums.UserProfileField.*;
 
 import org.apache.commons.lang.StringUtils;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesRequest;
-import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
-import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
-import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
-import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
-import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
-import uk.gov.hmcts.reform.userprofileapi.service.ResourceNotFoundException;
+import org.springframework.util.CollectionUtils;
+import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.*;
+import uk.gov.hmcts.reform.userprofileapi.exception.RequiredFieldMissingException;
+import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
+import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
+// tbc remove this and put in a validaiton service
 public interface UserProfileValidator {
 
-    String STATUS = "STATUS";
-    String LANGUAGEPREFERENCE = "LANGUAGEPREFERENCE";
-    String USERTYPE = "USERTYPE";
-    String USERCATEGORY = "USERCATEGORY";
-
-    static boolean isUserIdValid(String userId, boolean throwException) {
+    static boolean isUserIdValid(String userId, boolean hasExceptionThrown) {
         if (StringUtils.isBlank(userId)) {
-            if (throwException) {
-                throw new ResourceNotFoundException("userId is null or blank.Should have UUID format");
-            }
-            return false;
-        }
-
-        try {
-            java.util.UUID.fromString(userId);
-        } catch (IllegalArgumentException ex) {
-            if (throwException) {
-                throw new ResourceNotFoundException("Malformed userId.Should have UUID format");
+            if (hasExceptionThrown) {
+                throw new ResourceNotFoundException("userId is null or blank.");
             }
             return false;
         }
         return true;
     }
 
-    static boolean isUpdateUserProfileRequestValid(UpdateUserProfileData updateUserProfileData) {
-
-        boolean isValid = true;
-
-        if (!validateUpdateUserProfileRequestFields(updateUserProfileData)) {
-            isValid = false;
-        } else {
-            try {
-                validateEnumField(STATUS, updateUserProfileData.getIdamStatus());
-            } catch (Exception ex) {
-                isValid = false;
-            }
+    static boolean validateUserProfileStatus(UpdateUserProfileData updateUserProfileData) {
+        try {
+            validateEnumField(STATUS.name(), updateUserProfileData.getIdamStatus().toUpperCase());
+            return true;
+        } catch (Exception ex) {
+            return false;
         }
-        return isValid;
-    }
-
-    static boolean validateUpdateUserProfileRequestFields(UpdateUserProfileData updateUserProfileData) {
-
-        boolean isValid = true;
-        if (updateUserProfileData == null) {
-            isValid = false;
-        } else if (isBlankOrSizeInvalid(updateUserProfileData.getEmail(), 255)
-                || isBlankOrSizeInvalid(updateUserProfileData.getFirstName(), 255)
-                || isBlankOrSizeInvalid(updateUserProfileData.getLastName(), 255)
-                || isBlankOrSizeInvalid(updateUserProfileData.getIdamStatus(), 255)) {
-
-            isValid = false;
-        } else if (!updateUserProfileData.getEmail().matches("\\A(?=[a-zA-Z0-9@.!#$%&'*+/=?^_`{|}~-]{6,254}\\z)(?=[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]{1,64}@)[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:(?=[a-zA-Z0-9-]{1,63}\\.)[a-zA-Z0-9](?:[a-z0-9-]*[a-zA-Z0-9])?\\.)+(?=[a-zA-Z0-9-]{1,63}\\z)[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\z")) {
-            isValid = false;
-        }
-        return isValid;
     }
 
     static boolean isBlankOrSizeInvalid(String fieldValue, int validSize) {
@@ -82,36 +43,34 @@ public interface UserProfileValidator {
         return isInvalid;
     }
 
-    static boolean isSameAsExistingUserProfile(UpdateUserProfileData updateUserProfileData, UserProfile userProfile) {
 
-        boolean isSame = false;
-        if (userProfile.getEmail().equals(updateUserProfileData.getEmail().trim())
-            && userProfile.getFirstName().equals(updateUserProfileData.getFirstName().trim())
-            && userProfile.getLastName().equals(updateUserProfileData.getLastName().trim())
-            && userProfile.getStatus().toString().equals(updateUserProfileData.getIdamStatus().trim())) {
-            isSame = true;
-        }
-        return isSame;
-    }
-
-    static void validateCreateUserProfileRequest(CreateUserProfileData request) {
+    static void validateCreateUserProfileRequest(UserProfileCreationData request) {
         requireNonNull(request, "createUserProfileData cannot be null");
 
-        validateEnumField(USERTYPE, request.getUserType());
-        validateEnumField(USERCATEGORY, request.getUserCategory());
+        validateEnumField(USERTYPE.name(), request.getUserType());
+        validateEnumField(USERCATEGORY.name(), request.getUserCategory());
     }
 
     static void validateEnumField(String name, String value) {
+        UserProfileField field = UserProfileField.valueOf(name.toUpperCase());
+
         if (null != value) {
             try {
-                if (name.equals(STATUS)) {
-                    IdamStatus.valueOf(value);
-                } else if (name.equals(LANGUAGEPREFERENCE)) {
-                    LanguagePreference.valueOf(value);
-                } else if (name.equals(USERTYPE)) {
-                    UserType.valueOf(value);
-                } else if (name.equals(USERCATEGORY)) {
-                    UserCategory.valueOf(value);
+                switch (field) {
+                    case STATUS:
+                        IdamStatus.valueOf(value);
+                        break;
+                    case LANGUAGEPREFERENCE:
+                        LanguagePreference.valueOf(value);
+                        break;
+                    case USERTYPE:
+                        UserType.valueOf(value);
+                        break;
+                    case USERCATEGORY:
+                        UserCategory.valueOf(value);
+                        break;
+                    default:
+                        break; //tbc refactor this might not be best for this
                 }
             } catch (IllegalArgumentException ex) {
                 throw new RequiredFieldMissingException(name + " has invalid value : " + value);
@@ -119,24 +78,37 @@ public interface UserProfileValidator {
         }
     }
 
-    static boolean validateAndReturnBooleanForParam(String showDeleted) {
+    static boolean validateAndReturnBooleanForParam(String param) {
 
-        boolean isValid = false;
-        if (null == showDeleted) {
-            throw new RequiredFieldMissingException("param showDeleted" + " has invalid value : " + showDeleted);
-        } else if ("true".equalsIgnoreCase(showDeleted)) {
+        boolean isValid;
+        if (null == param) {
+            throw new RequiredFieldMissingException("param has invalid value : " + param);
+        } else if ("true".equalsIgnoreCase(param)) {
             isValid = true;
-        } else if ("false".equalsIgnoreCase(showDeleted)) {
+        } else if ("false".equalsIgnoreCase(param)) {
             isValid = false;
         } else {
-            throw new RequiredFieldMissingException("param showDeleted" + " has invalid value : " + showDeleted);
+            throw new RequiredFieldMissingException("param showDeleted has invalid value : " + param);
         }
         return isValid;
     }
 
-    static void validateUserIds(GetUserProfilesRequest getUserProfilesRequest) {
-        if (getUserProfilesRequest.getUserIds().isEmpty()) {
+    static void validateUserIds(UserProfileDataRequest userProfileDataRequest) {
+        if (userProfileDataRequest.getUserIds().isEmpty()) {
             throw new RequiredFieldMissingException("no user id in request");
+        }
+    }
+
+    static void validateUserProfileDataAndUserId(UpdateUserProfileData userProfileData, String userId) {
+
+        if (null == userProfileData) {
+
+            throw new RequiredFieldMissingException("No Request Body in the request");
+        } else if (StringUtils.isBlank(userId)
+                || (!CollectionUtils.isEmpty(userProfileData.getRolesAdd()) && userProfileData.getRolesAdd().isEmpty())
+                || (!CollectionUtils.isEmpty(userProfileData.getRolesDelete()) && userProfileData.getRolesDelete().isEmpty())) {
+
+            throw new RequiredFieldMissingException("No userId or roles in the request");
         }
     }
 }
