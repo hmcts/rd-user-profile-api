@@ -14,14 +14,11 @@ import java.util.List;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import net.serenitybdd.rest.SerenityRest;
 import org.junit.Before;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.springframework.beans.factory.annotation.Value;
-
 import org.springframework.http.HttpStatus;
-
 import org.springframework.test.context.TestPropertySource;
 
 @RunWith(SpringIntegrationSerenityRunner.class)

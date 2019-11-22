@@ -6,7 +6,7 @@ import java.util.List;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.hmcts.reform.userprofileapi.client.IdamUserResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamUserResponse;
 
 @Getter
 public class IdamRolesInfo {
@@ -16,6 +16,8 @@ public class IdamRolesInfo {
     private String forename;
     private String surname;
     private List<String> roles;
+    private Boolean active;
+    private Boolean pending;
     private HttpStatus responseStatusCode;
     private String statusMessage;
 
@@ -26,6 +28,8 @@ public class IdamRolesInfo {
             this.email = entity.getBody().getEmail();
             this.forename = entity.getBody().getForename();
             this.surname = entity.getBody().getSurname();
+            this.active = entity.getBody().getActive();
+            this.pending = entity.getBody().getPending();
         }
         loadStatusCodes(idamGetResponseStatusCode);
     }

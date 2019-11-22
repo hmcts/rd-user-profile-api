@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+
 @RunWith(SpringIntegrationSerenityRunner.class)
 public class SmokeTest {
 
@@ -19,8 +20,7 @@ public class SmokeTest {
     private final String targetInstance =
             StringUtils.defaultIfBlank(
                     System.getenv("TEST_URL"),
-                    "http://localhost:8090"
-            );
+                    "http://localhost:8090" );
 
     @Test
     public void should_prove_app_is_running_and_healthy() {
@@ -28,8 +28,11 @@ public class SmokeTest {
         /*SerenityRest.proxy("proxyout.reform.hmcts.net", 8080);
         RestAssured.proxy("proxyout.reform.hmcts.net", 8080); */
 
+        LOG.info("Smoke test executing on " + targetInstance);
+
         RestAssured.baseURI = targetInstance;
         RestAssured.useRelaxedHTTPSValidation();
+
 
         Response response = RestAssured
                 .given()
