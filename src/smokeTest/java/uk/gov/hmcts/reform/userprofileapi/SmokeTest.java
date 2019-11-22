@@ -44,8 +44,6 @@ public class SmokeTest {
         if (null != response.body()) {
             assertThat(response.body().asString())
                     .contains("Welcome to the User Profile API");
-
         }
-
     }
 }
