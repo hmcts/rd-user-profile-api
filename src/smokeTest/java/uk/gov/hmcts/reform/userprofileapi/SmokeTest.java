@@ -14,7 +14,7 @@ import org.junit.runner.RunWith;
 @RunWith(SpringIntegrationSerenityRunner.class)
 public class SmokeTest {
 
-    // to test locally use the line in private final string targetInstance
+    // to test locally please use the line in private final string targetInstance
     // private final String targetInstance = "http://rd-user-profile-api-aat.service.core-compute-aat.internal";
     private final String targetInstance =
             StringUtils.defaultIfBlank(
@@ -26,7 +26,7 @@ public class SmokeTest {
     public void should_prove_app_is_running_and_healthy() {
         // local test
         /*SerenityRest.proxy("proxyout.reform.hmcts.net", 8080);
-        RestAssured.proxy("proxyout.reform.hmcts.net", 8080); */
+        RestAssured.proxy("proxyout.reform.hmcts.net", 8080);*/
 
         RestAssured.baseURI = targetInstance;
         RestAssured.useRelaxedHTTPSValidation();
@@ -38,7 +38,7 @@ public class SmokeTest {
                 .get("/")
                 .andReturn();
 
-        if (null != response.body()) {
+        if (null != response && response.statusCode() == 200) {
             assertThat(response.body().asString())
                     .contains("Welcome to the User Profile API");
 
