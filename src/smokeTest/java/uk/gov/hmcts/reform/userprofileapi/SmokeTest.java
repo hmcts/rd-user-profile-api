@@ -7,24 +7,26 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
-import net.serenitybdd.rest.SerenityRest;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(SpringIntegrationSerenityRunner.class)
 public class SmokeTest {
 
-    private final String targetInstance = "http://rd-user-profile-api-aat.service.core-compute-aat.internal";
-    /* StringUtils.defaultIfBlank(
+    // to test locally use the line in private final string targetInstance
+    // private final String targetInstance = "http://rd-user-profile-api-aat.service.core-compute-aat.internal";
+    private final String targetInstance =
+            StringUtils.defaultIfBlank(
                     System.getenv("TEST_URL"),
                     "http://localhost:8090"
-    );*/
+            );
 
     @Test
     public void should_prove_app_is_running_and_healthy() {
         // local test
-        SerenityRest.proxy("proxyout.reform.hmcts.net", 8080);
-        RestAssured.proxy("proxyout.reform.hmcts.net", 8080);
+        /*SerenityRest.proxy("proxyout.reform.hmcts.net", 8080);
+        RestAssured.proxy("proxyout.reform.hmcts.net", 8080); */
 
         RestAssured.baseURI = targetInstance;
         RestAssured.useRelaxedHTTPSValidation();
