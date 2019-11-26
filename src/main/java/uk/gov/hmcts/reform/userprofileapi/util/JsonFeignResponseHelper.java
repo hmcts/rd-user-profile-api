@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.userprofileapi.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Response;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.zip.GZIPInputStream;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,8 +29,8 @@ public class JsonFeignResponseHelper {
         MultiValueMap<String, String> headers = convertHeaders(response.headers());
         HttpStatus httpStatus = HttpStatus.valueOf(response.status());
         return (payload.isPresent())
-                ? new ResponseEntity<U>(payload.orElse(null), headers, httpStatus)
-                : new ResponseEntity<U>(headers, httpStatus);
+                ? new ResponseEntity<>(payload.orElse(null), headers, httpStatus)
+                : new ResponseEntity<>(headers, httpStatus);
     }
 
     public static MultiValueMap<String, String> convertHeaders(Map<String, Collection<String>> responseHeaders) {

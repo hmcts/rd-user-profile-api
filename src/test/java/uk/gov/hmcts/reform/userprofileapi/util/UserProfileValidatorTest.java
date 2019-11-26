@@ -5,26 +5,29 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.getIdamRolesJson;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfilesRequest;
-import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
-import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
-import uk.gov.hmcts.reform.userprofileapi.domain.RequiredFieldMissingException;
-import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
-import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
+import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
+import uk.gov.hmcts.reform.userprofileapi.domain.*;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.service.ResourceNotFoundException;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.LanguagePreference;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserCategory;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserType;
+import uk.gov.hmcts.reform.userprofileapi.exception.RequiredFieldMissingException;
+import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
+import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
+import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserProfileValidatorTest {
 
-    CreateUserProfileData userProfileData =
-            new CreateUserProfileData(
+    UserProfileCreationData userProfileData =
+            new UserProfileCreationData(
                     "test-email-@somewhere.com",
                     "test-first-name",
                     "test-last-name",
@@ -49,92 +52,6 @@ public class UserProfileValidatorTest {
 
         boolean response1 = UserProfileValidator.isUserIdValid("", false);
         assertThat(response1).isFalse();
-    }
-
-    @Test
-    public void test_isUpdateUserProfileRequestValid() {
-
-        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("som@org.com", "fanme", "lname", "ACTIV");
-        boolean response = UserProfileValidator.isUpdateUserProfileRequestValid(updateUserProfileData);
-        assertThat(response).isFalse();
-    }
-
-    @Test
-    public void test_validateUpdateUserProfileRequestFields() {
-
-        UpdateUserProfileData updateUserProfileDataWithNull = null;
-        UpdateUserProfileData updateUserProfileDataWithInvalidEmail = new UpdateUserProfileData("somorg.com", "fanme", "lname", "ACTIVE");
-        boolean response = UserProfileValidator.validateUpdateUserProfileRequestFields(updateUserProfileDataWithNull);
-        assertThat(response).isFalse();
-
-        boolean response1 = UserProfileValidator.validateUpdateUserProfileRequestFields(updateUserProfileDataWithInvalidEmail);
-        assertThat(response1).isFalse();
-    }
-
-    @Test
-    public void test_validateEmailAreValid() {
-
-        String[] validEmails = new String[] {
-            "shreedhar.lomte@hmcts.net",
-            "shreedhar@yahoo.com",
-            "Email.100@yahoo.com",
-            "email111@email.com",
-            "email.100@email.com.au",
-            "email@gmail.com.com",
-            "email_231_a@email.com",
-            "email_100@yahoo-test.ABC.CoM",
-            "email-100@yahoo.com",
-            "email-100@email.net",
-            "email+100@gmail.com",
-            "emAil-100@yahoo-test.com",
-            "v.green@ashfords.co.uk",
-            "j.robinson@timms-law.com",
-            "あいうえお@example.com",
-            "emAil@1.com",
-            "email@.com.my",
-            "email123@gmail.",
-            "email123@.com",
-            "email123@.com.com",
-            ".email@email.com",
-            "email()*@gmAil.com",
-            "eEmail()*@gmail.com",
-            "email@%*.com",
-            "email..2002@gmail.com",
-            "email.@gmail.com",
-            "email@email@gmail.com",
-            "email@gmail.com.",
-            "email..2002@gmail.com@",
-            "-email.23@email.com",
-            "$email.3@email.com",
-            "!email@email.com",
-            "+@Adil61371@gmail.com",
-            "_email.23@email.com",
-            "email.23@-email.com"};
-
-        for (String email : validEmails) {
-
-            UpdateUserProfileData updateUserProfileDataWithInvalidEmail = new UpdateUserProfileData(email, "fanme", "lname", "ACTIVE");
-            boolean response1 = UserProfileValidator.validateUpdateUserProfileRequestFields(updateUserProfileDataWithInvalidEmail);
-            assertThat(response1).isTrue();
-        }
-    }
-
-    @Test
-    public void test_validateEmailAreInValid() {
-
-        String[] validEmails = new String[]{
-            "email.com",
-            "email@com",
-            "email@",
-            "@"
-        };
-
-        for (String email : validEmails) {
-
-            UpdateUserProfileData updateUserProfileDataWithInvalidEmail = new UpdateUserProfileData(email, "fanme", "lname", "ACTIVE");
-            boolean response1 = UserProfileValidator.validateUpdateUserProfileRequestFields(updateUserProfileDataWithInvalidEmail);
-            assertThat(response1).isFalse();
-        }
     }
 
     @Test
@@ -164,14 +81,12 @@ public class UserProfileValidatorTest {
         IdamRegistrationInfo idamInfo = new IdamRegistrationInfo(HttpStatus.CREATED);
         UserProfile userProfile = new UserProfile(userProfileData, idamInfo.getIdamRegistrationResponse());
 
-        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("test-email-@somewhere.com", "test-first-name", "test-last-name", "PENDING");
+        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("test-email-@somewhere.com", "test-first-name", "test-last-name", "PENDING",addRolesToRoleName(), addRolesToRoleName());
 
-        boolean response = UserProfileValidator.isSameAsExistingUserProfile(updateUserProfileData, userProfile);
-        assertThat(response).isTrue();
+        assertThat(updateUserProfileData.isSameAsUserProfile(userProfile)).isTrue();
 
-        updateUserProfileData = new UpdateUserProfileData("test-l-@somewhere.com", "test-first-name", "test-last-name", "PENDING");
-        boolean response1 = UserProfileValidator.isSameAsExistingUserProfile(updateUserProfileData, userProfile);
-        assertThat(response1).isFalse();
+        updateUserProfileData = new UpdateUserProfileData("test-email-@somewhere.com1", "test-first-name1", "test-last-name", "PENDING",addRolesToRoleName(), addRolesToRoleName());
+        assertThat(updateUserProfileData.isSameAsUserProfile(userProfile)).isFalse();
     }
 
     @Test
@@ -181,12 +96,12 @@ public class UserProfileValidatorTest {
                 .isInstanceOf(NullPointerException.class);
     }
 
-    @Test(expected = Test.None.class)
+    @Test
     public void test_validateCreateUserProfileRequest_no_exception_thrown() {
         UserProfileValidator.validateCreateUserProfileRequest(userProfileData);
     }
 
-    @Test(expected = Test.None.class)
+    @Test
     public void test_validateCreateUserProfileRequest_no_exception_thrown_when_values_are_null() {
         userProfileData.setUserCategory(null);
         userProfileData.setUserType(null);
@@ -222,8 +137,8 @@ public class UserProfileValidatorTest {
                 .isInstanceOf(RequiredFieldMissingException.class);
     }
 
-    static void validateUserIds(GetUserProfilesRequest getUserProfilesRequest) {
-        if (getUserProfilesRequest.getUserIds().isEmpty()) {
+    static void validateUserIds(UserProfileDataRequest userProfileDataRequest) {
+        if (userProfileDataRequest.getUserIds().isEmpty()) {
             throw new RequiredFieldMissingException("no user id in request");
         }
     }
@@ -231,8 +146,28 @@ public class UserProfileValidatorTest {
     @Test
     public void test_validateUserIds() {
 
-        GetUserProfilesRequest getUserProfilesRequest = new GetUserProfilesRequest(new ArrayList<String>());
-        assertThatThrownBy(() -> UserProfileValidator.validateUserIds(getUserProfilesRequest))
+        UserProfileDataRequest userProfileDataRequest = new UserProfileDataRequest(new ArrayList<String>());
+        assertThatThrownBy(() -> UserProfileValidator.validateUserIds(userProfileDataRequest))
                 .isInstanceOf(RequiredFieldMissingException.class);
+    }
+    
+    @Test
+    public void test_validateUserProfileDataAndUser() {
+
+        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData();
+
+        if (null == userProfileData) {
+            throw new RequiredFieldMissingException("No Request Body in the request");
+        }
+
+        assertThat(userProfileData).isNotNull();
+    }
+
+    private Set<RoleName> addRolesToRoleName() {
+
+        RoleName roleName = new RoleName("prd-admin");
+        Set<RoleName> roleNames = new HashSet<RoleName>();
+        roleNames.add(roleName);
+        return roleNames;
     }
 }
