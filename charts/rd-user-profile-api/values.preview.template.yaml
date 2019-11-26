@@ -7,7 +7,9 @@ java:
     POSTGRES_NAME: "{{ .Values.postgresql.postgresqlDatabase}}"
     POSTGRES_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
     POSTGRES_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
+
   postgresql:
+    enabled: true
     postgresqlUsername: dbuserprofile
     postgresqlPassword: dbuserprofile
     postgresqlDatabase: dbuserprofile
@@ -15,7 +17,3 @@ java:
     rd:
       secrets:
         - s2s-secret
-
-postgresql:
-  #Whether to deploy the Postgres Chart or not
-  enabled: true
