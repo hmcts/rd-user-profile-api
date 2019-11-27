@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
@@ -9,10 +11,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.client.GetUserProfileWithRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
+
 
 
 @RunWith(SpringIntegrationSerenityRunner.class)
@@ -30,55 +33,57 @@ public class RetrieveUserProfileFuncTest extends AbstractFunctional {
     @Test
     public void should_get_user_profile_by_userId() throws Exception {
 
-        CreateUserProfileData createUserProfileData = createUserProfileData();
-        CreateUserProfileResponse createdResource = createUserProfile(createUserProfileData, HttpStatus.CREATED);
-        GetUserProfileResponse resource =
+        UserProfileCreationData userProfileCreationData = createUserProfileData();
+        UserProfileCreationResponse createdResource = createUserProfile(userProfileCreationData, HttpStatus.CREATED);
+        UserProfileResponse resource =
             testRequestHandler.sendGet(
                 requestUri + "?userId=" + createdResource.getIdamId(),
-                    GetUserProfileResponse.class);
+                    UserProfileResponse.class);
 
-        verifyGetUserProfile(resource, createUserProfileData);
+        verifyGetUserProfile(resource, userProfileCreationData);
     }
 
     @Test
     public void should_get_user_profile_by_email() throws Exception {
 
-        CreateUserProfileData createUserProfileData = createUserProfileData();
-        CreateUserProfileResponse createdResource = createUserProfile(createUserProfileData, HttpStatus.CREATED);
-        GetUserProfileResponse resource =
+        UserProfileCreationData userProfileCreationData = createUserProfileData();
+        UserProfileCreationResponse createdResource = createUserProfile(userProfileCreationData, HttpStatus.CREATED);
+        UserProfileResponse resource =
                 testRequestHandler.sendGet(
-                        requestUri + "?email=" + createUserProfileData.getEmail().toLowerCase(),
-                        GetUserProfileResponse.class
+                        requestUri + "?email=" + userProfileCreationData.getEmail().toLowerCase(),
+                        UserProfileResponse.class
                 );
 
-        verifyGetUserProfile(resource, createUserProfileData);
+        verifyGetUserProfile(resource, userProfileCreationData);
+        assertThat(createdResource.getIdamId()).isNotNull();
     }
 
     @Test
     public void should_get_user_profile_with_roles_by_userId() throws Exception {
 
-        CreateUserProfileData createUserProfileData = createUserProfileData();
-        CreateUserProfileResponse createdResource = createUserProfile(createUserProfileData, HttpStatus.CREATED);
-        GetUserProfileWithRolesResponse resource =
+        UserProfileCreationData userProfileCreationData = createUserProfileData();
+        UserProfileCreationResponse createdResource = createUserProfile(userProfileCreationData, HttpStatus.CREATED);
+        UserProfileWithRolesResponse resource =
                 testRequestHandler.sendGet(
                         requestUri + "/" + createdResource.getIdamId() + "/roles",
-                        GetUserProfileWithRolesResponse.class);
+                        UserProfileWithRolesResponse.class);
 
-        verifyGetUserProfileWithRoles(resource, createUserProfileData);
+        verifyGetUserProfileWithRoles(resource, userProfileCreationData);
     }
 
     @Test
     public void should_get_user_profile_with_roles_by_email() throws Exception {
 
-        CreateUserProfileData createUserProfileData = createUserProfileData();
-        CreateUserProfileResponse createdResource = createUserProfile(createUserProfileData, HttpStatus.CREATED);
-        GetUserProfileWithRolesResponse resource =
+        UserProfileCreationData userProfileCreationData = createUserProfileData();
+        UserProfileCreationResponse createdResource = createUserProfile(userProfileCreationData, HttpStatus.CREATED);
+        UserProfileWithRolesResponse resource =
                 testRequestHandler.sendGet(
-                        requestUri + "/roles?email=" + createUserProfileData.getEmail().toLowerCase(),
-                        GetUserProfileWithRolesResponse.class
+                        requestUri + "/roles?email=" + userProfileCreationData.getEmail().toLowerCase(),
+                        UserProfileWithRolesResponse.class
                 );
 
-        verifyGetUserProfileWithRoles(resource, createUserProfileData);
+        verifyGetUserProfileWithRoles(resource, userProfileCreationData);
+        assertThat(createdResource.getIdamId()).isNotNull();
     }
 
     @Test

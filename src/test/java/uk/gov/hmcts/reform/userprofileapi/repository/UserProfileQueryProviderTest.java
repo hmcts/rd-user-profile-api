@@ -16,10 +16,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.userprofileapi.client.IdentifierName;
-import uk.gov.hmcts.reform.userprofileapi.client.UserProfileIdentifier;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.*;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserProfileQueryProviderTest {
