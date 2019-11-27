@@ -9,11 +9,10 @@ java:
     POSTGRES_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
 
   postgresql:
+    enabled: true
     postgresqlUsername: dbuserprofile
     postgresqlPassword: dbuserprofile
     postgresqlDatabase: dbuserprofile
-    #Whether to deploy the Postgres Chart or not
-    enabled: true
   keyVaults:
     rd:
       secrets:
