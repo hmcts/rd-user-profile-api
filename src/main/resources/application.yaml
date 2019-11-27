@@ -78,6 +78,6 @@ feign:
 auth.idam.client.baseUrl: ${IDAM_URL:https://idam-api.aat.platform.hmcts.net}
 auth.idam.client.detailsUri: "/details"
 auth.provider.service.client.baseUrl: ${S2S_URL:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
-idam.s2s-auth.totp_secret: ${S2S_SECRET:OLMEJQA7UHU6EZKG}
+idam.s2s-auth.totp_secret: ${S2S_SECRET:AAAAAAAAAAAAAAAA}
 idam.s2s-auth.microservice: rd_user_profile_api
 idam.s2s-auth.url: ${S2S_URL:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
