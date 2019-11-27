@@ -9,7 +9,6 @@ java:
     POSTGRES_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
 
   postgresql:
-    enabled: true
     postgresqlUsername: dbuserprofile
     postgresqlPassword: dbuserprofile
     postgresqlDatabase: dbuserprofile
