@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
 
+import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,8 @@ import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
 import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileService;
 import uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator;
+
+
 
 
 @Api(
@@ -97,12 +100,19 @@ public class UserProfileController {
     @ResponseBody
     public ResponseEntity<UserProfileCreationResponse> createUserProfile(@Valid @RequestBody UserProfileCreationData userProfileCreationData) {
 
-        //print all headers
-        LOG.info("::Authorization header idam token::" + request.getHeader("Authorization"));
-        LOG.info("::Authorization header S2S Token::" + request.getHeader("ServiceAuthorization"));
+
+        String param1 =  ((HttpServletRequest) request).getHeader(
+                "Authorization");
+        String param2 =  ((HttpServletRequest) request).getHeader(
+                "ServiceAuthorization");
+        param1 = Objects.isNull(param1) ? "" : param1.replaceAll("[\n|\r|\t]", "_");
+        param2 = Objects.isNull(param2) ? "" : param2.replaceAll("[\n|\r|\t]", "_");
+
+        LOG.info(String.format("::Authorization header idam token:: %S", param1));
+        LOG.info(String.format(":Authorization header S2S Token::", param2));
+
 
         //Creating new User Profile
-
         validateCreateUserProfileRequest(userProfileCreationData);
 
         UserProfileCreationResponse resource = userProfileService.create(userProfileCreationData);

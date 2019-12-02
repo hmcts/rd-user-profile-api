@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.controller;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -26,10 +27,17 @@ public class TestFilter implements Filter {
             ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
 
-        LOG.info(String.format(":Authorization Header:: %S", ((HttpServletRequest) request).getHeader(
-                "Authorization")));
-        LOG.info(String.format(":ServiceAuthorization Header:: %S", ((HttpServletRequest) request).getHeader(
-                "ServiceAuthorization")));
+
+        String param1 =  ((HttpServletRequest) request).getHeader(
+                "Authorization");
+        String param2 =  ((HttpServletRequest) request).getHeader(
+                "ServiceAuthorization");
+
+        param1 = Objects.isNull(param1) ? "" : param1.replaceAll("[\n|\r|\t]", "_");
+        param2 = Objects.isNull(param2) ? "" : param2.replaceAll("[\n|\r|\t]", "_");
+
+        LOG.info(String.format(":Authorization Header:: %S", param1));
+        LOG.info(String.format(":ServiceAuthorization Header:: %S", param2));
         chain.doFilter(request, response);
     }
 }
