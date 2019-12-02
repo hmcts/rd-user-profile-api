@@ -13,13 +13,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.userprofileapi.config.SecurityConfiguration;
 
 @Component
 @Order(1)
 public class TestFilter implements Filter {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SecurityConfiguration.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TestFilter.class);
 
     @Override
     public void doFilter(
@@ -27,13 +26,10 @@ public class TestFilter implements Filter {
             ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
 
-
-
-        HttpServletRequest req = (HttpServletRequest) request;
-        LOG.info("::Authorization Header::"   + ((HttpServletRequest) request).getHeader("Authorization"));
-        LOG.info("::ServiceAuthorization Header::"   + ((HttpServletRequest) request).getHeader("ServiceAuthorization"));
+        LOG.info(String.format(":Authorization Header:: %S", ((HttpServletRequest) request).getHeader(
+                "Authorization")));
+        LOG.info(String.format(":ServiceAuthorization Header:: %S", ((HttpServletRequest) request).getHeader(
+                "ServiceAuthorization")));
         chain.doFilter(request, response);
-
     }
-
 }
