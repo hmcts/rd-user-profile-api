@@ -6,9 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,7 +14,6 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
-import org.springframework.security.core.context.SecurityContextHolder;
 import uk.gov.hmcts.reform.auth.checker.core.RequestAuthorizer;
 import uk.gov.hmcts.reform.auth.checker.core.service.Service;
 import uk.gov.hmcts.reform.auth.checker.core.user.User;
@@ -32,32 +28,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final List<String> anonymousPaths = new ArrayList<>();
     private AuthCheckerServiceAndUserFilter authCheckerServiceAndUserFilter;
 
-
-
-    private static final Logger LOG = LoggerFactory.getLogger(SecurityConfiguration.class);
-
     public SecurityConfiguration(RequestAuthorizer<User> userRequestAuthorizer,
 
                                  RequestAuthorizer<Service> serviceRequestAuthorizer,
 
                                  AuthenticationManager authenticationManager) {
 
-
-
-
-        LOG.info("::Authorization header idam token filter credentials::" + SecurityContextHolder.getContext().getAuthentication().getCredentials());
-        LOG.info("::Authorization header idam token filter name::" + SecurityContextHolder.getContext().getAuthentication().getName());
-
         //inside security configuration
 
         authCheckerServiceAndUserFilter = new AuthCheckerServiceAndUserFilter(serviceRequestAuthorizer, userRequestAuthorizer);
 
         authCheckerServiceAndUserFilter.setAuthenticationManager(authenticationManager);
-
-
-
-        //print all headers
-        LOG.info("::Authorization header done in filter");
 
     }
 
