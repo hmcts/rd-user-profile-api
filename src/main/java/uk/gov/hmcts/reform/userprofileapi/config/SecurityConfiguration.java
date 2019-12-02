@@ -5,7 +5,12 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,17 +33,30 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final List<String> anonymousPaths = new ArrayList<>();
     private AuthCheckerServiceAndUserFilter authCheckerServiceAndUserFilter;
 
+    @Autowired
+    private HttpServletRequest request;
+
+    private static final Logger LOG = LoggerFactory.getLogger(SecurityConfiguration.class);
+
     public SecurityConfiguration(RequestAuthorizer<User> userRequestAuthorizer,
 
                                  RequestAuthorizer<Service> serviceRequestAuthorizer,
 
                                  AuthenticationManager authenticationManager) {
 
+
+        //print all headers
+        LOG.info("::Authorization header idam token filter::" + request.getHeader("Authorization"));
+        LOG.info("::Authorization header S2S Token s2s token in filter::" + request.getHeader("ServiceAuthorization"));
+
         //inside security configuration
 
         authCheckerServiceAndUserFilter = new AuthCheckerServiceAndUserFilter(serviceRequestAuthorizer, userRequestAuthorizer);
 
         authCheckerServiceAndUserFilter.setAuthenticationManager(authenticationManager);
+
+        //print all headers
+        LOG.info("::Authorization header done in filter");
 
     }
 

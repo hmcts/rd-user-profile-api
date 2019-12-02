@@ -11,8 +11,12 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,6 +56,11 @@ public class UserProfileController {
     @Autowired
     private ValidationService validationService;
 
+    @Autowired
+    private HttpServletRequest request;
+
+    private static final Logger LOG = LoggerFactory.getLogger(UserProfileController.class);
+
 
     @ApiOperation(value = "Create a User Profile",
                   authorizations = {
@@ -87,6 +96,11 @@ public class UserProfileController {
     )
     @ResponseBody
     public ResponseEntity<UserProfileCreationResponse> createUserProfile(@Valid @RequestBody UserProfileCreationData userProfileCreationData) {
+
+        //print all headers
+        LOG.info("::Authorization header idam token::" + request.getHeader("Authorization"));
+        LOG.info("::Authorization header S2S Token::" + request.getHeader("ServiceAuthorization"));
+
         //Creating new User Profile
 
         validateCreateUserProfileRequest(userProfileCreationData);

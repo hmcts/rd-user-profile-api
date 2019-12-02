@@ -9,6 +9,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
@@ -44,6 +46,9 @@ public class UserProfileControllerTest {
     private UserProfileController sut;
 
     private static final String ORIGIN  = "EXUI";
+
+    @Mock
+    HttpServletRequest request;
 
     @Test
     public void testCreateUserProfile() {
