@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.auth.checker.core.RequestAuthorizer;
 import uk.gov.hmcts.reform.auth.checker.core.service.Service;
 import uk.gov.hmcts.reform.auth.checker.core.user.User;
 import uk.gov.hmcts.reform.auth.checker.spring.serviceanduser.AuthCheckerServiceAndUserFilter;
+import uk.gov.hmcts.reform.userprofileapi.controller.TestFilter;
 
 @Configuration
 @ConfigurationProperties(prefix = "security")
@@ -72,6 +73,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .anyRequest()
                 .authenticated()
                 .and()
+                .addFilterBefore(new TestFilter(),AuthCheckerServiceAndUserFilter.class)
                 .addFilter(authCheckerServiceAndUserFilter);
     }
 }
