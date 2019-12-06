@@ -44,8 +44,9 @@ public class TestFilter extends GenericFilterBean {
         LOG.info(String.format("::totpSecret:::: %S", totpSecret));
         LOG.info(String.format("::s2sAuthMicroservicename:: %S", s2sAuthMicroservicename));
 
+
         LOG.info(String.format(":Authorization Header from swagger:: %S", param1));
-        LOG.info(String.format(":Authorization Header from swagger:: %S", param1));
+        LOG.info(String.format(":Authorization Header from swagger:: %S", param2));
 
 
         MutableHttpServletRequest mutableRequest = new MutableHttpServletRequest((HttpServletRequest) request);
