@@ -17,3 +17,4 @@ java:
     rd:
       secrets:
         - s2s-secret
+
