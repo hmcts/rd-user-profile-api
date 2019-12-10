@@ -81,7 +81,7 @@ public class UserProfileControllerTest {
                 .isInstanceOf(NullPointerException.class)
                 .hasMessageContaining("createUserProfileData");
 
-        verifyZeroInteractions(userProfileServiceMock);
+        verifyNoInteractions(userProfileServiceMock);
 
     }
 
@@ -97,7 +97,7 @@ public class UserProfileControllerTest {
 
     @Test
     public void should_throw_exception_when_get_with_uuid_null_parameters_passed_in() {
-        verifyZeroInteractions(userProfileServiceMock);
+        verifyNoInteractions(userProfileServiceMock);
     }
 
 
@@ -138,7 +138,7 @@ public class UserProfileControllerTest {
     @Test
     public void should_throw_exception_when_get_with_idamId_null_parameters_passed_in() {
 
-        verifyZeroInteractions(userProfileServiceMock);
+        verifyNoInteractions(userProfileServiceMock);
     }
 
     @Test
