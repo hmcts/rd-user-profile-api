@@ -13,9 +13,9 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.hmcts.reform.userprofileapi.client.IdamUserResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamUserResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IdamStatusResolverTest {
@@ -58,11 +58,9 @@ public class IdamStatusResolverTest {
         idamStatusMap.put(addRule(true, false), IdamStatus.ACTIVE);
         idamStatusMap.put(addRule(false,false), IdamStatus.SUSPENDED);
 
-
-
-        assertThat(IdamStatusResolver.resolveIdamStatus(idamStatusMap, createIdamRoleInfo(false,true))).isEqualTo(IdamStatus.PENDING);
-        assertThat(IdamStatusResolver.resolveIdamStatus(idamStatusMap, createIdamRoleInfo(true,false))).isEqualTo(IdamStatus.ACTIVE);
-        assertThat(IdamStatusResolver.resolveIdamStatus(idamStatusMap, createIdamRoleInfo(false,false))).isEqualTo(IdamStatus.SUSPENDED);
+        assertThat(IdamStatusResolver.resolveIdamStatus(createIdamRoleInfo(false,true))).isEqualTo(IdamStatus.PENDING);
+        assertThat(IdamStatusResolver.resolveIdamStatus(createIdamRoleInfo(true,false))).isEqualTo(IdamStatus.ACTIVE);
+        assertThat(IdamStatusResolver.resolveIdamStatus(createIdamRoleInfo(false,false))).isEqualTo(IdamStatus.SUSPENDED);
     }
 
 

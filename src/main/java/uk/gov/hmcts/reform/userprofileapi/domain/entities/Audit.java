@@ -13,7 +13,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import lombok.Getter;
 import org.hibernate.annotations.CreationTimestamp;
-import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 
 
 

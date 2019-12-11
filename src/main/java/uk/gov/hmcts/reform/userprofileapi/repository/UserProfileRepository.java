@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 
 public interface UserProfileRepository extends CrudRepository<UserProfile, Long> {
 

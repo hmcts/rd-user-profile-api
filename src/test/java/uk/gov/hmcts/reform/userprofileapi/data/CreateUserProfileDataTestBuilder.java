@@ -5,12 +5,9 @@ import java.util.List;
 
 import lombok.Setter;
 import org.apache.commons.lang.RandomStringUtils;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.client.UpdateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.domain.LanguagePreference;
-import uk.gov.hmcts.reform.userprofileapi.domain.UserCategory;
-import uk.gov.hmcts.reform.userprofileapi.domain.UserType;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.*;
+import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 @Setter
 public class CreateUserProfileDataTestBuilder {
@@ -19,8 +16,8 @@ public class CreateUserProfileDataTestBuilder {
         //not meant to be instantiated.
     }
 
-    public static CreateUserProfileData buildCreateUserProfileData() {
-        return new CreateUserProfileData(
+    public static UserProfileCreationData buildCreateUserProfileData() {
+        return new UserProfileCreationData(
             buildRandomEmail(),
             RandomStringUtils.randomAlphabetic(20),
             RandomStringUtils.randomAlphabetic(20),
@@ -40,6 +37,16 @@ public class CreateUserProfileDataTestBuilder {
                 IdamStatus.ACTIVE.toString(),
                 null,null
                 );
+    }
+
+    public static UpdateUserProfileData buildUpdateUserProfileDataForUpdatingStatus() {
+        return new UpdateUserProfileData(
+                buildRandomEmail(),
+                RandomStringUtils.randomAlphabetic(20),
+                RandomStringUtils.randomAlphabetic(20),
+                IdamStatus.ACTIVE.toString(),
+                null,null
+        );
     }
 
     private static String buildRandomEmail() {

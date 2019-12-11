@@ -6,7 +6,7 @@ import java.util.List;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.hmcts.reform.userprofileapi.client.IdamUserResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamUserResponse;
 
 @Getter
 public class IdamRolesInfo {
