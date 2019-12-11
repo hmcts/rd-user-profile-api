@@ -41,8 +41,9 @@ withPipeline(type, product, component) {
     enableDockerBuild()
     installCharts()
     // **enable below for AAT deployment**
-    disableLegacyDeployment()
+
     enableAksStagingDeployment()
+    disableLegacyDeployment()
 
     after('functionalTest:preview') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
