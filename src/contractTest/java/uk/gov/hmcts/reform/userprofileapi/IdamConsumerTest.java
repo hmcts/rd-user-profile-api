@@ -78,7 +78,7 @@ public class IdamConsumerTest {
                 SerenityRest
                         .given()
                         .headers(headers)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .when()
                         .post(mockServer.getUrl() + IDAM_POST_USER_REGISTRATION_URL)
                         .then()
@@ -120,7 +120,7 @@ public class IdamConsumerTest {
                 SerenityRest
                         .given()
                         .headers(headers)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .when()
                         .get(mockServer.getUrl() + IDAM_USER_BY_ID_URL)
                         .then()
@@ -173,7 +173,7 @@ public class IdamConsumerTest {
                 SerenityRest
                         .given()
                         .headers(headers)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .when()
                         .put(mockServer.getUrl() + IDAM_USER_ROLES_BY_ID_URL)
                         .then()
@@ -226,7 +226,7 @@ public class IdamConsumerTest {
                 SerenityRest
                         .given()
                         .headers(headers)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .when()
                         .post(mockServer.getUrl() + IDAM_USER_ROLES_BY_ID_URL)
                         .then()
@@ -279,7 +279,7 @@ public class IdamConsumerTest {
                 SerenityRest
                         .given()
                         .headers(headers)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .when()
                         .delete(mockServer.getUrl() + IDAM_USER_ROLES_BY_ID_URL + "/pui-case-manager")
                         .then()
@@ -332,7 +332,7 @@ public class IdamConsumerTest {
                 SerenityRest
                         .given()
                         .headers(headers)
-                        .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .when()
                         .patch(mockServer.getUrl() + IDAM_USER_BY_ID_URL)
                         .then()
