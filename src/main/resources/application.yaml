@@ -67,6 +67,8 @@ security:
     - rd_professional_api
     - xui_webapp
     - finrem_payment_service
+    - iac
+    - fpl_case_service
 
 feign:
   allow:
