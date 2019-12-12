@@ -13,7 +13,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import lombok.Getter;
 import org.hibernate.annotations.CreationTimestamp;
-import uk.gov.hmcts.reform.userprofileapi.client.ResponseSource;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 
 
 
@@ -41,9 +41,13 @@ public class Audit {
     private UserProfile userProfile;
 
     public Audit(Integer idamRegistrationResponse, String statusMessage, ResponseSource source, UserProfile userProfile) {
+        this(idamRegistrationResponse, statusMessage, source);
+        this.userProfile = userProfile;
+    }
+
+    public Audit(Integer idamRegistrationResponse, String statusMessage, ResponseSource source) {
         this.idamRegistrationResponse = idamRegistrationResponse;
         this.statusMessage = statusMessage;
         this.source = source;
-        this.userProfile = userProfile;
     }
 }

@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -41,7 +42,7 @@ public class IdamClient {
         this.testConfig = testConfig;
     }
 
-    public String createUser(String userRole) {
+    public String createUser(List<String> roles) {
         //Generating a random user
         String userEmail = nextUserEmail();
         String firstName = "First";
@@ -50,12 +51,9 @@ public class IdamClient {
 
         String id = UUID.randomUUID().toString();
 
-        Role role = new Role(userRole);
+        List<Role> rolesList = roles.stream().map(role -> new Role(role)).collect(Collectors.toList());
 
-        List<Role> roles = new ArrayList<>();
-        roles.add(role);
-
-        User user = new User(userEmail, firstName, id, lastName, password, roles);
+        User user = new User(userEmail, firstName, id, lastName, password, rolesList);
 
         String serializedUser = gson.toJson(user);
 
@@ -76,7 +74,9 @@ public class IdamClient {
 
     public String getBearerToken() {
 
-        String userEmail = createUser("prd-admin");
+        List<String> roles = new ArrayList<>();
+        roles.add("prd-admin");
+        String userEmail = createUser(roles);
 
         String codeAuthorization = Base64.getEncoder().encodeToString((userEmail + ":" + password).getBytes());
 

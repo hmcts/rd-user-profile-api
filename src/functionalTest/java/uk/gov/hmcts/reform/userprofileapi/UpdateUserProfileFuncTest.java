@@ -5,22 +5,20 @@ import java.util.UUID;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 
-@Ignore
 @RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest
 public class UpdateUserProfileFuncTest extends AbstractFunctional {
 
     private static final Logger LOG = LoggerFactory.getLogger(UpdateUserProfileFuncTest.class);
-    CreateUserProfileResponse createdResource;
+    UserProfileCreationResponse createdResource;
 
     @Before
     public void setUp() throws Exception {
@@ -36,6 +34,6 @@ public class UpdateUserProfileFuncTest extends AbstractFunctional {
 
     @Test
     public void should_throw_404_while_update_profile_with_userId_not_in_db() throws Exception {
-        updateUserProfile(updateUserProfileData(), UUID.randomUUID(), HttpStatus.NOT_FOUND);
+        updateUserProfile(updateUserProfileData(), UUID.randomUUID().toString(), HttpStatus.NOT_FOUND);
     }
 }
