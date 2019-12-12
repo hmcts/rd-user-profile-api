@@ -4,7 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,11 +15,20 @@ import org.mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.hmcts.reform.userprofileapi.client.*;
+import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder;
 import uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.service.UserProfileService;
+import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
+import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
+import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
+import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileService;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -31,95 +43,52 @@ public class UserProfileControllerTest {
     @InjectMocks
     private UserProfileController sut;
 
+    private static final String ORIGIN  = "EXUI";
+
     @Test
     public void testCreateUserProfile() {
 
-        CreateUserProfileData createUserProfileData = CreateUserProfileDataTestBuilder.buildCreateUserProfileData();
+        UserProfileCreationData userProfileCreationData = CreateUserProfileDataTestBuilder.buildCreateUserProfileData();
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
-        CreateUserProfileResponse expectedBody = new CreateUserProfileResponse(userProfile);
+        UserProfileCreationResponse expectedBody = new UserProfileCreationResponse(userProfile);
 
-        when(userProfileServiceMock.create(createUserProfileData)).thenReturn(expectedBody);
+        when(userProfileServiceMock.create(userProfileCreationData)).thenReturn(expectedBody);
 
-        ResponseEntity<CreateUserProfileResponse> resource = sut.createUserProfile(createUserProfileData);
+        ResponseEntity<UserProfileCreationResponse> resource = sut.createUserProfile(userProfileCreationData);
         assertThat(resource.getBody()).isEqualToComparingFieldByField(expectedBody);
 
-        verify(userProfileServiceMock).create(any(CreateUserProfileData.class));
+        verify(userProfileServiceMock).create(any(UserProfileCreationData.class));
 
     }
 
     @Test
     public void testCreateUserProfileThrowsException() {
-        CreateUserProfileData createUserProfileData = CreateUserProfileDataTestBuilder.buildCreateUserProfileData();
+        UserProfileCreationData userProfileCreationData = CreateUserProfileDataTestBuilder.buildCreateUserProfileData();
         IllegalStateException ex = new IllegalStateException("this is a test exception");
 
-        when(userProfileServiceMock.create(createUserProfileData)).thenThrow(ex);
+        when(userProfileServiceMock.create(userProfileCreationData)).thenThrow(ex);
 
-        assertThatThrownBy(() -> sut.createUserProfile(createUserProfileData))
-            .isEqualTo(ex);
+        assertThatThrownBy(() -> sut.createUserProfile(userProfileCreationData))
+                .isEqualTo(ex);
 
-        verify(userProfileServiceMock).create(any(CreateUserProfileData.class));
+        verify(userProfileServiceMock).create(any(UserProfileCreationData.class));
     }
 
     @Test
     public void testCreateUserProfileWithNullParam() {
 
         assertThatThrownBy(() -> sut.createUserProfile(null))
-            .isInstanceOf(NullPointerException.class)
-            .hasMessageContaining("createUserProfileData");
+                .isInstanceOf(NullPointerException.class)
+                .hasMessageContaining("createUserProfileData");
 
         verifyZeroInteractions(userProfileServiceMock);
-
-    }
-
-    //@Test
-    public void should_return_null_body_when_post_and_create_method_returns_null() {
-
-        CreateUserProfileData createUserProfileData = CreateUserProfileDataTestBuilder.buildCreateUserProfileData();
-
-        when(userProfileServiceMock.create(createUserProfileData)).thenReturn(null);
-
-        ResponseEntity<CreateUserProfileResponse> resource = sut.createUserProfile(createUserProfileData);
-        assertThat(resource.getBody()).isNull();
-
-        verify(userProfileServiceMock).create(any(CreateUserProfileData.class));
-
-    }
-
-    //@Test
-    public void should_call_retrieve_successfully_when_get_with_uuid_param() {
-
-        UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID, UUID.randomUUID().toString());
-        UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
-        GetUserProfileWithRolesResponse expectedResource = new GetUserProfileWithRolesResponse(userProfile, true);
-
-        when(userProfileServiceMock.retrieve(argumentCaptorMock.capture())).thenReturn(expectedResource);
-
-        /*ResponseEntity<GetUserProfileWithRolesResponse> resource = sut.getUserProfileById(identifier.getValue());
-
-        assertThat(resource.getBody()).isEqualToComparingFieldByField(expectedResource);*/
-        assertThat(argumentCaptorMock.getValue()).isEqualToComparingFieldByField(identifier);
-
-        verify(userProfileServiceMock).retrieve(any(UserProfileIdentifier.class));
-
-    }
-
-    //@Test
-    public void should_propagate_exception_when_get_with_uuid_and_retrieve_method_throws_exception() {
-        UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID, UUID.randomUUID().toString());
-        IllegalStateException ex = new IllegalStateException("This is a test exception");
-
-        when(userProfileServiceMock.retrieve(argumentCaptorMock.capture())).thenThrow(ex);
-        //   assertThatThrownBy(() -> sut.getUserProfileById(identifier.getValue())).isEqualTo(ex);
-        assertThat(argumentCaptorMock.getValue()).isEqualToComparingFieldByField(identifier);
-
-        verify(userProfileServiceMock).retrieve(any(UserProfileIdentifier.class));
 
     }
 
     @Test
     public void testGetUserProfileWithRolesById() {
         String id = "a833c2e2-2c73-4900-96ca-74b1efb37928";
-        GetUserProfileWithRolesResponse responseMock = Mockito.mock(GetUserProfileWithRolesResponse.class);
+        UserProfileWithRolesResponse responseMock = Mockito.mock(UserProfileWithRolesResponse.class);
 
         when(userProfileServiceMock.retrieveWithRoles(any(UserProfileIdentifier.class))).thenReturn(responseMock);
 
@@ -135,7 +104,7 @@ public class UserProfileControllerTest {
     @Test
     public void testGetUserProfileWithRolesByEmail() {
         String email = "test@test.com";
-        GetUserProfileWithRolesResponse responseMock = Mockito.mock(GetUserProfileWithRolesResponse.class);
+        UserProfileWithRolesResponse responseMock = Mockito.mock(UserProfileWithRolesResponse.class);
 
         when(userProfileServiceMock.retrieveWithRoles(any(UserProfileIdentifier.class))).thenReturn(responseMock);
 
@@ -147,88 +116,75 @@ public class UserProfileControllerTest {
     public void testUpdateUserProfile() {
 
         UpdateUserProfileData updateUserProfileDataMock = Mockito.mock(UpdateUserProfileData.class);
+        AttributeResponse attributeResponseMock =  Mockito.mock(AttributeResponse.class);
         UserProfile userProfileMock = Mockito.mock(UserProfile.class);
 
         ResponseEntity responseEntityMock = Mockito.mock(ResponseEntity.class);
 
         String idamId = "13b02995-5e44-4136-bf5a-46f4ff4acb8f";
 
-        ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId);
+        when(updateUserProfileDataMock.getRolesAdd()).thenReturn(null);
+        when(updateUserProfileDataMock.getRolesDelete()).thenReturn(null);
+        when(userProfileServiceMock.update(any(), any(), any())).thenReturn(attributeResponseMock);
+        when(attributeResponseMock.getIdamStatusCode()).thenReturn(200);
+        ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId, ORIGIN);
 
-        verify(userProfileServiceMock, times(1)).update(any(), any());
-
+        verify(userProfileServiceMock, times(1)).update(any(), any(), any());
         ResponseEntity expect = ResponseEntity.status(HttpStatus.OK).build();
-
-        assertThat(actual).isEqualTo(expect);
+        assertThat(actual.getStatusCode().value()).isEqualTo(expect.getStatusCode().value());
     }
 
-    //@Test
-    public void should_propagate_exception_when_get_with_email_and_retrieve_method_throws_exception() {
-
-        UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.EMAIL, UUID.randomUUID().toString());
-        IllegalStateException ex = new IllegalStateException("This is a test exception");
-
-        when(userProfileServiceMock.retrieve(argumentCaptorMock.capture())).thenThrow(ex);
-
-        //  assertThatThrownBy(() -> sut.getUserProfileByEmail(identifier.getValue())).isEqualTo(ex);
-
-        assertThat(argumentCaptorMock.getValue()).isEqualToComparingFieldByField(identifier);
-
-        verify(userProfileServiceMock).retrieve(any(UserProfileIdentifier.class));
-
-    }
-
-    @Test
-    public void should_throw_exception_when_get_with_email_null_parameters_passed_in() {
-
-        /*  assertThatThrownBy(() -> sut.getUserProfileByEmail(null))
-            .isInstanceOf(NullPointerException.class)
-            .hasMessageContaining("email");*/
-
-        verifyZeroInteractions(userProfileServiceMock);
-
-    }
-
-
-    //@Test
-    public void should_call_request_manager_retrieve_method_with_idamId() {
-
-        UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID, "test-idam-id");
-        UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
-        GetUserProfileWithRolesResponse expectedResource = new GetUserProfileWithRolesResponse(userProfile, true);
-
-        when(userProfileServiceMock.retrieve(argumentCaptorMock.capture())).thenReturn(expectedResource);
-
-        // ResponseEntity<GetUserProfileWithRolesResponse> resource = sut.getUserProfileById(identifier.getValue());
-
-        //  assertThat(resource.getBody()).isEqualToComparingFieldByField(expectedResource);
-        assertThat(argumentCaptorMock.getValue()).isEqualToComparingFieldByField(identifier);
-
-        verify(userProfileServiceMock).retrieve(any(UserProfileIdentifier.class));
-
-    }
-
-    //@Test
-    public void should_propagate_exception_when_handle_retrieve_with_idamId_throws_exception() {
-
-        UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID, UUID.randomUUID().toString());
-        IllegalStateException ex = new IllegalStateException("This is a test exception");
-
-        when(userProfileServiceMock.retrieve(argumentCaptorMock.capture())).thenThrow(ex);
-
-        // assertThatThrownBy(() -> sut.getUserProfileById(identifier.getValue())).isEqualTo(ex);
-
-        assertThat(argumentCaptorMock.getValue()).isEqualToComparingFieldByField(identifier);
-
-        verify(userProfileServiceMock).retrieve(any(UserProfileIdentifier.class));
-
-    }
 
     @Test
     public void should_throw_exception_when_get_with_idamId_null_parameters_passed_in() {
 
         verifyZeroInteractions(userProfileServiceMock);
+    }
+
+    @Test
+    public void testUpdateUserProfileRoles() {
+        UpdateUserProfileData updateUserProfileDataMock = Mockito.mock(UpdateUserProfileData.class);
+
+        RoleName roleName1 = new RoleName("pui-case-manager");
+        RoleName roleName2 = new RoleName("pui-case-organisation");
+        Set<RoleName> roles = new HashSet<RoleName>();
+        roles.add(roleName1);
+        roles.add(roleName2);
+        when(updateUserProfileDataMock.getRolesAdd()).thenReturn(roles);
+        String idamId = "13b02995-5e44-4136-bf5a-46f4ff4acb8f";
+        ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId, ORIGIN);
+        verify(userProfileServiceMock, times(1)).updateRoles(any(), any());
+        ResponseEntity expect = ResponseEntity.status(HttpStatus.OK).build();
+        assertThat(actual).isEqualTo(expect);
 
     }
 
+    @Test
+    public void testretrieveUserProfiles() {
+
+        List<String> userIds = new ArrayList<>();
+        userIds.add("1");
+        userIds.add("2");
+        UserProfileDataRequest userProfileDataRequest = mock(UserProfileDataRequest.class);
+        when(userProfileDataRequest.getUserIds()).thenReturn(userIds);
+        ResponseEntity<UserProfileDataResponse> responseEntity = sut.retrieveUserProfiles("false","true", userProfileDataRequest);
+        assertThat(responseEntity).isNotNull();
+
+    }
+
+    @Test
+    public void testUpdateUserProfileRolesForDelete() {
+        UpdateUserProfileData updateUserProfileDataMock = Mockito.mock(UpdateUserProfileData.class);
+        RoleName roleName1 = new RoleName("pui-case-manager");
+        RoleName roleName2 = new RoleName("pui-case-organisation");
+        Set<RoleName> roles = new HashSet<RoleName>();
+        roles.add(roleName1);
+        roles.add(roleName2);
+        when(updateUserProfileDataMock.getRolesDelete()).thenReturn(roles);
+        String idamId = "13b02995-5e44-4136-bf5a-46f4ff4acb8f";
+        ResponseEntity actual = sut.updateUserProfile(updateUserProfileDataMock, idamId, ORIGIN);
+        verify(userProfileServiceMock, times(1)).updateRoles(any(), any());
+        ResponseEntity expect = ResponseEntity.status(HttpStatus.OK).build();
+        assertThat(actual).isEqualTo(expect);
+    }
 }

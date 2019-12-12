@@ -1,28 +1,18 @@
 java:
   applicationPort: 8091
+  ingressHost: rd-user-profile-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+  aadIdentityName: rd
+  image: 'hmctspublic.azurecr.io/rd/user-profile-api:latest'
   environment:
-    POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
-    POSTGRES_USERNAME: "{{ .Values.postgresql.postgresqlDatabase}}"
-    POSTGRES_NAME: "{{ .Values.postgresql.postgresqlUsername}}"
-    POSTGRES_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
+    POSTGRES_HOST: rd-user-profile-api-postgres-db-{{ .Values.global.environment }}.postgres.database.azure.com
+    POSTGRES_USERNAME: dbuserprofile@rd-user-profile-api-postgres-db-{{ .Values.global.environment }}
+    POSTGRES_NAME: dbuserprofile
     POSTGRES_PORT: 5432
-    LOGBACK_REQUIRE_ALERT_LEVEL: 'false'
-    LOGBACK_REQUIRE_ERROR_CODE: 'false'
-  image: 'https://hmctspublic.azurecr.io/hmcts/draft-store-service:latest'
-  postgresql:
-    image:
-      tag: 10.7.0-r68
-    postgresqlUsername: dbuserprofile
-    postgresqlPassword: dbuserprofile
-    postgresqlDatabase: dbuserprofile
-    service:
-      port: 5432
+    S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    IDAM_URL: https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net
   keyVaults:
-    "s2s":
-      resourceGroup: rpe-service-auth-provider
+    rd:
       secrets:
-        - microservicekey-rd-user-profile-api
-    "rd":
-      resourceGroup: rd
-      secrets:
-        - s2s-url
+        - s2s-secret
+        - user-profile-api-POSTGRES-PASS
+        - AppInsightsInstrumentationKey
