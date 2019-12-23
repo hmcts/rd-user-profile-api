@@ -26,6 +26,9 @@ public class WelcomeTest {
 
         RestAssured.baseURI = targetInstance;
         RestAssured.useRelaxedHTTPSValidation();
+        // TO enable for local testing
+        //RestAssured.proxy("proxyout.reform.hmcts.net",8080);
+        //SerenityRest.proxy("proxyout.reform.hmcts.net", 8080);
 
         String response =
                 SerenityRest.given()
@@ -36,7 +39,7 @@ public class WelcomeTest {
                 .get("/")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .and()
                 .extract().body().asString();
 

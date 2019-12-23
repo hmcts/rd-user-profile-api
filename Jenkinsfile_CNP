@@ -1,6 +1,7 @@
 #!groovy
 
 @Library("Infrastructure")
+import uk.gov.hmcts.contino.AppPipelineDsl
 
 def type = "java"
 def product = "rd"
@@ -43,8 +44,10 @@ withPipeline(type, product, component) {
     enableDbMigration('rd')
     enableDockerBuild()
     installCharts()
-    disableLegacyDeployment()
+    // **enable below for AAT deployment**
+    //disableLegacyDeployment()
     enableAksStagingDeployment()
+    enableMutationTest()
 
     after('functionalTest:preview') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
@@ -53,5 +56,9 @@ withPipeline(type, product, component) {
     after('functionalTest:aat') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
     }
+
+    enablePactAs([
+            AppPipelineDsl.PactRoles.CONSUMER
+    ])
 
 }

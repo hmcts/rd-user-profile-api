@@ -11,14 +11,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.reform.userprofileapi.client.CreateUserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 
 @RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest
 public class UpdateUserProfileFuncTest extends AbstractFunctional {
 
     private static final Logger LOG = LoggerFactory.getLogger(UpdateUserProfileFuncTest.class);
-    CreateUserProfileResponse createdResource;
+    UserProfileCreationResponse createdResource;
 
     @Before
     public void setUp() throws Exception {

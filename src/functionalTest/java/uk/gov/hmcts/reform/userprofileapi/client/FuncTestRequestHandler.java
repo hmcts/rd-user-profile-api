@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.client;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -64,6 +64,14 @@ public class FuncTestRequestHandler {
                 .statusCode(expectedStatus.value()).extract().response();
     }
 
+    public <T> T sendPut(Object data, HttpStatus expectedStatus, String path, Class<T> clazz) throws JsonProcessingException {
+
+        return sendPut(objectMapper.writeValueAsString(data),
+               expectedStatus,
+               path)
+               .as(clazz);
+    }
+
     public void sendPut(Object data, HttpStatus expectedStatus, String path) throws JsonProcessingException {
         sendPut(objectMapper.writeValueAsString(data),
                 expectedStatus,
@@ -75,6 +83,30 @@ public class FuncTestRequestHandler {
         return withAuthenticatedRequest()
                 .body(jsonBody)
                 .put(path)
+                .then()
+                .log().all(true)
+                .statusCode(expectedStatus.value()).extract().response();
+    }
+
+    public <T> T sendDelete(Object data, HttpStatus expectedStatus, String path, Class<T> clazz) throws JsonProcessingException {
+
+        return sendPut(objectMapper.writeValueAsString(data),
+                expectedStatus,
+                path)
+                .as(clazz);
+    }
+
+    public void sendDelete(Object data, HttpStatus expectedStatus, String path) throws JsonProcessingException {
+        sendPut(objectMapper.writeValueAsString(data),
+                expectedStatus,
+                path);
+    }
+
+    public Response sendDelete(String jsonBody, HttpStatus expectedStatus, String path) {
+
+        return withAuthenticatedRequest()
+                .body(jsonBody)
+                .delete(path)
                 .then()
                 .log().all(true)
                 .statusCode(expectedStatus.value()).extract().response();
@@ -93,7 +125,7 @@ public class FuncTestRequestHandler {
         return SerenityRest
             .given()
             //.headers(authorizationHeadersProvider.getServiceAuthorization())
-            .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
             .baseUri(baseUrl)
             .header("ServiceAuthorization", BEARER + s2sToken)
             .header("Authorization", BEARER + bearerToken)
@@ -121,12 +153,12 @@ public class FuncTestRequestHandler {
                 .baseUri(baseUrl)
                 .header("ServiceAuthorization", BEARER + s2sToken)
                 .header("Authorization", BEARER + bearerToken)
-                .header("Content-Type", APPLICATION_JSON_UTF8_VALUE)
-                .header("Accepts", APPLICATION_JSON_UTF8_VALUE);
+                .header("Content-Type", APPLICATION_JSON_VALUE)
+                .header("Accepts", APPLICATION_JSON_VALUE);
     }
 
     private String getBearerToken() {
-        IdamClient idamClient = new IdamClient(testConfig);
+        IdamOpenIdClient idamClient = new IdamOpenIdClient(testConfig);
         return idamClient.getBearerToken();
     }
 
