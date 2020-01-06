@@ -5,6 +5,8 @@ import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUse
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateUserProfileStatus;
 
 import java.util.Optional;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ import uk.gov.hmcts.reform.userprofileapi.service.ExceptionService;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationHelperService;
 
 @Service
+@Slf4j
 public class ValidationHelperServiceImpl implements ValidationHelperService {
 
     @Autowired
@@ -48,9 +51,10 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
     public boolean validateUpdateUserProfileRequestValid(UpdateUserProfileData updateUserProfileData, String userId, ResponseSource source) {
         if (!validateUserProfileStatus(updateUserProfileData)) {
             auditService.persistAudit(HttpStatus.BAD_REQUEST, source);
-            final String exceptionMsg = String.format("RequiredFieldMissingException - Update user profile request is not valid for userId: %s", userId);
+            final String exceptionMsg = String.format("RequiredFieldMissingException - Update user profile request has invalid status %s for userId: %s", updateUserProfileData.getIdamStatus(), userId);
             exceptionService.throwCustomRuntimeException(ExceptionType.REQUIREDFIELDMISSINGEXCEPTION, exceptionMsg);
         }
+        log.error("User status provided is correct");
         return true;
     }
 
@@ -61,6 +65,7 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
             final String exceptionMsg = String.format("User is PENDING or input status is PENDING and only be changed to ACTIVE or SUSPENDED for userId: %s", userProfile.getIdamId());
             exceptionService.throwCustomRuntimeException(ExceptionType.REQUIREDFIELDMISSINGEXCEPTION, exceptionMsg);
         }
+        log.error("validateUserStatusBeforeUpdate is correct");
         return true;
     }
 

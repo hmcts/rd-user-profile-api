@@ -43,7 +43,7 @@ public class IdamServiceImpl implements IdamService {
 
     @Override
     public IdamRolesInfo fetchUserById(String id) {
-        log.info("Getting Idam roles by id for user id:" + id);
+        //Getting Idam roles by id
         IdamRolesInfo result;
         try (Response response = idamClient.getUserById(id)) {
             result = buildIdamResponseResult(response);
@@ -55,7 +55,7 @@ public class IdamServiceImpl implements IdamService {
 
     @Override
     public IdamRolesInfo fetchUserByEmail(String email) {
-        log.info("Getting Idam roles by id for user email:" + email);
+        //Getting Idam roles by user email
         IdamRolesInfo result;
         try (Response response = idamClient.getUserByEmail(email)) {
             result = buildIdamResponseResult(response);
@@ -67,7 +67,7 @@ public class IdamServiceImpl implements IdamService {
 
     @Override
     public IdamRolesInfo updateUserRoles(List roleRequest, String userId) {
-        log.info("Update idam roles for userId :" + userId);
+        //Update idam roles
         HttpStatus httpStatus = null;
         Response response;
         try {
@@ -82,7 +82,7 @@ public class IdamServiceImpl implements IdamService {
 
     @Override
     public IdamRolesInfo addUserRoles(Set roleRequest, String userId) {
-        log.info("add idam roles for userId :" + userId);
+        //add idam roles
         HttpStatus httpStatus = null;
         Response response;
         try {
@@ -97,7 +97,7 @@ public class IdamServiceImpl implements IdamService {
 
     @Override
     public AttributeResponse updateUserDetails(UpdateUserDetails updateUserDetails, String userId) {
-        log.info("Update user details for userId :" + userId);
+        //Update user details
         HttpStatus httpStatus = null;
         Response response;
         try {

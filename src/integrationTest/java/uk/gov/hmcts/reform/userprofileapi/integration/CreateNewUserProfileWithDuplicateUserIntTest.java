@@ -126,7 +126,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(404)
-                       ));
+                ));
 
     }
 
@@ -147,12 +147,12 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
 
         UserProfileCreationResponse createdResource =
                 userProfileRequestHandlerTest.sendPost(
-                mockMvc,
-                APP_BASE_PATH,
-                data,
-                CREATED,
-                UserProfileCreationResponse.class
-            );
+                        mockMvc,
+                        APP_BASE_PATH,
+                        data,
+                        CREATED,
+                        UserProfileCreationResponse.class
+                );
 
         verifyUserProfileCreation(createdResource, CREATED, data, IdamStatus.ACTIVE);
 

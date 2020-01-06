@@ -1,8 +1,5 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
@@ -17,11 +14,11 @@ public final class IdamStatusResolver {
     public static final String ACCEPTED = "12 User Registration accepted";
     public static final String INVALID_REQUEST = "13 Required parameters or one of request field is missing or invalid";
     public static final String MISSING_TOKEN = "14 Missing Bearer Token";
-    public static final String TOKEN_EXPIRED = "15 Bearer token is expired, or it doesn’t have the ‘create-user’ scope";
+    public static final String TOKEN_EXPIRED = "15 Bearer token is expired, or it doesn’t have the 'create-user' scope";
     public static final String NOT_FOUND = "16 Resource not found";
     public static final String USER_EXISTS = "17 User with this email already exists";
     public static final String UNKNOWN = "18 Unknown error from Idam";
-    public static final String NO_IDAM_CALL = "19 No call made to SIDAM to get the user roles as user status is not ‘ACTIVE’";
+    public static final String NO_IDAM_CALL = "19 No call made to SIDAM to get the user roles as user status is not 'ACTIVE'";
     public static final String NO_CONTENT = "20 User Role Deleted";
 
     public static final String ACTIVE = "ACTIVE";
@@ -51,13 +48,21 @@ public final class IdamStatusResolver {
         }
     }
 
+    public static IdamStatus resolveIdamStatus(IdamRolesInfo idamRolesInfo) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(null == idamRolesInfo.getPending() || !idamRolesInfo.getPending());
+        sb.append(null == idamRolesInfo.getActive() || !idamRolesInfo.getActive());
 
-    public static IdamStatus resolveIdamStatus(Map<Map<String, Boolean>, IdamStatus> statusResolver, IdamRolesInfo idamRolesInfo) {
+        switch (sb.toString().toLowerCase()) {
+            case "falsetrue":
+                return IdamStatus.PENDING;
 
-        Map<String, Boolean> statusMap = new HashMap<>();
-        statusMap.put(ACTIVE, idamRolesInfo.getActive() == null ? false : idamRolesInfo.getActive());
-        statusMap.put(PENDING, idamRolesInfo.getPending() == null ? false : idamRolesInfo.getPending());
+            case "truefalse":
+                return IdamStatus.ACTIVE;
 
-        return statusResolver.get(statusMap) != null ? statusResolver.get(statusMap) : IdamStatus.SUSPENDED;
+            default:
+                return IdamStatus.SUSPENDED;
+        }
     }
+
 }

@@ -58,11 +58,9 @@ public class IdamStatusResolverTest {
         idamStatusMap.put(addRule(true, false), IdamStatus.ACTIVE);
         idamStatusMap.put(addRule(false,false), IdamStatus.SUSPENDED);
 
-
-
-        assertThat(IdamStatusResolver.resolveIdamStatus(idamStatusMap, createIdamRoleInfo(false,true))).isEqualTo(IdamStatus.PENDING);
-        assertThat(IdamStatusResolver.resolveIdamStatus(idamStatusMap, createIdamRoleInfo(true,false))).isEqualTo(IdamStatus.ACTIVE);
-        assertThat(IdamStatusResolver.resolveIdamStatus(idamStatusMap, createIdamRoleInfo(false,false))).isEqualTo(IdamStatus.SUSPENDED);
+        assertThat(IdamStatusResolver.resolveIdamStatus(createIdamRoleInfo(false,true))).isEqualTo(IdamStatus.PENDING);
+        assertThat(IdamStatusResolver.resolveIdamStatus(createIdamRoleInfo(true,false))).isEqualTo(IdamStatus.ACTIVE);
+        assertThat(IdamStatusResolver.resolveIdamStatus(createIdamRoleInfo(false,false))).isEqualTo(IdamStatus.SUSPENDED);
     }
 
 

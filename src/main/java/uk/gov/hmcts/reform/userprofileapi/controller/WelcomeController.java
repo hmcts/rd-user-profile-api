@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Api(
     value = "/",
-    produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    produces = MediaType.APPLICATION_JSON_VALUE
 )
 
 @Slf4j
@@ -34,7 +34,7 @@ public class WelcomeController {
      *
      * @return Welcome message from the service.
      */
-    @ApiOperation("Welcome message for the Immigration & Asylum case API")
+    @ApiOperation("Welcome to the System User Profile Data API")
     @ApiResponses({
         @ApiResponse(
             code = 200,
@@ -44,7 +44,7 @@ public class WelcomeController {
     })
     @GetMapping(
         path = "/",
-        produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+        produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
     public ResponseEntity<String> welcome() {
