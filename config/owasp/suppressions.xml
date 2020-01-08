@@ -116,6 +116,62 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
+       file name: jackson-databind-2.9.9.3.jar
+       ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson-databind@.*$</packageUrl>
+        <cpe>cpe:/a:fasterxml:jackson</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+       file name: jackson-databind-2.9.9.3.jar
+       ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson-databind@.*$</packageUrl>
+        <cpe>cpe:/a:fasterxml:jackson-databind</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+       file name: jackson-databind-2.9.9.3.jar
+       ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson-databind@.*$</packageUrl>
+        <cve>CVE-2019-14540</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+       file name: jackson-databind-2.9.9.3.jar
+       ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson-databind@.*$</packageUrl>
+        <cve>CVE-2019-16335</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+       file name: jackson-databind-2.9.9.3.jar
+       ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson-databind@.*$</packageUrl>
+        <cve>CVE-2019-16942</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+       file name: jackson-databind-2.9.9.3.jar
+       ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson-databind@.*$</packageUrl>
+        <cve>CVE-2019-16943</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+       file name: jackson-databind-2.9.9.3.jar
+       ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson-databind@.*$</packageUrl>
+        <cve>CVE-2019-17267</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+       file name: jackson-databind-2.9.9.3.jar
+       ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson-databind@.*$</packageUrl>
+        <cve>CVE-2019-17531</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
        file name: spring-security-config-5.1.5.RELEASE.jar
        ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring-security-config@.*$</packageUrl>
@@ -317,7 +373,104 @@
         <sha1>123ae21ad13ecc888bf3e18d5c65857df32e6a9f</sha1>
         <cpe>cpe:/a:opera:opera</cpe>
     </suppress>
-
+    <suppress>
+        <notes><![CDATA[
+       file name: selenium-opera-driver-3.14.0.jar
+       ]]></notes>
+        <sha1>123ae21ad13ecc888bf3e18d5c65857df32e6a9f</sha1>
+        <cve>CVE-2003-1561</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+       file name: selenium-opera-driver-3.14.0.jar
+       ]]></notes>
+        <sha1>123ae21ad13ecc888bf3e18d5c65857df32e6a9f</sha1>
+        <cve>CVE-2008-1761</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+       file name: selenium-opera-driver-3.14.0.jar
+       ]]></notes>
+        <sha1>123ae21ad13ecc888bf3e18d5c65857df32e6a9f</sha1>
+        <cve>CVE-2008-1764</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+       file name: selenium-opera-driver-3.14.0.jar
+       ]]></notes>
+        <sha1>123ae21ad13ecc888bf3e18d5c65857df32e6a9f</sha1>
+        <cve>CVE-2008-3079</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+       file name: selenium-opera-driver-3.14.0.jar
+       ]]></notes>
+        <sha1>123ae21ad13ecc888bf3e18d5c65857df32e6a9f</sha1>
+        <cve>CVE-2008-3172</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+       file name: selenium-opera-driver-3.14.0.jar
+       ]]></notes>
+        <sha1>123ae21ad13ecc888bf3e18d5c65857df32e6a9f</sha1>
+        <cve>CVE-2008-4293</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+       file name: selenium-opera-driver-3.14.0.jar
+       ]]></notes>
+        <sha1>123ae21ad13ecc888bf3e18d5c65857df32e6a9f</sha1>
+        <cve>CVE-2008-4695</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+       file name: selenium-opera-driver-3.14.0.jar
+       ]]></notes>
+        <sha1>123ae21ad13ecc888bf3e18d5c65857df32e6a9f</sha1>
+        <cve>CVE-2008-4696</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+       file name: selenium-opera-driver-3.14.0.jar
+       ]]></notes>
+        <sha1>123ae21ad13ecc888bf3e18d5c65857df32e6a9f</sha1>
+        <cve>CVE-2008-4794</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+       file name: selenium-opera-driver-3.14.0.jar
+       ]]></notes>
+        <sha1>123ae21ad13ecc888bf3e18d5c65857df32e6a9f</sha1>
+        <cve>CVE-2008-4795</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+       file name: selenium-opera-driver-3.14.0.jar
+       ]]></notes>
+        <sha1>123ae21ad13ecc888bf3e18d5c65857df32e6a9f</sha1>
+        <cve>CVE-2008-5679</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+       file name: selenium-opera-driver-3.14.0.jar
+       ]]></notes>
+        <sha1>123ae21ad13ecc888bf3e18d5c65857df32e6a9f</sha1>
+        <cve>CVE-2009-0915</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+       file name: selenium-opera-driver-3.14.0.jar
+       ]]></notes>
+        <sha1>123ae21ad13ecc888bf3e18d5c65857df32e6a9f</sha1>
+        <cve>CVE-2010-5227</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+       file name: selenium-opera-driver-3.14.0.jar
+       ]]></notes>
+        <sha1>123ae21ad13ecc888bf3e18d5c65857df32e6a9f</sha1>
+        <cve>CVE-2015-8960</cve>
+    </suppress>
     <suppress>
         <notes><![CDATA[
        file name: gradle-pitest-plugin-1.3.0.jar
