@@ -317,7 +317,6 @@
         <sha1>123ae21ad13ecc888bf3e18d5c65857df32e6a9f</sha1>
         <cpe>cpe:/a:opera:opera</cpe>
     </suppress>
-
     <suppress>
         <notes><![CDATA[
        file name: gradle-pitest-plugin-1.3.0.jar
