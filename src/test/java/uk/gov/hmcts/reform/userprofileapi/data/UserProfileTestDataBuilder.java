@@ -10,7 +10,7 @@ import java.util.UUID;
 import org.assertj.core.util.Lists;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamStatus;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 
 public class UserProfileTestDataBuilder {
 
@@ -27,6 +27,13 @@ public class UserProfileTestDataBuilder {
     public static UserProfile buildUserProfileWithDeletedStatus() {
         UserProfile up = new UserProfile(buildCreateUserProfileData(), HttpStatus.CREATED);
         up.setStatus(IdamStatus.DELETED);
+        up.setIdamId(UUID.randomUUID().toString());
+        return up;
+    }
+
+    public static UserProfile buildUserProfileWithSuspendedStatus() {
+        UserProfile up = new UserProfile(buildCreateUserProfileData(), HttpStatus.CREATED);
+        up.setStatus(IdamStatus.SUSPENDED);
         up.setIdamId(UUID.randomUUID().toString());
         return up;
     }
