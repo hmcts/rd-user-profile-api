@@ -201,7 +201,6 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
             assertThat(getUserProfilesResponse.getIdamStatus()).isEqualTo(up.getStatus().name());
             assertThat(getUserProfilesResponse.getRoles()).isNull();
             assertThat(getUserProfilesResponse.getIdamMessage()).isNotEmpty();
-            //todo clarify this requirement
             if (IdamStatus.ACTIVE == up.getStatus()) {
                 assertThat(getUserProfilesResponse.getIdamStatusCode()).isEqualTo("404");
             } else {
