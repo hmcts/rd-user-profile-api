@@ -44,10 +44,8 @@ withPipeline(type, product, component) {
     enableDbMigration('rd')
     enableDockerBuild()
     installCharts()
-    // **enable below for AAT deployment**
-    //disableLegacyDeployment()
+    disableLegacyDeployment()
     enableAksStagingDeployment()
-    enableMutationTest()
 
     after('functionalTest:preview') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'

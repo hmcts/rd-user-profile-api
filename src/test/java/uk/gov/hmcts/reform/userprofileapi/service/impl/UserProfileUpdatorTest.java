@@ -238,8 +238,6 @@ public class UserProfileUpdatorTest {
         verify(userProfileRepositoryMock,times(1)).save(any(UserProfile.class));
         verify(auditServiceMock, times(1)).persistAudit(eq(HttpStatus.OK), any(UserProfile.class), any());
 
-        //  TODO verify in separate auditService test
-        //! verify(auditRepositoryMock,times(1)).save(any(Audit.class));
     }
 
     @Test
@@ -285,7 +283,7 @@ public class UserProfileUpdatorTest {
 
         verify(userProfileRepositoryMock,times(1)).save(any(UserProfile.class));
         verify(auditServiceMock, times(1)).persistAudit(eq(HttpStatus.OK), any(UserProfile.class), any());
-        //tbc improve test
+
     }
 
     @Test(expected = ResourceNotFoundException.class)
@@ -294,7 +292,6 @@ public class UserProfileUpdatorTest {
         when(validationServiceMock.validateUpdate(any(), any(), any())).thenThrow(ResourceNotFoundException.class);
 
         sut.update(updateUserProfileData,"invalid", EXUI);
-        //TODO verify auditService independently
     }
 
     @Test(expected = ResourceNotFoundException.class)

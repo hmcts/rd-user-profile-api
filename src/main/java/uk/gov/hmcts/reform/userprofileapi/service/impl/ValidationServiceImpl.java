@@ -46,7 +46,6 @@ public class ValidationServiceImpl implements ValidationService {
         return validationHelperService.validateUserStatusBeforeUpdate(updateUserProfileData, userProfile, source);
     }
 
-    //TODO determine why this fails for !UserProfileField.SYNC.name().equalsIgnoreCase(origin)????
     public boolean isExuiUpdateRequest(String origin) {
         return ResponseSource.EXUI.name().equalsIgnoreCase(origin);
 
