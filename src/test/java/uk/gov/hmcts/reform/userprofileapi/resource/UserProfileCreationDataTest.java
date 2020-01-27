@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.getIdamRolesJson;
+import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileDataTestBuilder.getIdamRolesJson;
 
 import org.junit.Test;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.*;

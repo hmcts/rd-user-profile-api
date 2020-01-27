@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.userprofileapi.data;
+package uk.gov.hmcts.reform.userprofileapi.helper;
 
 import java.util.ArrayList;
 import java.util.List;

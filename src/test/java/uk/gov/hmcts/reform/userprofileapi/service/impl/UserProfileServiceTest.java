@@ -24,8 +24,8 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataRes
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
-import uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;

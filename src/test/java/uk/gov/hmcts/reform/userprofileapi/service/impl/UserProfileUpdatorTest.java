@@ -32,12 +32,12 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.RoleAdditionRespon
 import uk.gov.hmcts.reform.userprofileapi.controller.response.RoleDeletionResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
-import uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.*;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.exception.*;
+import uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileDataTestBuilder;
 import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
