@@ -73,9 +73,8 @@ public class UserProfileCreatorTest {
         assertThat(response).isEqualToComparingFieldByField(userProfile);
 
         InOrder inOrder = Mockito.inOrder(idamService, userProfileRepository);
-        inOrder.verify(idamService).registerUser(any(IdamRegisterUserRequest.class));
-        inOrder.verify(userProfileRepository).save(any(UserProfile.class));
-
+        inOrder.verify(idamService, Mockito.times(1)).registerUser(any(IdamRegisterUserRequest.class));
+        inOrder.verify(userProfileRepository, Mockito.times(1)).save(any(UserProfile.class));
         Mockito.verify(auditRepository, Mockito.times(1)).save(any(Audit.class));
 
     }
@@ -93,8 +92,8 @@ public class UserProfileCreatorTest {
         assertThat(response).isEqualToComparingFieldByField(userProfile);
 
         InOrder inOrder = Mockito.inOrder(idamService, userProfileRepository);
-        inOrder.verify(idamService).registerUser(any(IdamRegisterUserRequest.class));
-        inOrder.verify(userProfileRepository).save(any(UserProfile.class));
+        inOrder.verify(idamService, Mockito.times(1)).registerUser(any(IdamRegisterUserRequest.class));
+        inOrder.verify(userProfileRepository, Mockito.times(1)).save(any(UserProfile.class));
 
         Mockito.verify(auditRepository, Mockito.times(1)).save(any(Audit.class));
         assertThat(response.getIdamId()).isNull();
@@ -114,8 +113,8 @@ public class UserProfileCreatorTest {
         assertThat(response).isEqualToComparingFieldByField(userProfile);
 
         InOrder inOrder = Mockito.inOrder(idamService, userProfileRepository);
-        inOrder.verify(idamService).registerUser(any(IdamRegisterUserRequest.class));
-        inOrder.verify(userProfileRepository).save(any(UserProfile.class));
+        inOrder.verify(idamService, Mockito.times(1)).registerUser(any(IdamRegisterUserRequest.class));
+        inOrder.verify(userProfileRepository, Mockito.times(1)).save(any(UserProfile.class));
 
         Mockito.verify(auditRepository, Mockito.times(1)).save(any(Audit.class));
 
@@ -138,6 +137,7 @@ public class UserProfileCreatorTest {
         Mockito.when(idamService.registerUser(any(IdamRegisterUserRequest.class))).thenReturn(idamRegistrationInfo);
         assertThatThrownBy(() -> userProfileCreator.create(userProfileCreationData)).isExactlyInstanceOf(IdamServiceException.class);
         Mockito.verify(userProfileRepository, Mockito.times(0)).save(any(UserProfile.class));
+        Mockito.verify(idamService, Mockito.times(1)).registerUser(any(IdamRegisterUserRequest.class));
         Mockito.verify(auditRepository, Mockito.times(1)).save(any(Audit.class));
     }
 
@@ -202,6 +202,7 @@ public class UserProfileCreatorTest {
         ReflectionTestUtils.setField(userProfileCreator, "sidamGetUri", "/api/v1/users/");
 
         UserProfile responseUserProfile = userProfileCreator.create(userProfileCreationData);
+        Mockito.verify(userProfileRepository, Mockito.times(1)).findByEmail(any());
         Mockito.verify(userProfileRepository, Mockito.times(1)).save(any(UserProfile.class));
         Mockito.verify(auditRepository, Mockito.times(1)).save(any(Audit.class));
         assertThat(responseUserProfile).isNotNull();

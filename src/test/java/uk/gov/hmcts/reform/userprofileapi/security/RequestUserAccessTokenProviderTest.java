@@ -4,7 +4,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RequestUserAccessTokenProviderTest {
@@ -42,6 +44,7 @@ public class RequestUserAccessTokenProviderTest {
         String actualAccessToken = requestUserAccessTokenProvider.getAccessToken();
 
         assertEquals(expectedAccessToken, actualAccessToken);
+        verify(httpServletRequest, times(1)).getHeader(any());
     }
 
     @Test
@@ -52,6 +55,8 @@ public class RequestUserAccessTokenProviderTest {
         assertThatThrownBy(() -> requestUserAccessTokenProvider.getAccessToken())
             .hasMessage("Request access token not present")
             .isExactlyInstanceOf(IllegalStateException.class);
+
+        verify(httpServletRequest, times(1)).getHeader(any());
     }
 
     @Test
@@ -65,6 +70,7 @@ public class RequestUserAccessTokenProviderTest {
 
         assertTrue(optionalAccessToken.isPresent());
         assertEquals(expectedAccessToken, optionalAccessToken.get());
+        verify(httpServletRequest, times(1)).getHeader(any());
     }
 
     @Test
@@ -75,6 +81,8 @@ public class RequestUserAccessTokenProviderTest {
         Optional<String> optionalAccessToken = requestUserAccessTokenProvider.tryGetAccessToken();
 
         assertFalse(optionalAccessToken.isPresent());
+
+        verify(httpServletRequest, times(1)).getHeader(any());
     }
 
     @Test

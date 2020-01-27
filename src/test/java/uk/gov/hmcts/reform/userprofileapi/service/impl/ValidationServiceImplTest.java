@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
 import java.util.Optional;
 
@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
@@ -36,9 +37,6 @@ public class ValidationServiceImplTest {
     private final String invalidEmail = "fakeemail.com";
 
     private final IdamStatus dummyIdamStatus = IdamStatus.SUSPENDED;
-
-    @Mock
-    private AuditService auditServiceMock;
 
     @Mock
     private UserProfileRepository userProfileRepositoryMock;
@@ -74,6 +72,8 @@ public class ValidationServiceImplTest {
         UserProfile actual = sut.validateUpdate(updateUserProfileDataMock, userId, ResponseSource.API);
 
         assertThat(actual.getStatus()).isEqualTo(dummyIdamStatus);
+
+        verify(userProfileRepositoryMock, times(1)).findByIdamId(any(String.class));
     }
 
     @Test

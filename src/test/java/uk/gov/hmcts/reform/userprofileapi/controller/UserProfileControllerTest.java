@@ -66,8 +66,7 @@ public class UserProfileControllerTest {
         ResponseEntity<UserProfileCreationResponse> resource = sut.createUserProfile(userProfileCreationData);
         assertThat(resource.getBody()).isEqualToComparingFieldByField(expectedBody);
 
-        verify(userProfileServiceMock).create(any(UserProfileCreationData.class));
-
+        verify(userProfileServiceMock, times(1)).create(any(UserProfileCreationData.class));
     }
 
     @Test
@@ -80,7 +79,7 @@ public class UserProfileControllerTest {
         assertThatThrownBy(() -> sut.createUserProfile(userProfileCreationData))
                 .isEqualTo(ex);
 
-        verify(userProfileServiceMock).create(any(UserProfileCreationData.class));
+        verify(userProfileServiceMock, times(1)).create(any(UserProfileCreationData.class));
     }
 
     @Test
@@ -102,6 +101,7 @@ public class UserProfileControllerTest {
         when(userProfileServiceMock.retrieveWithRoles(any(UserProfileIdentifier.class))).thenReturn(responseMock);
 
         assertThat(sut.getUserProfileWithRolesById(id)).isEqualTo(ResponseEntity.ok(responseMock));
+        verify(userProfileServiceMock, times(1)).retrieveWithRoles(any(UserProfileIdentifier.class));
     }
 
     @Test
@@ -118,6 +118,7 @@ public class UserProfileControllerTest {
         when(userProfileServiceMock.retrieveWithRoles(any(UserProfileIdentifier.class))).thenReturn(responseMock);
 
         assertThat(sut.getUserProfileWithRolesByEmail(email)).isEqualTo(ResponseEntity.ok(responseMock));
+        verify(userProfileServiceMock, times(1)).retrieveWithRoles(any(UserProfileIdentifier.class));
 
     }
 
