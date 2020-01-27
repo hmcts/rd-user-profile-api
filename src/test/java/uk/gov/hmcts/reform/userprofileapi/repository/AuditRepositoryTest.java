@@ -1,15 +1,9 @@
 package uk.gov.hmcts.reform.userprofileapi.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
 
-import java.util.List;
 import java.util.Optional;
-
-import org.h2.engine.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,9 +29,9 @@ public class AuditRepositoryTest {
 
     @Before
     public void setUp() {
-        auditRepository.save(new Audit(1, "test", ResponseSource.API, any(UserProfile.class)));
-
         userProfileRepository.save(userProfile);
+        auditRepository.save(new Audit(1, "test", ResponseSource.API, userProfile));
+
     }
 
     @Test
