@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.domain.entities;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
+import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
 
 import org.junit.Test;
 import org.springframework.http.HttpStatus;

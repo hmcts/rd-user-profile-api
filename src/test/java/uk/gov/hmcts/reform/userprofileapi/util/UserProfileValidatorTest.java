@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.userprofileapi.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.getIdamRolesJson;
+import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileDataTestBuilder.getIdamRolesJson;
 
 import java.util.ArrayList;
 import java.util.HashSet;
