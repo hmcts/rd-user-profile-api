@@ -124,7 +124,6 @@ public class UserProfileCreatorTest {
     @Test
     public void should_throw_IdamServiceException_when_user_already_exist() {
 
-        Audit audit = mock(Audit.class);
         Mockito.when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
         assertThatThrownBy(() -> userProfileCreator.create(userProfileCreationData)).isExactlyInstanceOf(IdamServiceException.class);
         Mockito.verify(userProfileRepository, Mockito.times(0)).save(any(UserProfile.class));
@@ -134,7 +133,6 @@ public class UserProfileCreatorTest {
     @Test
     public void should_throw_IdamServiceException_when_idam_registration_fail() {
 
-        Audit audit = mock(Audit.class);
         idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.BAD_REQUEST);
         Mockito.when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(null));
         Mockito.when(idamService.registerUser(any(IdamRegisterUserRequest.class))).thenReturn(idamRegistrationInfo);
@@ -148,7 +146,6 @@ public class UserProfileCreatorTest {
 
         List<String> roles = new ArrayList<>();
         roles.add("pui-case-manager");
-        Audit audit = mock(Audit.class);
         ResponseEntity entity = mock(ResponseEntity.class);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", "/api/v1/users/" + UUID.randomUUID().toString());
@@ -169,7 +166,7 @@ public class UserProfileCreatorTest {
         Mockito.when(idamService.fetchUserById(any(String.class))).thenReturn(idamRolesInfo);
         Mockito.when(idamService.addUserRoles(any(), Mockito.anyString())).thenReturn(idamRolesInfo);
 
-        Map<Map<String, Boolean>, IdamStatus> idamStatusMap = createDecisionMap();
+        createDecisionMap();
         ReflectionTestUtils.setField(userProfileCreator, "sidamGetUri", "/api/v1/users/");
 
         UserProfile responseUserProfile = userProfileCreator.create(userProfileCreationData);
@@ -181,9 +178,6 @@ public class UserProfileCreatorTest {
     @Test
     public void should_register_when_idam_registration_conflicts_and_roles_null() {
 
-        //List<String> roles = new ArrayList<>();
-        //roles.add("pui-case-manager");
-        Audit audit = mock(Audit.class);
         ResponseEntity entity = mock(ResponseEntity.class);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", "/api/v1/users/" + UUID.randomUUID().toString());
@@ -204,7 +198,7 @@ public class UserProfileCreatorTest {
         Mockito.when(idamService.fetchUserById(any(String.class))).thenReturn(idamRolesInfo);
         Mockito.when(idamService.addUserRoles(any(), Mockito.anyString())).thenReturn(idamRolesInfo);
 
-        Map<Map<String, Boolean>, IdamStatus> idamStatusMap = createDecisionMap();
+        createDecisionMap();
         ReflectionTestUtils.setField(userProfileCreator, "sidamGetUri", "/api/v1/users/");
 
         UserProfile responseUserProfile = userProfileCreator.create(userProfileCreationData);
@@ -216,7 +210,7 @@ public class UserProfileCreatorTest {
     @Test
     public void should_set_CreateUserProfileData_fields() {
 
-        Map<Map<String, Boolean>, IdamStatus> idamStatusMap = createDecisionMap();
+        createDecisionMap();
 
         Mockito.when(idamRolesInfo.getEmail()).thenReturn("any@emai");
         Mockito.when(idamRolesInfo.getForename()).thenReturn("fname");
@@ -237,7 +231,7 @@ public class UserProfileCreatorTest {
     @Test
     public void should_set_CreateUserProfileData_fields_with_idamStatus_null() {
 
-        Map<Map<String, Boolean>, IdamStatus> idamStatusMap = createDecisionMap();
+        createDecisionMap();
 
         Mockito.when(idamRolesInfo.getEmail()).thenReturn("any@emai");
         Mockito.when(idamRolesInfo.getForename()).thenReturn("fname");

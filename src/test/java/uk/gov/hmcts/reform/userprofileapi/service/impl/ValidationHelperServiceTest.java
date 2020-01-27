@@ -106,9 +106,6 @@ public class ValidationHelperServiceTest {
     //SCENARIO THREE-------------------------------------------------------------------------------------------------------------------------
     @Test
     public void testValidateUpdateUserProfileRequestValidHappyPath() {
-        String dummyEmail = "email@gmail.com";
-        String dummyFirstName = "April";
-        String dummyLastName = "O'Neil";
 
         when(updateUserProfileDataMock.getIdamStatus()).thenReturn("SUSPENDED");
 

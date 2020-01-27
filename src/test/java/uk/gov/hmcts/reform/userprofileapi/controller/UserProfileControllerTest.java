@@ -126,9 +126,6 @@ public class UserProfileControllerTest {
 
         UpdateUserProfileData updateUserProfileDataMock = Mockito.mock(UpdateUserProfileData.class);
         AttributeResponse attributeResponseMock =  Mockito.mock(AttributeResponse.class);
-        UserProfile userProfileMock = Mockito.mock(UserProfile.class);
-
-        ResponseEntity responseEntityMock = Mockito.mock(ResponseEntity.class);
 
         String idamId = "13b02995-5e44-4136-bf5a-46f4ff4acb8f";
 

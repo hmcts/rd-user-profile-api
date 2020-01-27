@@ -135,7 +135,6 @@ public class UserProfileServiceTest {
         List<UserProfile> profileList = new ArrayList<>();
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         profileList.add(userProfile);
-        UserProfileWithRolesResponse expected = new UserProfileWithRolesResponse(userProfile, true);
 
         when(userProfileRetriever.retrieveMultipleProfiles(identifier, true, true)).thenReturn(profileList);
 

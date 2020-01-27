@@ -20,14 +20,13 @@ public class IdamRolesInfoTest {
         String email = "some@hmcts.net";
         String foreName = "firstName";
         String userId = UUID.randomUUID().toString();
-        Boolean locked = false;
         List<String> roles = new ArrayList<>();
         roles.add("pui-case-manger");
         String surName = "lastName";
         Boolean pending = false;
         IdamUserResponse idamUserResponse = new IdamUserResponse(active, email, foreName, userId, pending, roles, surName);
 
-        ResponseEntity<IdamUserResponse> entity = new ResponseEntity<IdamUserResponse>(idamUserResponse, HttpStatus.CREATED);
+        ResponseEntity<IdamUserResponse> entity = new ResponseEntity<>(idamUserResponse, HttpStatus.CREATED);
 
         IdamRolesInfo idamRolesInfo = new IdamRolesInfo(entity, HttpStatus.CREATED);
 

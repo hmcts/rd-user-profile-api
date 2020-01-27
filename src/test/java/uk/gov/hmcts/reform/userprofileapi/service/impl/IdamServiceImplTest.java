@@ -93,7 +93,6 @@ public class IdamServiceImplTest {
     @Test
     public void testFetchUserByEmailWithFeignExceptionThrown() {
         FeignException feignExceptionMock = Mockito.mock(FeignException.class);
-        Response responseMock = Mockito.mock(Response.class);
 
         when(idamFeignClientMock.getUserByEmail(email)).thenThrow(feignExceptionMock);
         when(feignExceptionMock.status()).thenReturn(StatusCode.INTERNAL_SERVER_ERROR.getStatus());
@@ -214,7 +213,6 @@ public class IdamServiceImplTest {
     public void testUpdateUserDetails_withFailure() {
         UpdateUserDetails updateUserDetailsMock = Mockito.mock(UpdateUserDetails.class);
 
-        Response responseMock = Mockito.mock(Response.class);
         FeignException feignExceptionMock = Mockito.mock(FeignException.class);
 
         when(idamFeignClientMock.updateUserDetails(updateUserDetailsMock, userId)).thenThrow(feignExceptionMock);

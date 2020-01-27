@@ -65,7 +65,6 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
     @Autowired
     protected WebApplicationContext webApplicationContext;
 
-
     @Rule
     public WireMockRule idamService = new WireMockRule(5000);
 
