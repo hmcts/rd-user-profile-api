@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.HashSet;
 import java.util.Set;
 
