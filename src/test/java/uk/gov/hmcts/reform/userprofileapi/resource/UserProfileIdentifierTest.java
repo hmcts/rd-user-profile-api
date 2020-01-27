@@ -2,11 +2,11 @@ package uk.gov.hmcts.reform.userprofileapi.resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdentifierName;
-
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import org.junit.Test;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdentifierName;
 
 public class UserProfileIdentifierTest {
 

@@ -13,6 +13,7 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -22,14 +23,14 @@ import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdentifierName;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdentifierName;
 import uk.gov.hmcts.reform.userprofileapi.exception.IdamServiceException;
 import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
 import uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
-import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileQueryProvider;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
+import uk.gov.hmcts.reform.userprofileapi.service.UserProfileQueryProvider;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -56,34 +57,33 @@ public class UserProfileRetrieverTest {
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
 
         Stream.of(IdentifierName.values())
-            .forEach(identifierName -> {
+                .forEach(identifierName -> {
                     UserProfileIdentifier identifier = new UserProfileIdentifier(
-                        identifierName,
-                        String.valueOf(new Random().nextInt()));
+                            identifierName,
+                            String.valueOf(new Random().nextInt()));
 
                     when(querySupplier.getRetrieveByIdQuery(identifier)).thenReturn(supplier);
                     when(supplier.get()).thenReturn(Optional.of(userProfile));
 
                     UserProfile entity = userProfileRetriever.retrieve(identifier, false);
                     assertThat(entity).isEqualTo(userProfile);
-                }
-            );
+                });
     }
 
     @Test
     public void should_throw_exception_when_query_returns_empty_result() {
 
         UserProfileIdentifier identifier =
-            new UserProfileIdentifier(
-                IdentifierName.UUID,
-                UUID.randomUUID().toString());
+                new UserProfileIdentifier(
+                        IdentifierName.UUID,
+                        UUID.randomUUID().toString());
 
         when(querySupplier.getRetrieveByIdQuery(identifier)).thenReturn(supplier);
         when(supplier.get()).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> userProfileRetriever.retrieve(identifier, false))
-            .isInstanceOf(ResourceNotFoundException.class)
-            .hasMessage("Could not find resource from database with given identifier: " + identifier.getValue());
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessage("Could not find resource from database with given identifier: " + identifier.getValue());
 
     }
 
@@ -91,14 +91,14 @@ public class UserProfileRetrieverTest {
     public void should_throw_exception_when_query_provider_throws_exception() {
 
         UserProfileIdentifier identifier =
-            new UserProfileIdentifier(
-                IdentifierName.UUID,
-                UUID.randomUUID().toString());
+                new UserProfileIdentifier(
+                        IdentifierName.UUID,
+                        UUID.randomUUID().toString());
 
         when(querySupplier.getRetrieveByIdQuery(identifier)).thenThrow(IllegalStateException.class);
 
         assertThatThrownBy(() -> userProfileRetriever.retrieve(identifier, false))
-            .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(IllegalStateException.class);
 
     }
 
@@ -106,15 +106,15 @@ public class UserProfileRetrieverTest {
     public void should_throw_exception_when_query_throws_exception() {
 
         UserProfileIdentifier identifier =
-            new UserProfileIdentifier(
-                IdentifierName.UUID,
-                UUID.randomUUID().toString());
+                new UserProfileIdentifier(
+                        IdentifierName.UUID,
+                        UUID.randomUUID().toString());
 
         when(querySupplier.getRetrieveByIdQuery(identifier)).thenReturn(supplier);
         when(supplier.get()).thenThrow(ResourceNotFoundException.class);
 
         assertThatThrownBy(() -> userProfileRetriever.retrieve(identifier, false))
-            .isInstanceOf(ResourceNotFoundException.class);
+                .isInstanceOf(ResourceNotFoundException.class);
 
     }
 
