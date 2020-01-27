@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.userprofileapi.resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Test;
 import org.mockito.InjectMocks;

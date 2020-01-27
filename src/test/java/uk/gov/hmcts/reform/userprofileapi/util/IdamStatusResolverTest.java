@@ -1,7 +1,15 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.*;
+import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.ACCEPTED;
+import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.INVALID_REQUEST;
+import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.MISSING_TOKEN;
+import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.TOKEN_EXPIRED;
+import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.NOT_FOUND;
+import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.USER_EXISTS;
+import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.NO_CONTENT;
+import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.UNKNOWN;
+import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.OK;
 
 import java.util.ArrayList;
 import java.util.HashMap;
