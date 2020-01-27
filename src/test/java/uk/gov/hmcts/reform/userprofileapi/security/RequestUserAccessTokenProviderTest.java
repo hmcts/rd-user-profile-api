@@ -16,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RequestUserAccessTokenProviderTest {
