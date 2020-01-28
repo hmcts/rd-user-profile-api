@@ -39,15 +39,15 @@ import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IdamServiceImplTest {
+
     private final String userId = "test796-d05e-480d-bf3d-7cbfacb3ca29";
     private final String email = "test.user@test.com";
-    private final  Map<String, Collection<String>> headerData = new HashMap<>();
+    private final Map<String, Collection<String>> headerData = new HashMap<>();
 
     private IdamFeignClient idamFeignClientMock = Mockito.mock(IdamFeignClient.class);
 
     @InjectMocks
     private IdamService sut = new IdamServiceImpl();
-
 
     @Test
     public void testRegisterUser() {

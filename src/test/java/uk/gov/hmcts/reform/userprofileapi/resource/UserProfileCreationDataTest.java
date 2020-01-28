@@ -13,7 +13,6 @@ public class UserProfileCreationDataTest {
 
     @Test
     public void should_hold_values_after_creation() {
-
         UserProfileCreationData userProfileData =
             new UserProfileCreationData(
                 "test-email-@somewhere.com",
@@ -42,6 +41,5 @@ public class UserProfileCreationDataTest {
 
         UserProfileCreationData userProfileData1 = new UserProfileCreationData();
         assertThat(userProfileData1).isNotNull();
-
     }
 }

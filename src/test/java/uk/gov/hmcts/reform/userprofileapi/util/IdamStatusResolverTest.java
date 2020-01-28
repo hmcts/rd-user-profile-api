@@ -11,7 +11,7 @@ import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.TOKEN_E
 import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.UNKNOWN;
 import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.USER_EXISTS;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,12 +60,6 @@ public class IdamStatusResolverTest {
 
     @Test
     public void should_resolve_and_return_idam_status_by_idam_flags() {
-
-        Map<Map<String, Boolean>, IdamStatus> idamStatusMap = new HashMap<Map<String, Boolean>, IdamStatus>();
-        idamStatusMap.put(addRule(false,true), IdamStatus.PENDING);
-        idamStatusMap.put(addRule(true, false), IdamStatus.ACTIVE);
-        idamStatusMap.put(addRule(false,false), IdamStatus.SUSPENDED);
-
         assertThat(IdamStatusResolver.resolveIdamStatus(createIdamRoleInfo(false,true))).isEqualTo(IdamStatus.PENDING);
         assertThat(IdamStatusResolver.resolveIdamStatus(createIdamRoleInfo(true,false))).isEqualTo(IdamStatus.ACTIVE);
         assertThat(IdamStatusResolver.resolveIdamStatus(createIdamRoleInfo(false,false))).isEqualTo(IdamStatus.SUSPENDED);
@@ -83,13 +77,11 @@ public class IdamStatusResolverTest {
         String email = "some@hmcts.net";
         String foreName = "firstName";
         String userId = UUID.randomUUID().toString();
-        List<String> roles = new ArrayList<>();
-        roles.add("pui-case-manger");
+        List<String> roles = Collections.singletonList("pui-case-manger");
         String surName = "lastName";
 
         IdamUserResponse idamUserResponse = new IdamUserResponse(active, email, foreName, userId,pending, roles, surName);
         ResponseEntity<IdamUserResponse> entity = new ResponseEntity<IdamUserResponse>(idamUserResponse, HttpStatus.CREATED);
-        IdamRolesInfo idamRolesInfo = new IdamRolesInfo(entity, HttpStatus.CREATED);
-        return idamRolesInfo;
+        return new IdamRolesInfo(entity, HttpStatus.CREATED);
     }
 }

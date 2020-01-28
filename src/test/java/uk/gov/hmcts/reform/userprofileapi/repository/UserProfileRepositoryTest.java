@@ -17,12 +17,10 @@ import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 @RunWith(SpringRunner.class)
 public class UserProfileRepositoryTest {
 
-
     @Autowired
     UserProfileRepository userProfileRepository;
 
     UserProfile userProfile = new UserProfile(buildCreateUserProfileData(), HttpStatus.CREATED);
-
 
     @Before
     public void setUp() {

@@ -31,7 +31,6 @@ public class AuditRepositoryTest {
     public void setUp() {
         userProfileRepository.save(userProfile);
         auditRepository.save(new Audit(1, "test", ResponseSource.API, userProfile));
-
     }
 
     @Test

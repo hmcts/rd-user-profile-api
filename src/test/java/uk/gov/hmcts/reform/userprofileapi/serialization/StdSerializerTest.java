@@ -17,7 +17,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class StdSerializerTest {
 
-    @Mock private ObjectMapper mapper;
+    @Mock
+    private ObjectMapper mapper;
 
     private StdSerializer<Integer> stdSerializer;
 
@@ -28,13 +29,12 @@ public class StdSerializerTest {
 
     @Test
     public void should_serialize_argument_to_string() throws JsonProcessingException {
-
         Integer source = 123;
         String expectedSerializedSource = "123";
 
         doReturn(expectedSerializedSource)
-            .when(mapper)
-            .writeValueAsString(source);
+                .when(mapper)
+                .writeValueAsString(source);
 
         String actualSerializedSource = stdSerializer.serialize(source);
 
@@ -45,16 +45,15 @@ public class StdSerializerTest {
 
     @Test
     public void should_convert_checked_exception_to_runtime_on_error() throws JsonProcessingException {
-
         Integer source = 123;
 
         doThrow(mock(JsonProcessingException.class))
-            .when(mapper)
-            .writeValueAsString(source);
+                .when(mapper)
+                .writeValueAsString(source);
 
         assertThatThrownBy(() -> stdSerializer.serialize(source))
-            .hasMessage("Could not serialize data")
-            .isExactlyInstanceOf(IllegalArgumentException.class);
+                .hasMessage("Could not serialize data")
+                .isExactlyInstanceOf(IllegalArgumentException.class);
 
         verify(mapper, times(1)).writeValueAsString(any());
     }

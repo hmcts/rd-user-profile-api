@@ -15,15 +15,11 @@ public class WelcomeControllerTest {
 
     @Test
     public void should_return_welcome_response() {
-
         String expectedMessage = "Welcome to the User Profile API";
         ResponseEntity<String> responseEntity = welcomeController.welcome();
 
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertThat(
-            responseEntity.getBody(),
-            containsString(expectedMessage)
-        );
+        assertThat(responseEntity.getBody(), containsString(expectedMessage));
     }
 }
