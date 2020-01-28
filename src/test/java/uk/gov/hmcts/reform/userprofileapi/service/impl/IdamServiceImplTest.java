@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -62,6 +63,8 @@ public class IdamServiceImplTest {
         assertThat(idamId.getIdamRegistrationResponse()).isNotNull();
         assertThat(idamId.getIdamRegistrationResponse().value())
                 .isEqualTo(HttpStatus.ACCEPTED.value());
+
+        verify(idamFeignClientMock, times(1)).createUserProfile(any());
     }
 
     @Test
@@ -75,6 +78,8 @@ public class IdamServiceImplTest {
         IdamRolesInfo idamRolesInfo = sut.fetchUserById(userId);
 
         assertThat(idamRolesInfo).isNotNull();
+
+        verify(idamFeignClientMock, times(1)).getUserById(any());
     }
 
     @Test
@@ -88,6 +93,8 @@ public class IdamServiceImplTest {
         IdamRolesInfo idamRolesInfo = sut.fetchUserByEmail(email);
 
         assertThat(idamRolesInfo).isNotNull();
+
+        verify(idamFeignClientMock, times(1)).getUserByEmail(any());
     }
 
     @Test
@@ -100,6 +107,8 @@ public class IdamServiceImplTest {
         IdamRolesInfo idamRolesInfo = sut.fetchUserByEmail(email);
 
         assertThat(idamRolesInfo).isNotNull();
+
+        verify(idamFeignClientMock, times(1)).getUserByEmail(any());
     }
 
     @Test
@@ -115,6 +124,8 @@ public class IdamServiceImplTest {
         assertThat(idamId.getIdamRegistrationResponse()).isNotNull();
         assertThat(idamId.getIdamRegistrationResponse().value())
                 .isEqualTo(HttpStatus.NOT_FOUND.value());
+
+        verify(idamFeignClientMock, times(1)).createUserProfile(any());
     }
 
     @Test

@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
@@ -202,6 +203,8 @@ public class UserProfileRetrieverTest {
         assertThat(profile.getRoles().size()).isEqualTo(0);
         assertThat(profile.getErrorMessage()).isNotEmpty();
         assertThat(profile.getErrorStatusCode()).isEqualTo("404");
+
+        Mockito.verify(auditRepository, Mockito.times(1)).save(any(Audit.class));
     }
 
     @Test
@@ -217,6 +220,8 @@ public class UserProfileRetrieverTest {
 
         assertThatThrownBy(() -> userProfileRetriever.getRolesFromIdam(up, false))
                 .isInstanceOf(IdamServiceException.class);
+
+        Mockito.verify(auditRepository, Mockito.times(1)).save(any(Audit.class));
     }
 
     @Test

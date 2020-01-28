@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
@@ -112,6 +113,9 @@ public class ValidationHelperServiceTest {
         boolean actual = sut.validateUpdateUserProfileRequestValid(updateUserProfileDataMock, "f56e5539-a8f7-4ae6-b378-cc1015b72dcc", ResponseSource.API);
 
         assertThat(actual).isTrue();
+
+        Mockito.verify(updateUserProfileDataMock, Mockito.times(1)).getIdamStatus();
+
     }
 
     @Test(expected = RequiredFieldMissingException.class)
@@ -161,7 +165,6 @@ public class ValidationHelperServiceTest {
         when(updateUserProfileDataMock.getIdamStatus()).thenReturn(IdamStatus.ACTIVE.name());
 
         assertThat(sut.validateUserStatusBeforeUpdate(updateUserProfileDataMock, userProfileMock, ResponseSource.API)).isTrue();
-
     }
 
     @Test(expected = Test.None.class)

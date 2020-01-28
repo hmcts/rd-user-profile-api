@@ -69,6 +69,7 @@ public class UserProfileServiceTest {
         userProfileResponse = userProfileService.updateRoles(updateUserProfileData, "1234");
 
         assertThat(userProfileResponse).isNotNull();
+        Mockito.verify(resourceUpdatorMock, Mockito.times(1)).updateRoles(any(),any(String.class));
     }
 
     @Test
@@ -111,6 +112,8 @@ public class UserProfileServiceTest {
 
         assertThat(resource).isEqualToComparingFieldByField(expected);
 
+        Mockito.verify(userProfileRetriever, Mockito.times(1)).retrieve(any(),any(boolean.class));
+
     }
 
     @Test
@@ -125,6 +128,8 @@ public class UserProfileServiceTest {
         UserProfileWithRolesResponse resource = userProfileService.retrieveWithRoles(identifier);
 
         assertThat(resource).isEqualToComparingFieldByField(expected);
+
+        Mockito.verify(userProfileRetriever, Mockito.times(1)).retrieve(any(),any(boolean.class));
 
     }
 
@@ -141,6 +146,8 @@ public class UserProfileServiceTest {
         UserProfileDataResponse resource = userProfileService.retrieveWithRoles(identifier, true, true);
 
         assertThat(resource).isNotNull();
+
+        Mockito.verify(userProfileRetriever, Mockito.times(1)).retrieveMultipleProfiles(any(),any(boolean.class),any(boolean.class));
 
     }
 }

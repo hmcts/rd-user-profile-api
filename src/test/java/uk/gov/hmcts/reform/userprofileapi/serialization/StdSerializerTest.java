@@ -2,9 +2,9 @@ package uk.gov.hmcts.reform.userprofileapi.serialization;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,6 +39,8 @@ public class StdSerializerTest {
         String actualSerializedSource = stdSerializer.serialize(source);
 
         assertEquals(expectedSerializedSource, actualSerializedSource);
+
+        verify(mapper, times(1)).writeValueAsString(any());
     }
 
     @Test
@@ -53,5 +55,7 @@ public class StdSerializerTest {
         assertThatThrownBy(() -> stdSerializer.serialize(source))
             .hasMessage("Could not serialize data")
             .isExactlyInstanceOf(IllegalArgumentException.class);
+
+        verify(mapper, times(1)).writeValueAsString(any());
     }
 }
