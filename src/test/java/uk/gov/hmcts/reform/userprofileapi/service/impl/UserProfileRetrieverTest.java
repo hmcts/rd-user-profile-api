@@ -15,6 +15,7 @@ import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -22,6 +23,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamUserResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
@@ -49,9 +52,26 @@ public class UserProfileRetrieverTest {
     @Mock
     private Supplier<Optional<UserProfile>> supplier;
 
-    IdamRolesInfo idamRolesInfoMock = mock(IdamRolesInfo.class);
+    private ResponseEntity<IdamUserResponse> entity;
+    private IdamRolesInfo idamRolesInfo;
+
     AuditRepository auditRepository = mock(AuditRepository.class);
     Audit audit = mock(Audit.class);
+
+    @Before
+    public void setUp() {
+        Boolean active = true;
+        String email = "some@hmcts.net";
+        String foreName = "firstName";
+        String userId = UUID.randomUUID().toString();
+        List<String> roles = new ArrayList<>();
+        roles.add("pui-case-manger");
+        String surName = "lastName";
+        Boolean pending = false;
+
+        IdamUserResponse idamUserResponse = new IdamUserResponse(active, email, foreName, userId, pending, roles, surName);
+        entity = new ResponseEntity<>(idamUserResponse, HttpStatus.CREATED);
+    }
 
     @Test
     public void should_run_query_and_respond_with_user_profile() {
@@ -108,6 +128,8 @@ public class UserProfileRetrieverTest {
 
     @Test
     public void should_retrieve_Multiple_Profiles() {
+        idamRolesInfo = new IdamRolesInfo(entity, HttpStatus.CREATED);
+
         List<UserProfile> userProfiles = new ArrayList<>();
 
         UserProfile up1 = UserProfileTestDataBuilder.buildUserProfile();
@@ -121,8 +143,7 @@ public class UserProfileRetrieverTest {
         UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID_LIST, Arrays.asList(UUID.randomUUID().toString(), UUID.randomUUID().toString()));
 
         when(querySupplier.getProfilesByIds(identifier, true)).thenReturn(Optional.of(userProfiles));
-        when(idamServiceMock.fetchUserById(any(String.class))).thenReturn(idamRolesInfoMock);
-        when(idamRolesInfoMock.getResponseStatusCode()).thenReturn(HttpStatus.OK);
+        when(idamServiceMock.fetchUserById(any(String.class))).thenReturn(idamRolesInfo);
         when(auditRepository.save(any())).thenReturn(audit);
 
         List<UserProfile> userProfilesWithRoles = userProfileRetriever.retrieveMultipleProfiles(identifier, true, true);
@@ -150,13 +171,13 @@ public class UserProfileRetrieverTest {
 
     @Test
     public void should_retrieve_user_multiple_profiles_without_roles_when_idam_fails() {
+        idamRolesInfo = new IdamRolesInfo(entity, HttpStatus.NOT_FOUND);
+
         UserProfile up = UserProfileTestDataBuilder.buildUserProfile();
         up.setStatus(IdamStatus.ACTIVE);
 
-        when(idamServiceMock.fetchUserById(any(String.class))).thenReturn(idamRolesInfoMock);
+        when(idamServiceMock.fetchUserById(any(String.class))).thenReturn(idamRolesInfo);
         when(auditRepository.save(any())).thenReturn(audit);
-        when(idamRolesInfoMock.getResponseStatusCode()).thenReturn(HttpStatus.NOT_FOUND);
-        when(idamRolesInfoMock.getStatusMessage()).thenReturn("some error message");
 
         UserProfile profile = userProfileRetriever.getRolesFromIdam(up, true);
 
@@ -173,12 +194,12 @@ public class UserProfileRetrieverTest {
 
     @Test
     public void should_throw_404_single_user_profile_without_roles_when_idam_fails() {
+        idamRolesInfo = new IdamRolesInfo(entity, HttpStatus.NOT_FOUND);
+
         UserProfile up = UserProfileTestDataBuilder.buildUserProfile();
         up.setStatus(IdamStatus.ACTIVE);
 
-        when(idamServiceMock.fetchUserById(any(String.class))).thenReturn(idamRolesInfoMock);
-        when(idamRolesInfoMock.getResponseStatusCode()).thenReturn(HttpStatus.NOT_FOUND);
-        when(idamRolesInfoMock.getStatusMessage()).thenReturn("some error message");
+        when(idamServiceMock.fetchUserById(any(String.class))).thenReturn(idamRolesInfo);
         when(auditRepository.save(any())).thenReturn(audit);
 
         assertThatThrownBy(() -> userProfileRetriever.getRolesFromIdam(up, false))
