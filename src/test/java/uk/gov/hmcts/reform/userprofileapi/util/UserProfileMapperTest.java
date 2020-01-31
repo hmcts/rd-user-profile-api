@@ -60,12 +60,6 @@ public class UserProfileMapperTest {
 
     }
 
-    /*
-    static UpdateUserDetails mapIdamUpdateStatusRequest(UpdateUserProfileData updateUserProfileData) {
-        return new UpdateUserDetails(updateUserProfileData.getFirstName(), updateUserProfileData.getLastName(), deriveStatusFlag(updateUserProfileData));
-    }
-     */
-
     @Test
     public void test_mapIdamUpdateStatusRequest_senario1() {
 
