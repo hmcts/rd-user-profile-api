@@ -63,16 +63,12 @@ public class UserProfileUpdatorTest {
     private AuditService auditServiceMock;
 
     @Mock
-    private UserProfile userProfileMock;
-
-    @Mock
     private IdamService idamServiceMock;
 
     @Mock
-    private AttributeResponse attributeResponseMock;
-
-    @Mock
     private ValidationHelperService validationHelperServiceMock;
+
+    private AttributeResponse attributeResponse = new AttributeResponse(HttpStatus.OK);
 
     private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.ACCEPTED);
 
@@ -225,12 +221,9 @@ public class UserProfileUpdatorTest {
 
         String userId = UUID.randomUUID().toString();
 
-        when(userProfileRepositoryMock.save(any(UserProfile.class))).thenReturn(userProfileMock);
+        when(userProfileRepositoryMock.save(any(UserProfile.class))).thenReturn(userProfile);
 
-        when(userProfileMock.getEmail()).thenReturn(dummyEmail);
-        when(userProfileMock.getFirstName()).thenReturn(dummyFirstName);
-
-        when(validationServiceMock.validateUpdate(any(), any(), any())).thenReturn(userProfileMock);
+        when(validationServiceMock.validateUpdate(any(), any(), any())).thenReturn(userProfile);
 
         when(validationHelperServiceMock.validateUserPersistedWithException(any())).thenReturn(true);
 
@@ -245,25 +238,16 @@ public class UserProfileUpdatorTest {
 
     @Test
     public void should_update_user_profile_successfully_for_sync() {
-
-        String userId = UUID.randomUUID().toString();
-
-        when(userProfileRepositoryMock.save(any(UserProfile.class))).thenReturn(userProfileMock);
-
-        when(userProfileMock.getEmail()).thenReturn(dummyEmail);
-        when(userProfileMock.getFirstName()).thenReturn(dummyFirstName);
-
-        when(validationServiceMock.validateUpdate(any(), any(), any())).thenReturn(userProfileMock);
-
+        when(userProfileRepositoryMock.save(any(UserProfile.class))).thenReturn(userProfile);
+        when(validationServiceMock.validateUpdate(any(), any(), any())).thenReturn(userProfile);
         when(validationHelperServiceMock.validateUserPersistedWithException(any())).thenReturn(true);
 
-        AttributeResponse response = sut.update(updateUserProfileData, userId, SYNC);
+        AttributeResponse response = sut.update(updateUserProfileData, userProfile.getIdamId(), SYNC);
 
         assertThat(response).isNotNull();
 
         verify(userProfileRepositoryMock,times(1)).save(any(UserProfile.class));
-        verify(auditServiceMock, times(1)).persistAudit(eq(HttpStatus.OK), any(UserProfile.class), any());
-
+        verify(auditServiceMock, times(1)).persistAudit(eq(HttpStatus.OK), any(UserProfile.class), eq(ResponseSource.SYNC));
     }
 
     @Test
@@ -271,13 +255,10 @@ public class UserProfileUpdatorTest {
 
         String userId = UUID.randomUUID().toString();
 
-        when(userProfileRepositoryMock.save(any(UserProfile.class))).thenReturn(userProfileMock);
-
-        when(userProfileMock.getEmail()).thenReturn(dummyEmail);
-        when(userProfileMock.getFirstName()).thenReturn(dummyFirstName);
+        when(userProfileRepositoryMock.save(any(UserProfile.class))).thenReturn(userProfile);
 
         when(validationServiceMock.isExuiUpdateRequest(any())).thenReturn(false);
-        when(validationServiceMock.validateUpdate(any(), any(), any())).thenReturn(userProfileMock);
+        when(validationServiceMock.validateUpdate(any(), any(), any())).thenReturn(userProfile);
 
         AttributeResponse response = sut.update(updateUserProfileData, userId, EXUI);
 
@@ -397,20 +378,17 @@ public class UserProfileUpdatorTest {
 
         when(idamFeignClientMock.deleteUserRole("1234", "pui-case-manager")).thenReturn(response);
 
-        UserProfileRolesResponse response1 = sut.updateRoles(updateUserProfileData, userProfile.getIdamId());
-
-        return response1;
+        return sut.updateRoles(updateUserProfileData, userProfile.getIdamId());
     }
 
     @Test
     public void test_updateSidamAndUserProfile() {
 
         String userId = UUID.randomUUID().toString();
-        when(userProfileMock.getEmail()).thenReturn("email");
-        when(attributeResponseMock.getIdamStatusCode()).thenReturn(200);
-        when(idamServiceMock.updateUserDetails(any(), any())).thenReturn(attributeResponseMock);
-        when(userProfileRepositoryMock.save(any())).thenReturn(userProfileMock);
-        AttributeResponse response = sut.updateSidamAndUserProfile(updateUserProfileData, userProfileMock, ResponseSource.API, userId);
+
+        when(idamServiceMock.updateUserDetails(any(), any())).thenReturn(attributeResponse);
+        when(userProfileRepositoryMock.save(any())).thenReturn(userProfile);
+        AttributeResponse response = sut.updateSidamAndUserProfile(updateUserProfileData, userProfile, ResponseSource.API, userId);
         assertThat(response).isNotNull();
 
         Mockito.verify(userProfileRepositoryMock, Mockito.times(1)).save(any());
