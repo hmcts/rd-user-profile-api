@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.userprofileapi.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
 
+import java.util.List;
 import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,13 +36,16 @@ public class AuditRepositoryTest {
 
     @Test
     public void findAllTest() {
-        assertThat(auditRepository.findAll().size()).isEqualTo(1);
+        List<Audit> audits = auditRepository.findAll();
+
+        assertThat(audits.size()).isEqualTo(1);
+        assertThat(audits.get(0).getUserProfile()).isEqualTo(userProfile);
     }
 
     @Test
     public void findByUserProfile() {
         Optional<Audit> audit1 = auditRepository.findByUserProfile(userProfile);
 
-        assertThat(audit1).isNotNull();
+        assertThat(audit1.get().getUserProfile()).isEqualTo(userProfile);
     }
 }

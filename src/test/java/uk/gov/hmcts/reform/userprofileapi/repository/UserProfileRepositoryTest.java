@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
 
+import java.util.Optional;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,16 +31,25 @@ public class UserProfileRepositoryTest {
 
     @Test
     public void findAllTest() {
-        assertThat(userProfileRepository.findAll()).hasSize(1);
+        Iterable<UserProfile> userProfiles = userProfileRepository.findAll();
+
+        assertThat(userProfiles).hasSize(1);
+        assertThat(userProfiles.iterator().next()).isEqualTo(userProfile);
     }
 
     @Test
     public void findByEmailTest() {
-        assertTrue(userProfileRepository.findByEmail(userProfile.getEmail()).isPresent());
+        Optional<UserProfile> user = userProfileRepository.findByEmail(userProfile.getEmail());
+
+        assertTrue(user.isPresent());
+        assertThat(user.get()).isEqualTo(userProfile);
     }
 
     @Test
     public void findByIdamIdTest() {
-        assertTrue(userProfileRepository.findByIdamId(userProfile.getIdamId()).isPresent());
+        Optional<UserProfile> user = userProfileRepository.findByIdamId(userProfile.getIdamId());
+
+        assertTrue(user.isPresent());
+        assertThat(user.get()).isEqualTo(userProfile);
     }
 }
