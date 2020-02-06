@@ -50,7 +50,6 @@ public class AuditRepositoryTest {
         Optional<Audit> audit1 = auditRepository.findByUserProfile(userProfile);
 
         assertThat(audit1.get().getUserProfile()).isEqualTo(userProfile);
-        assertThat(audit1.get().getUserProfile()).isEqualTo(userProfile);
         assertThat(audit1.get().getIdamRegistrationResponse()).isEqualTo(1);
         assertThat(audit1.get().getStatusMessage()).isEqualTo("test");
         assertThat(audit1.get().getSource()).isEqualTo(ResponseSource.API);
