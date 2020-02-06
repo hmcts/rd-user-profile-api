@@ -40,6 +40,9 @@ public class AuditRepositoryTest {
 
         assertThat(audits.size()).isEqualTo(1);
         assertThat(audits.get(0).getUserProfile()).isEqualTo(userProfile);
+        assertThat(audits.get(0).getIdamRegistrationResponse()).isEqualTo(1);
+        assertThat(audits.get(0).getStatusMessage()).isEqualTo("test");
+        assertThat(audits.get(0).getSource()).isEqualTo(ResponseSource.API);
     }
 
     @Test
