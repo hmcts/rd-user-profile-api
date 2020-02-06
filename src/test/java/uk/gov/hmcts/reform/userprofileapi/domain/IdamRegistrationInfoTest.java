@@ -24,12 +24,10 @@ public class IdamRegistrationInfoTest {
     private HttpStatus httpStatusMock;
 
 
-
     @Before
     public void setUp() throws Exception {
-        httpStatusMock =  Mockito.mock(HttpStatus.class);
+        httpStatusMock = Mockito.mock(HttpStatus.class);
         responseEntityMockOptional = Optional.ofNullable(Mockito.mock(ResponseEntity.class));
-
 
         sut = new IdamRegistrationInfo(httpStatusMock, responseEntityMockOptional);
     }
@@ -50,15 +48,12 @@ public class IdamRegistrationInfoTest {
 
     @Test
     public void isSuccessFromIdam() {
-
         when(httpStatusMock.is2xxSuccessful()).thenReturn(true);
 
         IdamRegistrationInfo sut = new IdamRegistrationInfo(httpStatusMock);
         Boolean actual = sut.isSuccessFromIdam();
 
         assertThat(actual).isTrue();
-
-
     }
 
     @Test
@@ -76,7 +71,7 @@ public class IdamRegistrationInfoTest {
     public void getIdamRegistrationResponse() {
         assertThat(sut.getIdamRegistrationResponse()).isEqualTo(httpStatusMock);
     }
-    
+
     @Test
     public void getResponse() {
         assertThat(sut.getResponse()).isEqualTo(responseEntityMockOptional.get());

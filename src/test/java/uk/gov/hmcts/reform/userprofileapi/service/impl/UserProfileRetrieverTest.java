@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -88,6 +90,7 @@ public class UserProfileRetrieverTest {
 
                     UserProfile entity = userProfileRetriever.retrieve(identifier, false);
                     assertThat(entity).isEqualTo(userProfile);
+                    verify(querySupplier, times(1)).getRetrieveByIdQuery(identifier);
                 });
     }
 
@@ -101,6 +104,7 @@ public class UserProfileRetrieverTest {
         assertThatThrownBy(() -> userProfileRetriever.retrieve(identifier, false))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("Could not find resource from database with given identifier: " + identifier.getValue());
+        verify(querySupplier, times(1)).getRetrieveByIdQuery(identifier);
 
     }
 
@@ -112,6 +116,7 @@ public class UserProfileRetrieverTest {
 
         assertThatThrownBy(() -> userProfileRetriever.retrieve(identifier, false))
                 .isInstanceOf(IllegalStateException.class);
+        verify(querySupplier, times(1)).getRetrieveByIdQuery(identifier);
     }
 
     @Test
@@ -123,7 +128,7 @@ public class UserProfileRetrieverTest {
 
         assertThatThrownBy(() -> userProfileRetriever.retrieve(identifier, false))
                 .isInstanceOf(ResourceNotFoundException.class);
-
+        verify(querySupplier, times(1)).getRetrieveByIdQuery(identifier);
     }
 
     @Test
@@ -157,6 +162,9 @@ public class UserProfileRetrieverTest {
         assertThat(getUserProfile1.getRoles()).isEqualTo(up1.getRoles());
         assertThat(getUserProfile1.getErrorMessage()).isEqualTo(up1.getErrorMessage());
         assertThat(getUserProfile1.getErrorStatusCode()).isEqualTo(up1.getErrorStatusCode());
+        verify(querySupplier, times(1)).getProfilesByIds(identifier, true);
+        verify(idamServiceMock, times(2)).fetchUserById(any(String.class));
+        verify(auditRepository, times(2)).save(any());
     }
 
     @Test
@@ -167,6 +175,7 @@ public class UserProfileRetrieverTest {
 
         assertThatThrownBy(() -> userProfileRetriever.retrieveMultipleProfiles(identifier, true, true))
                 .isInstanceOf(ResourceNotFoundException.class);
+        verify(querySupplier, times(1)).getProfilesByIds(identifier, true);
     }
 
     @Test

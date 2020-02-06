@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.userprofileapi.service.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
@@ -14,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
@@ -59,6 +61,8 @@ public class UserProfileQueryProviderTest {
 
         assertThat(userProfiles).isNotNull();
         assertThat(userProfiles.get().get().getEmail()).isEqualTo(userProfile.getEmail());
+
+        verify(userProfileRepositoryMock, Mockito.times(1)).findByEmail(any(String.class));
     }
 
 
@@ -82,6 +86,7 @@ public class UserProfileQueryProviderTest {
 
         assertThat(result).isNotNull();
         assertThat(result.get().get(0).getEmail()).isEqualTo(userProfile.getEmail());
+        verify(userProfileRepositoryMock, Mockito.times(1)).findByIdamIdIn(anyList());
     }
 
 }
