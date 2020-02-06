@@ -88,5 +88,4 @@ public class UserProfileQueryProviderTest {
         assertThat(result.get().get(0).getEmail()).isEqualTo(userProfile.getEmail());
         verify(userProfileRepositoryMock, Mockito.times(1)).findByIdamIdIn(anyList());
     }
-
 }
