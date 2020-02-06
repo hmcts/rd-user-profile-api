@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import uk.gov.hmcts.reform.userprofileapi.exception.IdamServiceException;
 import uk.gov.hmcts.reform.userprofileapi.exception.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
 
@@ -29,6 +30,15 @@ public class UserProfileControllerAdviceTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
 
         ResponseEntity response = advice.handleRequiredFieldMissingException(request, exception);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void should_handle_invalid_request_exception() {
+        String message = "test-ex-message";
+        InvalidRequest exception = new InvalidRequest(message);
+
+        ResponseEntity response = advice.customValidationError(exception);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
@@ -61,6 +71,16 @@ public class UserProfileControllerAdviceTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
 
         ResponseEntity response = advice.handleDataIntegrityViolationException(request, exception);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void should_handle() {
+        String message = "test-ex-message";
+        IdamServiceException exception = new IdamServiceException(message, HttpStatus.BAD_REQUEST);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+
+        ResponseEntity response = advice.handleIdamServiceException(request, exception);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
