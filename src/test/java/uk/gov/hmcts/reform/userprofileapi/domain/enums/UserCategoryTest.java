@@ -1,9 +1,11 @@
 package uk.gov.hmcts.reform.userprofileapi.domain.enums;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+import java.util.EnumSet;
 import org.junit.Test;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserCategory;
 
 public class UserCategoryTest {
 
@@ -23,4 +25,16 @@ public class UserCategoryTest {
         assertThat(UserCategory.valueOf("CITIZEN")).isEqualTo(UserCategory.CITIZEN);
     }
 
+    @Test
+    public void checkEnums() {
+        assertTrue(returnTrueIfValid(UserCategory.CASEWORKER));
+        assertTrue(returnTrueIfValid(UserCategory.PROFESSIONAL));
+        assertTrue(returnTrueIfValid(UserCategory.JUDICIAL));
+        assertTrue(returnTrueIfValid(UserCategory.CITIZEN));
+        assertFalse(returnTrueIfValid(null));
+    }
+
+    private boolean returnTrueIfValid(UserCategory userCategory) {
+        return EnumSet.allOf(UserCategory.class).contains(userCategory);
+    }
 }

@@ -1,7 +1,10 @@
 package uk.gov.hmcts.reform.userprofileapi.domain.enums;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+import java.util.EnumSet;
 import org.junit.Test;
 
 public class IdamStatusTest {
@@ -22,4 +25,18 @@ public class IdamStatusTest {
         assertThat(IdamStatus.valueOf("SUSPENDED")).isEqualTo(IdamStatus.SUSPENDED);
     }
 
+    @Test
+    public void checkEnums() {
+        assertTrue(returnTrueIfValidIdamStatus(IdamStatus.ACTIVE));
+        assertTrue(returnTrueIfValidIdamStatus(IdamStatus.DELETED));
+        assertTrue(returnTrueIfValidIdamStatus(IdamStatus.PENDING));
+        assertTrue(returnTrueIfValidIdamStatus(IdamStatus.SUSPENDED));
+        assertFalse(returnTrueIfValidIdamStatus(null));
+    }
+
+    private boolean returnTrueIfValidIdamStatus(IdamStatus idamStatus) {
+        return EnumSet.allOf(IdamStatus.class).contains(idamStatus);
+    }
 }
+
+

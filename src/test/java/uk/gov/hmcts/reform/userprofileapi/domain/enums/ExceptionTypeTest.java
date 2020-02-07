@@ -1,7 +1,10 @@
 package uk.gov.hmcts.reform.userprofileapi.domain.enums;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+import java.util.EnumSet;
 import org.junit.Test;
 
 public class ExceptionTypeTest {
@@ -22,5 +25,19 @@ public class ExceptionTypeTest {
         assertThat(ExceptionType.valueOf("REQUIREDFIELDMISSINGEXCEPTION")).isEqualTo(ExceptionType.REQUIREDFIELDMISSINGEXCEPTION);
         assertThat(ExceptionType.valueOf("RESOURCENOTFOUNDEXCEPTION")).isEqualTo(ExceptionType.RESOURCENOTFOUNDEXCEPTION);
         assertThat(ExceptionType.valueOf("UNDEFINDEDEXCEPTION")).isEqualTo(ExceptionType.UNDEFINDEDEXCEPTION);
+    }
+
+    @Test
+    public void checkEnumIsValidTest() {
+        assertTrue(returnTrueIfValidExceptionType(ExceptionType.ERRORPERSISTINGEXCEPTION));
+        assertTrue(returnTrueIfValidExceptionType(ExceptionType.IDAMSERVICEEXCEPTION));
+        assertTrue(returnTrueIfValidExceptionType(ExceptionType.REQUIREDFIELDMISSINGEXCEPTION));
+        assertTrue(returnTrueIfValidExceptionType(ExceptionType.RESOURCENOTFOUNDEXCEPTION));
+        assertTrue(returnTrueIfValidExceptionType(ExceptionType.UNDEFINDEDEXCEPTION));
+        assertFalse(returnTrueIfValidExceptionType(null));
+    }
+
+    private boolean returnTrueIfValidExceptionType(ExceptionType exceptionType) {
+        return EnumSet.allOf(ExceptionType.class).contains(exceptionType);
     }
 }

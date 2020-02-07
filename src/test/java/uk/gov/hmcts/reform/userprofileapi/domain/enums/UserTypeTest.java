@@ -1,9 +1,11 @@
 package uk.gov.hmcts.reform.userprofileapi.domain.enums;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+import java.util.EnumSet;
 import org.junit.Test;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserType;
 
 public class UserTypeTest {
 
@@ -19,4 +21,14 @@ public class UserTypeTest {
         assertThat(UserType.valueOf("INTERNAL")).isEqualTo(UserType.INTERNAL);
     }
 
+    @Test
+    public void checkEnums() {
+        assertTrue(returnTrueIfValid(UserType.EXTERNAL));
+        assertTrue(returnTrueIfValid(UserType.INTERNAL));
+        assertFalse(returnTrueIfValid(null));
+    }
+
+    private boolean returnTrueIfValid(UserType userType) {
+        return EnumSet.allOf(UserType.class).contains(userType);
+    }
 }

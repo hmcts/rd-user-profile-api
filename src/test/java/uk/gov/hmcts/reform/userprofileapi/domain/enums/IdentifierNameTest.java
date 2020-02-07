@@ -1,7 +1,10 @@
 package uk.gov.hmcts.reform.userprofileapi.domain.enums;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+import java.util.EnumSet;
 import org.junit.Test;
 
 public class IdentifierNameTest {
@@ -18,5 +21,17 @@ public class IdentifierNameTest {
         assertThat(IdentifierName.valueOf("EMAIL")).isEqualTo(IdentifierName.EMAIL);
         assertThat(IdentifierName.valueOf("UUID")).isEqualTo(IdentifierName.UUID);
         assertThat(IdentifierName.valueOf("UUID_LIST")).isEqualTo(IdentifierName.UUID_LIST);
+    }
+
+    @Test
+    public void checkEnums() {
+        assertTrue(returnTrueIfValid(IdentifierName.EMAIL));
+        assertTrue(returnTrueIfValid(IdentifierName.UUID));
+        assertTrue(returnTrueIfValid(IdentifierName.UUID_LIST));
+        assertFalse(returnTrueIfValid(null));
+    }
+
+    private boolean returnTrueIfValid(IdentifierName identifierName) {
+        return EnumSet.allOf(IdentifierName.class).contains(identifierName);
     }
 }
