@@ -1470,20 +1470,6 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
-   file name: spring-webmvc-5.2.2.RELEASE.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-webmvc@.*$</packageUrl>
-        <cpe>cpe:/a:pivotal_software:spring_framework</cpe>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: spring-webmvc-5.2.2.RELEASE.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-webmvc@.*$</packageUrl>
-        <cve>CVE-2020-5398</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
    file name: spring-test-5.2.2.RELEASE.jar
    ]]></notes>
         <sha1>444e2f91f667558df1853b15915ac28b2185404c</sha1>
