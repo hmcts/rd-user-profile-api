@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 
 import java.util.HashSet;
 
@@ -35,14 +36,21 @@ public class UserProfileMapperTest {
     @Test
     public void test_deriveStatusFlagWhenStatusIsActive() {
         updateUserProfileData.setIdamStatus(IdamStatus.ACTIVE.name());
-        assertThat(UserProfileMapper.deriveStatusFlag(updateUserProfileData)).isTrue();
+        assertEquals(true, UserProfileMapper.deriveStatusFlag(updateUserProfileData));
     }
 
     @Test
     public void test_deriveStatusFlagWhenStatusIsSuspended() {
         updateUserProfileData.setIdamStatus(IdamStatus.SUSPENDED.name());
-        assertThat(UserProfileMapper.deriveStatusFlag(updateUserProfileData)).isFalse();
+        assertEquals(false, UserProfileMapper.deriveStatusFlag(updateUserProfileData));
     }
+
+    @Test
+    public void test_deriveStatusFlagWhenStatusIsNull() {
+        updateUserProfileData.setIdamStatus(null);
+        assertEquals(false, UserProfileMapper.deriveStatusFlag(updateUserProfileData));
+    }
+
 
     @Test
     public void test_mapIdamUpdateStatusRequestWhenStatusIsActive() {

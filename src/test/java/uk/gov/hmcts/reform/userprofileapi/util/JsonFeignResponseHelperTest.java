@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.userprofileapi.util;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 import static org.powermock.api.mockito.PowerMockito.when;
 
@@ -9,6 +10,7 @@ import feign.Request;
 import feign.Response;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -132,6 +134,10 @@ public class JsonFeignResponseHelperTest {
         assertThat(JsonFeignResponseHelper.isStatusCodeSuccessful(201)).isTrue();
         assertThat(JsonFeignResponseHelper.isStatusCodeSuccessful(400)).isFalse();
         assertThat(JsonFeignResponseHelper.isStatusCodeSuccessful(401)).isFalse();
+        assertThat(JsonFeignResponseHelper.isStatusCodeSuccessful(300)).isFalse();
+        assertThat(JsonFeignResponseHelper.isStatusCodeSuccessful(199)).isFalse();
+
+
     }
 
     @Test
@@ -167,5 +173,13 @@ public class JsonFeignResponseHelperTest {
         assertThat(entity.getStatusCode().value()).isEqualTo(200);
         assertThat(entity.getHeaders()).isNotEmpty();
         assertThat(((UserProfileCreationResponse) Objects.requireNonNull(entity.getBody())).getIdamId()).isEqualTo("1");
+    }
+
+    @Test
+    public void privateConstructorTest() throws Exception {
+        Constructor<JsonFeignResponseHelper> constructor = JsonFeignResponseHelper.class.getDeclaredConstructor();
+        assertFalse(constructor.isAccessible());
+        constructor.setAccessible(true);
+        constructor.newInstance((Object[]) null);
     }
 }

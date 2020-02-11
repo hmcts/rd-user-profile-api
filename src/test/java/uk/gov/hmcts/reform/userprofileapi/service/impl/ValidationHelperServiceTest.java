@@ -5,8 +5,10 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -21,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ExceptionType;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.exception.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
@@ -152,6 +155,36 @@ public class ValidationHelperServiceTest {
     @Test(expected = Test.None.class)
     public void testvalidateUserPersistedWithException_scenario2() {
         assertThat(sut.validateUserPersistedWithException(HttpStatus.BAD_REQUEST)).isTrue();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testvalidateUserPersistedWithException_withInvalidHttpStatus() {
+        assertThat(sut.validateUserPersistedWithException(HttpStatus.valueOf("test"))).isTrue();
+    }
+
+    @Test
+    public void testvalidateUserPersistedWithException_withInvalidHttpStatusCode() {
+        assertThat(sut.validateUserPersistedWithException(HttpStatus.I_AM_A_TEAPOT)).isTrue();
+    }
+
+
+    @Test
+    public void testvalidateUserStatusBeforeUpdate_PendingUserStatus() {
+        UserProfile userProfileMock = mock(UserProfile.class);
+        when(userProfileMock.getStatus()).thenReturn(IdamStatus.PENDING);
+
+        assertThat(sut.validateUserStatusBeforeUpdate(updateUserProfileData, userProfileMock, ResponseSource.API)).isTrue();
+    }
+
+    @Test
+    public void testvalidateUserStatusBeforeUpdate_ActiveUserStatus() {
+        UserProfile userProfileMock = mock(UserProfile.class);
+        when(userProfileMock.getStatus()).thenReturn(IdamStatus.ACTIVE);
+
+        UpdateUserProfileData updateUserProfileDataMock = mock(UpdateUserProfileData.class);
+        when(updateUserProfileDataMock.getIdamStatus()).thenReturn(IdamStatus.PENDING.name());
+
+        assertThat(sut.validateUserStatusBeforeUpdate(updateUserProfileDataMock, userProfileMock, ResponseSource.API)).isTrue();
     }
 
 }

@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.userprofileapi.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileDataTestBuilder.getIdamRolesJson;
 
 import java.util.ArrayList;
@@ -72,6 +74,9 @@ public class UserProfileValidatorTest {
 
         boolean response5 = UserProfileValidator.isBlankOrSizeInvalid("lname", 8);
         assertThat(response5).isFalse();
+
+        boolean response6 = UserProfileValidator.isBlankOrSizeInvalid("nam", 3);
+        assertThat(response6).isFalse();
     }
 
 
@@ -91,7 +96,6 @@ public class UserProfileValidatorTest {
 
     @Test
     public void test_validateCreateUserProfileRequest() {
-
         assertThatThrownBy(() -> UserProfileValidator.validateCreateUserProfileRequest(null))
                 .isInstanceOf(NullPointerException.class);
     }
@@ -106,6 +110,24 @@ public class UserProfileValidatorTest {
         userProfileData.setUserCategory(null);
         userProfileData.setUserType(null);
         UserProfileValidator.validateCreateUserProfileRequest(userProfileData);
+    }
+
+    @Test
+    public void validateCreateUserProfileRequest_ThrowsRequiredFieldMissingExceptionIfGetUserTypeIsNull() {
+        UserProfileCreationData userProfileCreationDataMock = mock(UserProfileCreationData.class);
+        when(userProfileCreationDataMock.getUserType()).thenReturn("invalid");
+
+        assertThatThrownBy(() -> UserProfileValidator.validateCreateUserProfileRequest(userProfileCreationDataMock))
+                .isInstanceOf(RequiredFieldMissingException.class);
+    }
+
+    @Test
+    public void validateCreateUserProfileRequest_ThrowsRequiredFieldMissingExceptionIfGetUserCategoryIsNull() {
+        UserProfileCreationData userProfileCreationDataMock = mock(UserProfileCreationData.class);
+        when(userProfileCreationDataMock.getUserCategory()).thenReturn("invalid");
+
+        assertThatThrownBy(() -> UserProfileValidator.validateCreateUserProfileRequest(userProfileCreationDataMock))
+                .isInstanceOf(RequiredFieldMissingException.class);
     }
 
     @Test
