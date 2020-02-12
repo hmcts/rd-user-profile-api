@@ -1470,10 +1470,10 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
-   file name: spring-webmvc-5.0.8.RELEASE.jar
+   file name: spring-test-5.2.2.RELEASE.jar
    ]]></notes>
-        <gav regex="true">^org\.springframework:spring-webmvc:.*$</gav>
-        <cve>CVE-2018-15756</cve>
+        <sha1>444e2f91f667558df1853b15915ac28b2185404c</sha1>
+        <cpe>cpe:/a:pivotal_software:spring_framework</cpe>
     </suppress>
     <suppress>
         <notes><![CDATA[

@@ -30,12 +30,16 @@ public class UserProfileDataRequestTest {
     public void testUserProfileRequestWithNullIds() {
         userIds.add(UUID.randomUUID().toString());
         UserProfileDataRequest getUserProfileRequest = new UserProfileDataRequest(null);
+
         assertThat(getUserProfileRequest.getUserIds()).isNull();
+
         getUserProfileRequest.setUserIds(userIds);
+
         assertThat(getUserProfileRequest.getUserIds()).isNotNull();
         assertThat(getUserProfileRequest.getUserIds().size()).isEqualTo(1);
 
         getUserProfileRequest.setUserIds(null);
+        
         assertThat(getUserProfileRequest.getUserIds()).isNull();
     }
 }

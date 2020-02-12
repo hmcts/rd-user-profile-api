@@ -12,7 +12,9 @@ public class RoleDeletionResponseTest {
     public void testDeleteRoleResponse() {
         final String caseWorker = "caseworker";
         final HttpStatus status = HttpStatus.OK;
+
         RoleDeletionResponse roleDeletionResponse = new RoleDeletionResponse(caseWorker, status);
+
         assertThat(roleDeletionResponse.getRoleName()).isEqualTo(caseWorker);
         assertThat(roleDeletionResponse.getIdamStatusCode()).isEqualTo(String.valueOf(status.value()));
         assertThat(roleDeletionResponse.getIdamMessage()).isEqualTo(resolveStatusAndReturnMessage(status));

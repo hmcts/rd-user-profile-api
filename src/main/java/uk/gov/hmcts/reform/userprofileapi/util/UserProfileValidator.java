@@ -1,12 +1,18 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.userprofileapi.domain.enums.UserProfileField.*;
+import static uk.gov.hmcts.reform.userprofileapi.domain.enums.UserProfileField.STATUS;
+import static uk.gov.hmcts.reform.userprofileapi.domain.enums.UserProfileField.USERCATEGORY;
+import static uk.gov.hmcts.reform.userprofileapi.domain.enums.UserProfileField.USERTYPE;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.*;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.LanguagePreference;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserCategory;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserProfileField;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserType;
 import uk.gov.hmcts.reform.userprofileapi.exception.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;

@@ -1,16 +1,18 @@
 package uk.gov.hmcts.reform.userprofileapi.resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.getIdamRolesJson;
+import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileDataTestBuilder.getIdamRolesJson;
 
 import org.junit.Test;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.*;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.LanguagePreference;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserCategory;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserType;
 
 public class UserProfileCreationDataTest {
 
     @Test
     public void should_hold_values_after_creation() {
-
         UserProfileCreationData userProfileData =
             new UserProfileCreationData(
                 "test-email-@somewhere.com",
@@ -39,6 +41,5 @@ public class UserProfileCreationDataTest {
 
         UserProfileCreationData userProfileData1 = new UserProfileCreationData();
         assertThat(userProfileData1).isNotNull();
-
     }
 }

@@ -1,12 +1,13 @@
 package uk.gov.hmcts.reform.userprofileapi.domain.entities;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
+import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
 
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.*;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 
@@ -17,7 +18,6 @@ public class UserProfileTest {
 
     @Test
     public void should_create_and_get_successfully() {
-
         UserProfileCreationData data = buildCreateUserProfileData();
         UserProfile userProfile = new UserProfile(data, HttpStatus.CREATED);
 
@@ -34,7 +34,7 @@ public class UserProfileTest {
 
         assertThat(userProfile.getStatus()).isEqualTo(IdamStatus.PENDING);
         assertThat(userProfile.getIdamRegistrationResponse())
-            .isEqualTo(idamRegistrationInfo.getIdamRegistrationResponse().value());
+                .isEqualTo(idamRegistrationInfo.getIdamRegistrationResponse().value());
 
         //Timestamps set by hibernate at insertion time
         assertThat(userProfile.getCreated()).isNull();
@@ -56,7 +56,6 @@ public class UserProfileTest {
 
     @Test
     public void should_set_defaults_when_optional_field_is_not_provided() {
-
         UserProfile userProfile = new UserProfile(buildCreateUserProfileData(), HttpStatus.CREATED);
 
         assertThat(userProfile.getLanguagePreference()).isEqualTo(LanguagePreference.EN);
@@ -68,9 +67,10 @@ public class UserProfileTest {
 
     @Test
     public void should_set_defaults_when_language_pref_field_is_not_provided() {
-
         UserProfileCreationData data = buildCreateUserProfileData();
+
         data.setLanguagePreference(null);
+
         UserProfile userProfile = new UserProfile(data, HttpStatus.CREATED);
         assertThat(userProfile.getLanguagePreference()).isEqualTo(LanguagePreference.EN);
     }

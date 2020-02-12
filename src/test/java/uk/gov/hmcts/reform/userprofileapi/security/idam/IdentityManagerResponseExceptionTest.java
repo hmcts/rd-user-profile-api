@@ -14,7 +14,6 @@ public class IdentityManagerResponseExceptionTest {
 
     @Test
     public void should_create_exception_successfully() {
-
         String message = "test-exception-message";
         HttpClientErrorException cause = mock(HttpClientErrorException.class);
         IdentityManagerResponseException ex = new IdentityManagerResponseException(message, cause);

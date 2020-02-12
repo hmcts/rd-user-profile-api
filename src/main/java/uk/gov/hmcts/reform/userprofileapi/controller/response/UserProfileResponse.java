@@ -8,7 +8,6 @@ import java.util.List;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.*;
 
 @Data
 @NoArgsConstructor
