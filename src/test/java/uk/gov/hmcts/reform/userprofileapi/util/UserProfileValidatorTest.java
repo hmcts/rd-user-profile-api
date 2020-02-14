@@ -114,10 +114,9 @@ public class UserProfileValidatorTest {
 
     @Test
     public void validateCreateUserProfileRequest_ThrowsRequiredFieldMissingExceptionIfGetUserTypeIsNull() {
-        UserProfileCreationData userProfileCreationDataMock = mock(UserProfileCreationData.class);
-        when(userProfileCreationDataMock.getUserType()).thenReturn("invalid");
+        userProfileData.setUserType("invalid");
 
-        assertThatThrownBy(() -> UserProfileValidator.validateCreateUserProfileRequest(userProfileCreationDataMock))
+        assertThatThrownBy(() -> UserProfileValidator.validateCreateUserProfileRequest(userProfileData))
                 .isInstanceOf(RequiredFieldMissingException.class);
     }
 

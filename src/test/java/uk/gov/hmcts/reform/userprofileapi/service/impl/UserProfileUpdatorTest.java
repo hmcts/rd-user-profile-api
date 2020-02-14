@@ -112,6 +112,8 @@ public class UserProfileUpdatorTest {
 
         assertThat(response).isNotNull();
         assertThat(response.getRoleAdditionResponse().getIdamStatusCode()).isEqualTo("200");
+
+        verify(idamFeignClientMock, times(1)).addUserRoles(any(),any(String.class));
     }
 
     @Test
@@ -129,6 +131,9 @@ public class UserProfileUpdatorTest {
         assertThat(response.getRoleDeletionResponse().size()).isEqualTo(1);
         assertThat(response.getRoleDeletionResponse().get(0).getRoleName()).isEqualTo("pui-case-manager");
         assertThat(response.getRoleDeletionResponse().get(0).getIdamStatusCode()).isEqualTo("200");
+
+        verify(idamFeignClientMock, times(2)).addUserRoles(any(),any(String.class));
+        verify(idamFeignClientMock, times(1)).deleteUserRole(any(),any(String.class));
     }
 
     @Test
@@ -139,6 +144,8 @@ public class UserProfileUpdatorTest {
         assertThat(response1.getRoleDeletionResponse().size()).isEqualTo(1);
         assertThat(response1.getRoleDeletionResponse().get(0).getRoleName()).isEqualTo("pui-case-manager");
         assertThat(response1.getRoleDeletionResponse().get(0).getIdamStatusCode()).isEqualTo("200");
+
+        verify(idamFeignClientMock, times(1)).deleteUserRole(any(),any(String.class));
     }
 
     @Test

@@ -159,6 +159,8 @@ public class UserProfileControllerTest {
 
         ResponseEntity<UserProfileDataResponse> responseEntity = sut.retrieveUserProfiles("false", "true", userProfileDataRequest);
         assertThat(responseEntity).isNotNull();
+
+        verify(userProfileServiceMock, times(1)).retrieveWithRoles(any(UserProfileIdentifier.class), any(Boolean.class), any(Boolean.class));
     }
 
     @Test

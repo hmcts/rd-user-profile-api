@@ -79,6 +79,7 @@ public class ValidationServiceImplTest {
     @Test
     public void testIsValidForUserDetailUpdateSadPath() {
         assertThat(sut.isValidForUserDetailUpdate(updateUserProfileData, userProfile, ResponseSource.API)).isFalse();
+        verify(validationHelperServiceMock, times(1)).validateUserStatusBeforeUpdate(any(UpdateUserProfileData.class), any(UserProfile.class), any(ResponseSource.class));
     }
 
     @Test

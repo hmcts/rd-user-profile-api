@@ -174,6 +174,8 @@ public class ValidationHelperServiceTest {
         when(userProfileMock.getStatus()).thenReturn(IdamStatus.PENDING);
 
         assertThat(sut.validateUserStatusBeforeUpdate(updateUserProfileData, userProfileMock, ResponseSource.API)).isTrue();
+
+        verify(auditServiceMock, times(1)).persistAudit(any(HttpStatus.class), any(ResponseSource.class));
     }
 
     @Test
