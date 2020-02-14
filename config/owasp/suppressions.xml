@@ -2,6 +2,13 @@
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
     <suppress>
         <notes><![CDATA[
+   This suppresses a CVE-2020-5529 cve in any htmlunit of selenium
+   ]]></notes>
+        <cpe>cpe:/a:htmlunit:htmlunit</cpe>
+        <cve>CVE-2020-5529</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
    file name: commons-beanutils-1.9.3.jar
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/commons-beanutils/commons-beanutils@.*$</packageUrl>
