@@ -37,7 +37,7 @@ def versions = [
     reformS2sClient    : '3.0.0',
     serenity           : '2.0.23',
     sonarPitest        : '0.5',
-    springBoot         : '2.1.4.RELEASE',
+    springBoot         : '2.2.4.RELEASE',
     springHystrix      : '2.1.1.RELEASE',
     springfoxSwagger   : '2.9.2',
     pact_version       : '3.5.24'
@@ -247,7 +247,6 @@ dependencies {
     compile group: 'net.sourceforge.htmlunit', name: 'htmlunit-core-js', version: '2.37.0'
     compile group: 'net.sourceforge.htmlunit', name: 'htmlunit', version: '2.37.0'
     compile group: 'org.seleniumhq.selenium', name: 'htmlunit-driver', version: '2.37.0'
-    compile group: 'org.springframework', name: 'spring-webmvc', version: '5.2.3.RELEASE'
     compile group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: versions.springBoot
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
@@ -308,7 +307,6 @@ dependencies {
         exclude group: "org.hamcrest", module: "hamcrest-library"
     }
 
-    testCompile group: 'org.springframework', name: 'spring-test', version: '5.2.3.RELEASE'
     testCompile group: 'com.h2database', name: 'h2'
     testCompile "com.github.tomakehurst:wiremock:2.19.0"
     testCompile group: 'org.mockito', name: 'mockito-core', version: '2.21.0'
