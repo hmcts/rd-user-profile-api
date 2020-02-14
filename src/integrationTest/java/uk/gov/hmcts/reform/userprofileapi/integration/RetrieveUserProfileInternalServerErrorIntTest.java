@@ -60,7 +60,7 @@ public class RetrieveUserProfileInternalServerErrorIntTest extends Authorization
     public void should_return_500_and_not_create_user_profile_when_idam_service_throws_exception() throws Exception {
 
         when(idamService.registerUser(any(IdamRegisterUserRequest.class)))
-                .thenThrow(new RuntimeException("This is a test exception"));
+                .thenThrow(new RuntimeException("Runtime Exception"));
 
         UserProfileCreationData data = buildCreateUserProfileData();
 
@@ -83,7 +83,7 @@ public class RetrieveUserProfileInternalServerErrorIntTest extends Authorization
         when(idamService.registerUser(request))
                 .thenReturn(idamRegistrationInfo);
         when(userProfileRepository.findByIdamId(any(String.class)))
-                .thenThrow(new RuntimeException("This is a test exception"));
+                .thenThrow(new RuntimeException("Runtime Exception"));
 
         MvcResult result =
                 userProfileRequestHandlerTest.sendGet(
