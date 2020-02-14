@@ -2234,13 +2234,6 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
-    file name: htmlunit-cssparser-1.5.0.jar
-    ]]></notes>
-        <packageUrl regex="true">^pkg:maven/net\.sourceforge\.htmlunit/htmlunit\-cssparser@.*$</packageUrl>
-        <cve>CVE-2020-5529</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
    file name: flexmark-ext-xwiki-macros-0.34.30.jar
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/com\.vladsch\.flexmark/flexmark-ext-xwiki-macros@.*$</packageUrl>
@@ -2924,5 +2917,12 @@
    ]]></notes>
         <sha1>606ef790ce33d9cd6b892c47cc2a9508efc57698</sha1>
         <cpe>cpe:/a:apache:sling</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   This suppresses a CVE-2020-5529 cve in any htmlunit of selenium
+   ]]></notes>
+        <cpe>cpe:/a:htmlunit:htmlunit</cpe>
+        <cve>CVE-2020-5529</cve>
     </suppress>
 </suppressions>
