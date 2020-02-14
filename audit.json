@@ -24,5 +24,14 @@
   "90033_Loosely Scoped Cookie_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile/userId?origin=origin_PUT": "ignore",
   "90033_Loosely Scoped Cookie_http://rd-user-profile-api-aat.service.core-compute-aat.internal/_GET": "ignore",
   "90033_Loosely Scoped Cookie_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile/id/roles_GET": "ignore",
-  "90033_Loosely Scoped Cookie_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile?email=foo-bar@example.com\u0026userId=userId_GET": "ignore"
+  "90033_Loosely Scoped Cookie_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile?email=foo-bar@example.com\u0026userId=userId_GET": "ignore",
+  "90033_Loosely Scoped Cookie_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile/roles?email=foo-bar@example.com_GET": "ignore",
+  "10010_Cookie No HttpOnly Flag_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile/roles?email=foo-bar@example.com_GET": "ignore",
+  "10010_Cookie No HttpOnly Flag_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile/users?rolesRequired=rolesRequired\u0026showdeleted=showdeleted_POST": "ignore",
+  "10010_Cookie No HttpOnly Flag_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile?email=foo-bar@example.com\u0026userId=userId_GET": "ignore",
+  "10010_Cookie No HttpOnly Flag_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v2/api-docs_GET": "ignore",
+  "10010_Cookie No HttpOnly Flag_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile_POST": "ignore",
+  "10010_Cookie No HttpOnly Flag_http://rd-user-profile-api-aat.service.core-compute-aat.internal/_GET": "ignore",
+  "10010_Cookie No HttpOnly Flag_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile/id/roles_GET": "ignore",
+  "10010_Cookie No HttpOnly Flag_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile/userId?origin=origin_PUT": "ignore"
 }
