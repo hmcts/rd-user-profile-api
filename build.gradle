@@ -264,6 +264,10 @@ dependencies {
     compile group: 'io.github.openfeign', name: 'feign-okhttp', version: '10.5.1'
     compile group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.2.2'
 
+    compile group: 'org.seleniumhq.selenium', name: 'htmlunit-driver', version: '2.37.0'
+    compile group: 'net.sourceforge.htmlunit', name: 'htmlunit-core-js', version: '2.37.0'
+    compile group: 'net.sourceforge.htmlunit', name: 'htmlunit-cssparser', version: '1.5.0'
+    compile group: 'net.sourceforge.htmlunit', name: 'neko-htmlunit', version: '2.37.0'
 
     compile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.7'
     compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
