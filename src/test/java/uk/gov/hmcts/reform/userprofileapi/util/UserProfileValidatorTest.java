@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileDataTestBuilder.getIdamRolesJson;
+import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.getIdamRolesJson;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -114,10 +114,9 @@ public class UserProfileValidatorTest {
 
     @Test
     public void validateCreateUserProfileRequest_ThrowsRequiredFieldMissingExceptionIfGetUserTypeIsNull() {
-        UserProfileCreationData userProfileCreationDataMock = mock(UserProfileCreationData.class);
-        when(userProfileCreationDataMock.getUserType()).thenReturn("invalid");
+        userProfileData.setUserType("invalid");
 
-        assertThatThrownBy(() -> UserProfileValidator.validateCreateUserProfileRequest(userProfileCreationDataMock))
+        assertThatThrownBy(() -> UserProfileValidator.validateCreateUserProfileRequest(userProfileData))
                 .isInstanceOf(RequiredFieldMissingException.class);
     }
 

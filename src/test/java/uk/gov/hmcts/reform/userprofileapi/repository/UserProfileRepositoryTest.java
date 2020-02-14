@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.userprofileapi.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
-import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
+import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 
 import java.util.Optional;
 

@@ -7,7 +7,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileDataTestBuilder.buildUpdateUserProfileData;
+import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildUpdateUserProfileData;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -29,7 +29,7 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreatio
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileDataTestBuilder;
+import uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
@@ -53,7 +53,7 @@ public class UserProfileControllerTest {
     @Test
     public void testCreateUserProfile() {
 
-        UserProfileCreationData userProfileCreationData = CreateUserProfileDataTestBuilder.buildCreateUserProfileData();
+        UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         UserProfileCreationResponse expectedBody = new UserProfileCreationResponse(userProfile);
 
@@ -67,7 +67,7 @@ public class UserProfileControllerTest {
 
     @Test
     public void testCreateUserProfileThrowsException() {
-        UserProfileCreationData userProfileCreationData = CreateUserProfileDataTestBuilder.buildCreateUserProfileData();
+        UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
         IllegalStateException ex = new IllegalStateException("this is a test exception");
 
         when(userProfileServiceMock.create(userProfileCreationData)).thenThrow(ex);
@@ -159,6 +159,8 @@ public class UserProfileControllerTest {
 
         ResponseEntity<UserProfileDataResponse> responseEntity = sut.retrieveUserProfiles("false", "true", userProfileDataRequest);
         assertThat(responseEntity).isNotNull();
+
+        verify(userProfileServiceMock, times(1)).retrieveWithRoles(any(UserProfileIdentifier.class), any(Boolean.class), any(Boolean.class));
     }
 
     @Test

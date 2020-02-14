@@ -13,9 +13,9 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 @Setter
-public class CreateUserProfileDataTestBuilder {
+public class CreateUserProfileTestDataBuilder {
 
-    private CreateUserProfileDataTestBuilder() {
+    private CreateUserProfileTestDataBuilder() {
         //not meant to be instantiated.
     }
 

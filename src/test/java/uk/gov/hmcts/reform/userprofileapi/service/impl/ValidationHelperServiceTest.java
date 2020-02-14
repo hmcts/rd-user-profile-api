@@ -27,7 +27,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.exception.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
-import uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileDataTestBuilder;
+import uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
@@ -44,7 +44,7 @@ public class ValidationHelperServiceTest {
     @Mock
     private ExceptionService exceptionServiceMock;
 
-    private UserProfileCreationData userProfileCreationData = CreateUserProfileDataTestBuilder.buildCreateUserProfileData();
+    private UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
     private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.ACCEPTED);
     private UserProfile userProfile = new UserProfile(userProfileCreationData, idamRegistrationInfo.getIdamRegistrationResponse());
 
@@ -174,6 +174,8 @@ public class ValidationHelperServiceTest {
         when(userProfileMock.getStatus()).thenReturn(IdamStatus.PENDING);
 
         assertThat(sut.validateUserStatusBeforeUpdate(updateUserProfileData, userProfileMock, ResponseSource.API)).isTrue();
+
+        verify(auditServiceMock, times(1)).persistAudit(any(HttpStatus.class), any(ResponseSource.class));
     }
 
     @Test

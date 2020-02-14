@@ -2918,4 +2918,11 @@
         <sha1>606ef790ce33d9cd6b892c47cc2a9508efc57698</sha1>
         <cpe>cpe:/a:apache:sling</cpe>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   This suppresses a CVE-2020-5529 cve in any htmlunit of selenium
+   ]]></notes>
+        <cpe>cpe:/a:htmlunit:htmlunit</cpe>
+        <cve>CVE-2020-5529</cve>
+    </suppress>
 </suppressions>

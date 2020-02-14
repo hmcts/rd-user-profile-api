@@ -44,7 +44,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.exception.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
-import uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileDataTestBuilder;
+import uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
@@ -76,7 +76,7 @@ public class UserProfileUpdatorTest {
 
     private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.ACCEPTED);
 
-    private UserProfileCreationData userProfileCreationData = CreateUserProfileDataTestBuilder.buildCreateUserProfileData();
+    private UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
 
     private UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("email@net.com", "firstName", "lastName", "ACTIVE", new HashSet<RoleName>(), new HashSet<RoleName>());
 
@@ -112,6 +112,8 @@ public class UserProfileUpdatorTest {
 
         assertThat(response).isNotNull();
         assertThat(response.getRoleAdditionResponse().getIdamStatusCode()).isEqualTo("200");
+
+        verify(idamFeignClientMock, times(1)).addUserRoles(any(),any(String.class));
     }
 
     @Test
@@ -129,6 +131,9 @@ public class UserProfileUpdatorTest {
         assertThat(response.getRoleDeletionResponse().size()).isEqualTo(1);
         assertThat(response.getRoleDeletionResponse().get(0).getRoleName()).isEqualTo("pui-case-manager");
         assertThat(response.getRoleDeletionResponse().get(0).getIdamStatusCode()).isEqualTo("200");
+
+        verify(idamFeignClientMock, times(2)).addUserRoles(any(),any(String.class));
+        verify(idamFeignClientMock, times(1)).deleteUserRole(any(),any(String.class));
     }
 
     @Test
@@ -139,6 +144,8 @@ public class UserProfileUpdatorTest {
         assertThat(response1.getRoleDeletionResponse().size()).isEqualTo(1);
         assertThat(response1.getRoleDeletionResponse().get(0).getRoleName()).isEqualTo("pui-case-manager");
         assertThat(response1.getRoleDeletionResponse().get(0).getIdamStatusCode()).isEqualTo("200");
+
+        verify(idamFeignClientMock, times(1)).deleteUserRole(any(),any(String.class));
     }
 
     @Test
