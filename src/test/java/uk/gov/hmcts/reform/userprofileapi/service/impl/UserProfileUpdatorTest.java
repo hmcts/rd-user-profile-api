@@ -289,6 +289,7 @@ public class UserProfileUpdatorTest {
         sut.update(updateUserProfileData,"invalid", EXUI);
 
         verify(validationServiceMock, times(1)).validateUpdate(any(), any(), any());
+
     }
 
     @Test(expected = ResourceNotFoundException.class)
