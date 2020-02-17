@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.client;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -97,7 +98,7 @@ public class UserProfileRequestHandlerTest {
         return mockMvc.perform(put(path)
                 .headers(getMultipleAuthHeaders())
                 .content(jsonBody)
-                .contentType(APPLICATION_JSON_UTF8))
+                .contentType(APPLICATION_JSON))
                 .andExpect(status().is(expectedHttpStatus.value())).andReturn();
     }
 

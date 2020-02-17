@@ -1,18 +1,21 @@
-package uk.gov.hmcts.reform.userprofileapi.data;
+package uk.gov.hmcts.reform.userprofileapi.helper;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Setter;
 import org.apache.commons.lang.RandomStringUtils;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.*;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.LanguagePreference;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserCategory;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserType;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 @Setter
-public class CreateUserProfileDataTestBuilder {
+public class CreateUserProfileTestDataBuilder {
 
-    private CreateUserProfileDataTestBuilder() {
+    private CreateUserProfileTestDataBuilder() {
         //not meant to be instantiated.
     }
 

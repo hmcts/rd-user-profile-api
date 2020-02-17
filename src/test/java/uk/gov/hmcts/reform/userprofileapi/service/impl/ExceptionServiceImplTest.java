@@ -18,44 +18,32 @@ public class ExceptionServiceImplTest {
 
     @Test(expected = ResourceNotFoundException.class)
     public void testThrowRuntimeException() {
-
-        sut.throwCustomRuntimeException(ExceptionType.RESOURCENOTFOUNDEXCEPTION,"ResourceNotFoundException Message");
-
+        sut.throwCustomRuntimeException(ExceptionType.RESOURCENOTFOUNDEXCEPTION, "ResourceNotFoundException Message");
     }
 
     @Test(expected = IdamServiceException.class)
     public void testThrowIdamServiceException() {
-
-        sut.throwCustomRuntimeException(ExceptionType.IDAMSERVICEEXCEPTION,"IdamServiceException Message");
-
+        sut.throwCustomRuntimeException(ExceptionType.IDAMSERVICEEXCEPTION, "IdamServiceException Message");
     }
 
     @Test(expected = RequiredFieldMissingException.class)
     public void testThrowRequiredFieldMissingException() {
-
-        sut.throwCustomRuntimeException(ExceptionType.REQUIREDFIELDMISSINGEXCEPTION,"RequiredFieldMissingException Message");
-
+        sut.throwCustomRuntimeException(ExceptionType.REQUIREDFIELDMISSINGEXCEPTION, "RequiredFieldMissingException Message");
     }
 
     @Test(expected = UndefinedException.class)
     public void testThrowDefaultException() {
-
-        sut.throwCustomRuntimeException(ExceptionType.UNDEFINDEDEXCEPTION,"ExceptionNotFound Message");
-
+        sut.throwCustomRuntimeException(ExceptionType.UNDEFINDEDEXCEPTION, "ExceptionNotFound Message");
     }
 
     @Test(expected = ResourceNotFoundException.class)
     public void testOverloadedException() {
-
-        sut.throwCustomRuntimeException(ExceptionType.RESOURCENOTFOUNDEXCEPTION,"ResourceNotFoundException Message", HttpStatus.ACCEPTED);
-
+        sut.throwCustomRuntimeException(ExceptionType.RESOURCENOTFOUNDEXCEPTION, "ResourceNotFoundException Message", HttpStatus.ACCEPTED);
     }
 
     @Test(expected = ErrorPersistingException.class)
     public void testErrorPersistingException() {
-
-        sut.throwCustomRuntimeException(ExceptionType.ERRORPERSISTINGEXCEPTION,"Error while persisting user profile", HttpStatus.ACCEPTED);
-
+        sut.throwCustomRuntimeException(ExceptionType.ERRORPERSISTINGEXCEPTION, "Error while persisting user profile", HttpStatus.ACCEPTED);
     }
 
 }

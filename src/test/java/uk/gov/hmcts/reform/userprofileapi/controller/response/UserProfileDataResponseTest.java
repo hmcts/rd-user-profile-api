@@ -1,25 +1,21 @@
 package uk.gov.hmcts.reform.userprofileapi.controller.response;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 import org.junit.Test;
-import org.mockito.Mockito;
+import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 
 public class UserProfileDataResponseTest {
 
     @Test
     public void testUserProfileDataResponse() {
-        UserProfile userProfileMock = Mockito.mock(UserProfile.class);
+        UserProfile userProfile = new UserProfile(buildCreateUserProfileData(), HttpStatus.CREATED);
 
-        List<UserProfile> profilesList = new ArrayList<>();
-        profilesList.add(userProfileMock);
-        profilesList.add(userProfileMock);
-
-        UserProfileDataResponse sut = new UserProfileDataResponse(profilesList, false);
+        UserProfileDataResponse sut = new UserProfileDataResponse(Arrays.asList(userProfile, userProfile), false);
 
         assertThat(sut.getUserProfiles()).isNotNull();
         assertThat(sut.getUserProfiles().size()).isEqualTo(2);
@@ -28,7 +24,6 @@ public class UserProfileDataResponseTest {
     @Test
     public void testNoArgConstructor() {
         UserProfileDataResponse sut = new UserProfileDataResponse();
-
         assertThat(sut.getUserProfiles()).isNull();
     }
 }
