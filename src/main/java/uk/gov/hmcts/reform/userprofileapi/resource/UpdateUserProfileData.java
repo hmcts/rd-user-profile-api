@@ -1,8 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.resource;
 
-import static uk.gov.hmcts.reform.userprofileapi.controller.advice.UserProfileConstants.NAME_FORMAT_REGEX;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Set;
@@ -17,6 +16,9 @@ import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 @Getter
 @Setter
 public class UpdateUserProfileData implements RequestData {
+    
+    @JsonIgnore
+    private static final String NAME_FORMAT_REGEX = "^[A-Za-z'-]+$";
 
     private String email;
 
