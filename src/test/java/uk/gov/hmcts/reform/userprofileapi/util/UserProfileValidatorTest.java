@@ -4,19 +4,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildUpdateUserProfileData;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.getIdamRolesJson;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
@@ -194,33 +191,6 @@ public class UserProfileValidatorTest {
 
         assertThat(userProfileData).isNotNull();
     }
-
-    @Test(expected = RequiredFieldMissingException.class)
-    public void test_validateUserProfileDataAndFirstAndLastNames_Throws_RequiredFieldMissingException_IfDataNull() {
-        UserProfileValidator.validateUserProfileDataAndFirstAndLastNames(null, UUID.randomUUID().toString());
-    }
-
-    @Test(expected = RequiredFieldMissingException.class)
-    public void test_validateUserProfileDataAndFirstAndLastNames_Throws_RequiredFieldMissingException_IfUserIdNull() {
-        UserProfileValidator.validateUserProfileDataAndFirstAndLastNames(buildUpdateUserProfileData(), null);
-    }
-
-    @Test(expected = InvalidRequest.class)
-    public void test_validateUserProfileDataAndFirstAndLastNames_Throws_RequiredFieldMissingException_IfFirstNameInvalid() {
-        UpdateUserProfileData updateUserProfileData = buildUpdateUserProfileData();
-        updateUserProfileData.setFirstName("$this^is>invalid|");
-
-        UserProfileValidator.validateUserProfileDataAndFirstAndLastNames(updateUserProfileData, UUID.randomUUID().toString());
-    }
-
-    @Test(expected = InvalidRequest.class)
-    public void test_validateUserProfileDataAndFirstAndLastNames_Throws_RequiredFieldMissingException_IfLastNameInvalid() {
-        UpdateUserProfileData updateUserProfileData = buildUpdateUserProfileData();
-        updateUserProfileData.setLastName("$this^is>invalid|");
-
-        UserProfileValidator.validateUserProfileDataAndFirstAndLastNames(updateUserProfileData, UUID.randomUUID().toString());
-    }
-
 
     private Set<RoleName> addRolesToRoleName() {
 

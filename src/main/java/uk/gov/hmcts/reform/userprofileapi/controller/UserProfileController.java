@@ -277,8 +277,6 @@ public class UserProfileController {
                                                                  @PathVariable String userId,
                                                                  @ApiParam(name = "origin", required = false) @RequestParam (value = "origin", required = false) String origin) {
 
-        UserProfileValidator.validateUserProfileDataAndFirstAndLastNames(updateUserProfileData, userId);
-
         UserProfileRolesResponse userProfileResponse = null;
         if (CollectionUtils.isEmpty(updateUserProfileData.getRolesAdd())
              && CollectionUtils.isEmpty(updateUserProfileData.getRolesDelete())) {

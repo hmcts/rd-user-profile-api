@@ -23,7 +23,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
@@ -129,21 +128,6 @@ public class UserProfileControllerTest {
         ResponseEntity expect = ResponseEntity.status(HttpStatus.OK).build();
         assertThat(actual.getStatusCode().value()).isEqualTo(expect.getStatusCode().value());
     }
-
-    @Test(expected = InvalidRequest.class)
-    public void testUpdateUserProfile_ThrowsConstraintException_When_FirstNameInvalid() {
-        UpdateUserProfileData updateUserProfileData = buildUpdateUserProfileData();
-        updateUserProfileData.setFirstName("this!is>invalid*");
-        sut.updateUserProfile(updateUserProfileData, UUID.randomUUID().toString(), ORIGIN);
-    }
-
-    @Test(expected = InvalidRequest.class)
-    public void testUpdateUserProfile_ThrowsConstraintException_When_LastNameInvalid() {
-        UpdateUserProfileData updateUserProfileData = buildUpdateUserProfileData();
-        updateUserProfileData.setLastName("this!is>invalid*");
-        sut.updateUserProfile(updateUserProfileData, UUID.randomUUID().toString(), ORIGIN);
-    }
-
 
     @Test
     public void should_throw_exception_when_get_with_idamId_null_parameters_passed_in() {
