@@ -195,19 +195,6 @@ public class UserProfileValidatorTest {
         assertThat(userProfileData).isNotNull();
     }
 
-//        if (null == userProfileData) {
-//        throw new RequiredFieldMissingException("No Request Body in the request");
-//
-//    } else if (StringUtils.isBlank(userId)) {
-//        throw new RequiredFieldMissingException("No User ID present in the request");
-//
-//    } else if (!StringUtils.isBlank(userProfileData.getFirstName()) && !Pattern.matches(NAME_FORMAT_REGEX, userProfileData.getFirstName())) {
-//        throw new InvalidRequest("First name must only consist of Letters aA - zZ and the following special characters ' and -");
-//
-//    } else if (!StringUtils.isBlank(userProfileData.getLastName()) && !Pattern.matches(NAME_FORMAT_REGEX, userProfileData.getLastName())) {
-//        throw new InvalidRequest("Last Name must only consist of Letters aA - zZ and the following special characters ' and -");
-//    }
-
     @Test(expected = RequiredFieldMissingException.class)
     public void test_validateUserProfileDataAndFirstAndLastNames_Throws_RequiredFieldMissingException_IfDataNull() {
         UserProfileValidator.validateUserProfileDataAndFirstAndLastNames(null, UUID.randomUUID().toString());
