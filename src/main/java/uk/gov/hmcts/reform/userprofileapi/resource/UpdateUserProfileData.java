@@ -16,16 +16,19 @@ import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 @Getter
 @Setter
 public class UpdateUserProfileData implements RequestData {
-    
+
     @JsonIgnore
     private static final String NAME_FORMAT_REGEX = "^[A-Za-z'-]+$";
 
+    @JsonIgnore
+    private static final String NAME_ERROR_MESSAGE = " name must only consist of Letters aA - zZ and the following special characters ' and -";
+
     private String email;
 
-    @Pattern(regexp = NAME_FORMAT_REGEX, message = "First name must only consist of Letters aA - zZ and the following special characters ' and -")
+    @Pattern(regexp = NAME_FORMAT_REGEX, message = "First" + NAME_ERROR_MESSAGE)
     private String firstName;
 
-    @Pattern(regexp = NAME_FORMAT_REGEX, message = "Last name must only consist of Letters aA - zZ and the following special characters ' and -")
+    @Pattern(regexp = NAME_FORMAT_REGEX, message = "Last" + NAME_ERROR_MESSAGE)
     private String lastName;
 
     private String idamStatus;
