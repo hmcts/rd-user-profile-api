@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.userprofileapi;
 
 import io.restassured.RestAssured;
+
 import java.util.UUID;
+
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
 
@@ -12,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
+import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 
 @RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest
@@ -30,6 +33,22 @@ public class UpdateUserProfileFuncTest extends AbstractFunctional {
     @Test
     public void should_create_Update_profile_and_return_200() throws Exception {
         updateUserProfile(updateUserProfileData(), createdResource.getIdamId(), HttpStatus.OK);
+    }
+
+    @Test
+    public void should_throw_400_when_Update_profile_with_invalid_first_name() throws Exception {
+        UpdateUserProfileData updateUserProfileData = updateUserProfileData();
+        updateUserProfileData.setFirstName("<This!Is$Invalid");
+
+        updateUserProfile(updateUserProfileData, createdResource.getIdamId(), HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void should_throw_400_when_Update_profile_with_invalid_last_name() throws Exception {
+        UpdateUserProfileData updateUserProfileData = updateUserProfileData();
+        updateUserProfileData.setLastName("<This!Is$Invalid");
+
+        updateUserProfile(updateUserProfileData, createdResource.getIdamId(), HttpStatus.BAD_REQUEST);
     }
 
     @Test
