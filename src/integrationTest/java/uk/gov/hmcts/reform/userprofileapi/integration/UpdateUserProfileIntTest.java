@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+
 import org.assertj.core.api.Assertions;
 import org.assertj.core.util.Lists;
 import org.json.JSONObject;
@@ -51,7 +52,6 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
         assertThat(userProfiles).isEmpty();
 
         UserProfile user = userProfileRepository.save(buildUserProfile());
-
         assertTrue(userProfileRepository.existsById(user.getId()));
 
         userProfileMap = new HashMap<>();
@@ -60,25 +60,22 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
 
     @Test
     public void should_return_200_and_update_user_profile_resource() throws Exception {
-
         UserProfile persistedUserProfile = userProfileMap.get("user");
         String idamId = persistedUserProfile.getIdamId();
+
         UpdateUserProfileData data = buildUpdateUserProfileData();
 
         userProfileRequestHandlerTest.sendPut(
                 mockMvc,
                 APP_BASE_PATH + SLASH + idamId,
                 data,
-                OK
-        );
+                OK);
 
         verifyUserProfileCreation(data, persistedUserProfile);
-
     }
 
     @Test
     public void should_return_200_and_when_IdamStatus_is_updated() throws Exception {
-
         UserProfile persistedUserProfile = userProfileMap.get("user");
         String idamId = persistedUserProfile.getIdamId();
         UpdateUserProfileData data = buildUpdateUserProfileData();
@@ -88,17 +85,14 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
                 mockMvc,
                 APP_BASE_PATH + SLASH + idamId,
                 data,
-                OK
-        );
+                OK);
 
         Optional<UserProfile> optionalUp = userProfileRepository.findByIdamId(persistedUserProfile.getIdamId());
         UserProfile updatedUserProfile = optionalUp.orElse(null);
         assertThat(updatedUserProfile.getStatus()).isEqualTo(IdamStatus.ACTIVE);
-
     }
 
     private void verifyUserProfileCreation(UpdateUserProfileData data, UserProfile persistedUserProfile) {
-
         Optional<UserProfile> optionalUp = userProfileRepository.findByIdamId(persistedUserProfile.getIdamId());
         UserProfile updatedUserProfile = optionalUp.orElse(null);
 
@@ -126,33 +120,28 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
         assertThat(audit.getSource()).isEqualTo(ResponseSource.SYNC);
         assertThat(audit.getUserProfile().getIdamId()).isEqualTo(updatedUserProfile.getIdamId());
         assertThat(audit.getAuditTs()).isNotNull();
-
     }
 
 
     @Test
     public void should_return_400_while_update_profile_when_empty_body() throws Exception {
-
         UserProfile persistedUserProfile = userProfileMap.get("user");
         String idamId = persistedUserProfile.getIdamId();
 
         userProfileRequestHandlerTest.sendPut(
-            mockMvc,
-            APP_BASE_PATH + SLASH + idamId,
-            "{}",
-            BAD_REQUEST
-        );
+                mockMvc,
+                APP_BASE_PATH + SLASH + idamId,
+                "{}",
+                BAD_REQUEST);
     }
 
     @Test
     public void should_return_404_while_create_user_profile_when_userId_invalid() throws Exception {
-
         userProfileRequestHandlerTest.sendPut(
                 mockMvc,
                 APP_BASE_PATH + SLASH + "invalid",
                 "{}",
-                NOT_FOUND
-        );
+                NOT_FOUND);
     }
 
     @Test
@@ -162,53 +151,44 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
                 mockMvc,
                 APP_BASE_PATH + SLASH + UUID.randomUUID(),
                 "{}",
-                NOT_FOUND
-        );
+                NOT_FOUND);
     }
 
     @Test
     public void should_return_400_when_any_mandatory_field_missing() throws Exception {
-
         UserProfile persistedUserProfile = userProfileMap.get("user");
         String idamId = persistedUserProfile.getIdamId();
-        List<String> mandatoryFieldList =
-            Lists.newArrayList(
-                "email",
-                "firstName",
-                "lastName",
-                "idamStatus"
-            );
 
-        new JSONObject(
-            objectMapper.writeValueAsString(
-                    buildCreateUserProfileData()
-            )
-        );
+        List<String> mandatoryFieldList =
+                Lists.newArrayList(
+                        "email",
+                        "firstName",
+                        "lastName",
+                        "idamStatus");
+
+        new JSONObject(objectMapper.writeValueAsString(buildCreateUserProfileData()));
 
         mandatoryFieldList.forEach(s -> {
 
             try {
-
                 JSONObject jsonObject =
-                    new JSONObject(objectMapper.writeValueAsString(buildCreateUserProfileData()));
+                        new JSONObject(objectMapper.writeValueAsString(buildCreateUserProfileData()));
 
                 jsonObject.remove(s);
 
                 mockMvc.perform(put(APP_BASE_PATH + SLASH + idamId.toString())
-                    .content(jsonObject.toString())
-                    .contentType(APPLICATION_JSON))
-                    .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
-                    .andReturn();
+                        .content(jsonObject.toString())
+                        .contentType(APPLICATION_JSON))
+                        .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
+                        .andReturn();
 
             } catch (Exception e) {
                 Assertions.fail("could not run test correctly", e);
             }
-
         });
-
     }
 
-    //@Test
+    @Test
     public void should_return_200_and_update_user_profile_resource_with_valid_email() throws Exception {
 
         UserProfile persistedUserProfile = userProfileMap.get("user");
@@ -223,5 +203,35 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
                 OK
         );
 
+    }
+
+    @Test
+    public void should_return_400_with_invalid_first_name() throws Exception {
+        UserProfile persistedUserProfile = userProfileMap.get("user");
+        String idamId = persistedUserProfile.getIdamId();
+
+        UpdateUserProfileData data = buildUpdateUserProfileData();
+        data.setFirstName("&this!is>invalid<");
+
+        userProfileRequestHandlerTest.sendPut(
+                mockMvc,
+                APP_BASE_PATH + SLASH + idamId,
+                data,
+                BAD_REQUEST);
+    }
+
+    @Test
+    public void should_return_400_with_invalid_last_name() throws Exception {
+        UserProfile persistedUserProfile = userProfileMap.get("user");
+        String idamId = persistedUserProfile.getIdamId();
+
+        UpdateUserProfileData data = buildUpdateUserProfileData();
+        data.setLastName("&this!is>invalid<");
+
+        userProfileRequestHandlerTest.sendPut(
+                mockMvc,
+                APP_BASE_PATH + SLASH + idamId,
+                data,
+                BAD_REQUEST);
     }
 }
