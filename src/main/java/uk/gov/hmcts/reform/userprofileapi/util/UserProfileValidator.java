@@ -1,12 +1,16 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.userprofileapi.controller.advice.UserProfileConstants.NAME_FORMAT_REGEX;
 import static uk.gov.hmcts.reform.userprofileapi.domain.enums.UserProfileField.STATUS;
 import static uk.gov.hmcts.reform.userprofileapi.domain.enums.UserProfileField.USERCATEGORY;
 import static uk.gov.hmcts.reform.userprofileapi.domain.enums.UserProfileField.USERTYPE;
 
+import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
+
+import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.LanguagePreference;
@@ -115,6 +119,21 @@ public interface UserProfileValidator {
                 || (!CollectionUtils.isEmpty(userProfileData.getRolesDelete()) && userProfileData.getRolesDelete().isEmpty())) {
 
             throw new RequiredFieldMissingException("No userId or roles in the request");
+        }
+    }
+
+    static void validateUserProfileDataAndFirstAndLastNames(UpdateUserProfileData userProfileData, String userId) {
+        if (null == userProfileData) {
+            throw new RequiredFieldMissingException("No Request Body in the request");
+
+        } else if (StringUtils.isBlank(userId)) {
+            throw new RequiredFieldMissingException("No User ID present in the request");
+
+        } else if (!StringUtils.isBlank(userProfileData.getFirstName()) && !Pattern.matches(NAME_FORMAT_REGEX, userProfileData.getFirstName())) {
+            throw new InvalidRequest("First name must only consist of Letters aA - zZ and the following special characters ' and -");
+
+        } else if (!StringUtils.isBlank(userProfileData.getLastName()) && !Pattern.matches(NAME_FORMAT_REGEX, userProfileData.getLastName())) {
+            throw new InvalidRequest("Last Name must only consist of Letters aA - zZ and the following special characters ' and -");
         }
     }
 }
