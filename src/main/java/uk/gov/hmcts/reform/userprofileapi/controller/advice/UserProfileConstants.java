@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.controller.advice;
 
-public final class UserProfileConstants {
+public class UserProfileConstants {
 
     private UserProfileConstants() {
     }
