@@ -221,6 +221,15 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
                 APP_BASE_PATH + SLASH + idamId,
                 data,
                 BAD_REQUEST);
+
+        UpdateUserProfileData data1 = buildUpdateUserProfileData();
+        data1.setFirstName("%3cscript%3ealert(%22WXSS%22)%3c%2fscript%3e");
+
+        userProfileRequestHandlerTest.sendPut(
+                mockMvc,
+                APP_BASE_PATH + SLASH + idamId,
+                data1,
+                BAD_REQUEST);
     }
 
     @Test
@@ -235,6 +244,15 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
                 mockMvc,
                 APP_BASE_PATH + SLASH + idamId,
                 data,
+                BAD_REQUEST);
+
+        UpdateUserProfileData data1 = buildUpdateUserProfileData();
+        data1.setLastName("%3cscript%3ealert(%22WXSS%22)%3c%2fscript%3e");
+
+        userProfileRequestHandlerTest.sendPut(
+                mockMvc,
+                APP_BASE_PATH + SLASH + idamId,
+                data1,
                 BAD_REQUEST);
     }
 

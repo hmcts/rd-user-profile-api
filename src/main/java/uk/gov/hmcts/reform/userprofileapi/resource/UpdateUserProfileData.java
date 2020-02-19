@@ -19,13 +19,15 @@ public class UpdateUserProfileData implements RequestData {
 
     @JsonIgnore
     private static final String NAME_FORMAT_REGEX = "^[A-Za-z'-]+$";
+    @JsonIgnore
+    private static final String NAME_FORMAT_ERROR_MESSAGE = "First and Last Names must only consist of Letters aA - zZ and the following special characters ' and -";
 
     private String email;
 
-    @Pattern(regexp = NAME_FORMAT_REGEX, message = "First name must only consist of Letters aA - zZ and the following special characters ' and -")
+    @Pattern(regexp = NAME_FORMAT_REGEX, message = NAME_FORMAT_ERROR_MESSAGE)
     private String firstName;
 
-    @Pattern(regexp = NAME_FORMAT_REGEX, message = "Last name must only consist of Letters aA - zZ and the following special characters ' and -")
+    @Pattern(regexp = NAME_FORMAT_REGEX, message = NAME_FORMAT_ERROR_MESSAGE)
     private String lastName;
 
     private String idamStatus;

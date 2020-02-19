@@ -39,12 +39,20 @@ public class UpdateUserProfileFuncTest extends AbstractFunctional {
         updateUserProfileData.setFirstName("<This!Is$Invalid");
 
         updateUserProfile(updateUserProfileData, createdResource.getIdamId(), HttpStatus.BAD_REQUEST);
+
+        updateUserProfileData.setFirstName("%3cscript%3ealert(%22WXSS%22)%3c%2fscript%3e");
+
+        updateUserProfile(updateUserProfileData, createdResource.getIdamId(), HttpStatus.BAD_REQUEST);
     }
 
     @Test
     public void should_throw_400_when_Update_profile_with_invalid_last_name() throws Exception {
         UpdateUserProfileData updateUserProfileData = updateUserProfileData();
         updateUserProfileData.setLastName("<This!Is$Invalid");
+
+        updateUserProfile(updateUserProfileData, createdResource.getIdamId(), HttpStatus.BAD_REQUEST);
+
+        updateUserProfileData.setLastName("%3cscript%3ealert(%22WXSS%22)%3c%2fscript%3e");
 
         updateUserProfile(updateUserProfileData, createdResource.getIdamId(), HttpStatus.BAD_REQUEST);
     }
