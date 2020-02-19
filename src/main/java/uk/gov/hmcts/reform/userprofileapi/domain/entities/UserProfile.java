@@ -37,12 +37,6 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 @Entity
 @NoArgsConstructor
 @SequenceGenerator(name = "user_profile_id_seq", sequenceName = "user_profile_id_seq", allocationSize = 1)
-@NamedEntityGraph(
-        name = "User.alljoins",
-        attributeNodes = {
-                @NamedAttributeNode(value = "responses"),
-        }
-)
 public class UserProfile {
 
     @Id

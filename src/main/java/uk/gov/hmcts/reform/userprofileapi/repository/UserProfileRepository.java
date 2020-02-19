@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 @Repository
 public interface UserProfileRepository extends CrudRepository<UserProfile, Long> {
 
-    @EntityGraph(value = "User.alljoins")
+    //@EntityGraph(value = "User.alljoins")
     @Transactional(readOnly = true)
     Optional<UserProfile> findByEmail(String email);
 
