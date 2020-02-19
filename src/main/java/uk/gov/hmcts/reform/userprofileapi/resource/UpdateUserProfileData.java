@@ -1,9 +1,11 @@
 package uk.gov.hmcts.reform.userprofileapi.resource;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Set;
+import javax.validation.constraints.Pattern;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,10 +17,15 @@ import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 @Setter
 public class UpdateUserProfileData implements RequestData {
 
+    @JsonIgnore
+    private static final String NAME_FORMAT_REGEX = "^[A-Za-z'-]+$";
+
     private String email;
 
+    @Pattern(regexp = NAME_FORMAT_REGEX, message = "First name must only consist of Letters aA - zZ and the following special characters ' and -")
     private String firstName;
 
+    @Pattern(regexp = NAME_FORMAT_REGEX, message = "Last name must only consist of Letters aA - zZ and the following special characters ' and -")
     private String lastName;
 
     private String idamStatus;
