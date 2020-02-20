@@ -16,7 +16,8 @@ locals {
   s2s_url = "http://rpe-service-auth-provider-${local.local_env}.service.core-compute-${local.local_env}.internal"
   s2s_vault_name = "s2s-${local.local_env}"
   s2s_vault_uri = "https://s2s-${local.local_env}.vault.azure.net/"
-  idam_url = "${var.env == "prod" ? "https://idam-api.platform.hmcts.net" : "https://idam-api.${local.local_env}.platform.hmcts.net" }"
+  idam_url = "${var.env == "prod" ? "https://idam-api.platform.hmcts.net" : "http://idam-api.${local.local_env}.service.core-compute-ithc.internal" }"
+
 }
 
 resource "azurerm_resource_group" "rg" {
