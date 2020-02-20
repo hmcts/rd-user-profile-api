@@ -1,8 +1,8 @@
 targetInstance: ${TEST_URL:http://rd-user-profile-api-pr-170.service.core-compute-preview.internal}
 spring.flyway.enabled: false
-idamUrl: ${IDAM_URL_TO_TEST:https://idam-api.aat.platform.hmcts.net}
+idamUrl: ${IDAM_URL_TO_TEST:http://idam-api-ithc.service.core-compute-ithc.internal}
 
-idam.api.url: ${IDAM_URL_TO_TEST:https://idam-api.aat.platform.hmcts.net}
+idam.api.url: ${IDAM_URL_TO_TEST:http://idam-api-ithc.service.core-compute-ithc.internal}
 
 generated.user.email.pattern: ${GENERATED_USER_EMAIL_PATTERN:freg-test-user-%s@feemail.com}
 test.url: ${TEST_URL:http://rd-user-profile-api-aat.service.core-compute-aat.internal}
