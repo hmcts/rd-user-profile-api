@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -36,8 +37,8 @@ public class UserProfileControllerAdvice {
 
     @ExceptionHandler(RequiredFieldMissingException.class)
     protected ResponseEntity<Object> handleRequiredFieldMissingException(
-        HttpServletRequest request,
-        RequiredFieldMissingException e
+            HttpServletRequest request,
+            RequiredFieldMissingException e
     ) {
         return errorDetailsResponseEntity(e, BAD_REQUEST, INVALID_REQUEST.getErrorMessage());
     }
@@ -51,32 +52,32 @@ public class UserProfileControllerAdvice {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     protected ResponseEntity<Object> handleMethodArgumentNotValidException(
-        HttpServletRequest request,
-        MethodArgumentNotValidException e
+            HttpServletRequest request,
+            MethodArgumentNotValidException e
     ) {
-        return errorDetailsResponseEntity(e, BAD_REQUEST, INVALID_REQUEST.getErrorMessage());
+        return patternErrorDetailsResponseEntity(e, BAD_REQUEST, INVALID_REQUEST.getErrorMessage());
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     protected ResponseEntity<Object> handleResourceNotFoundException(
-        HttpServletRequest request,
-        ResourceNotFoundException e
+            HttpServletRequest request,
+            ResourceNotFoundException e
     ) {
         return errorDetailsResponseEntity(e, NOT_FOUND, RESOURCE_NOT_FOUND.getErrorMessage());
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     protected ResponseEntity<Object> handleDataIntegrityViolationException(
-        HttpServletRequest request,
-        DataIntegrityViolationException e
+            HttpServletRequest request,
+            DataIntegrityViolationException e
     ) {
         return errorDetailsResponseEntity(e, BAD_REQUEST, DATA_INTEGRITY_VIOLATION.getErrorMessage());
     }
 
     @ExceptionHandler(HttpMessageConversionException.class)
     protected ResponseEntity<Object> handleHttpMessageConversionException(
-        HttpServletRequest request,
-        HttpMessageConversionException e
+            HttpServletRequest request,
+            HttpMessageConversionException e
     ) {
         return errorDetailsResponseEntity(e, BAD_REQUEST, INVALID_REQUEST.getErrorMessage());
     }
@@ -91,8 +92,8 @@ public class UserProfileControllerAdvice {
 
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<Object> handleUnknownException(
-        HttpServletRequest request,
-        Exception e
+            HttpServletRequest request,
+            Exception e
     ) {
         return errorDetailsResponseEntity(e, INTERNAL_SERVER_ERROR, UNKNOWN_EXCEPTION.getErrorMessage());
     }
@@ -115,6 +116,27 @@ public class UserProfileControllerAdvice {
         ErrorResponse errorDetails = ErrorResponse.builder()
                 .errorMessage(errorMsg)
                 .errorDescription(getRootException(ex).getLocalizedMessage())
+                .timeStamp(getTimeStamp())
+                .build();
+
+        return new ResponseEntity<>(
+                errorDetails, httpStatus);
+    }
+
+    private ResponseEntity<Object> patternErrorDetailsResponseEntity(Exception ex, HttpStatus httpStatus, String errorMsg) {
+        String errorDesc;
+
+        try {
+            errorDesc = ex.getMessage().substring(ex.getMessage().lastIndexOf("default message"));
+            errorDesc = errorDesc.replace("default message [", "").replace("]]", "");
+        } catch (IndexOutOfBoundsException e) {
+            errorDesc = getRootException(ex).getLocalizedMessage();
+        }
+
+        log.error(LOG_STRING, ex);
+        ErrorResponse errorDetails = ErrorResponse.builder()
+                .errorMessage(errorMsg)
+                .errorDescription(errorDesc)
                 .timeStamp(getTimeStamp())
                 .build();
 

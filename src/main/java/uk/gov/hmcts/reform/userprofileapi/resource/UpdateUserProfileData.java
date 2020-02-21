@@ -5,8 +5,10 @@ import static uk.gov.hmcts.reform.userprofileapi.controller.advice.UserProfileCo
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Set;
 import javax.validation.constraints.Pattern;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
