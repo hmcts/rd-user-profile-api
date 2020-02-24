@@ -88,7 +88,6 @@ public class UserProfile {
     @UpdateTimestamp
     private LocalDateTime lastUpdated;
 
-    @Fetch(FetchMode.SUBSELECT)
     @OneToMany(mappedBy = "userProfile")
     private List<Audit> responses = new ArrayList<>();
 
