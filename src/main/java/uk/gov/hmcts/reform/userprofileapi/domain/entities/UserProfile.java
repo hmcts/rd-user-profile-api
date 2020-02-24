@@ -92,7 +92,6 @@ public class UserProfile {
     @OneToMany(mappedBy = "userProfile")
     private List<Audit> responses = new ArrayList<>();
 
-    @Fetch(FetchMode.SUBSELECT)
     @Transient
     private List<String> roles = new ArrayList<>();
 
