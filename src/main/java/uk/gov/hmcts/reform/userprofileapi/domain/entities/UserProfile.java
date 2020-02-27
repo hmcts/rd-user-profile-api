@@ -21,6 +21,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
@@ -86,9 +88,11 @@ public class UserProfile {
     @UpdateTimestamp
     private LocalDateTime lastUpdated;
 
+    @Fetch(FetchMode.SUBSELECT)
     @OneToMany(mappedBy = "userProfile")
     private List<Audit> responses = new ArrayList<>();
 
+    @Fetch(FetchMode.SUBSELECT)s
     @Transient
     private List<String> roles = new ArrayList<>();
 
