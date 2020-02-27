@@ -43,6 +43,7 @@ spring:
       log-abandoned: true
       abandon-when-percentage-full: 0
   jpa:
+    show-sql: true
     properties:
       hibernate:
         jdbc:

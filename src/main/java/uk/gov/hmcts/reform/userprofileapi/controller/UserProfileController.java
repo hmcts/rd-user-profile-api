@@ -341,8 +341,10 @@ public class UserProfileController {
         boolean showDeletedBoolean = UserProfileValidator.validateAndReturnBooleanForParam(showDeleted);
         boolean rolesRequiredBoolean = UserProfileValidator.validateAndReturnBooleanForParam(rolesRequired);
         UserProfileValidator.validateUserIds(userProfileDataRequest);
+        System.out.println("retrieve with roles");
         UserProfileDataResponse userProfileDataResponse =
                 userProfileService.retrieveWithRoles(new UserProfileIdentifier(IdentifierName.UUID_LIST, userProfileDataRequest.getUserIds()), showDeletedBoolean, rolesRequiredBoolean);
+        System.out.println("retrieve with roles end");
         return ResponseEntity.status(HttpStatus.OK).body(userProfileDataResponse);
 
     }
