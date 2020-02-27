@@ -23,13 +23,6 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
-   file name: checkstyle-8.10.1.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/com.puppycrawl.tools/checkstyle@.*$</packageUrl>
-        <cve>CVE-2019-9658</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
    file name: spring-security-config-5.1.5.RELEASE.jar
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org.springframework.security/spring-security-config@.*$</packageUrl>
@@ -95,9 +88,10 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
-       file name: checkstyle-8.10.1.jar
-       ]]></notes>
+   file name: checkstyle-8.10.1.jar
+   ]]></notes>
         <packageUrl regex="true">^pkg:maven/com\.puppycrawl\.tools/checkstyle@.*$</packageUrl>
+        <vulnerabilityName>CVE-2019-10782</vulnerabilityName>
         <cve>CVE-2019-9658</cve>
     </suppress>
     <suppress>
@@ -1648,20 +1642,6 @@
    ]]></notes>
         <gav regex="true">^org\.springframework:spring-jcl:.*$</gav>
         <cve>CVE-2018-15756</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: checkstyle-8.10.1.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.puppycrawl\.tools/checkstyle@.*$</packageUrl>
-        <cpe>cpe:/a:checkstyle:checkstyle</cpe>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: checkstyle-8.10.1.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.puppycrawl\.tools/checkstyle@.*$</packageUrl>
-        <cve>CVE-2019-9658</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[
