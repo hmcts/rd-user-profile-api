@@ -162,16 +162,8 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
     @Test
     public void should_retrieve_multiple_user_profiles_with_showDeleted_false() throws Exception {
 
-        System.out.println("begin test");
-
-        System.out.println("create request");
         UserProfileDataRequest request = new UserProfileDataRequest(userIds);
-        System.out.println("create request end");
-
-        System.out.println("getMultipleUsers Start");
         UserProfileDataResponse response = getMultipleUsers(request, OK,"false", "true");
-        System.out.println("getMultipleUsers End");
-        System.out.println("end test");
         assertThat(response).isNotNull();
         assertThat(response.getUserProfiles().size()).isEqualTo(3);
     }
