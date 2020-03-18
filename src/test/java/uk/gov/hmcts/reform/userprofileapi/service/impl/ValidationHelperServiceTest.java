@@ -78,7 +78,7 @@ public class ValidationHelperServiceTest {
 
     @Test
     public void testValidateUserIsPresentWithExceptionHappyPath() {
-        boolean actual = sut.validateUserIsPresentWithException(Optional.empty(), "f56e5539-a8f7-4ae6-b378-cc1015b72dcc");
+        boolean actual = sut.validateUserIsPresentWithException(Optional.empty());
 
         assertThat(actual).isTrue();
     }
@@ -87,14 +87,14 @@ public class ValidationHelperServiceTest {
     public void testValidateUserIsPresentWithException() {
         doThrow(ResourceNotFoundException.class).when(exceptionServiceMock).throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
 
-        sut.validateUserIsPresentWithException(Optional.empty(), "f56e5539-a8f7-4ae6-b378-cc1077b72dcc");
+        sut.validateUserIsPresentWithException(Optional.empty());
     }
 
     @Test
     public void testValidateUserIsPresentWithExceptionPersistAuditOnException() {
         doNothing().when(exceptionServiceMock).throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
 
-        sut.validateUserIsPresentWithException(Optional.empty(), "f56e5539-a8f7-4ae6-b378-cc1015b72dcc");
+        sut.validateUserIsPresentWithException(Optional.empty());
 
         verify(auditServiceMock, times(1)).persistAudit(eq(HttpStatus.NOT_FOUND), eq(ResponseSource.SYNC));
     }
