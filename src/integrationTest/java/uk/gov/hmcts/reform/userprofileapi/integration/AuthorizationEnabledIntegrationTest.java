@@ -11,6 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import java.util.Optional;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -189,5 +190,11 @@ public class AuthorizationEnabledIntegrationTest {
         assertThat(audit.getSource()).isEqualTo(ResponseSource.API);
         assertThat(audit.getUserProfile().getIdamId()).isEqualTo(createdResource.getIdamId());
         assertThat(audit.getAuditTs()).isNotNull();
+    }
+
+    @After
+    public void tearDown () {
+        auditRepository.deleteAll();
+        testUserProfileRepository.deleteAll();
     }
 }
