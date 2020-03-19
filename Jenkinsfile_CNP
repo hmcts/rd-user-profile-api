@@ -47,7 +47,14 @@ withPipeline(type, product, component) {
     // **This is for demo. Uncomment below for AAT/AKS deployments**
     //disableLegacyDeployment()
     enableAksStagingDeployment()
-    enableMutationTest()
+
+    after('integrationTest:preview') {
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+    }
+
+    after('integrationTest:aat') {
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+    }
 
     after('functionalTest:preview') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
