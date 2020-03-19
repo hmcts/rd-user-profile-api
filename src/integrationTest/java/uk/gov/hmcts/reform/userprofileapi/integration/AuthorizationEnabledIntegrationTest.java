@@ -165,7 +165,6 @@ public class AuthorizationEnabledIntegrationTest {
         Optional<UserProfile> persistedUserProfile = userProfileRepository.findByIdamId(createdResource.getIdamId());
         UserProfile userProfile = persistedUserProfile.get();
         assertThat(userProfile.getId()).isNotNull().isExactlyInstanceOf(Long.class);
-        assertThat(userProfile.getIdamRegistrationResponse()).isEqualTo(201);
         assertThat(userProfile.getEmail()).isEqualToIgnoringCase(data.getEmail());
         assertThat(userProfile.getFirstName()).isNotEmpty().isEqualTo(data.getFirstName());
         assertThat(userProfile.getLastName()).isNotEmpty().isEqualTo(data.getLastName());
@@ -180,15 +179,15 @@ public class AuthorizationEnabledIntegrationTest {
         assertThat(userProfile.getCreated()).isNotNull();
         assertThat(userProfile.getLastUpdated()).isNotNull();
 
-        Optional<Audit> optional = auditRepository.findByUserProfile(userProfile);
-        Audit audit = optional.get();
+        auditRepository.findAllByUserProfile(userProfile).forEach(audit -> verifyAudit(audit, createdResource));
+    }
 
+    public void verifyAudit(Audit audit, UserProfileCreationResponse createdResource) {
         assertThat(audit).isNotNull();
         assertThat(audit.getIdamRegistrationResponse()).isEqualTo(201);
         assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.ACCEPTED);
         assertThat(audit.getSource()).isEqualTo(ResponseSource.API);
         assertThat(audit.getUserProfile().getIdamId()).isEqualTo(createdResource.getIdamId());
         assertThat(audit.getAuditTs()).isNotNull();
-
     }
 }

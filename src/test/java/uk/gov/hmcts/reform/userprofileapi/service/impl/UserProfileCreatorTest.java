@@ -70,7 +70,7 @@ public class UserProfileCreatorTest {
 
         UserProfile response = userProfileCreator.create(userProfileCreationData);
 
-        assertThat(response).isEqualToComparingFieldByField(userProfile);
+        assertThat(response).isEqualToIgnoringGivenFields(userProfile, "idamId");
 
         InOrder inOrder = Mockito.inOrder(idamService, userProfileRepository);
         inOrder.verify(idamService, Mockito.times(1)).registerUser(any(IdamRegisterUserRequest.class));
@@ -89,14 +89,14 @@ public class UserProfileCreatorTest {
         userProfileCreationData.setStatus(IdamStatus.PENDING);
         UserProfile response = userProfileCreator.create(userProfileCreationData);
 
-        assertThat(response).isEqualToComparingFieldByField(userProfile);
+        assertThat(response).isEqualToIgnoringGivenFields(userProfile, "idamId");
 
         InOrder inOrder = Mockito.inOrder(idamService, userProfileRepository);
         inOrder.verify(idamService, Mockito.times(1)).registerUser(any(IdamRegisterUserRequest.class));
         inOrder.verify(userProfileRepository, Mockito.times(1)).save(any(UserProfile.class));
 
         Mockito.verify(auditRepository, Mockito.times(1)).save(any(Audit.class));
-        assertThat(response.getIdamId()).isNull();
+        assertThat(response.getIdamId()).isNotNull();
         assertThat(response.getStatus()).isNotNull();
 
     }
