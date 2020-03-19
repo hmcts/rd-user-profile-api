@@ -33,6 +33,14 @@ withParameterizedPipeline(params.TYPE, params.PRODUCT_NAME, params.APP, params.E
   setVaultName('rd')
   loadVaultSecrets(secrets)
 
+  after('integrationTest:preview') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+  }
+
+  after('integrationTest:aat') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+  }
+
   after('functionalTest:preview') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
   }
