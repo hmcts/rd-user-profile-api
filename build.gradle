@@ -267,7 +267,7 @@ dependencies {
     compile group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.4.0'
 
 
-    compile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.7'
+    compile group: 'io.rest-assured', name: 'rest-assured', version: '4.3.0'
     compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
     compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
 
