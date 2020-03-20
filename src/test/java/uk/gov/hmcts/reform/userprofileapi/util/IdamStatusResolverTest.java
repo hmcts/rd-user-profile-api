@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertFalse;
 import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.ACCEPTED;
 import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.INVALID_REQUEST;
 import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.MISSING_TOKEN;
@@ -11,6 +12,7 @@ import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.TOKEN_E
 import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.UNKNOWN;
 import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.USER_EXISTS;
 
+import java.lang.reflect.Constructor;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -83,5 +85,13 @@ public class IdamStatusResolverTest {
         IdamUserResponse idamUserResponse = new IdamUserResponse(active, email, foreName, userId,pending, roles, surName);
         ResponseEntity<IdamUserResponse> entity = new ResponseEntity<IdamUserResponse>(idamUserResponse, HttpStatus.CREATED);
         return new IdamRolesInfo(entity, HttpStatus.CREATED);
+    }
+
+    @Test
+    public void privateConstructorTest_for_IdamStatusResolver() throws Exception {
+        Constructor<IdamStatusResolver> constructor = IdamStatusResolver.class.getDeclaredConstructor();
+        assertFalse(constructor.isAccessible());
+        constructor.setAccessible(true);
+        constructor.newInstance((Object[]) null);
     }
 }

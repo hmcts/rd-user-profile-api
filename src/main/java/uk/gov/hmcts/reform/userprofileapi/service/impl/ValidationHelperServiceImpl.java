@@ -1,13 +1,17 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
+import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.TOO_MANY_REQUEST;
 import static uk.gov.hmcts.reform.userprofileapi.domain.enums.ExceptionType.ERRORPERSISTINGEXCEPTION;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateUserProfileStatus;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
@@ -29,6 +33,9 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
     @Autowired
     private ExceptionService exceptionService;
 
+    @Value("${resendInterval:1}")
+    private String resendInterval;
+
     @Override
     public boolean validateUserIdWithException(String userId) {
         if (!isUserIdValid(userId, false)) {
@@ -39,10 +46,10 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
         return true;
     }
 
-    public boolean validateUserIsPresentWithException(Optional<UserProfile> userProfile, String userId) {
+    public boolean validateUserIsPresentWithException(Optional<UserProfile> userProfile) {
         if (!userProfile.isPresent()) {
             auditService.persistAudit(HttpStatus.NOT_FOUND, ResponseSource.SYNC);
-            final String exceptionMsg = String.format("%s - could not find user profile for userId: %s", ExceptionType.RESOURCENOTFOUNDEXCEPTION, userId);
+            final String exceptionMsg = String.format("User does not exist", ExceptionType.RESOURCENOTFOUNDEXCEPTION);
             exceptionService.throwCustomRuntimeException(ExceptionType.RESOURCENOTFOUNDEXCEPTION, exceptionMsg);
         }
         return true;
@@ -54,7 +61,6 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
             final String exceptionMsg = String.format("RequiredFieldMissingException - Update user profile request has invalid status %s for userId: %s", updateUserProfileData.getIdamStatus(), userId);
             exceptionService.throwCustomRuntimeException(ExceptionType.REQUIREDFIELDMISSINGEXCEPTION, exceptionMsg);
         }
-        log.error("User status provided is correct");
         return true;
     }
 
@@ -65,7 +71,6 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
             final String exceptionMsg = String.format("User is PENDING or input status is PENDING and only be changed to ACTIVE or SUSPENDED for userId: %s", userProfile.getIdamId());
             exceptionService.throwCustomRuntimeException(ExceptionType.REQUIREDFIELDMISSINGEXCEPTION, exceptionMsg);
         }
-        log.error("validateUserStatusBeforeUpdate is correct");
         return true;
     }
 
@@ -74,6 +79,35 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
         if (!status.is2xxSuccessful()) {
             exceptionService.throwCustomRuntimeException(ERRORPERSISTINGEXCEPTION, "Error while persisting user profile");
         }
+        return true;
+    }
+
+    @Override
+    public boolean validateUserStatusWithException(UserProfile userProfile, IdamStatus expectedStatus) {
+        if (expectedStatus != userProfile.getStatus()) {
+            auditService.persistAudit(HttpStatus.BAD_REQUEST, ResponseSource.API);
+            final String exceptionMsg = String.format("User is not in %s state", expectedStatus);
+            exceptionService.throwCustomRuntimeException(ExceptionType.BADREQUEST, exceptionMsg);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean validateUserLastUpdatedWithinSpecifiedTimeWithException(UserProfile userProfile, long expectedHours) {
+        LocalDateTime latUpdated = userProfile.getLastUpdated();
+        if (Duration.between(latUpdated, LocalDateTime.now()).toHours() < expectedHours) {
+            auditService.persistAudit(HttpStatus.TOO_MANY_REQUESTS, ResponseSource.API);
+            final String exceptionMsg = String.format(TOO_MANY_REQUEST.getErrorMessage());
+            exceptionService.throwCustomRuntimeException(ExceptionType.TOOMANYREQUEST, exceptionMsg);
+        }
+        return true;
+    }
+
+    public boolean validateReInvitedUser(Optional<UserProfile> userProfileOpt) {
+        validateUserIsPresentWithException(userProfileOpt);
+        UserProfile userProfile = userProfileOpt.get();
+        validateUserStatusWithException(userProfile, IdamStatus.PENDING);
+        validateUserLastUpdatedWithinSpecifiedTimeWithException(userProfile, Long.valueOf(resendInterval));
         return true;
     }
 }

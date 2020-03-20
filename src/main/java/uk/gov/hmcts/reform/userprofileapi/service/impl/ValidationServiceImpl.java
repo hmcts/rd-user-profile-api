@@ -34,7 +34,7 @@ public class ValidationServiceImpl implements ValidationService {
         Optional<UserProfile> result = userProfileRepository.findByIdamId(userId);
 
         // validate with exception that user is well-formed
-        validationHelperService.validateUserIsPresentWithException(result, userId);
+        validationHelperService.validateUserIsPresentWithException(result);
 
         validationHelperService.validateUpdateUserProfileRequestValid(updateUserProfileData, userId, source);
 

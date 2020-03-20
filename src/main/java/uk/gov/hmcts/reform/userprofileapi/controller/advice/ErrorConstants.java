@@ -14,9 +14,13 @@ public enum ErrorConstants {
 
     DATA_INTEGRITY_VIOLATION("6 : attempt to insert or update data resulted in violation of an integrity constraint"),
 
-    ILLEGAL_ARGUMENT("7 : method has been passed an illegal or inappropriate argument"),
+    USER_ALREADY_ACTIVE("7 : Resend failed because the user is Active. Wait for some time for the system to refresh."),
 
-    UNKNOWN_EXCEPTION("8 : error was caused by an unknown exception");
+    UNKNOWN_EXCEPTION("8 : error was caused by an unknown exception"),
+
+    TOO_MANY_REQUEST("10 : The request was last made less than 1 hour ago. Please try after some time");
+
+
 
     private final String errorMessage;
 

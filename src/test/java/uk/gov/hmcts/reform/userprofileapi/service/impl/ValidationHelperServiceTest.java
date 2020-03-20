@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -10,6 +11,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Optional;
 
@@ -20,6 +22,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.HttpClientErrorException;
+import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ExceptionType;
@@ -43,6 +48,7 @@ public class ValidationHelperServiceTest {
 
     @Mock
     private ExceptionService exceptionServiceMock;
+
 
     private UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
     private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.ACCEPTED);
@@ -147,6 +153,28 @@ public class ValidationHelperServiceTest {
         assertThat(sut.validateUserStatusBeforeUpdate(updateUserProfileData, userProfile, ResponseSource.API)).isTrue();
     }
 
+    @Test
+    public void test_validateUserStatusBeforeUpdate_should_throw_exception_when_user_is_pending() {
+
+        doThrow(InvalidRequest.class).when(exceptionServiceMock).throwCustomRuntimeException(eq(ExceptionType.REQUIREDFIELDMISSINGEXCEPTION), any(String.class));
+        final Throwable raisedException = catchThrowable(() -> sut.validateUserStatusBeforeUpdate(updateUserProfileData, userProfile, ResponseSource.API));
+        assertThat(raisedException).isInstanceOf(InvalidRequest.class);
+
+        verify(auditServiceMock, times(1)).persistAudit(any(HttpStatus.class), any(ResponseSource.class));
+        verify(exceptionServiceMock, times(1)).throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
+    }
+
+    @Test
+    public void test_validateUserStatusBeforeUpdate_should_throw_exception_when_user_is_pending_in_request() {
+
+        doThrow(InvalidRequest.class).when(exceptionServiceMock).throwCustomRuntimeException(eq(ExceptionType.REQUIREDFIELDMISSINGEXCEPTION), any(String.class));
+        final Throwable raisedException = catchThrowable(() -> sut.validateUserStatusBeforeUpdate(updateUserProfileData, userProfile, ResponseSource.API));
+        assertThat(raisedException).isInstanceOf(InvalidRequest.class);
+
+        verify(auditServiceMock, times(1)).persistAudit(any(HttpStatus.class), any(ResponseSource.class));
+        verify(exceptionServiceMock, times(1)).throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
+    }
+
     @Test(expected = Test.None.class)
     public void testvalidateUserPersistedWithException_scenario1() {
         assertThat(sut.validateUserPersistedWithException(HttpStatus.OK)).isTrue();
@@ -189,4 +217,48 @@ public class ValidationHelperServiceTest {
         assertThat(sut.validateUserStatusBeforeUpdate(updateUserProfileDataMock, userProfileMock, ResponseSource.API)).isTrue();
     }
 
+    @Test
+    public void test_validateUserStatusWithException_should_return_true() {
+        assertThat(sut.validateUserStatusWithException(userProfile, IdamStatus.PENDING)).isTrue();
+    }
+
+    @Test
+    public void test_validateUserStatusWithException_should_throw_exception() {
+
+        userProfile.setStatus(IdamStatus.ACTIVE);
+        doThrow(InvalidRequest.class).when(exceptionServiceMock).throwCustomRuntimeException(eq(ExceptionType.BADREQUEST), any(String.class));
+        final Throwable raisedException = catchThrowable(() -> sut.validateUserStatusWithException(userProfile, IdamStatus.PENDING));
+        assertThat(raisedException).isInstanceOf(InvalidRequest.class);
+
+        verify(auditServiceMock, times(1)).persistAudit(any(HttpStatus.class), any(ResponseSource.class));
+        verify(exceptionServiceMock, times(1)).throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
+    }
+
+    @Test
+    public void test_validateUserLastUpdatedWithinSpecifiedTimeWithException_should_return_true() {
+
+        userProfile.setLastUpdated(LocalDateTime.now().minusHours(2L));
+        assertThat(sut.validateUserLastUpdatedWithinSpecifiedTimeWithException(userProfile, 1L)).isTrue();
+    }
+
+    @Test
+    public void test_validateUserLastUpdatedWithinSpecifiedTimeWithException_should_throw_exception() {
+
+        userProfile.setLastUpdated(LocalDateTime.now());
+        doThrow(HttpClientErrorException.class).when(exceptionServiceMock).throwCustomRuntimeException(eq(ExceptionType.TOOMANYREQUEST), any(String.class));
+        final Throwable raisedException = catchThrowable(() -> sut.validateUserLastUpdatedWithinSpecifiedTimeWithException(userProfile, 1L));
+        assertThat(raisedException).isInstanceOf(HttpClientErrorException.class);
+
+        verify(auditServiceMock, times(1)).persistAudit(any(HttpStatus.class), any(ResponseSource.class));
+        verify(exceptionServiceMock, times(1)).throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
+    }
+
+    @Test
+    public void test_validateReInvitedUser_should_return_true() {
+
+        ReflectionTestUtils.setField(sut, "resendInterval", "1");
+        userProfile.setLastUpdated(LocalDateTime.now().minusHours(2L));
+        Optional<UserProfile> userProfileOptional = Optional.of(userProfile);
+        assertThat(sut.validateReInvitedUser(userProfileOptional)).isTrue();
+    }
 }

@@ -95,7 +95,7 @@ public class AuthorizationEnabledIntegrationTest {
                                 +  "  ]"
                                 +  "}")));
 
-        setSidamRegistrationMockWithStatus(201);
+        setSidamRegistrationMockWithStatus(HttpStatus.CREATED.value());
 
         idamService.stubFor(get(urlMatching("/api/v1/users/.*"))
                 .willReturn(aResponse()
@@ -193,7 +193,7 @@ public class AuthorizationEnabledIntegrationTest {
     }
 
     @After
-    public void tearDown () {
+    public void tearDown() {
         auditRepository.deleteAll();
         testUserProfileRepository.deleteAll();
     }

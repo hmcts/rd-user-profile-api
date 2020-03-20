@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -25,6 +26,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
+import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.IdamRegisterUserRequest;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
@@ -37,6 +39,7 @@ import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
+import uk.gov.hmcts.reform.userprofileapi.service.ValidationHelperService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserProfileCreatorTest {
@@ -52,6 +55,9 @@ public class UserProfileCreatorTest {
 
     @Mock
     private AuditRepository auditRepository;
+
+    @Mock
+    private ValidationHelperService validationHelperService;
 
     private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.ACCEPTED);
 
@@ -333,6 +339,83 @@ public class UserProfileCreatorTest {
         Set<String> rolesToUpdate = userProfileCreator.consolidateRolesFromXuiAndIdam(userProfileCreationDataMock, idamRolesInfoMock);
 
         assertThat(rolesToUpdate.size()).isEqualTo(0);
+    }
+
+    @Test
+    public void should_reinvite_user_successfully() {
+
+        Mockito.when(idamService.registerUser(any())).thenReturn(idamRegistrationInfo);
+        Mockito.when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+        Mockito.when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);
+        when(validationHelperService.validateReInvitedUser(any())).thenReturn(true);
+
+        UserProfile response = userProfileCreator.reInviteUser(userProfileCreationData);
+
+        assertThat(response).isEqualToIgnoringGivenFields(userProfile, "idamId");
+        assertThat(response.getIdamRegistrationResponse()).isEqualTo(HttpStatus.ACCEPTED.value());
+
+        InOrder inOrder = Mockito.inOrder(idamService, userProfileRepository);
+        inOrder.verify(idamService, Mockito.times(1)).registerUser(any(IdamRegisterUserRequest.class));
+        inOrder.verify(userProfileRepository, Mockito.times(1)).save(any(UserProfile.class));
+        Mockito.verify(auditRepository, Mockito.times(1)).save(any(Audit.class));
+
+    }
+
+    @Test
+    public void should_not_reinvite_user_when_sidam_returns_409() {
+
+        IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.CONFLICT);
+        Mockito.when(idamService.registerUser(any())).thenReturn(idamRegistrationInfo);
+        Mockito.when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+        when(validationHelperService.validateReInvitedUser(any())).thenReturn(true);
+
+
+        final Throwable raisedException = catchThrowable(() -> userProfileCreator.reInviteUser(userProfileCreationData));
+
+        assertThat(raisedException).isInstanceOf(IdamServiceException.class)
+                .hasMessageContaining("7 : Resend failed because the user is Active. Wait for some time for the system to refresh.");
+
+        InOrder inOrder = Mockito.inOrder(idamService,auditRepository);
+        inOrder.verify(idamService, Mockito.times(1)).registerUser(any(IdamRegisterUserRequest.class));
+        Mockito.verify(userProfileRepository, Mockito.times(0)).save(any(UserProfile.class));
+        inOrder.verify(auditRepository, Mockito.times(1)).save(any(Audit.class));
+
+    }
+
+    @Test
+    public void should_not_reinvite_user_when_sidam_returns_400() {
+
+        IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.BAD_REQUEST);
+        Mockito.when(idamService.registerUser(any())).thenReturn(idamRegistrationInfo);
+        Mockito.when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+        when(validationHelperService.validateReInvitedUser(any())).thenReturn(true);
+
+
+        final Throwable raisedException = catchThrowable(() -> userProfileCreator.reInviteUser(userProfileCreationData));
+
+        assertThat(raisedException).isInstanceOf(IdamServiceException.class)
+                .hasMessageContaining("13 Required parameters or one of request field is missing or invalid");
+
+        InOrder inOrder = Mockito.inOrder(idamService,auditRepository);
+        inOrder.verify(idamService, Mockito.times(1)).registerUser(any(IdamRegisterUserRequest.class));
+        Mockito.verify(userProfileRepository, Mockito.times(0)).save(any(UserProfile.class));
+        inOrder.verify(auditRepository, Mockito.times(1)).save(any(Audit.class));
+
+    }
+
+    @Test
+    public void should_not_reinvite_user_when_validation_fails_returns_400() {
+
+        userProfile.setStatus(IdamStatus.ACTIVE);
+        Mockito.when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+        Mockito.when(validationHelperService.validateReInvitedUser(any())).thenThrow(InvalidRequest.class);
+
+        final Throwable raisedException = catchThrowable(() -> userProfileCreator.reInviteUser(userProfileCreationData));
+        assertThat(raisedException).isInstanceOf(InvalidRequest.class);
+
+        Mockito.verify(idamService, Mockito.times(0)).registerUser(any(IdamRegisterUserRequest.class));
+        Mockito.verify(userProfileRepository, Mockito.times(0)).save(any(UserProfile.class));
+
     }
 
 }

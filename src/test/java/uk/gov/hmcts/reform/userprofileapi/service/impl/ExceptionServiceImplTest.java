@@ -4,6 +4,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
+import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ExceptionType;
 import uk.gov.hmcts.reform.userprofileapi.exception.ErrorPersistingException;
 import uk.gov.hmcts.reform.userprofileapi.exception.IdamServiceException;
@@ -44,6 +46,16 @@ public class ExceptionServiceImplTest {
     @Test(expected = ErrorPersistingException.class)
     public void testErrorPersistingException() {
         sut.throwCustomRuntimeException(ExceptionType.ERRORPERSISTINGEXCEPTION, "Error while persisting user profile", HttpStatus.ACCEPTED);
+    }
+
+    @Test(expected = InvalidRequest.class)
+    public void testBadRequestException() {
+        sut.throwCustomRuntimeException(ExceptionType.BADREQUEST, "Bad request", HttpStatus.BAD_REQUEST);
+    }
+
+    @Test(expected = HttpClientErrorException.class)
+    public void testTooManyRequestException() {
+        sut.throwCustomRuntimeException(ExceptionType.TOOMANYREQUEST, "too many request", HttpStatus.ACCEPTED);
     }
 
 }

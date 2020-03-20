@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 
 import java.util.Optional;
+import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,8 +23,8 @@ import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
+@RunWith(SpringIntegrationSerenityRunner.class)
 public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
 
     UserProfileCreationData pendingUserRequest = null;
