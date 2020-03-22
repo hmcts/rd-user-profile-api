@@ -33,7 +33,7 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
     @Autowired
     private ExceptionService exceptionService;
 
-    @Value("${resendInterval:1}")
+    @Value("${resendInterval:60}")
     private String resendInterval;
 
     @Override
@@ -93,9 +93,9 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
     }
 
     @Override
-    public boolean validateUserLastUpdatedWithinSpecifiedTimeWithException(UserProfile userProfile, long expectedHours) {
+    public boolean validateUserLastUpdatedWithinSpecifiedTimeWithException(UserProfile userProfile, long expectedMins) {
         LocalDateTime latUpdated = userProfile.getLastUpdated();
-        if (Duration.between(latUpdated, LocalDateTime.now()).toHours() < expectedHours) {
+        if (Duration.between(latUpdated, LocalDateTime.now()).toMinutes() < expectedMins) {
             auditService.persistAudit(HttpStatus.TOO_MANY_REQUESTS, ResponseSource.API);
             final String exceptionMsg = String.format(TOO_MANY_REQUEST.getErrorMessage());
             exceptionService.throwCustomRuntimeException(ExceptionType.TOOMANYREQUEST, exceptionMsg);

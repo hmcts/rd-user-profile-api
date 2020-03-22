@@ -75,28 +75,28 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
     public void setUp() {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
 
-        testUserProfileRepository.deleteAll();
+        userProfileRepository.deleteAll();
         auditRepository.deleteAll();
 
-        Iterable<UserProfile> userProfiles = testUserProfileRepository.findAll();
+        Iterable<UserProfile> userProfiles = userProfileRepository.findAll();
         assertThat(userProfiles).isEmpty();
 
         //adding 2 userprofiles with PENDING and 2 with DELETED status
         UserProfile user1 = buildUserProfile();
         user1.setStatus(IdamStatus.ACTIVE);
-        user1 = testUserProfileRepository.save(user1);
+        user1 = userProfileRepository.save(user1);
 
         UserProfile user2 = buildUserProfile();
         user2.setStatus(IdamStatus.ACTIVE);
-        user2 = testUserProfileRepository.save(user2);
+        user2 = userProfileRepository.save(user2);
 
         userProfileMap = new HashMap<>();
         userProfileMap.put("user1", user1);
         userProfileMap.put("user2", user2);
 
-        UserProfile user3 = testUserProfileRepository.save(buildUserProfileWithDeletedStatus());
-        UserProfile user4 = testUserProfileRepository.save(buildUserProfileWithDeletedStatus());
-        UserProfile user5 = testUserProfileRepository.save(buildUserProfileWithSuspendedStatus());
+        UserProfile user3 = userProfileRepository.save(buildUserProfileWithDeletedStatus());
+        UserProfile user4 = userProfileRepository.save(buildUserProfileWithDeletedStatus());
+        UserProfile user5 = userProfileRepository.save(buildUserProfileWithSuspendedStatus());
         
         userProfileMap.put("user3", user3);
         userProfileMap.put("user4", user4);

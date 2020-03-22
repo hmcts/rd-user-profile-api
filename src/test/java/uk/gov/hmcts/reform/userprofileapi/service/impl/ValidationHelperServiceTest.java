@@ -237,8 +237,8 @@ public class ValidationHelperServiceTest {
     @Test
     public void test_validateUserLastUpdatedWithinSpecifiedTimeWithException_should_return_true() {
 
-        userProfile.setLastUpdated(LocalDateTime.now().minusHours(2L));
-        assertThat(sut.validateUserLastUpdatedWithinSpecifiedTimeWithException(userProfile, 1L)).isTrue();
+        userProfile.setLastUpdated(LocalDateTime.now().minusMinutes(120L));
+        assertThat(sut.validateUserLastUpdatedWithinSpecifiedTimeWithException(userProfile, 60L)).isTrue();
     }
 
     @Test
@@ -246,7 +246,7 @@ public class ValidationHelperServiceTest {
 
         userProfile.setLastUpdated(LocalDateTime.now());
         doThrow(HttpClientErrorException.class).when(exceptionServiceMock).throwCustomRuntimeException(eq(ExceptionType.TOOMANYREQUEST), any(String.class));
-        final Throwable raisedException = catchThrowable(() -> sut.validateUserLastUpdatedWithinSpecifiedTimeWithException(userProfile, 1L));
+        final Throwable raisedException = catchThrowable(() -> sut.validateUserLastUpdatedWithinSpecifiedTimeWithException(userProfile, 60L));
         assertThat(raisedException).isInstanceOf(HttpClientErrorException.class);
 
         verify(auditServiceMock, times(1)).persistAudit(any(HttpStatus.class), any(ResponseSource.class));
@@ -256,8 +256,8 @@ public class ValidationHelperServiceTest {
     @Test
     public void test_validateReInvitedUser_should_return_true() {
 
-        ReflectionTestUtils.setField(sut, "resendInterval", "1");
-        userProfile.setLastUpdated(LocalDateTime.now().minusHours(2L));
+        ReflectionTestUtils.setField(sut, "resendInterval", "60");
+        userProfile.setLastUpdated(LocalDateTime.now().minusMinutes(120L));
         Optional<UserProfile> userProfileOptional = Optional.of(userProfile);
         assertThat(sut.validateReInvitedUser(userProfileOptional)).isTrue();
     }

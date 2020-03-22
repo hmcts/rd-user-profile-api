@@ -16,7 +16,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
@@ -37,7 +36,7 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
         pendingUserRequest = buildCreateUserProfileData();
         createUser(pendingUserRequest, CREATED, UserProfileCreationResponse.class);
 
-        Optional<UserProfile> persistedUserProfile = testUserProfileRepository.findByEmail(pendingUserRequest.getEmail().toLowerCase());
+        Optional<UserProfile> persistedUserProfile = userProfileRepository.findByEmail(pendingUserRequest.getEmail().toLowerCase());
         userProfile = persistedUserProfile.get();
 
     }
@@ -47,7 +46,7 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
     public void should_return_201_when_user_reinvited() throws Exception {
 
         userProfile.setLastUpdated(userProfile.getLastUpdated().minusHours(2L));
-        testUserProfileRepository.save(userProfile);
+        userProfileRepository.save(userProfile);
 
         UserProfileCreationData data = buildCreateUserProfileData(true);
         data.setEmail(pendingUserRequest.getEmail());
@@ -72,7 +71,7 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
 
         userProfile.setLastUpdated(userProfile.getLastUpdated().minusHours(2L));
         userProfile.setStatus(IdamStatus.ACTIVE);
-        testUserProfileRepository.save(userProfile);
+        userProfileRepository.save(userProfile);
 
         UserProfileCreationData data = buildCreateUserProfileData(true);
         data.setEmail(pendingUserRequest.getEmail());
@@ -99,7 +98,7 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
     public void should_return_409_when_reinvited_user_gets_active_in_sidam_but_pending_in_up() throws Exception {
 
         userProfile.setLastUpdated(userProfile.getLastUpdated().minusHours(2L));
-        testUserProfileRepository.save(userProfile);
+        userProfileRepository.save(userProfile);
         setSidamRegistrationMockWithStatus(HttpStatus.CONFLICT.value());
 
         UserProfileCreationData data = buildCreateUserProfileData(true);

@@ -43,15 +43,15 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
     public void setUp() {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
 
-        Iterable<UserProfile> userProfiles = testUserProfileRepository.findAll();
+        Iterable<UserProfile> userProfiles = userProfileRepository.findAll();
         assertThat(userProfiles).isEmpty();
 
         UserProfile user1 = buildUserProfile();
         user1.setStatus(IdamStatus.ACTIVE);
-        user1 = testUserProfileRepository.save(user1);
+        user1 = userProfileRepository.save(user1);
 
 
-        assertTrue(testUserProfileRepository.existsById(user1.getId()));
+        assertTrue(userProfileRepository.existsById(user1.getId()));
 
         userProfileMap = new HashMap<>();
         userProfileMap.put("user", user1);
@@ -79,7 +79,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
         UserProfile user = buildUserProfile();
         user.setIdamId("1234567");
         user.setStatus(IdamStatus.ACTIVE);
-        testUserProfileRepository.save(user);
+        userProfileRepository.save(user);
 
 
         UserProfileResponse retrievedResource =
@@ -191,8 +191,8 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
     @Test
     public void should_return_404_when_nothing_in_the_db() throws Exception {
 
-        testUserProfileRepository.delete(userProfileMap.get("user"));
-        Iterable<UserProfile> userProfiles = testUserProfileRepository.findAll();
+        userProfileRepository.delete(userProfileMap.get("user"));
+        Iterable<UserProfile> userProfiles = userProfileRepository.findAll();
         assertThat(userProfiles).isEmpty();
 
         MvcResult result =
@@ -224,8 +224,8 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
     @Test
     public void should_return_404_when_query_by_email_and_nothing_in_the_db() throws Exception {
 
-        testUserProfileRepository.delete(userProfileMap.get("user"));
-        Iterable<UserProfile> userProfiles = testUserProfileRepository.findAll();
+        userProfileRepository.delete(userProfileMap.get("user"));
+        Iterable<UserProfile> userProfiles = userProfileRepository.findAll();
         assertThat(userProfiles).isEmpty();
 
         MvcResult result =

@@ -31,7 +31,6 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserType;
-import uk.gov.hmcts.reform.userprofileapi.integration.util.TestUserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
@@ -55,9 +54,6 @@ public class AuthorizationEnabledIntegrationTest {
 
     @Autowired
     protected WebApplicationContext webApplicationContext;
-
-    @Autowired
-    protected TestUserProfileRepository testUserProfileRepository;
 
     protected MockMvc mockMvc;
 
@@ -195,6 +191,6 @@ public class AuthorizationEnabledIntegrationTest {
     @After
     public void tearDown() {
         auditRepository.deleteAll();
-        testUserProfileRepository.deleteAll();
+        userProfileRepository.deleteAll();
     }
 }
