@@ -7,6 +7,7 @@ import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDat
 import io.restassured.RestAssured;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
@@ -50,6 +51,7 @@ public class AbstractFunctional {
     protected IdamClient idamClient;
 
 
+    @Before
     public void setupProxy() {
         //TO enable for local testing
         /*RestAssured.proxy("proxyout.reform.hmcts.net",8080);

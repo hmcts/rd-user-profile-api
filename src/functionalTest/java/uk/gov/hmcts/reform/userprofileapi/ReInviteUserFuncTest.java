@@ -1,9 +1,12 @@
 package uk.gov.hmcts.reform.userprofileapi;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.http.HttpStatus;
+import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
@@ -14,10 +17,12 @@ public class ReInviteUserFuncTest extends AbstractFunctional {
     @Test
     public void should_return_404_when_user_reinvited_if_user_not_exists() throws Exception {
 
-        testRequestHandler.sendPost(
+        ErrorResponse errorResponse = testRequestHandler.sendPost(
                 testRequestHandler.asJsonString(createUserProfileDataWithReInvite()),
                 HttpStatus.NOT_FOUND,
-                requestUri);
+                requestUri).as(ErrorResponse.class);
+        assertThat(errorResponse.getErrorMessage()).isEqualTo("4 : Resource not found");
+        assertThat(errorResponse.getErrorDescription()).contains("could not find user profile");
 
     }
 
@@ -32,10 +37,12 @@ public class ReInviteUserFuncTest extends AbstractFunctional {
         UserProfileCreationData data = createUserProfileDataWithReInvite();
         data.setEmail(activeUserData.getEmail());
 
-        testRequestHandler.sendPost(
+        ErrorResponse errorResponse = testRequestHandler.sendPost(
                 testRequestHandler.asJsonString(data),
                 HttpStatus.BAD_REQUEST,
-                requestUri);
+                requestUri).as(ErrorResponse.class);
+        assertThat(errorResponse.getErrorMessage()).isEqualTo("3 : There is a problem with your request. Please check and try again");
+        assertThat(errorResponse.getErrorDescription()).isEqualTo("User is not in PENDING state");
     }
 
     //AC5: resend invite to a given user who was last invited less than one hour before
@@ -43,16 +50,17 @@ public class ReInviteUserFuncTest extends AbstractFunctional {
     public void should_return_429_when_user_reinvited_within_one_hour() throws Exception {
 
         UserProfileCreationData pendingUserData = createUserProfileData();
-        UserProfileCreationResponse pendingUserResource = createActiveUserProfile(pendingUserData);
+        UserProfileCreationResponse pendingUserResource = createUserProfile(pendingUserData, HttpStatus.CREATED);
 
         UserProfileCreationData data = createUserProfileDataWithReInvite();
         data.setEmail(pendingUserData.getEmail());
 
-        testRequestHandler.sendPost(
+        ErrorResponse errorResponse = testRequestHandler.sendPost(
                 testRequestHandler.asJsonString(data),
                 HttpStatus.TOO_MANY_REQUESTS,
-                requestUri);
+                requestUri).as(ErrorResponse.class);
 
+        assertThat(errorResponse.getErrorMessage()).isEqualTo("10 : The request was last made less than 1 hour ago. Please try after some time");
     }
 
 
