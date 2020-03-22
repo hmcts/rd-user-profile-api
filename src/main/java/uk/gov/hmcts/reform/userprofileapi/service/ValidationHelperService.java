@@ -20,7 +20,7 @@ public interface ValidationHelperService {
 
     boolean validateUserPersistedWithException(HttpStatus status);
 
-    boolean validateReInvitedUser(Optional<UserProfile> userProfileOpt);
+    UserProfile validateReInvitedUser(Optional<UserProfile> userProfileOpt);
 
     boolean validateUserLastUpdatedWithinSpecifiedTimeWithException(UserProfile userProfile, long expectedHours);
 

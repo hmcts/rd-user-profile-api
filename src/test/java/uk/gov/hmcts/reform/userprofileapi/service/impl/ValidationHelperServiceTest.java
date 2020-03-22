@@ -259,6 +259,7 @@ public class ValidationHelperServiceTest {
         ReflectionTestUtils.setField(sut, "resendInterval", "60");
         userProfile.setLastUpdated(LocalDateTime.now().minusMinutes(120L));
         Optional<UserProfile> userProfileOptional = Optional.of(userProfile);
-        assertThat(sut.validateReInvitedUser(userProfileOptional)).isTrue();
+        UserProfile userProfileResponse  = sut.validateReInvitedUser(userProfileOptional);
+        assertThat(userProfileResponse).isNotNull();
     }
 }

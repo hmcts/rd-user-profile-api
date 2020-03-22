@@ -79,8 +79,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
     public UserProfile reInviteUser(UserProfileCreationData profileData) {
 
         Optional<UserProfile>  optionalExistingUserProfile = userProfileRepository.findByEmail(profileData.getEmail().toLowerCase());
-        validationHelperService.validateReInvitedUser(optionalExistingUserProfile);
-        UserProfile userProfile = optionalExistingUserProfile.orElse(null);
+        UserProfile userProfile = validationHelperService.validateReInvitedUser(optionalExistingUserProfile);
         return registerReInvitedUserInSidam(profileData, userProfile);
     }
 

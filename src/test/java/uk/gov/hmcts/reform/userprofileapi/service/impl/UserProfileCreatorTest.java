@@ -347,7 +347,7 @@ public class UserProfileCreatorTest {
         Mockito.when(idamService.registerUser(any())).thenReturn(idamRegistrationInfo);
         Mockito.when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
         Mockito.when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);
-        when(validationHelperService.validateReInvitedUser(any())).thenReturn(true);
+        when(validationHelperService.validateReInvitedUser(any())).thenReturn(userProfile);
 
         UserProfile response = userProfileCreator.reInviteUser(userProfileCreationData);
 
@@ -367,7 +367,7 @@ public class UserProfileCreatorTest {
         IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.CONFLICT);
         Mockito.when(idamService.registerUser(any())).thenReturn(idamRegistrationInfo);
         Mockito.when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
-        when(validationHelperService.validateReInvitedUser(any())).thenReturn(true);
+        when(validationHelperService.validateReInvitedUser(any())).thenReturn(userProfile);
 
 
         final Throwable raisedException = catchThrowable(() -> userProfileCreator.reInviteUser(userProfileCreationData));
@@ -388,7 +388,7 @@ public class UserProfileCreatorTest {
         IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.BAD_REQUEST);
         Mockito.when(idamService.registerUser(any())).thenReturn(idamRegistrationInfo);
         Mockito.when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
-        when(validationHelperService.validateReInvitedUser(any())).thenReturn(true);
+        when(validationHelperService.validateReInvitedUser(any())).thenReturn(userProfile);
 
 
         final Throwable raisedException = catchThrowable(() -> userProfileCreator.reInviteUser(userProfileCreationData));

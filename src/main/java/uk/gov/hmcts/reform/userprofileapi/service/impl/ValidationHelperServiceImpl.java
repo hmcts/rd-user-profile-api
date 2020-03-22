@@ -103,11 +103,11 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
         return true;
     }
 
-    public boolean validateReInvitedUser(Optional<UserProfile> userProfileOpt) {
+    public UserProfile validateReInvitedUser(Optional<UserProfile> userProfileOpt) {
         validateUserIsPresentWithException(userProfileOpt);
         UserProfile userProfile = userProfileOpt.orElse(null);
         validateUserStatusWithException(userProfile, IdamStatus.PENDING);
         validateUserLastUpdatedWithinSpecifiedTimeWithException(userProfile, Long.valueOf(resendInterval));
-        return true;
+        return userProfile;
     }
 }
