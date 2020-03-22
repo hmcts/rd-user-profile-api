@@ -62,7 +62,7 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
         UserProfileCreationData data = buildCreateUserProfileData(true);
         ErrorResponse errorResponse = (ErrorResponse) createUser(data, NOT_FOUND, ErrorResponse.class);
         assertThat(errorResponse.getErrorMessage()).isEqualTo("4 : Resource not found");
-        assertThat(errorResponse.getErrorDescription()).isEqualTo("User does not exist");
+        assertThat(errorResponse.getErrorDescription()).contains("could not find user profile");
     }
 
     // AC4: resend invite to a given user who is not in the 'Pending' state

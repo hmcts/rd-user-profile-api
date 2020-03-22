@@ -35,10 +35,8 @@ public interface UserProfileMapper {
     }
 
     static void setEmail(String email, UserProfile userProfile, boolean isExuiUpdate) {
-        if (!isExuiUpdate) {
-            if (StringUtils.isNotEmpty(email)) {
-                userProfile.setEmail(email.trim().toLowerCase());
-            }
+        if (!isExuiUpdate && StringUtils.isNotEmpty(email)) {
+            userProfile.setEmail(email.trim().toLowerCase());
         }
     }
 

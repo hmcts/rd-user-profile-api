@@ -49,7 +49,7 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
     public boolean validateUserIsPresentWithException(Optional<UserProfile> userProfile) {
         if (!userProfile.isPresent()) {
             auditService.persistAudit(HttpStatus.NOT_FOUND, ResponseSource.SYNC);
-            final String exceptionMsg = String.format("User does not exist", ExceptionType.RESOURCENOTFOUNDEXCEPTION);
+            final String exceptionMsg = String.format("%s - could not find user profile", ExceptionType.RESOURCENOTFOUNDEXCEPTION);
             exceptionService.throwCustomRuntimeException(ExceptionType.RESOURCENOTFOUNDEXCEPTION, exceptionMsg);
         }
         return true;
@@ -105,7 +105,7 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
 
     public boolean validateReInvitedUser(Optional<UserProfile> userProfileOpt) {
         validateUserIsPresentWithException(userProfileOpt);
-        UserProfile userProfile = userProfileOpt.get();
+        UserProfile userProfile = userProfileOpt.orElse(null);
         validateUserStatusWithException(userProfile, IdamStatus.PENDING);
         validateUserLastUpdatedWithinSpecifiedTimeWithException(userProfile, Long.valueOf(resendInterval));
         return true;

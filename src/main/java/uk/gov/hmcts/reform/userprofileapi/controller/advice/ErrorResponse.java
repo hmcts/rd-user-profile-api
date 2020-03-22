@@ -10,6 +10,7 @@ import lombok.Getter;
 public class ErrorResponse {
 
     public ErrorResponse() {
+        // required for parsing error response in integration/functional test cases
     }
 
     private String errorMessage;
