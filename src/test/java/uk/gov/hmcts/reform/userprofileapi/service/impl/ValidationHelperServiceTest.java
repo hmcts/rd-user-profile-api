@@ -220,6 +220,8 @@ public class ValidationHelperServiceTest {
     @Test
     public void test_validateUserStatusWithException_should_return_true() {
         assertThat(sut.validateUserStatusWithException(userProfile, IdamStatus.PENDING)).isTrue();
+        verify(auditServiceMock, times(0)).persistAudit(any(HttpStatus.class), any(ResponseSource.class));
+        verify(exceptionServiceMock, times(0)).throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
     }
 
     @Test
@@ -239,6 +241,8 @@ public class ValidationHelperServiceTest {
 
         userProfile.setLastUpdated(LocalDateTime.now().minusMinutes(120L));
         assertThat(sut.validateUserLastUpdatedWithinSpecifiedTimeWithException(userProfile, 60L)).isTrue();
+        verify(auditServiceMock, times(0)).persistAudit(any(HttpStatus.class), any(ResponseSource.class));
+        verify(exceptionServiceMock, times(0)).throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
     }
 
     @Test
@@ -254,7 +258,7 @@ public class ValidationHelperServiceTest {
     }
 
     @Test
-    public void test_validateReInvitedUser_should_return_true() {
+    public void test_validateReInvitedUser_should_return_userProfile() {
 
         ReflectionTestUtils.setField(sut, "resendInterval", "60");
         userProfile.setLastUpdated(LocalDateTime.now().minusMinutes(120L));

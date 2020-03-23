@@ -54,4 +54,15 @@ public class AuditRepositoryTest {
         assertThat(audit1.get().getStatusMessage()).isEqualTo("test");
         assertThat(audit1.get().getSource()).isEqualTo(ResponseSource.API);
     }
+
+    @Test
+    public void findAllByUserProfile() {
+        List<Audit> audits = auditRepository.findAllByUserProfile(userProfile);
+        audits.forEach(audit -> {
+            assertThat(audit.getUserProfile()).isEqualTo(userProfile);
+            assertThat(audit.getIdamRegistrationResponse()).isEqualTo(1);
+            assertThat(audit.getStatusMessage()).isEqualTo("test");
+            assertThat(audit.getSource()).isEqualTo(ResponseSource.API);
+        });
+    }
 }
