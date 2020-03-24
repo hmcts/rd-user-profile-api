@@ -8,9 +8,9 @@ public enum ExceptionType {
     REQUIREDFIELDMISSINGEXCEPTION("RequiredFieldMissingException"),
     IDAMSERVICEEXCEPTION("IdamServiceException"),
     UNDEFINDEDEXCEPTION("UndefinedException"),
-    ERRORPERSISTINGEXCEPTION("ErrorPersistingException"),
+    ERRORPERSISTINGEXCEPTION("PersistingException"),
     BADREQUEST("BadRequest"),
-    TOOMANYREQUEST("TooManyRequestException");
+    TOOMANYREQUESTS("TooManyRequestException");
 
     private String content;
 

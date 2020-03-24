@@ -14,11 +14,11 @@ public enum ErrorConstants {
 
     DATA_INTEGRITY_VIOLATION("6 : attempt to insert or update data resulted in violation of an integrity constraint"),
 
-    USER_ALREADY_ACTIVE("7 : Resend failed because the user is Active. Wait for some time for the system to refresh."),
+    USER_ALREADY_ACTIVE("7 : Resend invite failed as user is already active. Wait for one hour for the system to refresh."),
 
     UNKNOWN_EXCEPTION("8 : error was caused by an unknown exception"),
 
-    TOO_MANY_REQUEST("10 : The request was last made less than 1 hour ago. Please try after some time");
+    TOO_MANY_REQUESTS("10 : The request was last made less than 1 hour ago. Please try after some time");
 
 
 

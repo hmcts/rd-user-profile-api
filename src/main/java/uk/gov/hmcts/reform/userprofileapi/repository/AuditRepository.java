@@ -13,6 +13,7 @@ public interface AuditRepository extends JpaRepository<Audit, Long> {
     @Transactional(readOnly = true)
     Optional<Audit> findByUserProfile(UserProfile userProfile);
 
+    @Transactional(readOnly = true)
     List<Audit> findAllByUserProfile(UserProfile userProfile);
 
 }

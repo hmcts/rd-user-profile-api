@@ -12,7 +12,7 @@ public interface ValidationHelperService {
 
     boolean validateUserIdWithException(String userId);
 
-    boolean validateUserIsPresentWithException(Optional<UserProfile> userProfile);
+    void validateUserIsPresentWithException(Optional<UserProfile> userProfile);
 
     boolean validateUpdateUserProfileRequestValid(UpdateUserProfileData updateUserProfileData, String userId, ResponseSource source);
 
@@ -22,7 +22,7 @@ public interface ValidationHelperService {
 
     UserProfile validateReInvitedUser(Optional<UserProfile> userProfileOpt);
 
-    boolean validateUserLastUpdatedWithinSpecifiedTimeWithException(UserProfile userProfile, long expectedHours);
+    void validateUserLastUpdatedWithinSpecifiedTimeWithException(UserProfile userProfile, long expectedHours);
 
-    boolean validateUserStatusWithException(UserProfile userProfile, IdamStatus expectedStatus);
+    void validateUserStatusWithException(UserProfile userProfile, IdamStatus expectedStatus);
 }

@@ -3,13 +3,11 @@ package uk.gov.hmcts.reform.userprofileapi.controller.advice;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.TOO_MANY_REQUESTS;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.DATA_INTEGRITY_VIOLATION;
 import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.INVALID_REQUEST;
 import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.RESOURCE_NOT_FOUND;
-import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.TOO_MANY_REQUEST;
 import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.UNKNOWN_EXCEPTION;
 
 import java.text.SimpleDateFormat;
@@ -90,7 +88,7 @@ public class UserProfileControllerAdvice {
             HttpServletRequest request,
             HttpClientErrorException e
     ) {
-        return errorDetailsResponseEntity(e, TOO_MANY_REQUESTS, TOO_MANY_REQUEST.getErrorMessage());
+        return errorDetailsResponseEntity(e, HttpStatus.TOO_MANY_REQUESTS, ErrorConstants.TOO_MANY_REQUESTS.getErrorMessage());
     }
 
     @ExceptionHandler(IdamServiceException.class)

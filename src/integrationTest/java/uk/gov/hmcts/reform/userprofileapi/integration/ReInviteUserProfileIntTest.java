@@ -104,8 +104,8 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
         UserProfileCreationData data = buildCreateUserProfileData(true);
         data.setEmail(pendingUserRequest.getEmail());
         ErrorResponse errorResponse = (ErrorResponse) createUser(data, HttpStatus.CONFLICT, ErrorResponse.class);
-        assertThat(errorResponse.getErrorMessage()).isEqualTo("7 : Resend failed because the user is Active. Wait for some time for the system to refresh.");
-        assertThat(errorResponse.getErrorDescription()).contains("Resend failed because the user is Active. Wait for some time for the system to refresh.");
+        assertThat(errorResponse.getErrorMessage()).isEqualTo("7 : Resend invite failed as user is already active. Wait for one hour for the system to refresh.");
+        assertThat(errorResponse.getErrorDescription()).contains("Resend invite failed as user is already active. Wait for one hour for the system to refresh.");
     }
 
 }

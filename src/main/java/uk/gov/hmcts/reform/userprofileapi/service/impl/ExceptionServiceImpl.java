@@ -29,7 +29,7 @@ public class ExceptionServiceImpl implements ExceptionService {
             case RESOURCENOTFOUNDEXCEPTION : throw new ResourceNotFoundException(msg);
             case ERRORPERSISTINGEXCEPTION : throw new ErrorPersistingException(msg);
             case BADREQUEST: throw new InvalidRequest(msg);
-            case TOOMANYREQUEST: throw new HttpClientErrorException(HttpStatus.TOO_MANY_REQUESTS, msg);
+            case TOOMANYREQUESTS: throw new HttpClientErrorException(HttpStatus.TOO_MANY_REQUESTS, msg);
             default: throw new UndefinedException("Unhandled exception:" + msg);
         }
     }

@@ -55,7 +55,7 @@ public class ExceptionServiceImplTest {
 
     @Test(expected = HttpClientErrorException.class)
     public void testTooManyRequestException() {
-        sut.throwCustomRuntimeException(ExceptionType.TOOMANYREQUEST, "too many request", HttpStatus.ACCEPTED);
+        sut.throwCustomRuntimeException(ExceptionType.TOOMANYREQUESTS, "too many request", HttpStatus.ACCEPTED);
     }
 
 }

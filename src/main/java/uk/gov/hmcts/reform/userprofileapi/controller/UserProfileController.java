@@ -88,6 +88,11 @@ public class UserProfileController {
             response = String.class
         ),
         @ApiResponse(
+                code = 429,
+                message = "Too many request for re invite",
+                response = String.class
+        ),
+        @ApiResponse(
             code = 500,
             message = "Internal Server Error",
             response = String.class
