@@ -42,10 +42,16 @@ withPipeline(type, product, component) {
 
     enableDbMigration('rd')
     installCharts()
-    // **This is for demo. Uncomment below for AAT/AKS deployments**
-    //disableLegacyDeployment()
+    disableLegacyDeployment()
     enableAksStagingDeployment()
-    enableMutationTest()
+
+    after('integrationTest:preview') {
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+    }
+
+    after('integrationTest:aat') {
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+    }
 
     after('integrationTest:preview') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
