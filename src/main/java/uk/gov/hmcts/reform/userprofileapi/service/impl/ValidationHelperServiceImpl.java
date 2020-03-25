@@ -99,8 +99,7 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
 
     @Override
     public void validateUserLastUpdatedWithinSpecifiedTimeWithException(UserProfile userProfile, long expectedMins) {
-        LocalDateTime latUpdated = userProfile.getLastUpdated();
-        if (Duration.between(latUpdated, LocalDateTime.now()).toMinutes() < expectedMins) {
+        if (Duration.between(userProfile.getLastUpdated(), LocalDateTime.now()).toMinutes() < expectedMins) {
             auditService.persistAudit(HttpStatus.TOO_MANY_REQUESTS, API);
             final String exceptionMsg = String.format(TOO_MANY_REQUESTS.getErrorMessage());
             exceptionService.throwCustomRuntimeException(TOOMANYREQUESTS, exceptionMsg);
