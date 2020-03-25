@@ -209,6 +209,54 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
 
     }
 
+    @Test
+    public void should_return_400_with_invalid_first_name() throws Exception {
+        UserProfile persistedUserProfile = userProfileMap.get("user");
+        String idamId = persistedUserProfile.getIdamId();
+
+        UpdateUserProfileData data = buildUpdateUserProfileData();
+        data.setFirstName("&this!is>invalid<");
+
+        userProfileRequestHandlerTest.sendPut(
+                mockMvc,
+                APP_BASE_PATH + SLASH + idamId,
+                data,
+                BAD_REQUEST);
+
+        UpdateUserProfileData data1 = buildUpdateUserProfileData();
+        data1.setFirstName("%3cscript%3ealert(%22WXSS%22)%3c%2fscript%3e");
+
+        userProfileRequestHandlerTest.sendPut(
+                mockMvc,
+                APP_BASE_PATH + SLASH + idamId,
+                data1,
+                BAD_REQUEST);
+    }
+
+    @Test
+    public void should_return_400_with_invalid_last_name() throws Exception {
+        UserProfile persistedUserProfile = userProfileMap.get("user");
+        String idamId = persistedUserProfile.getIdamId();
+
+        UpdateUserProfileData data = buildUpdateUserProfileData();
+        data.setLastName("&this!is>invalid<");
+
+        userProfileRequestHandlerTest.sendPut(
+                mockMvc,
+                APP_BASE_PATH + SLASH + idamId,
+                data,
+                BAD_REQUEST);
+
+        UpdateUserProfileData data1 = buildUpdateUserProfileData();
+        data1.setLastName("%3cscript%3ealert(%22WXSS%22)%3c%2fscript%3e");
+
+        userProfileRequestHandlerTest.sendPut(
+                mockMvc,
+                APP_BASE_PATH + SLASH + idamId,
+                data1,
+                BAD_REQUEST);
+    }
+
     //@Test
     public void should_return_200_and_update_user_profile_resource_with_valid_email() throws Exception {
 
