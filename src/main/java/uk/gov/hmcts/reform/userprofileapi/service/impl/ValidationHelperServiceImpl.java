@@ -40,11 +40,11 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
     @Autowired
     private ExceptionService exceptionService;
 
-    @Value("${resendInterval:60}")
+    @Value("${resendInterval}")
     private String resendInterval;
 
     @Override
-    public boolean validateUserIdWithException(String userId) {
+    public boolean validateUserId(String userId) {
         if (!isUserIdValid(userId, false)) {
             auditService.persistAudit(NOT_FOUND, SYNC);
             final String exceptionMsg = String.format("%s - userId provided is malformed: %s", RESOURCENOTFOUNDEXCEPTION, userId);
@@ -53,7 +53,7 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
         return true;
     }
 
-    public void validateUserIsPresentWithException(Optional<UserProfile> userProfile) {
+    public void validateUserIsPresent(Optional<UserProfile> userProfile) {
         if (!userProfile.isPresent()) {
             auditService.persistAudit(NOT_FOUND, SYNC);
             final String exceptionMsg = String.format("%s - could not find user profile", RESOURCENOTFOUNDEXCEPTION);
@@ -81,7 +81,7 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
     }
 
     @Override
-    public boolean validateUserPersistedWithException(HttpStatus status) {
+    public boolean validateUserPersisted(HttpStatus status) {
         if (!status.is2xxSuccessful()) {
             exceptionService.throwCustomRuntimeException(ERRORPERSISTINGEXCEPTION, "Error while persisting user profile");
         }
@@ -89,7 +89,7 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
     }
 
     @Override
-    public void validateUserStatusWithException(UserProfile userProfile, IdamStatus expectedStatus) {
+    public void validateUserStatus(UserProfile userProfile, IdamStatus expectedStatus) {
         if (expectedStatus != userProfile.getStatus()) {
             auditService.persistAudit(BAD_REQUEST, API);
             final String exceptionMsg = String.format("User is not in %s state", expectedStatus);
@@ -98,20 +98,20 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
     }
 
     @Override
-    public void validateUserLastUpdatedWithinSpecifiedTimeWithException(UserProfile userProfile, long expectedMins) {
+    public void validateUserLastUpdatedWithinSpecifiedTime(UserProfile userProfile, long expectedMins) {
         if (Duration.between(userProfile.getLastUpdated(), LocalDateTime.now()).toMinutes() < expectedMins) {
             auditService.persistAudit(HttpStatus.TOO_MANY_REQUESTS, API);
-            final String exceptionMsg = String.format(TOO_MANY_REQUESTS.getErrorMessage());
+            final String exceptionMsg = String.format(TOO_MANY_REQUESTS.getErrorMessage(), resendInterval);
             exceptionService.throwCustomRuntimeException(TOOMANYREQUESTS, exceptionMsg);
         }
     }
 
     @Override
     public UserProfile validateReInvitedUser(Optional<UserProfile> userProfileOpt) {
-        validateUserIsPresentWithException(userProfileOpt);
+        validateUserIsPresent(userProfileOpt);
         UserProfile userProfile = userProfileOpt.orElse(null);
-        validateUserStatusWithException(userProfile, IdamStatus.PENDING);
-        validateUserLastUpdatedWithinSpecifiedTimeWithException(userProfile, Long.valueOf(resendInterval.trim()));
+        validateUserStatus(userProfile, IdamStatus.PENDING);
+        validateUserLastUpdatedWithinSpecifiedTime(userProfile, Long.valueOf(resendInterval));
         return userProfile;
     }
 }

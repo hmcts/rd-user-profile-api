@@ -60,9 +60,6 @@ public class ReInviteUserFuncTest extends AbstractFunctional {
                 HttpStatus.TOO_MANY_REQUESTS,
                 requestUri).as(ErrorResponse.class);
 
-        assertThat(errorResponse.getErrorMessage()).isEqualTo("10 : The request was last made less than 1 hour ago. Please try after some time");
+        assertThat(errorResponse.getErrorMessage()).isEqualTo(String.format(String.format("10 : The request was last made less than %s minutes ago. Please try after some time" ,resendInterval)));
     }
-
-
-
 }

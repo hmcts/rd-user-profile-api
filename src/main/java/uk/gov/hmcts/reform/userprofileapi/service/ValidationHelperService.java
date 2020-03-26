@@ -10,19 +10,19 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 
 public interface ValidationHelperService {
 
-    boolean validateUserIdWithException(String userId);
+    boolean validateUserId(String userId);
 
-    void validateUserIsPresentWithException(Optional<UserProfile> userProfile);
+    void validateUserIsPresent(Optional<UserProfile> userProfile);
 
     boolean validateUpdateUserProfileRequestValid(UpdateUserProfileData updateUserProfileData, String userId, ResponseSource source);
 
     boolean validateUserStatusBeforeUpdate(UpdateUserProfileData updateUserProfileData, UserProfile userProfile, ResponseSource source);
 
-    boolean validateUserPersistedWithException(HttpStatus status);
+    boolean validateUserPersisted(HttpStatus status);
 
     UserProfile validateReInvitedUser(Optional<UserProfile> userProfileOpt);
 
-    void validateUserLastUpdatedWithinSpecifiedTimeWithException(UserProfile userProfile, long expectedHours);
+    void validateUserLastUpdatedWithinSpecifiedTime(UserProfile userProfile, long expectedHours);
 
-    void validateUserStatusWithException(UserProfile userProfile, IdamStatus expectedStatus);
+    void validateUserStatus(UserProfile userProfile, IdamStatus expectedStatus);
 }

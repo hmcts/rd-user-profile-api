@@ -28,13 +28,13 @@ public class ValidationServiceImpl implements ValidationService {
     @Override
     public UserProfile validateUpdate(UpdateUserProfileData updateUserProfileData, String userId, ResponseSource source) {
         // validate input
-        validationHelperService.validateUserIdWithException(userId);
+        validationHelperService.validateUserId(userId);
 
         // retrieve user by id
         Optional<UserProfile> result = userProfileRepository.findByIdamId(userId);
 
         // validate with exception that user is well-formed
-        validationHelperService.validateUserIsPresentWithException(result);
+        validationHelperService.validateUserIsPresent(result);
 
         validationHelperService.validateUpdateUserProfileRequestValid(updateUserProfileData, userId, source);
 

@@ -18,7 +18,7 @@ public enum ErrorConstants {
 
     UNKNOWN_EXCEPTION("8 : error was caused by an unknown exception"),
 
-    TOO_MANY_REQUESTS("10 : The request was last made less than 1 hour ago. Please try after some time");
+    TOO_MANY_REQUESTS("10 : The request was last made less than %s minutes ago. Please try after some time");
 
 
 

@@ -14,6 +14,7 @@ import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
@@ -28,6 +29,8 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
 
     UserProfileCreationData pendingUserRequest = null;
     UserProfile userProfile = null;
+    @Value("${resendInterval}")
+    private String resendInterval;
 
     @Before
     public void setUp() throws Exception {
@@ -88,8 +91,8 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
         UserProfileCreationData data = buildCreateUserProfileData(true);
         data.setEmail(pendingUserRequest.getEmail());
         ErrorResponse errorResponse = (ErrorResponse) createUser(data, TOO_MANY_REQUESTS, ErrorResponse.class);
-        assertThat(errorResponse.getErrorMessage()).isEqualTo("10 : The request was last made less than 1 hour ago. Please try after some time");
-        assertThat(errorResponse.getErrorDescription()).contains("The request was last made less than 1 hour ago. Please try after some time");
+        assertThat(errorResponse.getErrorMessage()).isEqualTo(String.format("10 : The request was last made less than %s minutes ago. Please try after some time" ,resendInterval));
+        assertThat(errorResponse.getErrorDescription()).contains(String.format("The request was last made less than %s minutes ago. Please try after some time" ,resendInterval));
 
     }
 

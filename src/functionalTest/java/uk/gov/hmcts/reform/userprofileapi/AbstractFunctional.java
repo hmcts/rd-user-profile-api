@@ -48,6 +48,8 @@ public class AbstractFunctional {
     protected String puiFinanceManager;
     @Value("${exui.role.pui-case-manager}")
     protected String puiCaseManager;
+    @Value("${resendInterval}")
+    protected String resendInterval;
     protected IdamClient idamClient;
 
 

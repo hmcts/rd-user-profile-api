@@ -64,7 +64,7 @@ public class ValidationHelperServiceTest {
 
     @Test
     public void testValidateUserIdHappyPath() {
-        boolean actual = sut.validateUserIdWithException("f56e5539-a8f7-4ae6-b378-cc1015b72dcc");
+        boolean actual = sut.validateUserId("f56e5539-a8f7-4ae6-b378-cc1015b72dcc");
 
         assertThat(actual).isTrue();
     }
@@ -73,35 +73,35 @@ public class ValidationHelperServiceTest {
     public void testValidateUserIdException() {
         doThrow(ResourceNotFoundException.class).when(exceptionServiceMock).throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
 
-        sut.validateUserIdWithException("");
+        sut.validateUserId("");
     }
 
     @Test
     public void testValidateUserIdPersistAuditOnException() {
         doNothing().when(exceptionServiceMock).throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
 
-        sut.validateUserIdWithException("");
+        sut.validateUserId("");
 
         verify(auditServiceMock, times(1)).persistAudit(eq(HttpStatus.NOT_FOUND), eq(SYNC));
     }
 
     @Test(expected = Test.None.class)
     public void testValidateUserIsPresentWithExceptionHappyPath() {
-        sut.validateUserIsPresentWithException(Optional.of(userProfile));
+        sut.validateUserIsPresent(Optional.of(userProfile));
     }
 
     @Test(expected = ResourceNotFoundException.class)
     public void testValidateUserIsPresentWithException() {
         doThrow(ResourceNotFoundException.class).when(exceptionServiceMock).throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
 
-        sut.validateUserIsPresentWithException(Optional.empty());
+        sut.validateUserIsPresent(Optional.empty());
     }
 
     @Test
     public void testValidateUserIsPresentWithExceptionPersistAuditOnException() {
         doNothing().when(exceptionServiceMock).throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
 
-        sut.validateUserIsPresentWithException(Optional.empty());
+        sut.validateUserIsPresent(Optional.empty());
 
         verify(auditServiceMock, times(1)).persistAudit(eq(HttpStatus.NOT_FOUND), eq(SYNC));
     }
@@ -178,22 +178,22 @@ public class ValidationHelperServiceTest {
 
     @Test(expected = Test.None.class)
     public void testvalidateUserPersistedWithException_scenario1() {
-        assertThat(sut.validateUserPersistedWithException(HttpStatus.OK)).isTrue();
+        assertThat(sut.validateUserPersisted(HttpStatus.OK)).isTrue();
     }
 
     @Test(expected = Test.None.class)
     public void testvalidateUserPersistedWithException_scenario2() {
-        assertThat(sut.validateUserPersistedWithException(HttpStatus.BAD_REQUEST)).isTrue();
+        assertThat(sut.validateUserPersisted(HttpStatus.BAD_REQUEST)).isTrue();
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testvalidateUserPersistedWithException_withInvalidHttpStatus() {
-        assertThat(sut.validateUserPersistedWithException(HttpStatus.valueOf("test"))).isTrue();
+        assertThat(sut.validateUserPersisted(HttpStatus.valueOf("test"))).isTrue();
     }
 
     @Test
     public void testvalidateUserPersistedWithException_withInvalidHttpStatusCode() {
-        assertThat(sut.validateUserPersistedWithException(HttpStatus.I_AM_A_TEAPOT)).isTrue();
+        assertThat(sut.validateUserPersisted(HttpStatus.I_AM_A_TEAPOT)).isTrue();
     }
 
 
@@ -220,7 +220,7 @@ public class ValidationHelperServiceTest {
 
     @Test(expected = Test.None.class)
     public void test_validateUserStatusWithException_should_return_true() {
-        sut.validateUserStatusWithException(userProfile, IdamStatus.PENDING);
+        sut.validateUserStatus(userProfile, IdamStatus.PENDING);
         verify(auditServiceMock, times(0)).persistAudit(any(HttpStatus.class), any(ResponseSource.class));
         verify(exceptionServiceMock, times(0)).throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
     }
@@ -230,7 +230,7 @@ public class ValidationHelperServiceTest {
 
         userProfile.setStatus(IdamStatus.ACTIVE);
         doThrow(InvalidRequest.class).when(exceptionServiceMock).throwCustomRuntimeException(eq(ExceptionType.BADREQUEST), any(String.class));
-        final Throwable raisedException = catchThrowable(() -> sut.validateUserStatusWithException(userProfile, IdamStatus.PENDING));
+        final Throwable raisedException = catchThrowable(() -> sut.validateUserStatus(userProfile, IdamStatus.PENDING));
         assertThat(raisedException).isInstanceOf(InvalidRequest.class);
 
         verify(auditServiceMock, times(1)).persistAudit(any(HttpStatus.class), any(ResponseSource.class));
@@ -241,7 +241,7 @@ public class ValidationHelperServiceTest {
     public void test_validateUserLastUpdatedWithinSpecifiedTimeWithException_should_return_true() {
 
         userProfile.setLastUpdated(LocalDateTime.now().minusMinutes(120L));
-        sut.validateUserLastUpdatedWithinSpecifiedTimeWithException(userProfile, 60L);
+        sut.validateUserLastUpdatedWithinSpecifiedTime(userProfile, 60L);
         verify(auditServiceMock, times(0)).persistAudit(any(HttpStatus.class), any(ResponseSource.class));
         verify(exceptionServiceMock, times(0)).throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
     }
@@ -251,7 +251,7 @@ public class ValidationHelperServiceTest {
 
         userProfile.setLastUpdated(LocalDateTime.now());
         doThrow(HttpClientErrorException.class).when(exceptionServiceMock).throwCustomRuntimeException(eq(TOOMANYREQUESTS), any(String.class));
-        final Throwable raisedException = catchThrowable(() -> sut.validateUserLastUpdatedWithinSpecifiedTimeWithException(userProfile, 60L));
+        final Throwable raisedException = catchThrowable(() -> sut.validateUserLastUpdatedWithinSpecifiedTime(userProfile, 60L));
         assertThat(raisedException).isInstanceOf(HttpClientErrorException.class);
 
         verify(auditServiceMock, times(1)).persistAudit(any(HttpStatus.class), any(ResponseSource.class));
