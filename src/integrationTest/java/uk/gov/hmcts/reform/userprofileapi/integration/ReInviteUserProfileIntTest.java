@@ -91,8 +91,8 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
         UserProfileCreationData data = buildCreateUserProfileData(true);
         data.setEmail(pendingUserRequest.getEmail());
         ErrorResponse errorResponse = (ErrorResponse) createUser(data, TOO_MANY_REQUESTS, ErrorResponse.class);
-        assertThat(errorResponse.getErrorMessage()).isEqualTo(String.format("10 : The request was last made less than %s minutes ago. Please try after some time" ,resendInterval));
-        assertThat(errorResponse.getErrorDescription()).contains(String.format("The request was last made less than %s minutes ago. Please try after some time" ,resendInterval));
+        assertThat(errorResponse.getErrorMessage()).isEqualTo(String.format("10 : The request was last made less than %s minutes ago. Please try after some time", resendInterval));
+        assertThat(errorResponse.getErrorDescription()).contains(String.format("The request was last made less than %s minutes ago. Please try after some time", resendInterval));
 
     }
 
