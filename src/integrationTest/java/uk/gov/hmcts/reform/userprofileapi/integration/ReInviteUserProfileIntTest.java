@@ -32,6 +32,9 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
     @Value("${resendInterval}")
     private String resendInterval;
 
+    @Value("${syncInterval}")
+    String syncInterval;
+
     @Before
     public void setUp() throws Exception {
 
@@ -107,8 +110,8 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
         UserProfileCreationData data = buildCreateUserProfileData(true);
         data.setEmail(pendingUserRequest.getEmail());
         ErrorResponse errorResponse = (ErrorResponse) createUser(data, HttpStatus.CONFLICT, ErrorResponse.class);
-        assertThat(errorResponse.getErrorMessage()).isEqualTo("7 : Resend invite failed as user is already active. Wait for one hour for the system to refresh.");
-        assertThat(errorResponse.getErrorDescription()).contains("Resend invite failed as user is already active. Wait for one hour for the system to refresh.");
+        assertThat(errorResponse.getErrorMessage()).isEqualTo(String.format("7 : Resend invite failed as user is already active. Wait for %s minutes for the system to refresh.", syncInterval));
+        assertThat(errorResponse.getErrorDescription()).contains(String.format("Resend invite failed as user is already active. Wait for %s minutes for the system to refresh.", syncInterval));
     }
 
 }

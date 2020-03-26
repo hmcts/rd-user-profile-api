@@ -50,6 +50,8 @@ public class AbstractFunctional {
     protected String puiCaseManager;
     @Value("${resendInterval}")
     protected String resendInterval;
+    @Value("${syncInterval}")
+    String syncInterval;
     protected IdamClient idamClient;
 
 

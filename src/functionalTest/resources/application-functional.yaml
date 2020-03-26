@@ -24,3 +24,6 @@ exui.role.pui-case-manager: pui-case-manager
 
 # resent user invite interval in minutes
 resendInterval: 60
+
+# sync time interval in minutes
+syncInterval: 60

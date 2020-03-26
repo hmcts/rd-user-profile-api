@@ -51,6 +51,9 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
     private AuditRepository auditRepository;
     @Autowired
     private ValidationHelperService validationHelperService;
+    @Value("${syncInterval}")
+    String syncInterval;
+
 
     public UserProfile create(UserProfileCreationData profileData) {
 
@@ -92,7 +95,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
             saveUserProfile(userProfile);
             persistAudit(idamRegistrationInfo.getStatusMessage(), idamRegistrationInfo.getIdamRegistrationResponse(), userProfile);
         } else {
-            String errorMessage = idamRegistrationInfo.isDuplicateUser() ? USER_ALREADY_ACTIVE.getErrorMessage() : idamRegistrationInfo.getStatusMessage();
+            String errorMessage = idamRegistrationInfo.isDuplicateUser() ? String.format(USER_ALREADY_ACTIVE.getErrorMessage(), syncInterval) : idamRegistrationInfo.getStatusMessage();
             persistAuditAndThrowIdamException(errorMessage, idamRegistrationInfo.getIdamRegistrationResponse(), null);
         }
         return userProfile;

@@ -367,6 +367,7 @@ public class UserProfileCreatorTest {
     @Test
     public void should_not_reinvite_user_when_sidam_returns_409() {
 
+        ReflectionTestUtils.setField(userProfileCreator, "syncInterval", "60");
         IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.CONFLICT);
         when(idamService.registerUser(any())).thenReturn(idamRegistrationInfo);
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
@@ -376,7 +377,7 @@ public class UserProfileCreatorTest {
         final Throwable raisedException = catchThrowable(() -> userProfileCreator.reInviteUser(userProfileCreationData));
 
         assertThat(raisedException).isInstanceOf(IdamServiceException.class)
-                .hasMessageContaining("7 : Resend invite failed as user is already active. Wait for one hour for the system to refresh.");
+                .hasMessageContaining("7 : Resend invite failed as user is already active. Wait for 60 minutes for the system to refresh.");
 
         InOrder inOrder = inOrder(idamService,auditRepository);
         inOrder.verify(idamService, times(1)).registerUser(any(IdamRegisterUserRequest.class));

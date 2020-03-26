@@ -86,3 +86,6 @@ idam.s2s-auth.url: ${S2S_URL:http://rpe-service-auth-provider-aat.service.core-c
 
 # resent user invite interval in minutes
 resendInterval: 60
+
+# sync time interval in minutes
+syncInterval: 60
