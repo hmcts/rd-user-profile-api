@@ -81,7 +81,7 @@ public class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabl
         assertThat(result.getResponse()).isNotNull();
         assertThat(result.getResponse().getContentAsString()).isNotEmpty();
 
-        Optional<Audit> optional = auditRepository.findByUserProfile(userProfile);
+        Optional<Audit> optional = testAuditRepository.findByUserProfile(userProfile);
         Audit audit = optional.get();
 
         assertThat(audit).isNotNull();
@@ -103,7 +103,7 @@ public class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabl
                         NOT_FOUND
                 );
 
-        Optional<Audit> optional = auditRepository.findByUserProfile(userProfile);
+        Optional<Audit> optional = testAuditRepository.findByUserProfile(userProfile);
         Audit audit = optional.get();
 
         assertThat(audit).isNotNull();

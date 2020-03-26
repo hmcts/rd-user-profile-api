@@ -31,7 +31,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserType;
-import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
+import uk.gov.hmcts.reform.userprofileapi.integration.util.TestAuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
@@ -47,7 +47,7 @@ public class AuthorizationEnabledIntegrationTest {
     protected UserProfileRepository userProfileRepository;
 
     @Autowired
-    protected AuditRepository auditRepository;
+    protected TestAuditRepository testAuditRepository;
 
     @Autowired
     protected UserProfileRequestHandlerTest userProfileRequestHandlerTest;
@@ -176,7 +176,7 @@ public class AuthorizationEnabledIntegrationTest {
         assertThat(userProfile.getCreated()).isNotNull();
         assertThat(userProfile.getLastUpdated()).isNotNull();
 
-        auditRepository.findAllByUserProfile(userProfile).forEach(audit -> verifyAudit(audit, createdResource));
+        testAuditRepository.findAllByUserProfile(userProfile).forEach(audit -> verifyAudit(audit, createdResource));
     }
 
     public void verifyAudit(Audit audit, UserProfileCreationResponse createdResource) {
@@ -190,7 +190,7 @@ public class AuthorizationEnabledIntegrationTest {
 
     @After
     public void tearDown() {
-        auditRepository.deleteAll();
+        testAuditRepository.deleteAll();
         userProfileRepository.deleteAll();
     }
 }

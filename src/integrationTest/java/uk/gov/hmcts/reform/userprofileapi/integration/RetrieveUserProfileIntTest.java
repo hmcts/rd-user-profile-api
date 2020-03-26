@@ -114,7 +114,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
         Optional<UserProfile> optionalUserProfile = userProfileRepository.findByIdamId(retrievedResource.getIdamId());
         UserProfile persistedUserProfile = optionalUserProfile.get();
 
-        Optional<Audit> optional = auditRepository.findByUserProfile(persistedUserProfile);
+        Optional<Audit> optional = testAuditRepository.findByUserProfile(persistedUserProfile);
         Audit audit = optional.get();
 
         assertThat(audit).isNotNull();
@@ -145,7 +145,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
         Optional<UserProfile> optionalUserProfile = userProfileRepository.findByIdamId(retrievedResource.getIdamId());
         UserProfile persistedUserProfile = optionalUserProfile.get();
 
-        Optional<Audit> optional = auditRepository.findByUserProfile(persistedUserProfile);
+        Optional<Audit> optional = testAuditRepository.findByUserProfile(persistedUserProfile);
         Audit audit = optional.get();
 
         assertThat(audit).isNotNull();
