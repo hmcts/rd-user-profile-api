@@ -33,6 +33,10 @@ public class UserProfileService<T extends RequestData> {
         return new UserProfileCreationResponse(resourceCreator.create(requestData));
     }
 
+    public UserProfileCreationResponse reInviteUser(T requestData) {
+        return new UserProfileCreationResponse(resourceCreator.reInviteUser(requestData));
+    }
+
     public UserProfileWithRolesResponse retrieveWithRoles(T requestData) {
         return new UserProfileWithRolesResponse(resourceRetriever.retrieve(requestData, true), true);
     }
