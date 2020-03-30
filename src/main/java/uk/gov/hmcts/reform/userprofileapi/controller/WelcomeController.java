@@ -38,7 +38,7 @@ public class WelcomeController {
     @ApiResponses({
         @ApiResponse(
             code = 200,
-            message = "Welcome message",
+            message = "Welcome Message",
             response = String.class
         )
     })

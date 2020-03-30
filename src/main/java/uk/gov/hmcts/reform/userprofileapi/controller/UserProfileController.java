@@ -11,7 +11,9 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
+
 import javax.validation.Valid;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -46,11 +48,11 @@ import uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator;
 
 
 @Api(
-    value = "/v1/userprofile"
+        value = "/v1/userprofile"
 )
 
 @RequestMapping(
-    path = "/v1/userprofile"
+        path = "/v1/userprofile"
 )
 
 @Slf4j
@@ -68,36 +70,36 @@ public class UserProfileController {
 
 
     @ApiOperation(value = "Create a User Profile",
-                  authorizations = {
+            authorizations = {
                     @Authorization(value = "ServiceAuthorization"),
-                    @Authorization(value = "Authorization") 
-                  })
+                    @Authorization(value = "Authorization")
+            })
     @ApiResponses({
-        @ApiResponse(
-            code = 201,
-            message = "Create a User Profile using request body",
-            response = UserProfileCreationResponse.class
-        ),
-        @ApiResponse(
-            code = 400,
-            message = "Bad Request",
-            response = String.class
-        ),
-        @ApiResponse(
-            code = 409,
-            message = "User already exists",
-            response = String.class
-        ),
-        @ApiResponse(
-            code = 500,
-            message = "Internal Server Error",
-            response = String.class
-        )
+            @ApiResponse(
+                    code = 201,
+                    message = "User Profile created successfully",
+                    response = UserProfileCreationResponse.class
+            ),
+            @ApiResponse(
+                    code = 400,
+                    message = "An invalid request has been provided",
+                    response = String.class
+            ),
+            @ApiResponse(
+                    code = 409,
+                    message = "A User already exists with the given information",
+                    response = String.class
+            ),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error",
+                    response = String.class
+            )
     })
 
     @PostMapping(
-        consumes = APPLICATION_JSON_VALUE,
-        produces = APPLICATION_JSON_VALUE
+            consumes = APPLICATION_JSON_VALUE,
+            produces = APPLICATION_JSON_VALUE
     )
     @ResponseBody
     public ResponseEntity<UserProfileCreationResponse> createUserProfile(@Valid @RequestBody UserProfileCreationData userProfileCreationData) {
@@ -110,37 +112,37 @@ public class UserProfileController {
 
     }
 
-    @ApiOperation(value = "Retrieves user profile with roles by id",
-                  authorizations = {
+    @ApiOperation(value = "Retrieves a User Profile and their Roles with the given ID",
+            authorizations = {
                     @Authorization(value = "ServiceAuthorization"),
                     @Authorization(value = "Authorization")
-                  }
+            }
     )
     @ApiResponses({
-        @ApiResponse(
-            code = 200,
-            message = "Representation of a user profile data",
-            response = String.class
-        ),
-        @ApiResponse(
-            code = 400,
-            message = "Bad Request",
-            response = String.class
-        ),
-        @ApiResponse(
-            code = 404,
-            message = "Not Found",
-            response = String.class
-        ),
-        @ApiResponse(
-            code = 500,
-            message = "Internal Server Error",
-            response = String.class
-        )
+            @ApiResponse(
+                    code = 200,
+                    message = "Representation of a User profile with their Roles",
+                    response = String.class
+            ),
+            @ApiResponse(
+                    code = 400,
+                    message = "An invalid request has been provided",
+                    response = String.class
+            ),
+            @ApiResponse(
+                    code = 404,
+                    message = "Not User Profile found with the given ID",
+                    response = String.class
+            ),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error",
+                    response = String.class
+            )
     })
     @GetMapping(
-        path = "/{id}/roles",
-        produces = APPLICATION_JSON_VALUE
+            path = "/{id}/roles",
+            produces = APPLICATION_JSON_VALUE
     )
     @ResponseBody
     public ResponseEntity<UserProfileWithRolesResponse> getUserProfileWithRolesById(@PathVariable String id) {
@@ -150,34 +152,34 @@ public class UserProfileController {
         return ResponseEntity.ok(response);
     }
 
-    @ApiOperation(value = "Retrieves user profile with roles by email",
-                  authorizations = {
+    @ApiOperation(value = "Retrieves a User Profile and their Roles with the given Email Address",
+            authorizations = {
                     @Authorization(value = "ServiceAuthorization"),
                     @Authorization(value = "Authorization")
-                  }
+            }
     )
     @ApiParam(name = "email", required = true)
     @ApiResponses({
-        @ApiResponse(
-            code = 200,
-            message = "Representation of a user profile data",
-            response = String.class
-        ),
-        @ApiResponse(
-            code = 400,
-            message = "Bad Request",
-            response = String.class
-        ),
-        @ApiResponse(
-            code = 404,
-            message = "Not Found",
-            response = String.class
-        ),
-        @ApiResponse(
-            code = 500,
-            message = "Internal Server Error",
-            response = String.class
-        )
+            @ApiResponse(
+                    code = 200,
+                    message = "Representation of a User profile with their Roles",
+                    response = String.class
+            ),
+            @ApiResponse(
+                    code = 400,
+                    message = "An invalid request has been provided",
+                    response = String.class
+            ),
+            @ApiResponse(
+                    code = 404,
+                    message = "No User Profile found with the given Email Address",
+                    response = String.class
+            ),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error",
+                    response = String.class
+            )
     })
     @GetMapping(
             path = "/roles",
@@ -193,24 +195,26 @@ public class UserProfileController {
         return ResponseEntity.ok(response);
     }
 
-    @ApiOperation(value = "Retrieves user profile queried by email or userId. If both provided email is preferred", 
-                  authorizations = {
+    @ApiOperation(value = "Retrieves a User Profile by Email or ID. If both are present then Email is used to retrieve.",
+            authorizations = {
                     @Authorization(value = "ServiceAuthorization"),
                     @Authorization(value = "Authorization")
-                  })
+            })
     @ApiResponses({
             @ApiResponse(
                     code = 200,
-                    message = "Representation of a user profile data",
+                    message = "Representation of a User profile",
                     response = UserProfileResponse.class
             ),
             @ApiResponse(
                     code = 400,
-                    message = "Bad Request"
+                    message = "An invalid request has been provided",
+                    response = String.class
             ),
             @ApiResponse(
                     code = 404,
-                    message = "Not Found"
+                    message = "No User Profile found with the given ID",
+                    response = String.class
             ),
             @ApiResponse(
                     code = 500,
@@ -222,8 +226,8 @@ public class UserProfileController {
             produces = APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    public ResponseEntity<UserProfileResponse> getUserProfileByEmail(@ApiParam(name = "email", required = false) @RequestParam (value = "email", required = false) String email,
-                                                                     @ApiParam(name = "userId", required = false) @RequestParam (value = "userId", required = false) String userId) {
+    public ResponseEntity<UserProfileResponse> getUserProfileByEmail(@ApiParam(name = "email", required = false) @RequestParam(value = "email", required = false) String email,
+                                                                     @ApiParam(name = "userId", required = false) @RequestParam(value = "userId", required = false) String userId) {
         UserProfileResponse response;
         if (email == null && userId == null) {
             return ResponseEntity.badRequest().build();
@@ -237,26 +241,26 @@ public class UserProfileController {
                     );
         } else {
             isUserIdValid(userId, true);
-            response =  userProfileService.retrieve(
+            response = userProfileService.retrieve(
                     new UserProfileIdentifier(IdentifierName.UUID, userId.trim()));
         }
         return ResponseEntity.ok().body(response);
     }
 
-    @ApiOperation(value = "Update user profile", 
-                  authorizations = {
+    @ApiOperation(value = "Update a User Profile",
+            authorizations = {
                     @Authorization(value = "ServiceAuthorization"),
                     @Authorization(value = "Authorization")
-                  })
+            })
     @ApiResponses({
             @ApiResponse(
                     code = 200,
-                    message = "Update User Profile using request body",
+                    message = "User Profile has been Updated successfully",
                     response = UserProfileCreationResponse.class
             ),
             @ApiResponse(
                     code = 400,
-                    message = "Bad Request",
+                    message = "An invalid request has been provided",
                     response = String.class
             ),
             @ApiResponse(
@@ -274,11 +278,11 @@ public class UserProfileController {
 
     @ResponseBody
     public ResponseEntity updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData,
-                                                                 @PathVariable String userId,
-                                                                 @ApiParam(name = "origin", required = false) @RequestParam (value = "origin", required = false) String origin) {
+                                            @PathVariable String userId,
+                                            @ApiParam(name = "origin", required = false) @RequestParam(value = "origin", required = false) String origin) {
         UserProfileRolesResponse userProfileResponse = null;
         if (CollectionUtils.isEmpty(updateUserProfileData.getRolesAdd())
-             && CollectionUtils.isEmpty(updateUserProfileData.getRolesDelete())) {
+                && CollectionUtils.isEmpty(updateUserProfileData.getRolesDelete())) {
             //Updating user profile details
             AttributeResponse attributeResponse = userProfileService.update(updateUserProfileData, userId, origin);
             userProfileResponse = new UserProfileRolesResponse();
@@ -294,7 +298,7 @@ public class UserProfileController {
 
     }
 
-    @ApiOperation(value = "Retrieving multiple user profiles",
+    @ApiOperation(value = "Retrieve multiple User Profiles",
             authorizations = {
                     @Authorization(value = "ServiceAuthorization"),
                     @Authorization(value = "Authorization")
@@ -307,17 +311,17 @@ public class UserProfileController {
     @ApiResponses({
             @ApiResponse(
                     code = 200,
-                    message = "Retrieving multiple user profiles",
+                    message = "Successfully retrieved multiple User Profiles",
                     response = UserProfileDataResponse.class
             ),
             @ApiResponse(
                     code = 400,
-                    message = "Bad Request",
+                    message = "An invalid request has been provided",
                     response = String.class
             ),
             @ApiResponse(
                     code = 404,
-                    message = "Resource not found",
+                    message = "No User Profile found with the given ID",
                     response = String.class
             ),
             @ApiResponse(
@@ -333,8 +337,8 @@ public class UserProfileController {
             produces = APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    public ResponseEntity<UserProfileDataResponse> retrieveUserProfiles(@ApiParam(name = "showdeleted", required = true)@RequestParam (value = "showdeleted", required = true) String showDeleted,
-                                                                        @ApiParam(name = "rolesRequired", required = true)@RequestParam (value = "rolesRequired", required = true) String rolesRequired,
+    public ResponseEntity<UserProfileDataResponse> retrieveUserProfiles(@ApiParam(name = "showdeleted", required = true) @RequestParam(value = "showdeleted", required = true) String showDeleted,
+                                                                        @ApiParam(name = "rolesRequired", required = true) @RequestParam(value = "rolesRequired", required = true) String rolesRequired,
                                                                         @RequestBody UserProfileDataRequest userProfileDataRequest) {
         //Retrieving multiple user profiles
 
