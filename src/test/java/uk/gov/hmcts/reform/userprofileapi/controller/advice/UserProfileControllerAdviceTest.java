@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.hmcts.reform.userprofileapi.exception.IdamServiceException;
 import uk.gov.hmcts.reform.userprofileapi.exception.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
@@ -114,5 +115,15 @@ public class UserProfileControllerAdviceTest {
 
         Throwable result = UserProfileControllerAdvice.getRootException(throwableMock);
         assertThat(result).isNotNull();
+    }
+
+    @Test
+    public void should_return_404_when_too_many_request_exception() {
+        String message = "test-ex-message";
+        HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.TOO_MANY_REQUESTS);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+
+        ResponseEntity response = advice.handleTooManyRequestsException(request, exception);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.TOO_MANY_REQUESTS);
     }
 }

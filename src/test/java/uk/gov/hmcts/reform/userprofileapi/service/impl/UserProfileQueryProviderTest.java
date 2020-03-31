@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 import org.junit.Before;
@@ -50,7 +51,7 @@ public class UserProfileQueryProviderTest {
     }
 
     @Test
-    public void getRetrieveByIdQueryTest() {
+    public void getRetrieveByIdQueryTest_with_userIdentifier_email() {
         userProfileRepositoryMock.save(userProfile);
 
         when(userProfileRepositoryMock.findByEmail(any(String.class))).thenReturn(Optional.of(userProfile));
@@ -63,6 +64,24 @@ public class UserProfileQueryProviderTest {
         assertThat(userProfiles.get().get().getEmail()).isEqualTo(userProfile.getEmail());
 
         verify(userProfileRepositoryMock, Mockito.times(1)).findByEmail(any(String.class));
+    }
+
+    @Test
+    public void getRetrieveByIdQueryTest_with_userIdentifier_userId() {
+        userProfileRepositoryMock.save(userProfile);
+
+        UUID userId = UUID.randomUUID();
+
+        when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.of(userProfile));
+
+        UserProfileIdentifier userProfileIdentifierWithOneValue = new UserProfileIdentifier(IdentifierName.UUID, userId.toString());
+
+        Supplier<Optional<UserProfile>> userProfiles = userProfileQueryProvider.getRetrieveByIdQuery(userProfileIdentifierWithOneValue);
+
+        assertThat(userProfiles).isNotNull();
+        assertThat(userProfiles.get().get().getEmail()).isEqualTo(userProfile.getEmail());
+
+        verify(userProfileRepositoryMock, Mockito.times(1)).findByIdamId(any(String.class));
     }
 
 
@@ -87,5 +106,22 @@ public class UserProfileQueryProviderTest {
         assertThat(result).isNotNull();
         assertThat(result.get().get(0).getEmail()).isEqualTo(userProfile.getEmail());
         verify(userProfileRepositoryMock, Mockito.times(1)).findByIdamIdIn(anyList());
+    }
+
+    @Test
+    public void getProfilesByIdsTest_with_show_deleted_false() {
+        List<UserProfile> userProfiles = Collections.singletonList(userProfile);
+
+        userProfileRepositoryMock.save(userProfile);
+
+        when(userProfileRepositoryMock.findByIdamIdInAndStatusNot(any(), any(IdamStatus.class))).thenReturn(Optional.of(userProfiles));
+
+        UserProfileIdentifier userProfileIdentifierWithMultipleValue = new UserProfileIdentifier(IdentifierName.UUID_LIST, Collections.singletonList(userProfile.getIdamId()));
+
+        Optional<List<UserProfile>> result = userProfileQueryProvider.getProfilesByIds(userProfileIdentifierWithMultipleValue, Boolean.FALSE);
+
+        assertThat(result).isNotNull();
+        assertThat(result.get().get(0).getEmail()).isEqualTo(userProfile.getEmail());
+        verify(userProfileRepositoryMock, Mockito.times(1)).findByIdamIdInAndStatusNot(any(), any(IdamStatus.class));
     }
 }

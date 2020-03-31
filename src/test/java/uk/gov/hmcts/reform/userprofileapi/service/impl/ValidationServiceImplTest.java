@@ -61,7 +61,7 @@ public class ValidationServiceImplTest {
     public void testValidateUpdateWithoutId() {
         userProfile.setStatus(IdamStatus.SUSPENDED);
 
-        when(validationHelperServiceMock.validateUserIdWithException(eq(userId))).thenReturn(true);
+        when(validationHelperServiceMock.validateUserId(eq(userId))).thenReturn(true);
         when(validationHelperServiceMock.validateUpdateUserProfileRequestValid(updateUserProfileData, userId, ResponseSource.API)).thenReturn(true);
 
         UserProfile actual = sut.validateUpdate(updateUserProfileData, userId, ResponseSource.API);

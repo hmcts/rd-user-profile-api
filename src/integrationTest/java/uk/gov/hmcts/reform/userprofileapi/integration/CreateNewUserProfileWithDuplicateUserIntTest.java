@@ -38,7 +38,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserType;
-import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
+import uk.gov.hmcts.reform.userprofileapi.integration.util.TestAuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
@@ -60,7 +60,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
     protected UserProfileRepository userProfileRepository;
 
     @Autowired
-    protected AuditRepository auditRepository;
+    protected TestAuditRepository testAuditRepository;
 
     @Autowired
     protected WebApplicationContext webApplicationContext;
@@ -182,7 +182,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
 
         mockWithGetFail();
         mockWithUpdateSuccess();
-        auditRepository.deleteAll();
+        testAuditRepository.deleteAll();
         userProfileRepository.deleteAll();
         UserProfileCreationData data = buildCreateUserProfileData();
 
@@ -204,7 +204,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
 
         mockWithGetSuccess(true);
         mockWithUpdateFail();
-        auditRepository.deleteAll();
+        testAuditRepository.deleteAll();
         userProfileRepository.deleteAll();
         UserProfileCreationData data = buildCreateUserProfileData();
 
@@ -242,7 +242,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
         assertThat(userProfile.getCreated()).isNotNull();
         assertThat(userProfile.getLastUpdated()).isNotNull();
 
-        Optional<Audit> optional = auditRepository.findByUserProfile(userProfile);
+        Optional<Audit> optional = testAuditRepository.findByUserProfile(userProfile);
         Audit audit = optional.orElse(null);
 
         assertThat(audit).isNotNull();
@@ -259,7 +259,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
         Iterable<UserProfile> userProfileList = userProfileRepository.findAll();
         assertThat(userProfileList.iterator().hasNext()).isFalse();
 
-        List<Audit> auditList = auditRepository.findAll();
+        List<Audit> auditList = testAuditRepository.findAll();
         assertThat(auditList.size()).isEqualTo(1);
         Audit audit = auditList.get(0);
 

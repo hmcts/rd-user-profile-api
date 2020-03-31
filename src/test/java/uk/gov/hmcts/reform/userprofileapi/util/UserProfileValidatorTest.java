@@ -39,7 +39,7 @@ public class UserProfileValidatorTest {
                     false,
                     UserCategory.CITIZEN.toString(),
                     UserType.EXTERNAL.toString(),
-                    getIdamRolesJson());
+                    getIdamRolesJson(), false);
 
     @Test
     public void test_isUserIdValid() {
