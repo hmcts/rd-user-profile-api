@@ -82,8 +82,7 @@ public class UserProfileController {
             ),
             @ApiResponse(
                     code = 400,
-                    message = "An invalid request has been provided",
-                    response = String.class
+                    message = "An invalid request has been provided"
             ),
             @ApiResponse(
                     code = 403,
@@ -91,18 +90,15 @@ public class UserProfileController {
             ),
             @ApiResponse(
                     code = 409,
-                    message = "A User already exists with the given information",
-                    response = String.class
+                    message = "A User already exists with the given information"
             ),
             @ApiResponse(
                     code = 429,
-                    message = "Too many requests made for re-invite",
-                    response = String.class
+                    message = "Too many requests made for re-invite"
             ),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error",
-                    response = String.class
+                    message = "Internal Server Error"
             )
     })
 
@@ -136,12 +132,11 @@ public class UserProfileController {
             @ApiResponse(
                     code = 200,
                     message = "Representation of a User profile with their Roles",
-                    response = String.class
+                    response = UserProfileWithRolesResponse.class
             ),
             @ApiResponse(
                     code = 400,
-                    message = "An invalid request has been provided",
-                    response = String.class
+                    message = "An invalid request has been provided"
             ),
             @ApiResponse(
                     code = 403,
@@ -149,13 +144,11 @@ public class UserProfileController {
             ),
             @ApiResponse(
                     code = 404,
-                    message = "Not User Profile found with the given ID",
-                    response = String.class
+                    message = "Not User Profile found with the given ID"
             ),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error",
-                    response = String.class
+                    message = "Internal Server Error"
             )
     })
     @GetMapping(
@@ -181,12 +174,11 @@ public class UserProfileController {
             @ApiResponse(
                     code = 200,
                     message = "Representation of a User profile with their Roles",
-                    response = String.class
+                    response = UserProfileWithRolesResponse.class
             ),
             @ApiResponse(
                     code = 400,
-                    message = "An invalid request has been provided",
-                    response = String.class
+                    message = "An invalid request has been provided"
             ),
             @ApiResponse(
                     code = 403,
@@ -194,13 +186,11 @@ public class UserProfileController {
             ),
             @ApiResponse(
                     code = 404,
-                    message = "No User Profile found with the given Email Address",
-                    response = String.class
+                    message = "No User Profile found with the given Email Address"
             ),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error",
-                    response = String.class
+                    message = "Internal Server Error"
             )
     })
     @GetMapping(
@@ -230,8 +220,7 @@ public class UserProfileController {
             ),
             @ApiResponse(
                     code = 400,
-                    message = "An invalid request has been provided",
-                    response = String.class
+                    message = "An invalid request has been provided"
             ),
             @ApiResponse(
                     code = 403,
@@ -239,8 +228,7 @@ public class UserProfileController {
             ),
             @ApiResponse(
                     code = 404,
-                    message = "No User Profile found with the given ID",
-                    response = String.class
+                    message = "No User Profile found with the given ID"
             ),
             @ApiResponse(
                     code = 500,
@@ -286,12 +274,15 @@ public class UserProfileController {
             ),
             @ApiResponse(
                     code = 400,
-                    message = "An invalid request has been provided",
-                    response = String.class
+                    message = "An invalid request has been provided"
             ),
             @ApiResponse(
                     code = 403,
                     message = FORBIDDEN_ERROR_ACCESS_DENIED
+            ),
+            @ApiResponse(
+                    code = 404,
+                    message = "No User Profile found with the given ID"
             ),
             @ApiResponse(
                     code = 412,
@@ -299,8 +290,7 @@ public class UserProfileController {
             ),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error",
-                    response = String.class
+                    message = "Internal Server Error"
             )
     })
 
@@ -350,8 +340,7 @@ public class UserProfileController {
             ),
             @ApiResponse(
                     code = 400,
-                    message = "An invalid request has been provided",
-                    response = String.class
+                    message = "An invalid request has been provided"
             ),
             @ApiResponse(
                     code = 403,
@@ -359,13 +348,11 @@ public class UserProfileController {
             ),
             @ApiResponse(
                     code = 404,
-                    message = "No User Profile found with the given ID",
-                    response = String.class
+                    message = "No User Profile found with the given ID"
             ),
             @ApiResponse(
                     code = 500,
-                    message = "Internal Server Error",
-                    response = String.class
+                    message = "Internal Server Error"
             )
     })
 
