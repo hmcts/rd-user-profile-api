@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.userprofileapi.controller;
 
 import static java.util.Objects.requireNonNull;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static uk.gov.hmcts.reform.userprofileapi.controller.advice.UserProfileConstants.FORBIDDEN_ERROR_ACCESS_DENIED;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateCreateUserProfileRequest;
 
@@ -86,6 +87,10 @@ public class UserProfileController {
                     response = String.class
             ),
             @ApiResponse(
+                    code = 403,
+                    message = FORBIDDEN_ERROR_ACCESS_DENIED
+            ),
+            @ApiResponse(
                     code = 409,
                     message = "A User already exists with the given information",
                     response = String.class
@@ -130,6 +135,10 @@ public class UserProfileController {
                     response = String.class
             ),
             @ApiResponse(
+                    code = 403,
+                    message = FORBIDDEN_ERROR_ACCESS_DENIED
+            ),
+            @ApiResponse(
                     code = 404,
                     message = "Not User Profile found with the given ID",
                     response = String.class
@@ -171,6 +180,10 @@ public class UserProfileController {
                     response = String.class
             ),
             @ApiResponse(
+                    code = 403,
+                    message = FORBIDDEN_ERROR_ACCESS_DENIED
+            ),
+            @ApiResponse(
                     code = 404,
                     message = "No User Profile found with the given Email Address",
                     response = String.class
@@ -210,6 +223,10 @@ public class UserProfileController {
                     code = 400,
                     message = "An invalid request has been provided",
                     response = String.class
+            ),
+            @ApiResponse(
+                    code = 403,
+                    message = FORBIDDEN_ERROR_ACCESS_DENIED
             ),
             @ApiResponse(
                     code = 404,
@@ -262,6 +279,10 @@ public class UserProfileController {
                     code = 400,
                     message = "An invalid request has been provided",
                     response = String.class
+            ),
+            @ApiResponse(
+                    code = 403,
+                    message = FORBIDDEN_ERROR_ACCESS_DENIED
             ),
             @ApiResponse(
                     code = 500,
@@ -318,6 +339,10 @@ public class UserProfileController {
                     code = 400,
                     message = "An invalid request has been provided",
                     response = String.class
+            ),
+            @ApiResponse(
+                    code = 403,
+                    message = FORBIDDEN_ERROR_ACCESS_DENIED
             ),
             @ApiResponse(
                     code = 404,
