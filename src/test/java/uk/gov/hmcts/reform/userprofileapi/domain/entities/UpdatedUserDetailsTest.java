@@ -19,4 +19,17 @@ public class UpdatedUserDetailsTest {
         assertThat(sut.active).isTrue();
     }
 
+    @Test
+    public void test_testUpdate_for_lombok_annotations() {
+        UpdatedUserDetails sut = new UpdatedUserDetails();
+        assertThat(sut).isNotNull();
+
+        sut.setActive(true);
+        assertThat(sut.active).isTrue();
+        sut.setForename("firstName");
+        assertThat(sut.getForename()).isEqualTo("firstName");
+        sut.setSurname("lastName");
+        assertThat(sut.getSurname()).isEqualTo("lastName");
+    }
+
 }

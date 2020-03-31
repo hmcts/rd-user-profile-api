@@ -46,7 +46,6 @@ import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
 import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileService;
 import uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator;
 
-
 @Api(
         value = "/v1/userprofile"
 )
@@ -91,6 +90,11 @@ public class UserProfileController {
                     response = String.class
             ),
             @ApiResponse(
+                code = 429,
+                message = "Too many request for re invite",
+                response = String.class
+            ),
+            @ApiResponse(
                     code = 500,
                     message = "Internal Server Error",
                     response = String.class
@@ -103,11 +107,16 @@ public class UserProfileController {
     )
     @ResponseBody
     public ResponseEntity<UserProfileCreationResponse> createUserProfile(@Valid @RequestBody UserProfileCreationData userProfileCreationData) {
-        //Creating new User Profile
 
+        UserProfileCreationResponse resource = null;
         validateCreateUserProfileRequest(userProfileCreationData);
 
-        UserProfileCreationResponse resource = userProfileService.create(userProfileCreationData);
+        if (userProfileCreationData.isResendInvite()) {
+            resource = userProfileService.reInviteUser(userProfileCreationData);
+        } else {
+            resource = userProfileService.create(userProfileCreationData);
+        }
+
         return ResponseEntity.status(HttpStatus.CREATED).body(resource);
 
     }

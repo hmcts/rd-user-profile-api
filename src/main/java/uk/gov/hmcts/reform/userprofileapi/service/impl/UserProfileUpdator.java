@@ -96,7 +96,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         }
         auditService.persistAudit(status, result, responseSource);
 
-        validationHelperService.validateUserPersistedWithException(status);
+        validationHelperService.validateUserPersisted(status);
     }
 
 

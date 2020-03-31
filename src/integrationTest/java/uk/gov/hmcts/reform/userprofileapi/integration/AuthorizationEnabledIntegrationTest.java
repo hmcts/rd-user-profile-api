@@ -6,9 +6,12 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import java.util.Optional;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +22,19 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRequestHandlerTest;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
-import uk.gov.hmcts.reform.userprofileapi.integration.util.TestUserProfileRepository;
-import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
+import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
+import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.LanguagePreference;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserCategory;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserType;
+import uk.gov.hmcts.reform.userprofileapi.integration.util.TestAuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
-
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
+import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 @Configuration
 @TestPropertySource(properties = {"S2S_URL=http://127.0.0.1:8990","IDAM_URL:http://127.0.0.1:5000"})
@@ -36,16 +47,13 @@ public class AuthorizationEnabledIntegrationTest {
     protected UserProfileRepository userProfileRepository;
 
     @Autowired
-    protected AuditRepository auditRepository;
+    protected TestAuditRepository testAuditRepository;
 
     @Autowired
     protected UserProfileRequestHandlerTest userProfileRequestHandlerTest;
 
     @Autowired
     protected WebApplicationContext webApplicationContext;
-
-    @Autowired
-    protected TestUserProfileRepository testUserProfileRepository;
 
     protected MockMvc mockMvc;
 
@@ -83,11 +91,7 @@ public class AuthorizationEnabledIntegrationTest {
                                 +  "  ]"
                                 +  "}")));
 
-        idamService.stubFor(post(urlEqualTo("/api/v1/users/registration"))
-                .willReturn(aResponse()
-                        .withHeader("Content-Type", "application/json")
-                        .withStatus(201)
-                ));
+        setSidamRegistrationMockWithStatus(HttpStatus.CREATED.value());
 
         idamService.stubFor(get(urlMatching("/api/v1/users/.*"))
                 .willReturn(aResponse()
@@ -120,7 +124,16 @@ public class AuthorizationEnabledIntegrationTest {
                                 + "}")));
     }
 
-    public UserProfileDataResponse getMultipleUsers(UserProfileDataRequest request, HttpStatus expectedStatus, String showDeleted, String rolesRequired) throws Exception {
+    protected void setSidamRegistrationMockWithStatus(int status) {
+        idamService.stubFor(post(urlEqualTo("/api/v1/users/registration"))
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withHeader("Location", "/api/v1/users/7f3c076c-e954-4d6f-80f7-6292160bf0bc")
+                        .withStatus(status)
+                ));
+    }
+
+    protected UserProfileDataResponse getMultipleUsers(UserProfileDataRequest request, HttpStatus expectedStatus, String showDeleted, String rolesRequired) throws Exception {
         return userProfileRequestHandlerTest.sendPost(
                 mockMvc,
                 APP_BASE_PATH + SLASH + "users?showdeleted=" + showDeleted + "&rolesRequired=" + rolesRequired,
@@ -128,5 +141,56 @@ public class AuthorizationEnabledIntegrationTest {
                 expectedStatus,
                 UserProfileDataResponse.class
         );
+    }
+
+    protected Object createUser(UserProfileCreationData data, HttpStatus expectedStatus, Class clazz) throws Exception {
+        return userProfileRequestHandlerTest.sendPost(
+                mockMvc,
+                APP_BASE_PATH,
+                data,
+                expectedStatus,
+                clazz
+        );
+    }
+
+    protected void verifyUserProfileCreation(UserProfileCreationResponse createdResource, HttpStatus idamStatus, UserProfileCreationData data) {
+
+        assertThat(createdResource.getIdamId()).isNotNull();
+        assertThat(createdResource.getIdamId()).isInstanceOf(String.class);
+        assertThat(createdResource.getIdamRegistrationResponse()).isEqualTo(idamStatus.value());
+
+        Optional<UserProfile> persistedUserProfile = userProfileRepository.findByIdamId(createdResource.getIdamId());
+        UserProfile userProfile = persistedUserProfile.get();
+        assertThat(userProfile.getId()).isNotNull().isExactlyInstanceOf(Long.class);
+        assertThat(userProfile.getEmail()).isEqualToIgnoringCase(data.getEmail());
+        assertThat(userProfile.getFirstName()).isNotEmpty().isEqualTo(data.getFirstName());
+        assertThat(userProfile.getLastName()).isNotEmpty().isEqualTo(data.getLastName());
+        assertThat(userProfile.getLanguagePreference()).isEqualTo(LanguagePreference.EN);
+        assertThat(userProfile.getUserCategory()).isEqualTo(UserCategory.PROFESSIONAL);
+        assertThat(userProfile.getUserType()).isEqualTo(UserType.EXTERNAL);
+        assertThat(userProfile.getStatus()).isEqualTo(IdamStatus.PENDING);
+        assertThat(userProfile.isEmailCommsConsent()).isEqualTo(false);
+        assertThat(userProfile.isPostalCommsConsent()).isEqualTo(false);
+        assertThat(userProfile.getEmailCommsConsentTs()).isNull();
+        assertThat(userProfile.getPostalCommsConsentTs()).isNull();
+        assertThat(userProfile.getCreated()).isNotNull();
+        assertThat(userProfile.getLastUpdated()).isNotNull();
+
+        testAuditRepository.findAllByUserProfile(userProfile).forEach(audit -> verifyAudit(audit, createdResource));
+    }
+
+    public void verifyAudit(Audit audit, UserProfileCreationResponse createdResource) {
+        assertThat(audit).isNotNull();
+        assertThat(audit.getIdamRegistrationResponse()).isEqualTo(201);
+        assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.ACCEPTED);
+        assertThat(audit.getSource()).isEqualTo(ResponseSource.API);
+        assertThat(audit.getUserProfile().getIdamId()).isEqualTo(createdResource.getIdamId());
+        assertThat(audit.getAuditTs()).isNotNull();
+    }
+
+    @After
+    public void tearDown() {
+        testAuditRepository.deleteAll();
+        userProfileRepository.deleteAll();
     }
 }
