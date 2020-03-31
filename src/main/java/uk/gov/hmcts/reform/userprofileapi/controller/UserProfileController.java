@@ -95,9 +95,9 @@ public class UserProfileController {
                     response = String.class
             ),
             @ApiResponse(
-                code = 429,
-                message = "Too many request for re invite",
-                response = String.class
+                    code = 429,
+                    message = "Too many requests made for re-invite",
+                    response = String.class
             ),
             @ApiResponse(
                     code = 500,
@@ -294,6 +294,10 @@ public class UserProfileController {
                     message = FORBIDDEN_ERROR_ACCESS_DENIED
             ),
             @ApiResponse(
+                    code = 412,
+                    message = "One or more of the Roles provided is already assigned to the User"
+            ),
+            @ApiResponse(
                     code = 500,
                     message = "Internal Server Error",
                     response = String.class
@@ -384,5 +388,4 @@ public class UserProfileController {
         return ResponseEntity.status(HttpStatus.OK).body(userProfileDataResponse);
 
     }
-
 }
