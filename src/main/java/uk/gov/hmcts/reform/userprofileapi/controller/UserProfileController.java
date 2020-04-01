@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.userprofileapi.controller;
 
 import static java.util.Objects.requireNonNull;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static uk.gov.hmcts.reform.userprofileapi.controller.advice.UserProfileConstants.FORBIDDEN_ERROR_ACCESS_DENIED;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateCreateUserProfileRequest;
 
@@ -87,7 +86,7 @@ public class UserProfileController {
             ),
             @ApiResponse(
                     code = 403,
-                    message = FORBIDDEN_ERROR_ACCESS_DENIED
+                    message = "Forbidden Error: Access denied"
             ),
             @ApiResponse(
                     code = 409,
@@ -142,7 +141,7 @@ public class UserProfileController {
             ),
             @ApiResponse(
                     code = 403,
-                    message = FORBIDDEN_ERROR_ACCESS_DENIED
+                    message = "Forbidden Error: Access denied"
             ),
             @ApiResponse(
                     code = 404,
@@ -184,7 +183,7 @@ public class UserProfileController {
             ),
             @ApiResponse(
                     code = 403,
-                    message = FORBIDDEN_ERROR_ACCESS_DENIED
+                    message = "Forbidden Error: Access denied"
             ),
             @ApiResponse(
                     code = 404,
@@ -226,7 +225,7 @@ public class UserProfileController {
             ),
             @ApiResponse(
                     code = 403,
-                    message = FORBIDDEN_ERROR_ACCESS_DENIED
+                    message = "Forbidden Error: Access denied"
             ),
             @ApiResponse(
                     code = 404,
@@ -280,7 +279,7 @@ public class UserProfileController {
             ),
             @ApiResponse(
                     code = 403,
-                    message = FORBIDDEN_ERROR_ACCESS_DENIED
+                    message = "Forbidden Error: Access denied"
             ),
             @ApiResponse(
                     code = 404,
@@ -346,7 +345,7 @@ public class UserProfileController {
             ),
             @ApiResponse(
                     code = 403,
-                    message = FORBIDDEN_ERROR_ACCESS_DENIED
+                    message = "Forbidden Error: Access denied"
             ),
             @ApiResponse(
                     code = 404,
