@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
-import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 
 @RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest
