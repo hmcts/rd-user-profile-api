@@ -236,7 +236,7 @@ public class UserProfileUpdatorTest {
 
         when(validationServiceMock.validateUpdate(any(), any(), any())).thenReturn(userProfile);
 
-        when(validationHelperServiceMock.validateUserPersistedWithException(any())).thenReturn(true);
+        when(validationHelperServiceMock.validateUserPersisted(any())).thenReturn(true);
 
         AttributeResponse response = sut.update(updateUserProfileData, userId, EXUI);
 
@@ -251,7 +251,7 @@ public class UserProfileUpdatorTest {
     public void should_update_user_profile_successfully_for_sync() {
         when(userProfileRepositoryMock.save(any(UserProfile.class))).thenReturn(userProfile);
         when(validationServiceMock.validateUpdate(any(), any(), any())).thenReturn(userProfile);
-        when(validationHelperServiceMock.validateUserPersistedWithException(any())).thenReturn(true);
+        when(validationHelperServiceMock.validateUserPersisted(any())).thenReturn(true);
 
         AttributeResponse response = sut.update(updateUserProfileData, userProfile.getIdamId(), SYNC);
 

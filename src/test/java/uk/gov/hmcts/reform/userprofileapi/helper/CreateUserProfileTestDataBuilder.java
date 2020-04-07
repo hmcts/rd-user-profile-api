@@ -22,6 +22,10 @@ public class CreateUserProfileTestDataBuilder {
     }
 
     public static UserProfileCreationData buildCreateUserProfileData() {
+        return buildCreateUserProfileData(false);
+    }
+
+    public static UserProfileCreationData buildCreateUserProfileData(boolean isReinviteUser) {
         return new UserProfileCreationData(
             buildRandomEmail(),
             randomAlphabetic(20),
@@ -31,7 +35,8 @@ public class CreateUserProfileTestDataBuilder {
             false,
             UserCategory.PROFESSIONAL.toString(),
             UserType.EXTERNAL.toString(),
-            getIdamRolesJson());
+            getIdamRolesJson(),
+                isReinviteUser);
     }
 
     public static UpdateUserProfileData buildUpdateUserProfileData() {

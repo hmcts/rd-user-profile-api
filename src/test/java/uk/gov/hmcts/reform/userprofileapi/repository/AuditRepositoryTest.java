@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 
 import java.util.List;
-import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,15 +42,5 @@ public class AuditRepositoryTest {
         assertThat(audits.get(0).getIdamRegistrationResponse()).isEqualTo(1);
         assertThat(audits.get(0).getStatusMessage()).isEqualTo("test");
         assertThat(audits.get(0).getSource()).isEqualTo(ResponseSource.API);
-    }
-
-    @Test
-    public void findByUserProfile() {
-        Optional<Audit> audit1 = auditRepository.findByUserProfile(userProfile);
-
-        assertThat(audit1.get().getUserProfile()).isEqualTo(userProfile);
-        assertThat(audit1.get().getIdamRegistrationResponse()).isEqualTo(1);
-        assertThat(audit1.get().getStatusMessage()).isEqualTo("test");
-        assertThat(audit1.get().getSource()).isEqualTo(ResponseSource.API);
     }
 }

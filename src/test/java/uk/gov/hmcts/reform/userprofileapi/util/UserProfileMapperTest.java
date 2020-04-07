@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
 import java.util.HashSet;
-
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UpdateUserDetails;
@@ -70,6 +69,14 @@ public class UserProfileMapperTest {
         assertThat(updateUserDetails.getForename()).isEqualTo("firstName");
         assertThat(updateUserDetails.getSurname()).isEqualTo("lastName");
         assertThat(updateUserDetails.getActive()).isFalse();
+    }
+
+    @Test
+    public void test_mapUpdatableFieldsForReInvite() {
+        UserProfile userProfile = new UserProfile();
+        UserProfileMapper.mapUpdatableFieldsForReInvite(userProfileCreationData, userProfile);
+        assertThat(userProfile.getFirstName()).isEqualTo(userProfileCreationData.getFirstName());
+        assertThat(userProfile.getLastName()).isEqualTo(userProfileCreationData.getLastName());
     }
 
 }

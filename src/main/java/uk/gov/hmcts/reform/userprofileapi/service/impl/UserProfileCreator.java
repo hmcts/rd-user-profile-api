@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
+import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.USER_ALREADY_ACTIVE;
+import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileMapper.mapUpdatableFieldsForReInvite;
+
 import java.net.URI;
 
 import java.util.ArrayList;
@@ -30,6 +33,7 @@ import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceCreator;
+import uk.gov.hmcts.reform.userprofileapi.service.ValidationHelperService;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 @Service
@@ -45,6 +49,11 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
     private UserProfileRepository userProfileRepository;
     @Autowired
     private AuditRepository auditRepository;
+    @Autowired
+    private ValidationHelperService validationHelperService;
+    @Value("${syncInterval}")
+    String syncInterval;
+
 
     public UserProfile create(UserProfileCreationData profileData) {
 
@@ -70,11 +79,33 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
         }
     }
 
+    public UserProfile reInviteUser(UserProfileCreationData profileData) {
+
+        Optional<UserProfile>  optionalExistingUserProfile = userProfileRepository.findByEmail(profileData.getEmail().toLowerCase());
+        UserProfile userProfile = validationHelperService.validateReInvitedUser(optionalExistingUserProfile);
+        return registerReInvitedUserInSidam(profileData, userProfile);
+    }
+
+    private UserProfile registerReInvitedUserInSidam(UserProfileCreationData profileData, UserProfile userProfile) {
+
+        final IdamRegistrationInfo idamRegistrationInfo = idamService.registerUser(createIdamRegistrationRequest(profileData, userProfile.getIdamId()));
+        if (idamRegistrationInfo.isSuccessFromIdam()) {
+            mapUpdatableFieldsForReInvite(profileData, userProfile);
+            userProfile.setIdamRegistrationResponse(idamRegistrationInfo.getIdamRegistrationResponse().value());
+            saveUserProfile(userProfile);
+            persistAudit(idamRegistrationInfo.getStatusMessage(), idamRegistrationInfo.getIdamRegistrationResponse(), userProfile);
+        } else {
+            String errorMessage = idamRegistrationInfo.isDuplicateUser() ? String.format(USER_ALREADY_ACTIVE.getErrorMessage(), syncInterval) : idamRegistrationInfo.getStatusMessage();
+            persistAuditAndThrowIdamException(errorMessage, idamRegistrationInfo.getIdamRegistrationResponse(), null);
+        }
+        return userProfile;
+    }
+
     private IdamRegisterUserRequest createIdamRegistrationRequest(UserProfileCreationData profileData, String id) {
         return new IdamRegisterUserRequest(profileData.getEmail(), profileData.getFirstName(), profileData.getLastName(), id, profileData.getRoles());
     }
 
-    private UserProfile persistUserProfileWithAudit(UserProfileCreationData profileData, String userId, String stausMessage, HttpStatus idamStatus) {
+    private UserProfile persistUserProfileWithAudit(UserProfileCreationData profileData, String userId, String statusMessage, HttpStatus idamStatus) {
         UserProfile userProfile = null;
         if (idamStatus.is2xxSuccessful()) {
             userProfile = new UserProfile(profileData, idamStatus);
@@ -82,16 +113,19 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
             if (null != profileData.getStatus()) {
                 userProfile.setStatus(profileData);
             }
-
-            try {
-                userProfile = userProfileRepository.save(userProfile);
-            } catch (Exception ex) {
-                persistAudit(ErrorConstants.UNKNOWN_EXCEPTION.toString(), HttpStatus.INTERNAL_SERVER_ERROR, null);
-                throw ex;
-            }
+            saveUserProfile(userProfile);
         }
-        persistAudit(stausMessage, idamStatus, userProfile);
+        persistAudit(statusMessage, idamStatus, userProfile);
         return userProfile;
+    }
+
+    private void saveUserProfile(UserProfile userProfile) {
+        try {
+            userProfileRepository.save(userProfile);
+        } catch (Exception ex) {
+            persistAudit(ErrorConstants.UNKNOWN_EXCEPTION.toString(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+            throw ex;
+        }
     }
 
     private UserProfile handleDuplicateUser(UserProfileCreationData profileData, IdamRegistrationInfo idamRegistrationInfo) {
