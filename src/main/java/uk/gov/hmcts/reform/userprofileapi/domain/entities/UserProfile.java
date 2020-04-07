@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Transient;
 
@@ -19,7 +20,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
@@ -75,7 +75,6 @@ public class UserProfile {
     @CreationTimestamp
     private LocalDateTime created;
 
-    @UpdateTimestamp
     private LocalDateTime lastUpdated;
 
     @OneToMany(mappedBy = "userProfile")
@@ -89,6 +88,11 @@ public class UserProfile {
 
     @Transient
     private String errorStatusCode;
+
+    @PrePersist
+    private void onPersistCallback() {
+        this.lastUpdated = LocalDateTime.now();
+    }
 
     public UserProfile(UserProfileCreationData data, HttpStatus idamStatus) {
         this.email = data.getEmail().trim().toLowerCase();

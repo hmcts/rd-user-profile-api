@@ -44,6 +44,8 @@ public class UserProfileCreationData implements RequestData {
     @JsonIgnore
     private IdamStatus status;
 
+    private boolean resendInvite;
+
     @JsonCreator
     public UserProfileCreationData(@JsonProperty(value = "email") String email,
                                    @JsonProperty(value = "firstName") String firstName,
@@ -53,7 +55,8 @@ public class UserProfileCreationData implements RequestData {
                                    @JsonProperty(value = "postalCommsConsent") boolean postalCommsConsent,
                                    @JsonProperty(value = "userCategory") String userCategory,
                                    @JsonProperty(value = "userType") String userType,
-                                   @JsonProperty(value = "roles") List<String> roles) {
+                                   @JsonProperty(value = "roles") List<String> roles,
+                                   @JsonProperty(value = "resendInvite") boolean resendInvite) {
 
         this.email = email;
         this.firstName = firstName;
@@ -64,6 +67,7 @@ public class UserProfileCreationData implements RequestData {
         this.userCategory = userCategory;
         this.userType = userType;
         this.roles = roles;
+        this.resendInvite = resendInvite;
     }
 
     public void setStatus(IdamStatus status) {
