@@ -1439,6 +1439,8 @@
       ]]></notes>
         <gav regex="true">^org\.apache\.tomcat\.embed:tomcat-embed-.*:.*$</gav>
         <cve>CVE-2019-0232</cve>
+        <cve>CVE-2019-17569</cve>
+        <cve>CVE-2020-1938</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[

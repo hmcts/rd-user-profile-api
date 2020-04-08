@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.helper;
 
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,8 +28,8 @@ public class CreateUserProfileTestDataBuilder {
     public static UserProfileCreationData buildCreateUserProfileData(boolean isReinviteUser) {
         return new UserProfileCreationData(
             buildRandomEmail(),
-            RandomStringUtils.randomAlphabetic(20),
-            RandomStringUtils.randomAlphabetic(20),
+            randomAlphabetic(20),
+            randomAlphabetic(20),
             LanguagePreference.EN.toString(),
             false,
             false,
@@ -40,21 +42,11 @@ public class CreateUserProfileTestDataBuilder {
     public static UpdateUserProfileData buildUpdateUserProfileData() {
         return new UpdateUserProfileData(
                 buildRandomEmail(),
-                RandomStringUtils.randomAlphabetic(20),
-                RandomStringUtils.randomAlphabetic(20),
+                randomAlphabetic(10) + " " + randomAlphabetic(10),
+                randomAlphabetic(10) + " " + randomAlphabetic(10),
                 IdamStatus.ACTIVE.toString(),
                 null,null
                 );
-    }
-
-    public static UpdateUserProfileData buildUpdateUserProfileDataForUpdatingStatus() {
-        return new UpdateUserProfileData(
-                buildRandomEmail(),
-                RandomStringUtils.randomAlphabetic(20),
-                RandomStringUtils.randomAlphabetic(20),
-                IdamStatus.ACTIVE.toString(),
-                null,null
-        );
     }
 
     private static String buildRandomEmail() {
