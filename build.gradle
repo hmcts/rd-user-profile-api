@@ -224,8 +224,7 @@ sonarqube {
         property "sonar.pitest.reportsDirectory", "build/reports/pitest"
         property "sonar.exclusions", "src/main/java/uk/gov/hmcts/reform/userprofileapi/config/**," +
                 "src/main/java/uk/gov/hmcts/reform/userprofileapi/SystemDateProvider.java," +
-                "src/main/java/uk/gov/hmcts/reform/userprofileapi/Application.java," +
-                "src/main/java/uk/gov/hmcts/reform/userprofileapi/controller/advice/UserProfileConstants.java," +
+                "src/main/java/uk/gov/hmcts/reform/userprofileapi/Application.java" +
                 "uk.gov.hmcts.reform.userprofileapi.domain/**"
     }
 }
