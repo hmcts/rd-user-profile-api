@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
@@ -144,7 +144,7 @@ public class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegration
 
                 mockMvc.perform(post(APP_BASE_PATH)
                     .content(jsonObject.toString())
-                    .contentType(APPLICATION_JSON_UTF8))
+                    .contentType(APPLICATION_JSON_VALUE))
                     .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
                     .andReturn();
 
@@ -185,7 +185,7 @@ public class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegration
 
                 mockMvc.perform(post(APP_BASE_PATH)
                         .content(jsonObject.toString())
-                        .contentType(APPLICATION_JSON_UTF8))
+                        .contentType(APPLICATION_JSON_VALUE))
                         .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
                         .andReturn();
 
@@ -193,7 +193,7 @@ public class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegration
 
                 mockMvc.perform(post(APP_BASE_PATH)
                         .content(jsonObject.toString())
-                        .contentType(APPLICATION_JSON_UTF8))
+                        .contentType(APPLICATION_JSON_VALUE))
                         .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
                         .andReturn();
 

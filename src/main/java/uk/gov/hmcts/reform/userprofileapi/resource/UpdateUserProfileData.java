@@ -1,13 +1,9 @@
 package uk.gov.hmcts.reform.userprofileapi.resource;
 
-import static uk.gov.hmcts.reform.userprofileapi.controller.advice.UserProfileConstants.NAME_FORMAT_ERROR_MESSAGE;
-import static uk.gov.hmcts.reform.userprofileapi.controller.advice.UserProfileConstants.NAME_FORMAT_REGEX;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Set;
-import javax.validation.constraints.Pattern;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,10 +17,8 @@ public class UpdateUserProfileData implements RequestData {
 
     private String email;
 
-    @Pattern(regexp = NAME_FORMAT_REGEX, message = NAME_FORMAT_ERROR_MESSAGE)
     private String firstName;
 
-    @Pattern(regexp = NAME_FORMAT_REGEX, message = NAME_FORMAT_ERROR_MESSAGE)
     private String lastName;
 
     private String idamStatus;
