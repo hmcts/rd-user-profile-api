@@ -10,6 +10,8 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
+import lombok.extern.slf4j.XSlf4j;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,6 +27,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 @SpringBootTest(webEnvironment = MOCK)
 @RunWith(SpringIntegrationSerenityRunner.class)
+@Slf4j
 public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
 
     UserProfileCreationData pendingUserRequest = null;
@@ -112,6 +115,38 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
         ErrorResponse errorResponse = (ErrorResponse) createUser(data, HttpStatus.CONFLICT, ErrorResponse.class);
         assertThat(errorResponse.getErrorMessage()).isEqualTo(String.format("7 : Resend invite failed as user is already active. Wait for %s minutes for the system to refresh.", syncInterval));
         assertThat(errorResponse.getErrorDescription()).contains(String.format("Resend invite failed as user is already active. Wait for %s minutes for the system to refresh.", syncInterval));
+    }
+
+    // resend invite fail with 429 if user is already invited within 1 hour
+    @Test
+    public void should_return_429_when_user_reinvited_successfully_and_again_reinvited_within_one_hour() throws Exception {
+
+        userProfile.setLastUpdated(userProfile.getLastUpdated().minusHours(2L));
+        userProfileRepository.save(userProfile);
+
+        Optional<UserProfile> persistedUserProfileOpt = userProfileRepository.findByEmail(userProfile.getEmail());
+        if(persistedUserProfileOpt.isPresent()) {
+            UserProfile userProfile =persistedUserProfileOpt.get();
+            log.info("***Before timestamp : " + userProfile.getLastUpdated());
+        }
+
+
+        UserProfileCreationData data = buildCreateUserProfileData(true);
+        data.setEmail(pendingUserRequest.getEmail());
+        UserProfileCreationResponse reInvitedUserResponse = (UserProfileCreationResponse) createUser(data, CREATED, UserProfileCreationResponse.class);
+        assertThat(reInvitedUserResponse.getIdamId()).isEqualTo(userProfile.getIdamId());
+        verifyUserProfileCreation(reInvitedUserResponse, CREATED, data);
+
+        persistedUserProfileOpt = userProfileRepository.findByEmail(userProfile.getEmail());
+        if(persistedUserProfileOpt.isPresent()) {
+            UserProfile userProfile =persistedUserProfileOpt.get();
+            log.info("***after timestamp : " + userProfile.getLastUpdated());
+        }
+
+
+        ErrorResponse errorResponse = (ErrorResponse) createUser(data, TOO_MANY_REQUESTS, ErrorResponse.class);
+        assertThat(errorResponse.getErrorMessage()).isEqualTo(String.format("10 : The request was last made less than %s minutes ago. Please try after some time", resendInterval));
+        assertThat(errorResponse.getErrorDescription()).contains(String.format("The request was last made less than %s minutes ago. Please try after some time", resendInterval));
     }
 
 }
