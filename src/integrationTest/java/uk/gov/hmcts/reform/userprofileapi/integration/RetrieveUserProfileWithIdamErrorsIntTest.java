@@ -15,7 +15,6 @@ import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuild
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;

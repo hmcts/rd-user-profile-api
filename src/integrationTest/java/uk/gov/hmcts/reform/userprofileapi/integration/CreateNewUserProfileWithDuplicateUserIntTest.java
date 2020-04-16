@@ -18,7 +18,6 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
