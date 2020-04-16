@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -73,10 +74,10 @@ public class AuthorizationEnabledIntegrationTest {
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
-                        .withBody("it")));
+                        .withBody("rd_user_profile_api")));
 
         idamService.stubFor(get(urlEqualTo("/details"))
-                .withHeader("Authorization", equalTo("Bearer authorization-eyJ0eXAiOiJKV1QiLCJ6aXAiOiJOT05FIiwia2lkIjoiYi9PNk92VnYxK3krV2dySDVVaTlXVGlvTHQwPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJzdXBlci51c2VyQGhtY3RzLm5ldCIsImF1dGhfbGV2ZWwiOjAsImF1ZGl0VHJhY2tpbmdJZCI6IjZiYTdkYTk4LTRjMGYtNDVmNy04ZjFmLWU2N2NlYjllOGI1OCIsImlzcyI6Imh0dHA6Ly9mci1hbTo4MDgwL29wZW5hbS9vYXV0aDIvaG1jdHMiLCJ0b2tlbk5hbWUiOiJhY2Nlc3NfdG9rZW4iLCJ0b2tlbl90eXBlIjoiQmVhcmVyIiwiYXV0aEdyYW50SWQiOiI0NjAzYjVhYS00Y2ZhLTRhNDQtYWQzZC02ZWI0OTI2YjgxNzYiLCJhdWQiOiJteV9yZWZlcmVuY2VfZGF0YV9jbGllbnRfaWQiLCJuYmYiOjE1NTk4OTgxNzMsImdyYW50X3R5cGUiOiJhdXRob3JpemF0aW9uX2NvZGUiLCJzY29wZSI6WyJhY3IiLCJvcGVuaWQiLCJwcm9maWxlIiwicm9sZXMiLCJjcmVhdGUtdXNlciIsImF1dGhvcml0aWVzIl0sImF1dGhfdGltZSI6MTU1OTg5ODEzNTAwMCwicmVhbG0iOiIvaG1jdHMiLCJleHAiOjE1NTk5MjY5NzMsImlhdCI6MTU1OTg5ODE3MywiZXhwaXJlc19pbiI6Mjg4MDAsImp0aSI6IjgxN2ExNjE0LTVjNzAtNGY4YS05OTI3LWVlYjFlYzJmYWU4NiJ9.RLJyLEKldHeVhQEfSXHhfOpsD_b8dEBff7h0P4nZVLVNzVkNoiPdXYJwBTSUrXl4pyYJXEhdBwkInGp3OfWQKhHcp73_uE6ZXD0eIDZRvCn1Nvi9FZRyRMFQWl1l3Dkn2LxLMq8COh1w4lFfd08aj-VdXZa5xFqQefBeiG_xXBxWkJ-nZcW3tTXU0gUzarGY0xMsFTtyRRilpcup0XwVYhs79xytfbq0WklaMJ-DBTD0gux97KiWBrM8t6_5PUfMDBiMvxKfRNtwGD8gN8Vct9JUgVTj9DAIwg0KPPm1rEETRPszYI2wWvD2lpH2AwUtLBlRDANIkN9SdfiHSETvoQ"))
+                .withHeader("Authorization", equalTo("Bearer authorization-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
@@ -90,6 +91,7 @@ public class AuthorizationEnabledIntegrationTest {
                                 +  "  "
                                 +  "  ]"
                                 +  "}")));
+
 
         setSidamRegistrationMockWithStatus(HttpStatus.CREATED.value());
 
@@ -122,6 +124,25 @@ public class AuthorizationEnabledIntegrationTest {
                                 + "    \"pui-organisation-manager\""
                                 + "  ]"
                                 + "}")));
+
+        idamService.stubFor(get(urlEqualTo("/o/userinfo"))
+                //.withHeader("Authorization", equalTo("Bearer authorization-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{"
+                                +  "  \"uid\": \"%s\","
+                                +  "  \"name\": \"Super\","
+                                +  "  \"family_name\": \"User\","
+                                +  "  \"given_name\": \"User\","
+                                +  "  \"sub\": \"super.user@hmcts.net\","
+                                +  "  \"accountStatus\": \"active\","
+                                +  "  \"roles\": ["
+                                +  "  \"pui-user-manager\""
+                                +  "  ]"
+                                +  "}")
+                        ));
+
     }
 
     protected void setSidamRegistrationMockWithStatus(int status) {
