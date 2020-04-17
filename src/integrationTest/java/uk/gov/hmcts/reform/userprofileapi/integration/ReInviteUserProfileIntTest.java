@@ -48,7 +48,7 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
     DataSource dataSource;
 
 
-    void updateLastUpdatedForReinvite(String givenIdamId) throws SQLException {
+    void updateLastUpdatedTimestamp(String givenIdamId) throws SQLException {
 
         String query = "update user_profile set last_updated = (sysdate - 1) where idam_id = '" + givenIdamId + "'";
         try (Connection connection = dataSource.getConnection()) {
@@ -76,7 +76,7 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
     @Test
     public void should_return_201_when_user_reinvited() throws Exception {
 
-        updateLastUpdatedForReinvite(userProfile.getIdamId());
+        updateLastUpdatedTimestamp(userProfile.getIdamId());
 
         UserProfileCreationData data = buildCreateUserProfileData(true);
         data.setEmail(pendingUserRequest.getEmail());
@@ -101,7 +101,7 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
 
         userProfile.setStatus(IdamStatus.ACTIVE);
         userProfileRepository.save(userProfile);
-        updateLastUpdatedForReinvite(userProfile.getIdamId());
+        updateLastUpdatedTimestamp(userProfile.getIdamId());
 
         UserProfileCreationData data = buildCreateUserProfileData(true);
         data.setEmail(pendingUserRequest.getEmail());
@@ -127,7 +127,7 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
     @Test
     public void should_return_409_when_reinvited_user_gets_active_in_sidam_but_pending_in_up() throws Exception {
 
-        updateLastUpdatedForReinvite(userProfile.getIdamId());
+        updateLastUpdatedTimestamp(userProfile.getIdamId());
         setSidamRegistrationMockWithStatus(HttpStatus.CONFLICT.value());
 
         UserProfileCreationData data = buildCreateUserProfileData(true);
@@ -141,7 +141,7 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
     @Test
     public void should_return_429_when_user_reinvited_successfully_and_again_reinvited_within_one_hour() throws Exception {
 
-        updateLastUpdatedForReinvite(userProfile.getIdamId());
+        updateLastUpdatedTimestamp(userProfile.getIdamId());
 
         UserProfileCreationData data = buildCreateUserProfileData(true);
         data.setEmail(pendingUserRequest.getEmail());
