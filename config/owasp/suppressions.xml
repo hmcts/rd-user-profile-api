@@ -2941,4 +2941,18 @@
         <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-oauth2\-core@.*$</packageUrl>
         <cve>CVE-2018-1258</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: hazelcast-spring-3.4.3.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.hazelcast/hazelcast\-spring@.*$</packageUrl>
+        <cve>CVE-2016-10750</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: hazelcast-3.4.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.hazelcast/hazelcast@.*$</packageUrl>
+        <cve>CVE-2016-10750</cve>
+    </suppress>
 </suppressions>

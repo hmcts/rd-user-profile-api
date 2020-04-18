@@ -18,7 +18,7 @@ import uk.gov.hmcts.reform.userprofileapi.repository.IdamRepository;
 
 /**
  * This class is used to parse the JWT Access token and returns the user info with GrantedAuthorities.
- * GrantedAuthorities present in the token request will pass to the respective controller api methods
+ * If GrantedAuthorities present in the token request will pass to the respective controller api methods
  * otherwise it displays unauthorised error message .
  *
  *
