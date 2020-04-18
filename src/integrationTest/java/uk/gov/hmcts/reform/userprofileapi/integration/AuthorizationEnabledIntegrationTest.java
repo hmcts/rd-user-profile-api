@@ -10,7 +10,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -32,7 +34,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserType;
-import uk.gov.hmcts.reform.userprofileapi.integration.util.TestAuditRepository;
+import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
@@ -49,7 +51,7 @@ public class AuthorizationEnabledIntegrationTest {
     protected UserProfileRepository userProfileRepository;
 
     @Autowired
-    protected TestAuditRepository testAuditRepository;
+    protected AuditRepository auditRepository;
 
     @Autowired
     protected UserProfileRequestHandlerTest userProfileRequestHandlerTest;
@@ -198,7 +200,10 @@ public class AuthorizationEnabledIntegrationTest {
         assertThat(userProfile.getCreated()).isNotNull();
         assertThat(userProfile.getLastUpdated()).isNotNull();
 
-        testAuditRepository.findAllByUserProfile(userProfile).forEach(audit -> verifyAudit(audit, createdResource));
+        List<Audit> audits = auditRepository.findAll();
+
+        getMatchedAuditRecords(audits, userProfile.getIdamId()).forEach(audit -> verifyAudit(audit, createdResource));
+
     }
 
     public void verifyAudit(Audit audit, UserProfileCreationResponse createdResource) {
@@ -212,7 +217,11 @@ public class AuthorizationEnabledIntegrationTest {
 
     @After
     public void tearDown() {
-        testAuditRepository.deleteAll();
+        auditRepository.deleteAll();
         userProfileRepository.deleteAll();
+    }
+
+    public static List<Audit> getMatchedAuditRecords(List<Audit> audits, String idamId) {
+        return audits.stream().filter(audit -> audit.getUserProfile().getIdamId().equalsIgnoreCase(idamId)).collect(Collectors.toList());
     }
 }

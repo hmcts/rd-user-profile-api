@@ -50,7 +50,7 @@ public class CreateNewUserProfileWithIdamErrorsIntTest  extends AuthorizationEna
     @Test
     public void should_return_error_and_not_create_user_profile_when_idam_registration_fails() throws Exception {
 
-        testAuditRepository.deleteAll();
+        auditRepository.deleteAll();
         UserProfileCreationData data = buildCreateUserProfileData();
 
         MvcResult result =
@@ -71,10 +71,10 @@ public class CreateNewUserProfileWithIdamErrorsIntTest  extends AuthorizationEna
         UserProfile userProfile = optionalUserProfile.orElse(null);
         assertThat(userProfile).isNull();
 
-        List<Audit> audits = testAuditRepository.findAll();
+        List<Audit> audits = auditRepository.findAll();
         if (!CollectionUtils.isEmpty(audits)) {
             audits = audits.stream().sorted((Comparator.comparing(Audit::getAuditTs)).reversed()).collect(Collectors.toList());
-            Optional<Audit> optionalAudit = testAuditRepository.findById(audits.get(0).getId());
+            Optional<Audit> optionalAudit = auditRepository.findById(audits.get(0).getId());
             Audit audit = optionalAudit.orElse(null);
 
 

@@ -12,6 +12,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
+import static uk.gov.hmcts.reform.userprofileapi.integration.AuthorizationEnabledIntegrationTest.getMatchedAuditRecords;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
@@ -38,7 +39,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserType;
-import uk.gov.hmcts.reform.userprofileapi.integration.util.TestAuditRepository;
+import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
@@ -60,7 +61,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
     protected UserProfileRepository userProfileRepository;
 
     @Autowired
-    protected TestAuditRepository testAuditRepository;
+    protected AuditRepository auditRepository;
 
     @Autowired
     protected WebApplicationContext webApplicationContext;
@@ -182,7 +183,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
 
         mockWithGetFail();
         mockWithUpdateSuccess();
-        testAuditRepository.deleteAll();
+        auditRepository.deleteAll();
         userProfileRepository.deleteAll();
         UserProfileCreationData data = buildCreateUserProfileData();
 
@@ -204,7 +205,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
 
         mockWithGetSuccess(true);
         mockWithUpdateFail();
-        testAuditRepository.deleteAll();
+        auditRepository.deleteAll();
         userProfileRepository.deleteAll();
         UserProfileCreationData data = buildCreateUserProfileData();
 
@@ -242,9 +243,9 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
         assertThat(userProfile.getCreated()).isNotNull();
         assertThat(userProfile.getLastUpdated()).isNotNull();
 
-        Optional<Audit> optional = testAuditRepository.findByUserProfile(userProfile);
-        Audit audit = optional.orElse(null);
-
+        List<Audit> matchedAudit = getMatchedAuditRecords(auditRepository.findAll(), userProfile.getIdamId());
+        assertThat(matchedAudit.size()).isEqualTo(1);
+        Audit audit = matchedAudit.get(0);
         assertThat(audit).isNotNull();
         assertThat(audit.getIdamRegistrationResponse()).isEqualTo(201);
         assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.ACCEPTED);
@@ -259,7 +260,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
         Iterable<UserProfile> userProfileList = userProfileRepository.findAll();
         assertThat(userProfileList.iterator().hasNext()).isFalse();
 
-        List<Audit> auditList = testAuditRepository.findAll();
+        List<Audit> auditList = auditRepository.findAll();
         assertThat(auditList.size()).isEqualTo(1);
         Audit audit = auditList.get(0);
 
