@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfile;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -114,10 +115,10 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
         Optional<UserProfile> optionalUserProfile = userProfileRepository.findByIdamId(retrievedResource.getIdamId());
         UserProfile persistedUserProfile = optionalUserProfile.get();
 
-        Optional<Audit> optional = testAuditRepository.findByUserProfile(persistedUserProfile);
-        Audit audit = optional.get();
+        List<Audit> matchedAuditRecords = getMatchedAuditRecords(auditRepository.findAll(), persistedUserProfile.getIdamId());
+        assertThat(matchedAuditRecords.size()).isEqualTo(1);
+        Audit audit = matchedAuditRecords.get(0);
 
-        assertThat(audit).isNotNull();
         assertThat(audit.getIdamRegistrationResponse()).isEqualTo(200);
         assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.OK);
         assertThat(audit.getSource()).isEqualTo(ResponseSource.API);
@@ -145,8 +146,9 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
         Optional<UserProfile> optionalUserProfile = userProfileRepository.findByIdamId(retrievedResource.getIdamId());
         UserProfile persistedUserProfile = optionalUserProfile.get();
 
-        Optional<Audit> optional = testAuditRepository.findByUserProfile(persistedUserProfile);
-        Audit audit = optional.get();
+        List<Audit> matchedAuditRecords = getMatchedAuditRecords(auditRepository.findAll(), persistedUserProfile.getIdamId());
+        assertThat(matchedAuditRecords.size()).isEqualTo(1);
+        Audit audit = matchedAuditRecords.get(0);
 
         assertThat(audit).isNotNull();
         assertThat(audit.getIdamRegistrationResponse()).isEqualTo(200);

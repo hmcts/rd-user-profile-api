@@ -9,11 +9,17 @@ import static org.springframework.http.HttpStatus.TOO_MANY_REQUESTS;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Optional;
+import javax.sql.DataSource;
+import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -25,15 +31,34 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 @SpringBootTest(webEnvironment = MOCK)
 @RunWith(SpringIntegrationSerenityRunner.class)
+@Slf4j
 public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
 
     UserProfileCreationData pendingUserRequest = null;
+
     UserProfile userProfile = null;
+
     @Value("${resendInterval}")
     private String resendInterval;
 
     @Value("${syncInterval}")
     String syncInterval;
+
+    @Autowired
+    DataSource dataSource;
+
+
+    void updateLastUpdatedTimestamp(String givenIdamId) throws SQLException {
+
+        String query = "update user_profile set last_updated = (sysdate - 1) where idam_id = '" + givenIdamId + "'";
+        try (Connection connection = dataSource.getConnection()) {
+            try (Statement statement = connection.createStatement()) {
+                statement.executeUpdate(query);
+            }
+        } catch (Exception exe) {
+            throw exe;
+        }
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -51,8 +76,7 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
     @Test
     public void should_return_201_when_user_reinvited() throws Exception {
 
-        userProfile.setLastUpdated(userProfile.getLastUpdated().minusHours(2L));
-        userProfileRepository.save(userProfile);
+        updateLastUpdatedTimestamp(userProfile.getIdamId());
 
         UserProfileCreationData data = buildCreateUserProfileData(true);
         data.setEmail(pendingUserRequest.getEmail());
@@ -75,9 +99,9 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
     @Test
     public void should_return_400_when_user_reinvited_is_not_pending() throws Exception {
 
-        userProfile.setLastUpdated(userProfile.getLastUpdated().minusHours(2L));
         userProfile.setStatus(IdamStatus.ACTIVE);
         userProfileRepository.save(userProfile);
+        updateLastUpdatedTimestamp(userProfile.getIdamId());
 
         UserProfileCreationData data = buildCreateUserProfileData(true);
         data.setEmail(pendingUserRequest.getEmail());
@@ -103,8 +127,7 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
     @Test
     public void should_return_409_when_reinvited_user_gets_active_in_sidam_but_pending_in_up() throws Exception {
 
-        userProfile.setLastUpdated(userProfile.getLastUpdated().minusHours(2L));
-        userProfileRepository.save(userProfile);
+        updateLastUpdatedTimestamp(userProfile.getIdamId());
         setSidamRegistrationMockWithStatus(HttpStatus.CONFLICT.value());
 
         UserProfileCreationData data = buildCreateUserProfileData(true);
@@ -112,6 +135,23 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
         ErrorResponse errorResponse = (ErrorResponse) createUser(data, HttpStatus.CONFLICT, ErrorResponse.class);
         assertThat(errorResponse.getErrorMessage()).isEqualTo(String.format("7 : Resend invite failed as user is already active. Wait for %s minutes for the system to refresh.", syncInterval));
         assertThat(errorResponse.getErrorDescription()).contains(String.format("Resend invite failed as user is already active. Wait for %s minutes for the system to refresh.", syncInterval));
+    }
+
+    // resend invite fail with 429 if user is already invited and again within 1 hour
+    @Test
+    public void should_return_429_when_user_reinvited_successfully_and_again_reinvited_within_one_hour() throws Exception {
+
+        updateLastUpdatedTimestamp(userProfile.getIdamId());
+
+        UserProfileCreationData data = buildCreateUserProfileData(true);
+        data.setEmail(pendingUserRequest.getEmail());
+        UserProfileCreationResponse reInvitedUserResponse = (UserProfileCreationResponse) createUser(data, CREATED, UserProfileCreationResponse.class);
+        assertThat(reInvitedUserResponse.getIdamId()).isEqualTo(userProfile.getIdamId());
+        verifyUserProfileCreation(reInvitedUserResponse, CREATED, data);
+
+        ErrorResponse errorResponse = (ErrorResponse) createUser(data, TOO_MANY_REQUESTS, ErrorResponse.class);
+        assertThat(errorResponse.getErrorMessage()).isEqualTo(String.format("10 : The request was last made less than %s minutes ago. Please try after some time", resendInterval));
+        assertThat(errorResponse.getErrorDescription()).contains(String.format("The request was last made less than %s minutes ago. Please try after some time", resendInterval));
     }
 
 }
