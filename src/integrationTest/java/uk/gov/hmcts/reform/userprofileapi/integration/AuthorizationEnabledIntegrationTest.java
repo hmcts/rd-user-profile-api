@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -18,6 +17,7 @@ import org.junit.Rule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
@@ -39,6 +39,7 @@ import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 @Configuration
 @TestPropertySource(properties = {"S2S_URL=http://127.0.0.1:8990","IDAM_URL:http://127.0.0.1:5000"})
+@DirtiesContext
 public class AuthorizationEnabledIntegrationTest {
 
     protected static final String APP_BASE_PATH = "/v1/userprofile";
@@ -62,10 +63,10 @@ public class AuthorizationEnabledIntegrationTest {
     protected ObjectMapper objectMapper;
 
     @Rule
-    public WireMockRule s2sService = new WireMockRule(8990);
+    public  WireMockRule s2sService = new WireMockRule(8990);
 
     @Rule
-    public WireMockRule idamService = new WireMockRule(5000);
+    public  WireMockRule idamService = new WireMockRule(5000);
 
     @Before
     public void setUpWireMock() {

@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.userprofileapi.client;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -39,7 +38,7 @@ public class UserProfileRequestHandlerTest {
         return mockMvc.perform(post(path)
             .headers(getMultipleAuthHeaders())
             .content(jsonBody)
-            .contentType(APPLICATION_JSON_UTF8))
+            .contentType(APPLICATION_JSON))
             .andExpect(status().is(expectedHttpStatus.value())).andReturn();
     }
 
@@ -72,7 +71,7 @@ public class UserProfileRequestHandlerTest {
 
         return mockMvc.perform(get(path)
             .headers(getMultipleAuthHeaders())
-            .contentType(APPLICATION_JSON_UTF8))
+            .contentType(APPLICATION_JSON))
             .andExpect(status().is(expectedHttpStatus.value()))
             .andReturn();
     }
@@ -115,7 +114,7 @@ public class UserProfileRequestHandlerTest {
         log.info("JWT TOKEN::" + JWT_TOKEN);
         log.info("IDAM_TOKEN::" + IDAM_TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
         headers.add("ServiceAuthorization", JWT_TOKEN);
         headers.add("Authorization", IDAM_TOKEN);

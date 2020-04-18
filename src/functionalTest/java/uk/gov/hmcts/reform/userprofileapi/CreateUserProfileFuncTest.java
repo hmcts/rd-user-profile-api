@@ -106,19 +106,35 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
         UserProfileCreationData data = createUserProfileData();
 
         UserProfileCreationResponse createdResource =
-            testRequestHandler.sendPost(
-                data,
-                HttpStatus.CREATED,
-                requestUri,
-                    UserProfileCreationResponse.class
-            );
+                testRequestHandler.sendPost(
+                        data,
+                        HttpStatus.CREATED,
+                        requestUri,
+                        UserProfileCreationResponse.class
+                );
 
         assertThat(createdResource).isNotNull();
 
         testRequestHandler.sendPost(
-            testRequestHandler.asJsonString(data),
-            HttpStatus.CONFLICT,
-            requestUri);
+                testRequestHandler.asJsonString(data),
+                HttpStatus.CONFLICT,
+                requestUri);
     }
 
+    @Test
+    public void should_return_401_when_attempting_to_create_user_profile_without_user_token_in_the_header() throws Exception {
+
+        UserProfileCreationData data = createUserProfileData();
+
+        UserProfileCreationResponse createdResource =
+                testRequestHandler.sendPostWithoutToken(
+                        data,
+                        HttpStatus.UNAUTHORIZED,
+                        requestUri,
+                        UserProfileCreationResponse.class
+                );
+
+
+    }
 }
+
