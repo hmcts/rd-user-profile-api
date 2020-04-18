@@ -22,6 +22,7 @@ import java.util.UUID;
 
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -185,6 +186,7 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
 
     }
 
+    @Ignore
     @Test
     public void should_return_200_and_add_delete_roles_to_user_profile_resource() throws Exception {
 

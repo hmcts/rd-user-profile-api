@@ -16,6 +16,7 @@ import java.util.UUID;
 
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -127,6 +128,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
 
     }
 
+    @Ignore
     @Test
     public void should_retrieve_user_profile_resource_with_roles_by_email() throws Exception {
         UserProfile userProfile = userProfileMap.get("user");

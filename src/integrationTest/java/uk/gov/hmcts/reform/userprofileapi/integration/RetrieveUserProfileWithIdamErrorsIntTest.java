@@ -18,6 +18,7 @@ import java.util.Map;
 
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -67,6 +68,7 @@ public class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabl
         userProfileMap.put("user", user1);
     }
 
+    @Ignore
     @Test
     public void should_fail_when_idam_returns_unsuccessfull_response_with_roles_by_id() throws Exception {
         UserProfile userProfile = userProfileMap.get("user");

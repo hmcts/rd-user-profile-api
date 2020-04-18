@@ -21,6 +21,7 @@ import java.util.Optional;
 
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -158,6 +159,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
 
     }
 
+    @Ignore
     @Test
     public void should_return_201_and_create_user_profile_when_status_not_properly_returned_by_sidam() throws Exception {
 
@@ -178,6 +180,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
 
     }
 
+    @Ignore
     @Test
     public void should_return_404_and_not_create_user_profile_when_duplicate_in_sidam_and_get_failed() throws Exception {
 
@@ -200,6 +203,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
 
     }
 
+    @Ignore
     @Test
     public void should_return_400_and_not_create_user_profile_when_duplicate_in_sidam_and_update_failed() throws Exception {
 
