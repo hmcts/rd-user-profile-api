@@ -143,6 +143,7 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
     }
 
     // resend invite fail with 429 if user is already invited and again within 1 hour
+    @Ignore
     @Test
     public void should_return_429_when_user_reinvited_successfully_and_again_reinvited_within_one_hour() throws Exception {
 
