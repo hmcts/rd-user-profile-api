@@ -64,33 +64,6 @@ public class FuncTestRequestHandler {
                 .statusCode(expectedStatus.value()).extract().response();
     }
 
-
-    public <T> T sendPostWithoutToken(Object data, HttpStatus expectedStatus, String path, Class<T> clazz) throws JsonProcessingException {
-        return
-                sendPostWithoutToken(objectMapper.writeValueAsString(data),
-                        expectedStatus,
-                        path)
-                        .as(clazz);
-    }
-
-    public void sendPostWithoutToken(Object data, HttpStatus expectedStatus, String path) throws JsonProcessingException {
-
-        sendPostWithoutToken(objectMapper.writeValueAsString(data),
-                expectedStatus,
-                path);
-    }
-
-    public Response sendPostWithoutToken(String jsonBody, HttpStatus expectedStatus, String path) {
-
-        return withUnauthenticatedBearerRequest()
-                .body(jsonBody)
-                .post(path)
-                .then()
-                .log().all(true)
-                .statusCode(expectedStatus.value()).extract().response();
-    }
-
-
     public <T> T sendPut(Object data, HttpStatus expectedStatus, String path, Class<T> clazz) throws JsonProcessingException {
 
         return sendPut(objectMapper.writeValueAsString(data),
@@ -184,7 +157,6 @@ public class FuncTestRequestHandler {
                 .header("Accepts", APPLICATION_JSON_VALUE);
     }
 
-
     private String getBearerToken() {
         IdamOpenIdClient idamClient = new IdamOpenIdClient(testConfig);
         return idamClient.getBearerToken();
@@ -194,18 +166,6 @@ public class FuncTestRequestHandler {
         log.info("S2s Base url : {}, Microservice : {}, Secret : {}", s2sBaseUrl, s2sMicroservice, s2sSecret);
         S2sClient client = new S2sClient(s2sBaseUrl, s2sMicroservice, s2sSecret);
         return client.getS2sToken();
-    }
-
-
-    private RequestSpecification withUnauthenticatedBearerRequest() {
-        String s2sToken = getS2sToken();
-        return SerenityRest.given()
-                .relaxedHTTPSValidation()
-                .baseUri(baseUrl)
-                .header("ServiceAuthorization", BEARER + s2sToken)
-                .header("Authorization", BEARER)
-                .header("Content-Type", APPLICATION_JSON_VALUE)
-                .header("Accepts", APPLICATION_JSON_VALUE);
     }
 
 }

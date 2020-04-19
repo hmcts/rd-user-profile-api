@@ -31,7 +31,6 @@ import uk.gov.hmcts.reform.userprofileapi.oidc.JwtGrantedAuthoritiesConverter;
 @ConfigurationProperties(prefix = "security")
 @EnableWebSecurity
 @Slf4j
-
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 

@@ -121,20 +121,4 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
                 requestUri);
     }
 
-    @Test
-    public void should_return_401_when_attempting_to_create_user_profile_without_user_token_in_the_header() throws Exception {
-
-        UserProfileCreationData data = createUserProfileData();
-
-        UserProfileCreationResponse createdResource =
-                testRequestHandler.sendPostWithoutToken(
-                        data,
-                        HttpStatus.UNAUTHORIZED,
-                        requestUri,
-                        UserProfileCreationResponse.class
-                );
-
-
-    }
 }
-

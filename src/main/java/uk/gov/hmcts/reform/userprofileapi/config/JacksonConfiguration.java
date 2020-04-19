@@ -22,14 +22,14 @@ public class JacksonConfiguration {
     /**
      * An object mapper configured to support java.time and write Date and Times in ISO8601.
      *
-     * @return Default ObjectMapper, used by Spring and HAL to serialise responses, and deserialise requests.
+     * @return Default ObjectMapper, used by Spring and HAL to serialise responses, and deserialize requests.
      */
     @Primary
     @Bean(name = "DefaultObjectMapper")
     public ObjectMapper defaultObjectMapper() {
         return new ObjectMapper()
                 .registerModule(new Jdk8Module())
-                .registerModule(new ParameterNamesModule(JsonCreator.Mode.PROPERTIES))
+                .registerModule(new ParameterNamesModule(JsonCreator.Mode.DEFAULT))
                 .registerModule(new JavaTimeModule()).disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
@@ -40,6 +40,6 @@ public class JacksonConfiguration {
                 .featuresToEnable(READ_ENUMS_USING_TO_STRING)
                 .featuresToEnable(READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE)
                 .featuresToEnable(WRITE_ENUMS_USING_TO_STRING)
-                .serializationInclusion(JsonInclude.Include.NON_ABSENT);
+                .serializationInclusion(JsonInclude.Include.ALWAYS);
     }
 }
