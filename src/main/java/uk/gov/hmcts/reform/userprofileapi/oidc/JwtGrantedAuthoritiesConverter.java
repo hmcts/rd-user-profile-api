@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.userprofileapi.repository.IdamRepository;
  * If GrantedAuthorities present in the token request will pass to the respective controller api methods
  * otherwise it displays unauthorised error message .
  *
- *
  */
 @Component
 public class JwtGrantedAuthoritiesConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
