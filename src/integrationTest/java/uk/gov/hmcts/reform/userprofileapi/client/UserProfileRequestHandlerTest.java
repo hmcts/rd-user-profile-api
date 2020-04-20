@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -114,7 +113,7 @@ public class UserProfileRequestHandlerTest {
         log.info("JWT TOKEN::" + JWT_TOKEN);
         log.info("IDAM_TOKEN::" + IDAM_TOKEN);
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setContentType(APPLICATION_JSON);
 
         headers.add("ServiceAuthorization", JWT_TOKEN);
         headers.add("Authorization", IDAM_TOKEN);

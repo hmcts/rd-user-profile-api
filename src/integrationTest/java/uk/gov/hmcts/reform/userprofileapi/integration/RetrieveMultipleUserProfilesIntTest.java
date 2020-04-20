@@ -19,7 +19,6 @@ import java.util.UUID;
 
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -187,7 +186,6 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
         assertThat(response.getUserProfiles().get(0).getIdamStatus()).isEqualTo(IdamStatus.SUSPENDED.name());
     }
 
-    @Ignore
     @Test
     public void should_retrieve_multiple_user_profiles_with_idam_failure() throws Exception {
 
@@ -232,7 +230,6 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
         assertThat(actualMatchedAudits).isEmpty();
     }
 
-    @Ignore
     @Test
     public void should_return_400_multiple_user_profiles_with_invalid_param() throws Exception {
 
@@ -240,7 +237,6 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
         getMultipleUsers(request, HttpStatus.BAD_REQUEST, "invalid", "true");
     }
 
-    @Ignore
     @Test
     public void should_return_400_multiple_user_profiles_with_no_user_ids_in_request() throws Exception {
 
@@ -248,7 +244,6 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
         getMultipleUsers(request, HttpStatus.BAD_REQUEST, "true", "true");
     }
 
-    @Ignore
     @Test
     public void should_return_404_multiple_user_profiles_with_user_ids_not_in_db() throws Exception {
 

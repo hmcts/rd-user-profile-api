@@ -14,7 +14,6 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -22,15 +21,10 @@ import java.util.UUID;
 
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
@@ -42,13 +36,6 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest {
 
     String id =  UUID.randomUUID().toString();
-    private MockMvc mockMvc;
-
-    @Autowired
-    protected WebApplicationContext webApplicationContext;
-
-    @Rule
-    public WireMockRule idamService = new WireMockRule(5000);
 
     @Before
     public void setUpWireMock() {
@@ -60,6 +47,7 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
                         .withHeader("Location", "/api/v1/users/" + id)
                         .withStatus(409)
                 ));
+
     }
 
     public void mockWithGetSuccess(boolean withoutStatusFields) {
@@ -186,7 +174,6 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
 
     }
 
-    @Ignore
     @Test
     public void should_return_200_and_add_delete_roles_to_user_profile_resource() throws Exception {
 

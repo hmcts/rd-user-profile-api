@@ -18,7 +18,6 @@ import org.assertj.core.util.Lists;
 
 import org.json.JSONObject;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -38,7 +37,8 @@ public class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegration
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
     }
 
-    @Ignore
+
+
     @Test
     public void should_return_201_and_create_user_profile_resource() throws Exception {
 
@@ -181,7 +181,6 @@ public class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegration
         verifyUserProfileCreation(createdResource, CREATED, data);
     }
 
-    @Ignore
     @Test
     public void should_return_400_and_create_user_profile_resource_with_invalid_email() throws Exception {
 
@@ -199,7 +198,6 @@ public class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegration
 
     }
 
-    @Ignore
     @Test
     public void should_return_400_and_create_user_profile_resource_with_invalid_email_1() throws Exception {
 

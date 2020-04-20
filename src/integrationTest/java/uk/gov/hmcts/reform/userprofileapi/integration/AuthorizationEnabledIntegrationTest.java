@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
@@ -15,7 +14,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -64,11 +63,11 @@ public class AuthorizationEnabledIntegrationTest {
     @Autowired
     protected ObjectMapper objectMapper;
 
-    @Rule
-    public  WireMockRule s2sService = new WireMockRule(8990);
+    @ClassRule
+    public  static WireMockRule s2sService = new WireMockRule(8990);
 
-    @Rule
-    public  WireMockRule idamService = new WireMockRule(5000);
+    @ClassRule
+    public  static WireMockRule idamService = new WireMockRule(5000);
 
     @Before
     public void setUpWireMock() {
@@ -78,22 +77,6 @@ public class AuthorizationEnabledIntegrationTest {
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
                         .withBody("rd_user_profile_api")));
-
-        idamService.stubFor(get(urlEqualTo("/details"))
-                .withHeader("Authorization", equalTo("Bearer authorization-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"))
-                .willReturn(aResponse()
-                        .withStatus(200)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody("{"
-                                +  "  \"id\": \"ef4fac86-d3e8-47b6-88a7-c7477fb69d3f\","
-                                +  "  \"forename\": \"Super\","
-                                +  "  \"surname\": \"User\","
-                                +  "  \"email\": \"super.user@hmcts.net\","
-                                +  "  \"accountStatus\": \"active\","
-                                +  "  \"roles\": ["
-                                +  "  "
-                                +  "  ]"
-                                +  "}")));
 
 
         setSidamRegistrationMockWithStatus(HttpStatus.CREATED.value());
@@ -129,7 +112,6 @@ public class AuthorizationEnabledIntegrationTest {
                                 + "}")));
 
         idamService.stubFor(get(urlEqualTo("/o/userinfo"))
-                //.withHeader("Authorization", equalTo("Bearer authorization-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")

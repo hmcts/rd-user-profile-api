@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
@@ -89,7 +88,6 @@ public class JsonFeignResponseHelperTest {
         assertThat(createUserProfileResponseOptional).isEmpty();
     }
 
-    @Ignore
     @Test
     public void testDecode_for_non_gzip_with_decode_fails_with_ioException() {
         Request request = mock(Request.class);
