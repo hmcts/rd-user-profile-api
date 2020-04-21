@@ -36,7 +36,7 @@ idam:
     totp_secret: ${S2S_SECRET:OLMEJQA7UHU6EZKG}
     microservice: rd_user_profile_api
     url: ${S2S_URL:http://127.0.0.1:8990}
-    pbaFromUserAccountMap: false
+
   s2s-authorised:
     services: ${PRD_S2S_AUTHORISED_SERVICES:rd_user_profile_api}
   api:
