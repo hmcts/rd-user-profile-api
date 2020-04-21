@@ -154,4 +154,20 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
         assertThat(errorResponse.getErrorDescription()).contains(String.format("The request was last made less than %s minutes ago. Please try after some time", resendInterval));
     }
 
+    // resend invite fail with 429 if user is already invited and again within 1 hour and fields are not changed
+    @Test
+    public void should_return_429_when_user_reinvited_successfully_and_again_reinvited_within_one_hour_with_no_request_fields_change() throws Exception {
+
+        updateLastUpdatedTimestamp(userProfile.getIdamId());
+
+        pendingUserRequest.setResendInvite(true);
+        UserProfileCreationResponse reInvitedUserResponse = (UserProfileCreationResponse) createUser(pendingUserRequest, CREATED, UserProfileCreationResponse.class);
+        assertThat(reInvitedUserResponse.getIdamId()).isEqualTo(userProfile.getIdamId());
+        verifyUserProfileCreation(reInvitedUserResponse, CREATED, pendingUserRequest);
+
+        ErrorResponse errorResponse = (ErrorResponse) createUser(pendingUserRequest, TOO_MANY_REQUESTS, ErrorResponse.class);
+        assertThat(errorResponse.getErrorMessage()).isEqualTo(String.format("10 : The request was last made less than %s minutes ago. Please try after some time", resendInterval));
+        assertThat(errorResponse.getErrorDescription()).contains(String.format("The request was last made less than %s minutes ago. Please try after some time", resendInterval));
+    }
+
 }
