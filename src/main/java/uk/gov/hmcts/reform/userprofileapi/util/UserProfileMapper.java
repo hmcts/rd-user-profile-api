@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
+import java.time.LocalDateTime;
 import org.apache.commons.lang.StringUtils;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UpdateUserDetails;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
@@ -21,6 +22,8 @@ public interface UserProfileMapper {
     static void mapUpdatableFieldsForReInvite(UserProfileCreationData userProfileCreationData, UserProfile userProfile) {
         setFirstName(userProfileCreationData.getFirstName(), userProfile);
         setLastName(userProfileCreationData.getLastName(), userProfile);
+        // explicitly setting this because hibernate does not update lastupdated if resend invite request has no change in fields
+        userProfile.setLastUpdated(LocalDateTime.now());
     }
 
     static UpdateUserDetails mapIdamUpdateStatusRequest(UpdateUserProfileData updateUserProfileData) {
