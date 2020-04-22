@@ -12,6 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 
@@ -21,6 +22,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 @Entity
 @Table(name = "response")
 @SequenceGenerator(name = "response_id_seq", sequenceName = "response_id_seq", allocationSize = 1)
+@NoArgsConstructor
 public class Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "response_id_seq")

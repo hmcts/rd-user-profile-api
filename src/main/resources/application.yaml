@@ -83,3 +83,9 @@ auth.provider.service.client.baseUrl: ${S2S_URL:http://rpe-service-auth-provider
 idam.s2s-auth.totp_secret: ${S2S_SECRET:AAAAAAAAAAAAAAAA}
 idam.s2s-auth.microservice: rd_user_profile_api
 idam.s2s-auth.url: ${S2S_URL:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
+
+# resent user invite interval in minutes
+resendInterval: 60
+
+# sync time interval in minutes
+syncInterval: 60

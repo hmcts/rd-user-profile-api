@@ -63,6 +63,23 @@ public class UserProfileControllerTest {
         assertThat(resource.getBody()).isEqualToComparingFieldByField(expectedBody);
 
         verify(userProfileServiceMock, times(1)).create(any(UserProfileCreationData.class));
+        verify(userProfileServiceMock, times(0)).reInviteUser(any(UserProfileCreationData.class));
+    }
+
+    @Test
+    public void testReInviteUserProfile() {
+
+        UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData(true);
+        UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
+        UserProfileCreationResponse expectedBody = new UserProfileCreationResponse(userProfile);
+
+        when(userProfileServiceMock.reInviteUser(userProfileCreationData)).thenReturn(expectedBody);
+
+        ResponseEntity<UserProfileCreationResponse> resource = sut.createUserProfile(userProfileCreationData);
+        assertThat(resource.getBody()).isEqualToComparingFieldByField(expectedBody);
+
+        verify(userProfileServiceMock, times(0)).create(any(UserProfileCreationData.class));
+        verify(userProfileServiceMock, times(1)).reInviteUser(any(UserProfileCreationData.class));
     }
 
     @Test
