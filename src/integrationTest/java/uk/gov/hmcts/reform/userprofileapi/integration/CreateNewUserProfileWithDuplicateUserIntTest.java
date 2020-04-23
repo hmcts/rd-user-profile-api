@@ -12,6 +12,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
+import static uk.gov.hmcts.reform.userprofileapi.integration.AuthorizationEnabledIntegrationTest.getMatchedAuditRecords;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
@@ -242,9 +243,9 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
         assertThat(userProfile.getCreated()).isNotNull();
         assertThat(userProfile.getLastUpdated()).isNotNull();
 
-        Optional<Audit> optional = auditRepository.findByUserProfile(userProfile);
-        Audit audit = optional.orElse(null);
-
+        List<Audit> matchedAudit = getMatchedAuditRecords(auditRepository.findAll(), userProfile.getIdamId());
+        assertThat(matchedAudit.size()).isEqualTo(1);
+        Audit audit = matchedAudit.get(0);
         assertThat(audit).isNotNull();
         assertThat(audit.getIdamRegistrationResponse()).isEqualTo(201);
         assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.ACCEPTED);

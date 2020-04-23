@@ -118,9 +118,10 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
         assertThat(updatedUserProfile.getPostalCommsConsentTs()).isEqualTo(persistedUserProfile.getPostalCommsConsentTs());
         assertThat(updatedUserProfile.getCreated()).isEqualTo(persistedUserProfile.getCreated());
 
-        Optional<Audit> optional = auditRepository.findByUserProfile(updatedUserProfile);
+        List<Audit> matchedAuditRecords = getMatchedAuditRecords(auditRepository.findAll(), updatedUserProfile.getIdamId());
+        assertThat(matchedAuditRecords.size()).isEqualTo(1);
+        Audit audit = matchedAuditRecords.get(0);
 
-        Audit audit = optional.get();
         assertThat(audit).isNotNull();
         assertThat(audit.getIdamRegistrationResponse()).isEqualTo(200);
         assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.OK);

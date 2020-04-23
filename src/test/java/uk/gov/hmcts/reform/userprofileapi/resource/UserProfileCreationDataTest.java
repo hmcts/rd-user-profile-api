@@ -23,7 +23,7 @@ public class UserProfileCreationDataTest {
                 false,
                 UserCategory.CITIZEN.toString(),
                 UserType.EXTERNAL.toString(),
-                getIdamRolesJson());
+                getIdamRolesJson(),false);
 
         assertThat(userProfileData.getEmail()).isEqualTo("test-email-@somewhere.com");
         assertThat(userProfileData.getFirstName()).isEqualTo("test-first-name");

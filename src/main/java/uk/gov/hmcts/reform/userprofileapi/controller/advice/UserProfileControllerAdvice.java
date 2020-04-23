@@ -16,6 +16,7 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.hmcts.reform.userprofileapi.exception.IdamServiceException;
 import uk.gov.hmcts.reform.userprofileapi.exception.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
@@ -34,6 +36,8 @@ import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
 public class UserProfileControllerAdvice {
 
     private static final String LOG_STRING = "handling exception: {}";
+    @Value("${resendInterval}")
+    private String resendInterval;
 
     @ExceptionHandler(RequiredFieldMissingException.class)
     protected ResponseEntity<Object> handleRequiredFieldMissingException(
@@ -80,6 +84,14 @@ public class UserProfileControllerAdvice {
             HttpMessageConversionException e
     ) {
         return errorDetailsResponseEntity(e, BAD_REQUEST, INVALID_REQUEST.getErrorMessage());
+    }
+
+    @ExceptionHandler(HttpClientErrorException.class)
+    protected ResponseEntity<Object> handleTooManyRequestsException(
+            HttpServletRequest request,
+            HttpClientErrorException e
+    ) {
+        return errorDetailsResponseEntity(e, HttpStatus.TOO_MANY_REQUESTS, String.format(ErrorConstants.TOO_MANY_REQUESTS.getErrorMessage(), resendInterval));
     }
 
     @ExceptionHandler(IdamServiceException.class)

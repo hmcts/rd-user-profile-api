@@ -13,8 +13,8 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfile;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
@@ -53,15 +53,15 @@ public class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabl
 
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
 
-        Iterable<UserProfile> userProfiles = testUserProfileRepository.findAll();
+        Iterable<UserProfile> userProfiles = userProfileRepository.findAll();
         assertThat(userProfiles).isEmpty();
 
         UserProfile user1 = buildUserProfile();
         user1.setStatus(IdamStatus.ACTIVE);
-        user1 = testUserProfileRepository.save(user1);
+        user1 = userProfileRepository.save(user1);
 
 
-        assertTrue(testUserProfileRepository.existsById(user1.getId()));
+        assertTrue(userProfileRepository.existsById(user1.getId()));
 
         userProfileMap = new HashMap<>();
         userProfileMap.put("user", user1);
@@ -81,8 +81,9 @@ public class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabl
         assertThat(result.getResponse()).isNotNull();
         assertThat(result.getResponse().getContentAsString()).isNotEmpty();
 
-        Optional<Audit> optional = auditRepository.findByUserProfile(userProfile);
-        Audit audit = optional.get();
+        List<Audit> matchedAuditRecords = getMatchedAuditRecords(auditRepository.findAll(), userProfile.getIdamId());
+        assertThat(matchedAuditRecords.size()).isEqualTo(1);
+        Audit audit = matchedAuditRecords.get(0);
 
         assertThat(audit).isNotNull();
         assertThat(audit.getIdamRegistrationResponse()).isEqualTo(404);
@@ -103,8 +104,9 @@ public class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabl
                         NOT_FOUND
                 );
 
-        Optional<Audit> optional = auditRepository.findByUserProfile(userProfile);
-        Audit audit = optional.get();
+        List<Audit> matchedAuditRecords = getMatchedAuditRecords(auditRepository.findAll(), userProfile.getIdamId());
+        assertThat(matchedAuditRecords.size()).isEqualTo(1);
+        Audit audit = matchedAuditRecords.get(0);
 
         assertThat(audit).isNotNull();
         assertThat(audit.getIdamRegistrationResponse()).isEqualTo(404);
