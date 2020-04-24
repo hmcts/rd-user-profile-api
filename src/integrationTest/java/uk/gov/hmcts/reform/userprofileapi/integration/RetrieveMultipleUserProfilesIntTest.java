@@ -77,7 +77,7 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
 
         userProfileRepository.deleteAll();
-        testAuditRepository.deleteAll();
+        auditRepository.deleteAll();
 
         Iterable<UserProfile> userProfiles = userProfileRepository.findAll();
         assertThat(userProfiles).isEmpty();
@@ -145,19 +145,23 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
             }
         });
 
-        Audit audit1 = testAuditRepository.findByUserProfile(userProfileMap.get("user1")).orElse(null);
-        assertThat(audit1).isNotNull();
-        assertThat(audit1.getIdamRegistrationResponse()).isEqualTo(200);
+        List<Audit> audits = auditRepository.findAll();
 
-        Audit audit2 = testAuditRepository.findByUserProfile(userProfileMap.get("user2")).orElse(null);
-        assertThat(audit2).isNotNull();
-        assertThat(audit2.getIdamRegistrationResponse()).isEqualTo(200);
+        List<Audit> matchedAudit = getMatchedAuditRecords(audits, userProfileMap.get("user1").getIdamId());
+        assertThat(matchedAudit.size()).isEqualTo(1);
+        Audit actualAudit = matchedAudit.get(0);
+        assertThat(actualAudit.getIdamRegistrationResponse()).isEqualTo(200);
 
-        Audit audit3 = testAuditRepository.findByUserProfile(userProfileMap.get("user3")).orElse(null);
-        assertThat(audit3).isNull();
+        matchedAudit = getMatchedAuditRecords(audits, userProfileMap.get("user2").getIdamId());
+        assertThat(matchedAudit.size()).isEqualTo(1);
+        Audit actualAudit1 = matchedAudit.get(0);
+        assertThat(actualAudit1.getIdamRegistrationResponse()).isEqualTo(200);
 
-        Audit audit4 = testAuditRepository.findByUserProfile(userProfileMap.get("user4")).orElse(null);
-        assertThat(audit4).isNull();
+        matchedAudit = getMatchedAuditRecords(audits, userProfileMap.get("user3").getIdamId());
+        assertThat(matchedAudit.size()).isEqualTo(0);
+
+        matchedAudit = getMatchedAuditRecords(audits, userProfileMap.get("user4").getIdamId());
+        assertThat(matchedAudit.size()).isEqualTo(0);
     }
 
     @Test
@@ -209,19 +213,21 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
             }
         });
 
-        Audit audit1 = testAuditRepository.findByUserProfile(userProfileMap.get("user1")).orElse(null);
-        assertThat(audit1).isNotNull();
-        assertThat(audit1.getIdamRegistrationResponse()).isEqualTo(404);
+        List<Audit> audits = auditRepository.findAll();
 
-        Audit audit2 = testAuditRepository.findByUserProfile(userProfileMap.get("user2")).orElse(null);
-        assertThat(audit2).isNotNull();
-        assertThat(audit2.getIdamRegistrationResponse()).isEqualTo(404);
+        List<Audit> actualMatchedAudits = getMatchedAuditRecords(audits, userProfileMap.get("user1").getIdamId());
+        assertThat(actualMatchedAudits).isNotEmpty().hasSize(1);
+        assertThat(actualMatchedAudits.get(0).getIdamRegistrationResponse()).isEqualTo(404);
 
-        Audit audit3 = testAuditRepository.findByUserProfile(userProfileMap.get("user3")).orElse(null);
-        assertThat(audit3).isNull();
+        actualMatchedAudits = getMatchedAuditRecords(audits, userProfileMap.get("user2").getIdamId());
+        assertThat(actualMatchedAudits).isNotEmpty().hasSize(1);
+        assertThat(actualMatchedAudits.get(0).getIdamRegistrationResponse()).isEqualTo(404);
 
-        Audit audit4 = testAuditRepository.findByUserProfile(userProfileMap.get("user4")).orElse(null);
-        assertThat(audit4).isNull();
+        actualMatchedAudits = getMatchedAuditRecords(audits, userProfileMap.get("user3").getIdamId());
+        assertThat(actualMatchedAudits).isEmpty();
+
+        actualMatchedAudits = getMatchedAuditRecords(audits, userProfileMap.get("user4").getIdamId());
+        assertThat(actualMatchedAudits).isEmpty();
     }
 
     @Test
