@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.controller;
 
 import static java.util.Objects.requireNonNull;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateCreateUserProfileRequest;
 
@@ -82,8 +82,8 @@ public class UserProfileController {
     })
 
     @PostMapping(
-        consumes = APPLICATION_JSON_UTF8_VALUE,
-        produces = APPLICATION_JSON_UTF8_VALUE
+        consumes = APPLICATION_JSON_VALUE,
+        produces = APPLICATION_JSON_VALUE
     )
     @ResponseBody
     public ResponseEntity<UserProfileCreationResponse> createUserProfile(@Valid @RequestBody UserProfileCreationData userProfileCreationData) {
@@ -126,7 +126,7 @@ public class UserProfileController {
     })
     @GetMapping(
         path = "/{id}/roles",
-        produces = APPLICATION_JSON_UTF8_VALUE
+        produces = APPLICATION_JSON_VALUE
     )
     @ResponseBody
     public ResponseEntity<UserProfileWithRolesResponse> getUserProfileWithRolesById(@PathVariable String id) {
@@ -168,7 +168,7 @@ public class UserProfileController {
     @GetMapping(
             path = "/roles",
             params = "email",
-            produces = APPLICATION_JSON_UTF8_VALUE
+            produces = APPLICATION_JSON_VALUE
     )
     @ResponseBody
     public ResponseEntity<UserProfileWithRolesResponse> getUserProfileWithRolesByEmail(@RequestParam String email) {
@@ -205,7 +205,7 @@ public class UserProfileController {
 
     })
     @GetMapping(
-            produces = APPLICATION_JSON_UTF8_VALUE
+            produces = APPLICATION_JSON_VALUE
     )
     @ResponseBody
     public ResponseEntity<UserProfileResponse> getUserProfileByEmail(@ApiParam(name = "email", required = false) @RequestParam (value = "email", required = false) String email,
@@ -254,8 +254,8 @@ public class UserProfileController {
 
     @PutMapping(
             path = "/{userId}",
-            consumes = APPLICATION_JSON_UTF8_VALUE,
-            produces = APPLICATION_JSON_UTF8_VALUE
+            consumes = APPLICATION_JSON_VALUE,
+            produces = APPLICATION_JSON_VALUE
     )
 
     @ResponseBody
@@ -315,8 +315,8 @@ public class UserProfileController {
 
     @PostMapping(
             path = "/users",
-            consumes = APPLICATION_JSON_UTF8_VALUE,
-            produces = APPLICATION_JSON_UTF8_VALUE
+            consumes = APPLICATION_JSON_VALUE,
+            produces = APPLICATION_JSON_VALUE
     )
     @ResponseBody
     public ResponseEntity<UserProfileDataResponse> retrieveUserProfiles(@ApiParam(name = "showdeleted", required = true)@RequestParam (value = "showdeleted", required = true) String showDeleted,
