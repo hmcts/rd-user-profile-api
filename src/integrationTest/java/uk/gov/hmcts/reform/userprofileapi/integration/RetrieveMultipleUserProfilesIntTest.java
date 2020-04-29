@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -249,6 +250,7 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
         getMultipleUsers(request, HttpStatus.BAD_REQUEST, "true", "true");
     }
 
+    @Ignore
     @Test
     public void should_retrieve_multiple_user_profiles_without_roles() throws Exception {
 

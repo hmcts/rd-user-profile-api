@@ -1,7 +1,8 @@
 spring:
   datasource:
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:dbuserprofile;INIT=create domain if not exists json as text
+    url: jdbc:h2:mem:dbuserprofile;IGNORE_UNKNOWN_SETTINGS=TRUE;INIT=create domain if not exists json as text;
+    platform: h2
     username: ${POSTGRES_USERNAME:dbuserprofile}
     password: ${POSTGRES_PASSWORD:dbuserprofile}
 
