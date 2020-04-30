@@ -37,6 +37,8 @@ public class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegration
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
     }
 
+
+
     @Test
     public void should_return_201_and_create_user_profile_resource() throws Exception {
 

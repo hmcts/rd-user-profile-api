@@ -73,7 +73,6 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
             );
 
         assertThat(retrievedResource).isNotNull();
-        //assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile, "roles", "idamStatus", "idamStatusCode", "idamMessage");
     }
 
     @Test
@@ -93,7 +92,6 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
                 );
 
         assertThat(retrievedResource).isNotNull();
-        //assertThat(retrievedResource).isEqualToIgnoringGivenFields(user, "roles", "idamStatus", "idamStatusCode", "idamMessage");
     }
 
     @Test
@@ -109,7 +107,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
                 );
 
         assertThat(retrievedResource).isNotNull();
-        //! assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile, "roles", "idamStatus", "idamStatusCode", "idamMessage");
+
         assertThat(retrievedResource.getRoles().size()).isGreaterThan(0);
 
         Optional<UserProfile> optionalUserProfile = userProfileRepository.findByIdamId(retrievedResource.getIdamId());
@@ -140,7 +138,6 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
                 );
 
         assertThat(retrievedResource).isNotNull();
-        //assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile, "roles", "idamStatus", "idamStatusCode", "idamMessage");
         assertThat(retrievedResource.getRoles().size()).isGreaterThan(0);
 
         Optional<UserProfile> optionalUserProfile = userProfileRepository.findByIdamId(retrievedResource.getIdamId());
@@ -172,7 +169,6 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
                 );
 
         assertThat(retrievedResource).isNotNull();
-        //assertThat(retrievedResource).isEqualToIgnoringGivenFields(userProfile, "roles", "idamStatus");
 
     }
 

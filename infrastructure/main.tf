@@ -17,6 +17,8 @@ locals {
   s2s_vault_name = "s2s-${local.local_env}"
   s2s_vault_uri = "https://s2s-${local.local_env}.vault.azure.net/"
   idam_url = "${var.env == "prod" ? "https://idam-api.platform.hmcts.net" : "https://idam-api.${local.local_env}.platform.hmcts.net" }"
+  OIDC_ISSUER_URL = "https://forgerock-am.service.core-compute-idam-{{ .Values.global.environment }}.internal:8443/openam/oauth2/hmcts"
+  OPEN_ID_API_BASE_URI = "https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net/o"
 }
 
 resource "azurerm_resource_group" "rg" {
@@ -51,6 +53,16 @@ data "azurerm_key_vault_secret" "s2s_url" {
 
 data "azurerm_key_vault_secret" "idam_url" {
   name = "idam-url"
+  key_vault_id = "${data.azurerm_key_vault.rd_key_vault.id}"
+}
+
+data "azurerm_key_vault_secret" "OIDC_ISSUER_URL" {
+  name = "OIDC-ISSUER-URL"
+  key_vault_id = "${data.azurerm_key_vault.rd_key_vault.id}"
+}
+
+data "azurerm_key_vault_secret" "OPEN_ID_API_BASE_URI" {
+  name = "OPEN-ID-API-BASE-URI"
   key_vault_id = "${data.azurerm_key_vault.rd_key_vault.id}"
 }
 
@@ -129,6 +141,9 @@ module "rd-user-profile-api" {
     POSTGRES_CONNECTION_OPTIONS = "?"
 
     IDAM_URL = "${data.azurerm_key_vault_secret.idam_url.value}"
+    OIDC_ISSUER_URL = "${data.azurerm_key_vault_secret.OIDC_ISSUER_URL.value}"
+    OPEN_ID_API_BASE_URI = "${data.azurerm_key_vault_secret.OPEN_ID_API_BASE_URI.value}"
+
     S2S_URL = "${local.s2s_url}"
 
     ROOT_LOGGING_LEVEL = "${var.root_logging_level}"
