@@ -10,11 +10,10 @@ import lombok.Setter;
 @Setter
 public class UserProfileDataRequest {
 
-    @JsonProperty(value = "userId")
     private List<String> userIds;
 
     @JsonCreator
-    public UserProfileDataRequest(List<String> userIds) {
+    public UserProfileDataRequest(@JsonProperty(value = "userId") List<String> userIds) {
         this.userIds = userIds;
     }
 }
