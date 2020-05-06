@@ -132,7 +132,7 @@ public class ValidationHelperServiceTest {
         verify(auditServiceMock, times(1)).persistAudit(eq(HttpStatus.BAD_REQUEST), eq(API));
     }
 
-    @Test(expected = Test.None.class)
+    @Test
     public void testvalidateUserStatusBeforeUpdate_scenario2() {
         final Throwable raisedException = catchThrowable(() -> sut.validateUserStatusBeforeUpdate(updateUserProfileData, userProfile, API));
 
