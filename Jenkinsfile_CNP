@@ -7,9 +7,9 @@ def product = "rd"
 def component = "user-profile-api"
 
 def secrets = [
-        's2s-${env}': [
-                secret('microservicekey-rd-user-profile-api', 'S2S_SECRET')
-        ]
+    's2s-${env}': [
+            secret('microservicekey-rd-user-profile-api', 'S2S_SECRET')
+    ]
 ]
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
@@ -23,8 +23,8 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 
 
 def vaultOverrides = [
-        'preview' : 'aat',
-        'spreview': 'saat'
+    'preview' : 'aat',
+    'spreview': 'saat'
 ]
 
 withPipeline(type, product, component) {
@@ -42,8 +42,10 @@ withPipeline(type, product, component) {
 
     enableDbMigration('rd')
     installCharts()
+    
     // **This is for demo. Uncomment below for AAT/AKS deployments**
-    //disableLegacyDeployment()
+    disableLegacyDeployment()
+    
     enableAksStagingDeployment()
     enableMutationTest()
 
@@ -62,5 +64,4 @@ withPipeline(type, product, component) {
     after('functionalTest:aat') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
     }
-
 }
