@@ -77,7 +77,7 @@ public class ValidationHelperServiceTest {
         verify(auditServiceMock, times(1)).persistAudit(eq(HttpStatus.NOT_FOUND), eq(SYNC));
     }
 
-    @Test(expected = Test.None.class)
+    @Test()
     public void testValidateUserIsPresentWithExceptionHappyPath() {
         sut.validateUserIsPresent(Optional.of(userProfile));
     }
@@ -122,7 +122,7 @@ public class ValidationHelperServiceTest {
         verify(auditServiceMock, times(1)).persistAudit(eq(HttpStatus.BAD_REQUEST), eq(API));
     }
 
-    @Test(expected = Test.None.class)
+    @Test()
     public void testvalidateUserStatusBeforeUpdate_scenario1() {
         final Throwable raisedException = catchThrowable(() -> sut.validateUserStatusBeforeUpdate(updateUserProfileData, userProfile, API));
 
@@ -142,7 +142,7 @@ public class ValidationHelperServiceTest {
         verify(auditServiceMock, times(1)).persistAudit(eq(HttpStatus.BAD_REQUEST), eq(API));
     }
 
-    @Test(expected = Test.None.class)
+    @Test()
     public void testvalidateUserStatusBeforeUpdate_scenario3() {
         userProfile.setStatus(IdamStatus.ACTIVE);
         assertThat(sut.validateUserStatusBeforeUpdate(updateUserProfileData, userProfile, API)).isTrue();
@@ -170,7 +170,7 @@ public class ValidationHelperServiceTest {
         verify(exceptionServiceMock, times(1)).throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
     }
 
-    @Test(expected = Test.None.class)
+    @Test()
     public void test_validateUserPersistedWithException_scenario1() {
         assertThat(sut.validateUserPersisted(HttpStatus.OK)).isTrue();
     }
@@ -209,7 +209,7 @@ public class ValidationHelperServiceTest {
         assertThat(sut.validateUserStatusBeforeUpdate(updateUserProfileData, userProfile, API)).isTrue();
     }
 
-    @Test(expected = Test.None.class)
+    @Test()
     public void test_validateUserStatusWithException_should_return_true() {
         sut.validateUserStatus(userProfile, IdamStatus.PENDING);
         verify(auditServiceMock, times(0)).persistAudit(any(HttpStatus.class), any(ResponseSource.class));
@@ -227,7 +227,7 @@ public class ValidationHelperServiceTest {
         verify(exceptionServiceMock, times(1)).throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
     }
 
-    @Test(expected = Test.None.class)
+    @Test()
     public void test_validateUserLastUpdatedWithinSpecifiedTimeWithException_should_return_true() {
 
         userProfile.setLastUpdated(LocalDateTime.now().minusMinutes(120L));
