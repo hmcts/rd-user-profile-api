@@ -27,7 +27,6 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
-import uk.gov.hmcts.reform.userprofileapi.service.ExceptionService;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationHelperService;
 
 @Service
@@ -38,7 +37,7 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
     private AuditService auditService;
 
     @Autowired
-    private ExceptionService exceptionService;
+    private ExceptionServiceImpl exceptionService;
 
     @Value("${resendInterval}")
     private String resendInterval;
