@@ -8,9 +8,11 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataRes
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfilesDeletionResponse;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceCreator;
+import uk.gov.hmcts.reform.userprofileapi.service.ResourceDeleter;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceRetriever;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceUpdator;
 
@@ -25,6 +27,9 @@ public class UserProfileService<T extends RequestData> {
 
     @Autowired
     private ResourceUpdator<T> resourceUpdator;
+
+    @Autowired
+    private ResourceDeleter<T> resourceDeleter;
 
     @Autowired
     private UserProfileRepository userProfileRepository;
@@ -55,5 +60,9 @@ public class UserProfileService<T extends RequestData> {
 
     public UserProfileRolesResponse updateRoles(T updateData, String userId) {
         return  resourceUpdator.updateRoles(updateData, userId);
+    }
+
+    public UserProfilesDeletionResponse delete(T requestData) {
+        return resourceDeleter.delete(requestData);
     }
 }

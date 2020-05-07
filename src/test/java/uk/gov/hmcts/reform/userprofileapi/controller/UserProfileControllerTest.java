@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildUpdateUserProfileData;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -28,6 +29,7 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfilesDeletionResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder;
@@ -36,6 +38,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfilesDeletionData;
 import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileService;
 
 
@@ -194,5 +197,23 @@ public class UserProfileControllerTest {
 
         ResponseEntity expect = ResponseEntity.status(HttpStatus.OK).build();
         assertThat(actual).isEqualTo(expect);
+    }
+
+    @Test
+    public void testDeleteUserProfiles() {
+
+        UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
+        List<String> userIds = new ArrayList<>();
+        userIds.add(userProfile.getIdamId());
+        UserProfileDataRequest userProfileDataRequest = new UserProfileDataRequest(userIds);
+        UserProfilesDeletionResponse userProfilesDeletionResponse = new UserProfilesDeletionResponse(204,"UserProfiles Successfully Deleted",null);
+
+        when(userProfileServiceMock.delete(any(UserProfilesDeletionData.class))).thenReturn(userProfilesDeletionResponse);
+        ResponseEntity<UserProfilesDeletionResponse> responseEntityActual = sut.deleteUserProfiles(userProfileDataRequest);
+        assertThat(responseEntityActual).isNotNull();
+
+        verify(userProfileServiceMock, times(1)).delete(any(UserProfilesDeletionData.class));
+        assertThat(responseEntityActual.getStatusCodeValue()).isEqualTo(204);
+        assertThat(responseEntityActual.getBody().getMessage()).isEqualTo("UserProfiles Successfully Deleted");
     }
 }

@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateCreateUserProfileRequest;
+import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateUserIds;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,11 +39,13 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataRes
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfilesDeletionResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdentifierName;
 import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfilesDeletionData;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
 import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileService;
@@ -370,10 +374,50 @@ public class UserProfileController {
 
         boolean showDeletedBoolean = UserProfileValidator.validateAndReturnBooleanForParam(showDeleted);
         boolean rolesRequiredBoolean = UserProfileValidator.validateAndReturnBooleanForParam(rolesRequired);
-        UserProfileValidator.validateUserIds(userProfileDataRequest);
+        validateUserIds(userProfileDataRequest);
         UserProfileDataResponse userProfileDataResponse =
                 userProfileService.retrieveWithRoles(new UserProfileIdentifier(IdentifierName.UUID_LIST, userProfileDataRequest.getUserIds()), showDeletedBoolean, rolesRequiredBoolean);
         return ResponseEntity.status(HttpStatus.OK).body(userProfileDataResponse);
 
     }
+
+    @ApiOperation(value = "Delete an User Profiles",
+            authorizations = {
+                    @Authorization(value = "ServiceAuthorization"),
+                    @Authorization(value = "Authorization")
+            })
+    @ApiResponses({
+            @ApiResponse(
+                    code = 204,
+                    message = "User Profiles deleted successfully",
+                    response = UserProfilesDeletionResponse.class
+            ),
+            @ApiResponse(
+                    code = 400,
+                    message = "An invalid request has been provided"
+            ),
+            @ApiResponse(
+                    code = 401,
+                    message = "Unauthorized Error : The requested resource is restricted and requires authentication"
+            ),
+            @ApiResponse(
+                    code = 500,
+                    message = "User Profiles not deleted successfully"
+            )
+    })
+
+    @DeleteMapping(
+            consumes = APPLICATION_JSON_VALUE,
+            produces = APPLICATION_JSON_VALUE
+    )
+    @ResponseBody
+    public ResponseEntity<UserProfilesDeletionResponse> deleteUserProfiles(@Valid @RequestBody UserProfileDataRequest userProfilesDeletionDataReq) {
+
+        UserProfilesDeletionResponse resource = null;
+        validateUserIds(userProfilesDeletionDataReq);
+        resource = userProfileService.delete(new UserProfilesDeletionData(userProfilesDeletionDataReq.getUserIds()));
+        return ResponseEntity.status(resource.getStatusCode()).body(resource);
+
+    }
+
 }
