@@ -35,6 +35,7 @@ public class UserProfileDeleter implements ResourceDeleter<UserProfilesDeletionD
     private AuditService auditService;
 
     @Override
+    @Transactional
     public UserProfilesDeletionResponse delete(UserProfilesDeletionData profilesData) {
 
         List<UserProfile> userProfiles = new ArrayList<UserProfile>();
@@ -48,26 +49,19 @@ public class UserProfileDeleter implements ResourceDeleter<UserProfilesDeletionD
      * Either delete all the audit and userProfiles data from the data base or none.
      *
      */
-    @Transactional
-    private UserProfilesDeletionResponse deleteUserProfiles(List<UserProfile> userProfiles) {
-        UserProfilesDeletionResponse attributeResponse = new UserProfilesDeletionResponse();
-        List<Audit> deleteAuditRecords = new ArrayList<Audit>();
-        HttpStatus status = HttpStatus.NO_CONTENT;
-        try {
-            userProfiles.forEach(userProfile -> deleteAuditRecords.addAll(userProfile.getResponses()));
-            auditRepository.deleteAll(deleteAuditRecords);
-            userProfileRepository.deleteAll(userProfiles);
-            attributeResponse.setMessage("UserProfiles Successfully Deleted");
-            attributeResponse.setStatusCode(204);
 
-        } catch (Exception ex) {
-            status = HttpStatus.INTERNAL_SERVER_ERROR;
-            attributeResponse.setMessage("While deleting userProfiles facing some issues");
-            attributeResponse.setStatusCode(500);
-            attributeResponse.setErrorDescription(ex.getMessage());
-        }
-        auditService.persistAudit(attributeResponse);
-        return attributeResponse;
+    private UserProfilesDeletionResponse deleteUserProfiles(List<UserProfile> userProfiles) {
+
+        List<Audit> deleteAuditRecords = new ArrayList<Audit>();
+        userProfiles.forEach(userProfile -> deleteAuditRecords.addAll(userProfile.getResponses()));
+        auditRepository.deleteAll(deleteAuditRecords);
+        userProfileRepository.deleteAll(userProfiles);
+        UserProfilesDeletionResponse deletionResponse = new UserProfilesDeletionResponse();
+        HttpStatus status = HttpStatus.NO_CONTENT;
+        deletionResponse.setMessage("UserProfiles Successfully Deleted");
+        deletionResponse.setStatusCode(status.value());
+        auditService.persistAudit(deletionResponse);
+        return deletionResponse;
 
     }
 

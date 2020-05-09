@@ -206,7 +206,7 @@ public class UserProfileControllerTest {
         List<String> userIds = new ArrayList<>();
         userIds.add(userProfile.getIdamId());
         UserProfileDataRequest userProfileDataRequest = new UserProfileDataRequest(userIds);
-        UserProfilesDeletionResponse userProfilesDeletionResponse = new UserProfilesDeletionResponse(204,"UserProfiles Successfully Deleted",null);
+        UserProfilesDeletionResponse userProfilesDeletionResponse = new UserProfilesDeletionResponse(204,"UserProfiles Successfully Deleted");
 
         when(userProfileServiceMock.delete(any(UserProfilesDeletionData.class))).thenReturn(userProfilesDeletionResponse);
         ResponseEntity<UserProfilesDeletionResponse> responseEntityActual = sut.deleteUserProfiles(userProfileDataRequest);

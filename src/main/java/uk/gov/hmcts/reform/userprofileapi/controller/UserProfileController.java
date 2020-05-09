@@ -401,6 +401,10 @@ public class UserProfileController {
                     message = "Unauthorized Error : The requested resource is restricted and requires authentication"
             ),
             @ApiResponse(
+                    code = 403,
+                    message = "Forbidden Error: Access denied"
+            ),
+            @ApiResponse(
                     code = 500,
                     message = "User Profiles not deleted successfully"
             )

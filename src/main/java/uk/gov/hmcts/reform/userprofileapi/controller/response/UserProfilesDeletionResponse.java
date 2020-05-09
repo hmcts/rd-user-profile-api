@@ -11,12 +11,10 @@ public class UserProfilesDeletionResponse {
 
     private int statusCode;
     private String message;
-    private String errorDescription;
 
-    public UserProfilesDeletionResponse(int statusCode, String message, String errorDescription) {
+    public UserProfilesDeletionResponse(int statusCode, String message) {
         this.statusCode = statusCode;
         this.message = message;
-        this.errorDescription = errorDescription;
 
     }
 
