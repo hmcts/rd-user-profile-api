@@ -7,7 +7,6 @@ import java.util.List;
 
 import lombok.Setter;
 import org.apache.commons.lang.RandomStringUtils;
-import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserCategory;
@@ -58,10 +57,6 @@ public class CreateUserProfileTestDataBuilder {
         List<String> roles = new ArrayList<String>();
         roles.add("caseworker");
         return roles;
-    }
-
-    public static UserProfileDataRequest buildUserProfileDataRequest(List<String> userIds) {
-        return new UserProfileDataRequest(userIds);
     }
 
 }
