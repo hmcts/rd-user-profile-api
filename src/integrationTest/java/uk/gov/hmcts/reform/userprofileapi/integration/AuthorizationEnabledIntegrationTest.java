@@ -206,4 +206,8 @@ public class AuthorizationEnabledIntegrationTest {
     public static List<Audit> getMatchedAuditRecords(List<Audit> audits, String idamId) {
         return audits.stream().filter(audit -> audit.getUserProfile().getIdamId().equalsIgnoreCase(idamId)).collect(Collectors.toList());
     }
+
+    public static UserProfileDataRequest buildUserProfileDataRequest(List<String> userIds) {
+        return new UserProfileDataRequest(userIds);
+    }
 }

@@ -99,7 +99,8 @@ public interface UserProfileValidator {
     }
 
     static void validateUserIds(UserProfileDataRequest userProfileDataRequest) {
-        if (CollectionUtils.isEmpty(userProfileDataRequest.getUserIds()) || userProfileDataRequest.getUserIds().contains(" ")) {
+        if (CollectionUtils.isEmpty(userProfileDataRequest.getUserIds())
+             || userProfileDataRequest.getUserIds().contains(" ")) {
             throw new RequiredFieldMissingException("no user id in request");
         }
     }

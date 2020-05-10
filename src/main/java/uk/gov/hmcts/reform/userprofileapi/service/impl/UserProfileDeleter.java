@@ -49,7 +49,6 @@ public class UserProfileDeleter implements ResourceDeleter<UserProfilesDeletionD
      * Either delete all the audit and userProfiles data from the data base or none.
      *
      */
-
     private UserProfilesDeletionResponse deleteUserProfiles(List<UserProfile> userProfiles) {
 
         List<Audit> deleteAuditRecords = new ArrayList<Audit>();
@@ -69,7 +68,8 @@ public class UserProfileDeleter implements ResourceDeleter<UserProfilesDeletionD
      * This method is used to find the user profile exist or not with the give idamId.
      *
      */
-    private UserProfile validateUserStatus(String idamId) {
+    private UserProfile validateUserStatus(String userId) {
+        String idamId = userId != "" ? userId.trim() : userId;
         Optional<UserProfile> userProfileOptional = userProfileRepository.findByIdamId(idamId);
         if (!userProfileOptional.isPresent()) {
             throw new ResourceNotFoundException("could not find user profile for userId:" + idamId);
