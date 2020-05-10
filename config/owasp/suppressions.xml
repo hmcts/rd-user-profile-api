@@ -2864,6 +2864,7 @@
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-core@.*$</packageUrl>
         <vulnerabilityName>CVE-2020-1935</vulnerabilityName>
+        <cve>CVE-2020-1745</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[
