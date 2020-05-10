@@ -69,7 +69,7 @@ public class UserProfileDeleter implements ResourceDeleter<UserProfilesDeletionD
      *
      */
     private UserProfile validateUserStatus(String userId) {
-        String idamId = userId != "" ? userId.trim() : userId;
+        String idamId = userId.equals("") ? userId : userId.trim();
         Optional<UserProfile> userProfileOptional = userProfileRepository.findByIdamId(idamId);
         if (!userProfileOptional.isPresent()) {
             throw new ResourceNotFoundException("could not find user profile for userId:" + idamId);
