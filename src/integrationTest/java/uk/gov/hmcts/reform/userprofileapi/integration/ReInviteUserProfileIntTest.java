@@ -128,12 +128,11 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
     public void should_return_409_when_reinvited_user_gets_active_in_sidam_but_pending_in_up() throws Exception {
 
         updateLastUpdatedTimestamp(userProfile.getIdamId());
-        setSidamRegistrationMockWithStatus(HttpStatus.CONFLICT.value());
-
+        setSidamRegistrationMockWithStatus(HttpStatus.CONFLICT.value(), false);
         UserProfileCreationData data = buildCreateUserProfileData(true);
         data.setEmail(pendingUserRequest.getEmail());
         ErrorResponse errorResponse = (ErrorResponse) createUser(data, HttpStatus.CONFLICT, ErrorResponse.class);
-        assertThat(errorResponse.getErrorMessage()).isEqualTo(String.format("7 : Resend invite failed as user is already active. Wait for %s minutes for the system to refresh.", syncInterval));
+        assertThat(errorResponse.getErrorMessage()).isEqualTo(String.format("17 User with this email already exists"));
         assertThat(errorResponse.getErrorDescription()).contains(String.format("Resend invite failed as user is already active. Wait for %s minutes for the system to refresh.", syncInterval));
     }
 

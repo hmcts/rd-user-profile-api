@@ -2,10 +2,11 @@ package uk.gov.hmcts.reform.userprofileapi.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.ResponseEntity.status;
 
 import java.util.HashSet;
 import org.junit.Test;
-import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UpdateUserDetails;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
@@ -18,7 +19,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 public class UserProfileMapperTest {
 
     private UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
-    private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.ACCEPTED);
+    private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(status(CREATED).build());
     private UserProfile userProfile = new UserProfile(userProfileCreationData, idamRegistrationInfo.getIdamRegistrationResponse());
     private UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("email@net.com", "firstName", "lastName", "ACTIVE", new HashSet<RoleName>(), new HashSet<RoleName>());
 

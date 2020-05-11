@@ -28,8 +28,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
@@ -97,6 +97,55 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
         assertThat(updatedUserProfile.getStatus()).isEqualTo(IdamStatus.ACTIVE);
 
     }
+
+    @Test
+    public void should_see_idam_error_message_and_when_IdamStatus_is_updated_by_exui_and_idam_fails() throws Exception {
+
+
+        UserProfile persistedUserProfile = userProfileMap.get("user");
+        persistedUserProfile.setStatus(IdamStatus.ACTIVE);
+        userProfileRepository.save(persistedUserProfile);
+        String idamId = persistedUserProfile.getIdamId();
+        UpdateUserProfileData data = buildUpdateUserProfileData();
+        data.setIdamStatus("Active");
+        setSidamUserUpdateMockWithStatus(NOT_FOUND.value(), false, idamId);
+        UserProfileRolesResponse userProfileRolesResponse = userProfileRequestHandlerTest.sendPut(
+                mockMvc,
+                APP_BASE_PATH + SLASH + idamId + "?origin=EXUI",
+                data,
+                NOT_FOUND,
+                UserProfileRolesResponse.class
+        );
+
+        assertThat(userProfileRolesResponse).isNotNull();
+        assertThat(userProfileRolesResponse.getAttributeResponse().getIdamStatusCode()).isEqualTo(404);
+        assertThat(userProfileRolesResponse.getAttributeResponse().getIdamMessage()).isEqualTo("Not Found");
+    }
+
+    @Test
+    public void should_see_idam_error_message_and_when_IdamStatus_is_updated_by_exui_and_idam_failsand_does_not_give_body() throws Exception {
+
+
+        UserProfile persistedUserProfile = userProfileMap.get("user");
+        persistedUserProfile.setStatus(IdamStatus.ACTIVE);
+        userProfileRepository.save(persistedUserProfile);
+        String idamId = persistedUserProfile.getIdamId();
+        UpdateUserProfileData data = buildUpdateUserProfileData();
+        data.setIdamStatus("Active");
+        setSidamUserUpdateMockWithStatus(NOT_FOUND.value(), true, idamId);
+        UserProfileRolesResponse userProfileRolesResponse = userProfileRequestHandlerTest.sendPut(
+                mockMvc,
+                APP_BASE_PATH + SLASH + idamId + "?origin=EXUI",
+                data,
+                NOT_FOUND,
+                UserProfileRolesResponse.class
+        );
+
+        assertThat(userProfileRolesResponse).isNotNull();
+        assertThat(userProfileRolesResponse.getAttributeResponse().getIdamStatusCode()).isEqualTo(404);
+        assertThat(userProfileRolesResponse.getAttributeResponse().getIdamMessage()).isEqualTo("16 Resource not found");
+    }
+
 
     private void verifyUserProfileCreation(UpdateUserProfileData data, UserProfile persistedUserProfile) {
 
@@ -199,7 +248,7 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
                 mockMvc.perform(put(APP_BASE_PATH + SLASH + idamId.toString())
                     .content(jsonObject.toString())
                     .contentType(APPLICATION_JSON))
-                    .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
+                    .andExpect(status().is(BAD_REQUEST.value()))
                     .andReturn();
 
             } catch (Exception e) {

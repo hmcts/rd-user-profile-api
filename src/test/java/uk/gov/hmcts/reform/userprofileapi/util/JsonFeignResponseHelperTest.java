@@ -3,8 +3,10 @@ package uk.gov.hmcts.reform.userprofileapi.util;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.powermock.api.mockito.PowerMockito.when;
+import static uk.gov.hmcts.reform.userprofileapi.util.JsonFeignResponseHelper.getResponseMapperClass;
 
 import feign.Request;
 import feign.Response;
@@ -22,6 +24,8 @@ import java.util.Optional;
 import org.junit.Test;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
+import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamErrorResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 
 public class JsonFeignResponseHelperTest {
@@ -69,7 +73,7 @@ public class JsonFeignResponseHelperTest {
 
         Optional<UserProfileCreationResponse> createUserProfileResponseOptional = JsonFeignResponseHelper.decode(response, Optional.of(UserProfileCreationResponse.class));
 
-        assertThat(createUserProfileResponseOptional).isEmpty();
+        assertThat(createUserProfileResponseOptional).isNotEmpty();
     }
 
     @Test
@@ -84,7 +88,7 @@ public class JsonFeignResponseHelperTest {
 
         Optional<UserProfileCreationResponse> createUserProfileResponseOptional = JsonFeignResponseHelper.decode(response, Optional.of(UserProfileCreationResponse.class));
 
-        assertThat(createUserProfileResponseOptional).isEmpty();
+        assertThat(createUserProfileResponseOptional).isNotEmpty();
     }
 
     @Test
@@ -129,18 +133,6 @@ public class JsonFeignResponseHelperTest {
     }
 
     @Test
-    public void test_isStatusCodeSuccessful() {
-        assertThat(JsonFeignResponseHelper.isStatusCodeSuccessful(200)).isTrue();
-        assertThat(JsonFeignResponseHelper.isStatusCodeSuccessful(201)).isTrue();
-        assertThat(JsonFeignResponseHelper.isStatusCodeSuccessful(400)).isFalse();
-        assertThat(JsonFeignResponseHelper.isStatusCodeSuccessful(401)).isFalse();
-        assertThat(JsonFeignResponseHelper.isStatusCodeSuccessful(300)).isFalse();
-        assertThat(JsonFeignResponseHelper.isStatusCodeSuccessful(199)).isFalse();
-
-
-    }
-
-    @Test
     public void test_convertHeaders() {
         Map<String, Collection<String>> header = new HashMap<>();
         Collection<String> list = Arrays.asList("gzip", "");
@@ -181,5 +173,41 @@ public class JsonFeignResponseHelperTest {
         assertFalse(constructor.isAccessible());
         constructor.setAccessible(true);
         constructor.newInstance((Object[]) null);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void test_getResponseMapperClass_when_response_success_and_expected_mapper_class_is_passed() {
+        Response response = Response.builder().status(200).reason("OK").body("{\"idamId\": 1}", UTF_8).request(mock(Request.class)).build();
+        Optional<ErrorResponse> optionalObj = getResponseMapperClass(response, Optional.of(ErrorResponse.class));
+        assertTrue(optionalObj.isPresent());
+        assertThat(optionalObj.get()).isEqualTo(ErrorResponse.class);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void test_getResponseMapperClass_when_response_success_and_expected_mapper_class_is_passed_empty() {
+        Response response = Response.builder().status(200).reason("OK").body("{\"idamId\": 1}", UTF_8).request(mock(Request.class)).build();
+        Optional optionalObj = getResponseMapperClass(response, Optional.empty());
+        assertFalse(optionalObj.isPresent());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void test_getResponseMapperClass_when_response_failure() {
+        Response response = Response.builder().status(400).reason("OK").body("{\"idamId\": 1}", UTF_8).request(mock(Request.class)).build();
+        Optional optionalObj = getResponseMapperClass(response, Optional.of(IdamErrorResponse.class));
+        assertTrue(optionalObj.isPresent());
+        assertThat(optionalObj.get()).isEqualTo(IdamErrorResponse.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void test_getResponseMapperClass_when_response_failure_with_error_code_100() {
+        Response response = Response.builder().status(100).reason("OK").body("{\"idamId\": 1}", UTF_8).request(mock(Request.class)).build();
+        Optional<IdamErrorResponse> optionalObj = getResponseMapperClass(response, Optional.empty());
+        assertTrue(optionalObj.isPresent());
+        assertThat(optionalObj.get()).isEqualTo(IdamErrorResponse.class);
+
     }
 }

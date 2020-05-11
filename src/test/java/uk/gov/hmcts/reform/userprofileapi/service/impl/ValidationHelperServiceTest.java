@@ -10,6 +10,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.ACCEPTED;
+import static org.springframework.http.ResponseEntity.status;
 import static uk.gov.hmcts.reform.userprofileapi.domain.enums.ExceptionType.TOOMANYREQUESTS;
 import static uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource.API;
 import static uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource.SYNC;
@@ -54,7 +56,7 @@ public class ValidationHelperServiceTest {
 
 
     private UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
-    private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.ACCEPTED);
+    private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(status(ACCEPTED).build());
     private UserProfile userProfile = new UserProfile(userProfileCreationData, idamRegistrationInfo.getIdamRegistrationResponse());
 
     private UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("email@net.com", "firstName", "lastName", "ACTIVE", new HashSet<RoleName>(), new HashSet<RoleName>());
