@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
+import static uk.gov.hmcts.reform.userprofileapi.util.JsonFeignResponseHelper.getResponseMapperClass;
+
 import feign.FeignException;
 import feign.Response;
 import feign.RetryableException;
@@ -11,6 +13,7 @@ import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
@@ -101,6 +104,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
 
 
     @Override
+    @SuppressWarnings("unchecked")
     public UserProfileRolesResponse updateRoles(UpdateUserProfileData profileData, String userId) {
         UserProfileRolesResponse userProfileResponse = new UserProfileRolesResponse();
         UserProfile userProfile = validateUserStatus(userId);
@@ -109,12 +113,12 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
             RoleAdditionResponse roleAdditionResponse;
             HttpStatus httpStatus;
             try (Response response = idamClient.addUserRoles(profileData.getRolesAdd(), userId)) {
-                httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode();
-                roleAdditionResponse = new RoleAdditionResponse(httpStatus);
+                ResponseEntity responseEntity = JsonFeignResponseHelper.toResponseEntity(response, getResponseMapperClass(response, Optional.empty()));
+                roleAdditionResponse = new RoleAdditionResponse(responseEntity);
             } catch (FeignException ex) {
                 httpStatus = getHttpStatusFromFeignException(ex);
                 auditService.persistAudit(httpStatus, userProfile, ResponseSource.API);
-                roleAdditionResponse = new RoleAdditionResponse(httpStatus);
+                roleAdditionResponse = new RoleAdditionResponse(ResponseEntity.status(httpStatus).build());
             }
             userProfileResponse.setRoleAdditionResponse(roleAdditionResponse);
         }
@@ -128,18 +132,19 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         return userProfileResponse;
     }
 
+    @SuppressWarnings("unchecked")
     private RoleDeletionResponse deleteRolesInIdam(String userId, String roleName, UserProfile userProfile) {
-        HttpStatus httpStatus;
+        ResponseEntity responseEntity;
         try (Response response = idamClient.deleteUserRole(userId, roleName)) {
-            httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode();
+            responseEntity = JsonFeignResponseHelper.toResponseEntity(response, getResponseMapperClass(response, Optional.empty()));
         } catch (FeignException ex) {
-            httpStatus = getHttpStatusFromFeignException(ex);
-            auditService.persistAudit(httpStatus, userProfile, ResponseSource.API);
+            responseEntity = ResponseEntity.status(getHttpStatusFromFeignException(ex).value()).build();
+            auditService.persistAudit(responseEntity.getStatusCode(), userProfile, ResponseSource.API);
         }
-        return new RoleDeletionResponse(roleName, httpStatus);
+        return new RoleDeletionResponse(roleName, responseEntity);
     }
 
-    private HttpStatus getHttpStatusFromFeignException(FeignException ex) {
+    public HttpStatus getHttpStatusFromFeignException(FeignException ex) {
         return (ex instanceof RetryableException)
                 ? HttpStatus.INTERNAL_SERVER_ERROR
                 : HttpStatus.valueOf(ex.status());

@@ -5,7 +5,7 @@ import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.resolve
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @Getter
 @Setter
@@ -15,14 +15,14 @@ public class RoleDeletionResponse {
     private String idamStatusCode;
     private String idamMessage;
 
-    public RoleDeletionResponse(String roleName, HttpStatus idamStatusCode) {
+    public RoleDeletionResponse(String roleName, ResponseEntity responseEntity) {
         this.roleName = roleName;
-        loadStatusCodes(idamStatusCode);
+        loadStatusCodes(responseEntity);
     }
 
-    public void loadStatusCodes(HttpStatus idamStatusCode) {
-        this.idamStatusCode = String.valueOf(idamStatusCode.value());
-        this.idamMessage = resolveStatusAndReturnMessage(idamStatusCode);
+    private void loadStatusCodes(ResponseEntity responseEntity) {
+        this.idamStatusCode = String.valueOf(responseEntity.getStatusCodeValue());
+        this.idamMessage = resolveStatusAndReturnMessage(responseEntity);
     }
 
 }

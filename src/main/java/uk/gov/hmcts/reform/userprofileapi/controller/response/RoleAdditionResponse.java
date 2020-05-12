@@ -4,7 +4,7 @@ import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.resolve
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @Data
 @NoArgsConstructor
@@ -13,8 +13,8 @@ public class RoleAdditionResponse {
     private String idamStatusCode;
     private String idamMessage;
 
-    public RoleAdditionResponse(HttpStatus idamStatusCode) {
-        this.idamStatusCode = String.valueOf(idamStatusCode.value());
-        this.idamMessage = resolveStatusAndReturnMessage(idamStatusCode);
+    public RoleAdditionResponse(ResponseEntity responseEntity) {
+        this.idamStatusCode = String.valueOf(responseEntity.getStatusCode().value());
+        this.idamMessage = resolveStatusAndReturnMessage(responseEntity);
     }
 }

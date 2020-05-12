@@ -20,27 +20,26 @@ public class IdamRolesInfo {
     private Boolean pending;
     private HttpStatus responseStatusCode;
     private String statusMessage;
+    private ResponseEntity responseEntity;
 
-    public IdamRolesInfo(ResponseEntity<IdamUserResponse> entity, HttpStatus idamGetResponseStatusCode) {
-        if (entity != null && entity.getBody() != null) {
-            this.id = entity.getBody().getId();
-            this.roles = entity.getBody().getRoles();
-            this.email = entity.getBody().getEmail();
-            this.forename = entity.getBody().getForename();
-            this.surname = entity.getBody().getSurname();
-            this.active = entity.getBody().getActive();
-            this.pending = entity.getBody().getPending();
+    public IdamRolesInfo(ResponseEntity entity) {
+        responseEntity = entity;
+        if (entity != null && entity.getBody() != null && entity.getBody() instanceof IdamUserResponse) {
+            IdamUserResponse idamUserResponse = (IdamUserResponse) entity.getBody();
+            this.id = idamUserResponse.getId();
+            this.roles = idamUserResponse.getRoles();
+            this.email = idamUserResponse.getEmail();
+            this.forename = idamUserResponse.getForename();
+            this.surname = idamUserResponse.getSurname();
+            this.active = idamUserResponse.getActive();
+            this.pending = idamUserResponse.getPending();
         }
-        loadStatusCodes(idamGetResponseStatusCode);
-    }
-
-    public IdamRolesInfo(HttpStatus idamGetResponseStatusCode) {
-        loadStatusCodes(idamGetResponseStatusCode);
+        loadStatusCodes(entity.getStatusCode());
     }
 
     private void loadStatusCodes(HttpStatus idamGetResponseStatusCode) {
         this.responseStatusCode = idamGetResponseStatusCode;
-        this.statusMessage = resolveStatusAndReturnMessage(idamGetResponseStatusCode);
+        this.statusMessage = resolveStatusAndReturnMessage(responseEntity);
     }
 
     public boolean isSuccessFromIdam() {

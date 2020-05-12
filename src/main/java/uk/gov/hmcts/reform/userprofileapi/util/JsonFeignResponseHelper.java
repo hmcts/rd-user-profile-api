@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamErrorResponse;
 
 
 @Slf4j
@@ -42,21 +43,25 @@ public class JsonFeignResponseHelper {
 
     public static <T> Optional<T> decode(Response response, Optional<Class<T>> clazz) {
         Optional<T> result = Optional.empty();
-        if (isStatusCodeSuccessful(response.status()) && clazz.isPresent()) {
+        if (clazz.isPresent()) {
             try {
                 Optional<Collection<String>> encodings = Optional.ofNullable(response.headers().get("content-encoding"));
                 result = Optional.of((encodings.isPresent() && encodings.get().contains("gzip"))
                         ? json.readValue(new GZIPInputStream(new BufferedInputStream(response.body().asInputStream())), clazz.get())
                         : json.readValue(response.body().asReader(), clazz.get()));
             } catch (IOException e) {
-                log.warn("Error could not decode!");
+                log.warn("Error could not decoded : " + e.getLocalizedMessage());
             }
         }
         return result;
     }
 
-    public static boolean isStatusCodeSuccessful(int statusCode) {
-        return statusCode >= 200 && statusCode < 300;
+    public static Optional getResponseMapperClass(Response response, Optional expectedClass) {
+        if (response.status() >= 200 && response.status() < 300) {
+            return expectedClass.isPresent() ? expectedClass : Optional.empty();
+        } else {
+            return Optional.of(IdamErrorResponse.class);
+        }
     }
 
 }
