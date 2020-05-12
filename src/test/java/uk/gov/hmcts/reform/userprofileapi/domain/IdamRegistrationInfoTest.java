@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+@SuppressWarnings("unchecked")
 public class IdamRegistrationInfoTest {
 
     private IdamRegistrationInfo sut;

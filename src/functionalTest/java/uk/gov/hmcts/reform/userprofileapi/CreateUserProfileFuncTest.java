@@ -141,7 +141,7 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
 
         assertThat(errorResponse).isNotNull();
         assertThat(errorResponse.getErrorMessage()).isEqualTo("16 Resource not found");
-        assertThat(errorResponse.getErrorMessage()).isEqualTo("The role to be assigned does not exist.");
+        assertThat(errorResponse.getErrorDescription()).isEqualTo("The role to be assigned does not exist.");
     }
 
 }

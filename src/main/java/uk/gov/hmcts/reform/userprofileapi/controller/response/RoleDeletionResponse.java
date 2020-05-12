@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.controller.response;
 
+import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.getStatusCodeValueFromResponseEntity;
 import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.resolveStatusAndReturnMessage;
 
 import lombok.Getter;
@@ -15,13 +16,13 @@ public class RoleDeletionResponse {
     private String idamStatusCode;
     private String idamMessage;
 
-    public RoleDeletionResponse(String roleName, ResponseEntity responseEntity) {
+    public RoleDeletionResponse(String roleName, ResponseEntity<Object> responseEntity) {
         this.roleName = roleName;
         loadStatusCodes(responseEntity);
     }
 
-    private void loadStatusCodes(ResponseEntity responseEntity) {
-        this.idamStatusCode = String.valueOf(responseEntity.getStatusCodeValue());
+    private void loadStatusCodes(ResponseEntity<Object> responseEntity) {
+        this.idamStatusCode = String.valueOf(getStatusCodeValueFromResponseEntity(responseEntity));
         this.idamMessage = resolveStatusAndReturnMessage(responseEntity);
     }
 

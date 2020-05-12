@@ -54,7 +54,7 @@ public class UserProfileRetrieverTest {
     @Mock
     private Supplier<Optional<UserProfile>> supplier;
 
-    private ResponseEntity<IdamUserResponse> entity;
+    private ResponseEntity<Object> entity;
     private IdamRolesInfo idamRolesInfo;
     private IdamUserResponse idamUserResponse;
 

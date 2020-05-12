@@ -94,7 +94,7 @@ public class IdamStatusResolverTest {
         String surName = "lastName";
 
         IdamUserResponse idamUserResponse = new IdamUserResponse(active, email, foreName, userId,pending, roles, surName);
-        ResponseEntity<IdamUserResponse> entity = new ResponseEntity<IdamUserResponse>(idamUserResponse, HttpStatus.CREATED);
+        ResponseEntity<Object> entity = new ResponseEntity<Object>(idamUserResponse, HttpStatus.CREATED);
         return new IdamRolesInfo(entity);
     }
 
@@ -108,21 +108,21 @@ public class IdamStatusResolverTest {
 
     @Test
     public void test_resolveStatusAndReturnMessage_when_responseEntity_is_null() {
-        ResponseEntity responseEntity = null;
+        ResponseEntity<Object> responseEntity = null;
         String errorMessage = resolveStatusAndReturnMessage(responseEntity);
         assertThat(errorMessage).isEqualTo(resolveStatusAndReturnMessage(INTERNAL_SERVER_ERROR));
     }
 
     @Test
     public void test_resolveStatusAndReturnMessage_when_responseEntity_body_is_null() {
-        ResponseEntity responseEntity = ResponseEntity.status(NOT_FOUND).build();
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(NOT_FOUND).build();
         String errorMessage = resolveStatusAndReturnMessage(responseEntity);
         assertThat(errorMessage).isEqualTo(resolveStatusAndReturnMessage(NOT_FOUND));
     }
 
     @Test
     public void test_resolveStatusAndReturnMessage_when_responseEntity_body_has_not_instance_of_IdamErrorResponse() {
-        ResponseEntity responseEntity = ResponseEntity.status(CREATED).body(new ErrorResponse());
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(CREATED).body(new ErrorResponse());
         String errorMessage = resolveStatusAndReturnMessage(responseEntity);
         assertThat(errorMessage).isEqualTo(resolveStatusAndReturnMessage(CREATED));
     }
@@ -132,7 +132,7 @@ public class IdamStatusResolverTest {
         IdamErrorResponse idamErrorResponse = new IdamErrorResponse();
         idamErrorResponse.setStatus(400);
         idamErrorResponse.setErrorMessage("some test error message");
-        ResponseEntity responseEntity = ResponseEntity.status(CREATED).body(idamErrorResponse);
+        ResponseEntity<Object> responseEntity = ResponseEntity.status(CREATED).body(idamErrorResponse);
         String errorMessage = resolveStatusAndReturnMessage(responseEntity);
         assertThat(errorMessage).isEqualTo("some test error message");
     }

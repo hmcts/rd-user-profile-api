@@ -180,7 +180,7 @@ public class JsonFeignResponseHelperTest {
     @SuppressWarnings("unchecked")
     public void test_getResponseMapperClass_when_response_success_and_expected_mapper_class_is_passed() {
         Response response = Response.builder().status(200).reason("OK").body("{\"idamId\": 1}", UTF_8).request(mock(Request.class)).build();
-        Optional<ErrorResponse> optionalObj = getResponseMapperClass(response, Optional.of(ErrorResponse.class));
+        Optional<ErrorResponse> optionalObj = getResponseMapperClass(response, ErrorResponse.class);
         assertTrue(optionalObj.isPresent());
         assertThat(optionalObj.get()).isEqualTo(ErrorResponse.class);
     }
@@ -189,7 +189,7 @@ public class JsonFeignResponseHelperTest {
     @SuppressWarnings("unchecked")
     public void test_getResponseMapperClass_when_response_success_and_expected_mapper_class_is_passed_empty() {
         Response response = Response.builder().status(200).reason("OK").body("{\"idamId\": 1}", UTF_8).request(mock(Request.class)).build();
-        Optional optionalObj = getResponseMapperClass(response, Optional.empty());
+        Optional optionalObj = getResponseMapperClass(response, null);
         assertFalse(optionalObj.isPresent());
     }
 
@@ -197,7 +197,7 @@ public class JsonFeignResponseHelperTest {
     @Test
     public void test_getResponseMapperClass_when_response_failure() {
         Response response = Response.builder().status(400).reason("OK").body("{\"idamId\": 1}", UTF_8).request(mock(Request.class)).build();
-        Optional optionalObj = getResponseMapperClass(response, Optional.of(IdamErrorResponse.class));
+        Optional optionalObj = getResponseMapperClass(response, IdamErrorResponse.class);
         assertTrue(optionalObj.isPresent());
         assertThat(optionalObj.get()).isEqualTo(IdamErrorResponse.class);
     }
@@ -206,7 +206,7 @@ public class JsonFeignResponseHelperTest {
     @Test
     public void test_getResponseMapperClass_when_response_failure_with_error_code_100() {
         Response response = Response.builder().status(100).reason("OK").body("{\"idamId\": 1}", UTF_8).request(mock(Request.class)).build();
-        Optional<IdamErrorResponse> optionalObj = getResponseMapperClass(response, Optional.empty());
+        Optional<IdamErrorResponse> optionalObj = getResponseMapperClass(response, null);
         assertTrue(optionalObj.isPresent());
         assertThat(optionalObj.get()).isEqualTo(IdamErrorResponse.class);
 

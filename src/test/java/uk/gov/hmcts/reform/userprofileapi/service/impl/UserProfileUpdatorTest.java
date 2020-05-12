@@ -8,6 +8,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.ResponseEntity.status;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -76,7 +77,7 @@ public class UserProfileUpdatorTest {
     @Mock
     private ValidationHelperService validationHelperServiceMock;
 
-    private AttributeResponse attributeResponse = new AttributeResponse(HttpStatus.OK);
+    private AttributeResponse attributeResponse = new AttributeResponse(status(OK).build());
 
     private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(status(CREATED).build());
 

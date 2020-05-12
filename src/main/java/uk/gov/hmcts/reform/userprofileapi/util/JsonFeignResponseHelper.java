@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
+import static java.util.Objects.nonNull;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Response;
 
@@ -57,9 +59,9 @@ public class JsonFeignResponseHelper {
         return result;
     }
 
-    public static Optional getResponseMapperClass(Response response, Optional expectedClass) {
+    public static Optional getResponseMapperClass(Response response, Class expectedClass) {
         if (response.status() >= 200 && response.status() < 300) {
-            return expectedClass.isPresent() ? expectedClass : Optional.empty();
+            return nonNull(expectedClass) ? Optional.of(expectedClass) : Optional.empty();
         } else {
             return Optional.of(IdamErrorResponse.class);
         }

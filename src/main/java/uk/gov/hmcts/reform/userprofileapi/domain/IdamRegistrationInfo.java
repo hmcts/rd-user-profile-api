@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.domain;
 
+import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.getStatusCodeValueFromResponseEntity;
 import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.resolveStatusAndReturnMessage;
 
 import lombok.Getter;
@@ -13,9 +14,9 @@ public class IdamRegistrationInfo {
     private String statusMessage;
     private ResponseEntity response;
 
-    public IdamRegistrationInfo(ResponseEntity response) {
+    public IdamRegistrationInfo(ResponseEntity<Object> response) {
         this.response = response;
-        this.idamRegistrationResponse = response.getStatusCode();
+        this.idamRegistrationResponse = HttpStatus.valueOf(getStatusCodeValueFromResponseEntity(response));
         this.statusMessage = resolveStatusAndReturnMessage(response);
     }
 

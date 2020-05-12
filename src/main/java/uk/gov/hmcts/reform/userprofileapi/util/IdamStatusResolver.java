@@ -58,7 +58,7 @@ public final class IdamStatusResolver {
         }
     }
 
-    public static String resolveStatusAndReturnMessage(ResponseEntity responseEntity) {
+    public static String resolveStatusAndReturnMessage(ResponseEntity<Object> responseEntity) {
         String errorMessage = null;
         if (nonNull(responseEntity)) {
             Object responseBody = responseEntity.getBody();
@@ -80,6 +80,10 @@ public final class IdamStatusResolver {
             errorMessage = idamErrorResponse.getErrorMessage();
         }
         return errorMessage;
+    }
+
+    public static Integer getStatusCodeValueFromResponseEntity(ResponseEntity<Object> responseEntity) {
+        return nonNull(responseEntity) ? responseEntity.getStatusCodeValue() : INTERNAL_SERVER_ERROR.value();
     }
 
     public static IdamStatus resolveIdamStatus(IdamRolesInfo idamRolesInfo) {
