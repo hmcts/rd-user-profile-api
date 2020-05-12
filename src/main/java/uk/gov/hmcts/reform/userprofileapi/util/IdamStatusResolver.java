@@ -5,7 +5,6 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.ResponseEntity.status;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
-import java.util.Objects;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamErrorResponse;
