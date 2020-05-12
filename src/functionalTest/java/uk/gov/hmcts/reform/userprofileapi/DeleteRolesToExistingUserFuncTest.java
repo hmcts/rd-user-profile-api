@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.client.IdamClient;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.RoleDeletionResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
@@ -109,5 +111,65 @@ public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
         assertThat(resourceForDeleteCheck.getRoles().contains("caseworker,pui-user-manager"));
         assertThat(!resourceForDeleteCheck.getRoles().contains(puiOrgManager));
 
+    }
+
+    @Test
+    public void should_throw_412_while_delete_user_profile_with_invalid_roles_passed() throws Exception {
+        UserProfileCreationData data = createUserProfileData();
+        List<String> roles = new ArrayList<>();
+        roles.add(puiUserManager);
+        String email = idamClient.createUser(roles);
+        data.setEmail(email);
+        UserProfileCreationResponse userProfileCreationResponse = createUserProfile(data, HttpStatus.CREATED);
+
+        RoleName roleDelete = new RoleName("pui-org-manager");
+        Set<RoleName> rolesDelete = new HashSet<>();
+        rolesDelete.add(roleDelete);
+
+        UpdateUserProfileData userProfileDataDelete = new UpdateUserProfileData();
+        userProfileDataDelete.setRolesDelete(rolesDelete);
+
+        UserProfileRolesResponse deleteResourceResp =
+                testRequestHandler.sendDelete(
+                        userProfileDataDelete,
+                        HttpStatus.OK,
+                        requestUri + "/" + userProfileCreationResponse.getIdamId(),
+                        UserProfileRolesResponse.class);
+        assertThat(deleteResourceResp).isNotNull();
+        assertThat(deleteResourceResp.getRoleDeletionResponse()).isNotEmpty();
+        RoleDeletionResponse roleDeletionResponse = deleteResourceResp.getRoleDeletionResponse().get(0);
+        assertThat(roleDeletionResponse.getRoleName()).isEqualTo("pui-org-manager");
+        assertThat(roleDeletionResponse.getIdamMessage()).isEqualTo("One or more of the roles provided does not exist.");
+        assertThat(roleDeletionResponse.getIdamStatusCode()).isEqualTo("412");
+    }
+
+    @Test
+    public void should_throw_412_while_delete_user_profile_with_unassigned_roles_passed() throws Exception {
+        UserProfileCreationData data = createUserProfileData();
+        List<String> roles = new ArrayList<>();
+        roles.add(puiUserManager);
+        String email = idamClient.createUser(roles);
+        data.setEmail(email);
+        UserProfileCreationResponse userProfileCreationResponse = createUserProfile(data, HttpStatus.CREATED);
+
+        RoleName roleDelete = new RoleName(puiCaseManager);
+        Set<RoleName> rolesDelete = new HashSet<>();
+        rolesDelete.add(roleDelete);
+
+        UpdateUserProfileData userProfileDataDelete = new UpdateUserProfileData();
+        userProfileDataDelete.setRolesDelete(rolesDelete);
+
+        UserProfileRolesResponse deleteResourceResp =
+                testRequestHandler.sendDelete(
+                        userProfileDataDelete,
+                        HttpStatus.OK,
+                        requestUri + "/" + userProfileCreationResponse.getIdamId(),
+                        UserProfileRolesResponse.class);
+        assertThat(deleteResourceResp).isNotNull();
+        assertThat(deleteResourceResp.getRoleDeletionResponse()).isNotEmpty();
+        RoleDeletionResponse roleDeletionResponse = deleteResourceResp.getRoleDeletionResponse().get(0);
+        assertThat(roleDeletionResponse.getRoleName()).isEqualTo(puiCaseManager);
+        assertThat(roleDeletionResponse.getIdamMessage()).isEqualTo("The role provided is not assigned to the user.");
+        assertThat(roleDeletionResponse.getIdamStatusCode()).isEqualTo("412");
     }
 }

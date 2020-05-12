@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.client.IdamClient;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.RoleAdditionResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
@@ -202,6 +204,62 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
 
         assertThat(actual1.getIdamStatus()).isEqualTo(IdamStatus.ACTIVE.name());
         log.info("user updated to:" + actual1.getIdamStatus());
+    }
+
+    @Test
+    public void should_throw_412_while_add_roles_with_invalid_roles_passed() throws Exception {
+        UserProfileCreationData data = createUserProfileData();
+        List<String> roles = new ArrayList<>();
+        roles.add(puiUserManager);
+        String email = idamClient.createUser(roles);
+        data.setEmail(email);
+        UserProfileCreationResponse userProfileCreationResponse = createUserProfile(data, HttpStatus.CREATED);
+
+        RoleName rolesToBeAdded = new RoleName("pui-org-manager");
+        Set<RoleName> rolesToAdd = new HashSet<>();
+        rolesToAdd.add(rolesToBeAdded);
+
+        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData();
+        updateUserProfileData.setRolesAdd(rolesToAdd);
+
+        UserProfileRolesResponse deleteResourceResp =
+                testRequestHandler.sendDelete(
+                        updateUserProfileData,
+                        HttpStatus.OK,
+                        requestUri + "/" + userProfileCreationResponse.getIdamId(),
+                        UserProfileRolesResponse.class);
+        assertThat(deleteResourceResp).isNotNull();
+        RoleAdditionResponse roleAdditionResponse = deleteResourceResp.getRoleAdditionResponse();
+        assertThat(roleAdditionResponse.getIdamMessage()).isEqualTo("One or more of the roles provided does not exist.");
+        assertThat(roleAdditionResponse.getIdamStatusCode()).isEqualTo("412");
+    }
+
+    @Test
+    public void should_throw_412_while_add_roles_with_already_unassigned_roles_passed() throws Exception {
+        UserProfileCreationData data = createUserProfileData();
+        List<String> roles = new ArrayList<>();
+        roles.add(puiUserManager);
+        String email = idamClient.createUser(roles);
+        data.setEmail(email);
+        UserProfileCreationResponse userProfileCreationResponse = createUserProfile(data, HttpStatus.CREATED);
+
+        RoleName rolesToBeAdded = new RoleName(puiUserManager);
+        Set<RoleName> rolesToAdd = new HashSet<>();
+        rolesToAdd.add(rolesToBeAdded);
+
+        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData();
+        updateUserProfileData.setRolesAdd(rolesToAdd);
+
+        UserProfileRolesResponse addResourceResp =
+                testRequestHandler.sendDelete(
+                        updateUserProfileData,
+                        HttpStatus.OK,
+                        requestUri + "/" + userProfileCreationResponse.getIdamId(),
+                        UserProfileRolesResponse.class);
+        assertThat(addResourceResp).isNotNull();
+        RoleAdditionResponse roleAdditionResponse = addResourceResp.getRoleAdditionResponse();
+        assertThat(roleAdditionResponse.getIdamMessage()).isEqualTo("One or more of the roles provided is already assigned to the user.");
+        assertThat(roleAdditionResponse.getIdamStatusCode()).isEqualTo("412");
     }
 
 }
