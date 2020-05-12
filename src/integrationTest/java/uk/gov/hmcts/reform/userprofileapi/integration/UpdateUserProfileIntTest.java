@@ -259,7 +259,7 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
 
     }
 
-    //@Test
+    @Test
     public void should_return_200_and_update_user_profile_resource_with_valid_email() throws Exception {
 
         UserProfile persistedUserProfile = userProfileMap.get("user");

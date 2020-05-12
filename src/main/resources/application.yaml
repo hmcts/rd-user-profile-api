@@ -17,6 +17,18 @@ spring:
     name: User Profile API
   jackson.date-format: yyyy-MM-dd
   flyway.enabled: true
+  main:
+    allow-bean-definition-overriding: true
+  security:
+      oauth2:
+        client:
+          provider:
+            oidc:
+              issuer-uri: ${OPEN_ID_API_BASE_URI:https://idam-web-public.aat.platform.hmcts.net/o}
+          registration:
+            oidc:
+              client-id: microservicekey-rd-user-profile-api
+              client-secret: ${S2S_SECRET:K6KA6PRLRFWQLSD6}
 
 ### database configuration
   datasource:
@@ -62,27 +74,36 @@ security:
     - "/webjars/springfox-swagger-ui/**"
     - "/favicon.ico"
     - "/error"
-  authorisedServices:
-    - rd_user_profile_api
-    - rd_professional_api
-    - xui_webapp
-    - finrem_payment_service
-    - fpl_case_service
-    - iac
+
+### dependency configuration
+idam:
+  s2s-auth:
+    totp_secret: ${S2S_SECRET:OLMEJQA7UHU6EZKG}
+    microservice: rd_user_profile_api
+    url: ${S2S_URL:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
+    pbaFromUserAccountMap: false
+  s2s-authorised:
+    services: ${PRD_S2S_AUTHORISED_SERVICES:rd_professional_api,rd_user_profile_api,xui_webapp,finrem_payment_service,fpl_case_service,iac}
+  api.url: ${idam_url:https://idam-api.aat.platform.hmcts.net}
+
+oidc.issuer: ${OIDC_ISSUER_URL:https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts}
+
+#cache implementation
+#definitions cache parameters
+#max idle time in seconds that applies to all definition cache entries
+definition.cache.max-idle.secs: ${DEFINITION_CACHE_MAX_IDLE_SEC:259200}
+#max size of cache map in terms of number of entries
+definition.cache.max.size: ${DEFINITION_CACHE_MAX_SIZE:5000}
+#eviction policy. If set to NONE the cache can grow arbitrarily large and definition.cache.max.size is ignored
+definition.cache.eviction.policy: ${DEFINITION_CACHE_EVICTION_POLICY:NONE}
+#time to live for user cache entries
+user.cache.ttl.secs: 1800
 
 feign:
   allow:
     headers:
       - authorization
       - serviceauthorization
-
-### dependency configuration
-auth.idam.client.baseUrl: ${IDAM_URL:https://idam-api.aat.platform.hmcts.net}
-auth.idam.client.detailsUri: "/o/userinfo"
-auth.provider.service.client.baseUrl: ${S2S_URL:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
-idam.s2s-auth.totp_secret: ${S2S_SECRET:AAAAAAAAAAAAAAAA}
-idam.s2s-auth.microservice: rd_user_profile_api
-idam.s2s-auth.url: ${S2S_URL:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
 
 # resent user invite interval in minutes
 resendInterval: 60

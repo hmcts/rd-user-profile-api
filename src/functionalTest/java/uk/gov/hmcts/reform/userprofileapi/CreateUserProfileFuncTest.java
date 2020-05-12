@@ -106,19 +106,19 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
         UserProfileCreationData data = createUserProfileData();
 
         UserProfileCreationResponse createdResource =
-            testRequestHandler.sendPost(
-                data,
-                HttpStatus.CREATED,
-                requestUri,
-                    UserProfileCreationResponse.class
-            );
+                testRequestHandler.sendPost(
+                        data,
+                        HttpStatus.CREATED,
+                        requestUri,
+                        UserProfileCreationResponse.class
+                );
 
         assertThat(createdResource).isNotNull();
 
         testRequestHandler.sendPost(
-            testRequestHandler.asJsonString(data),
-            HttpStatus.CONFLICT,
-            requestUri);
+                testRequestHandler.asJsonString(data),
+                HttpStatus.CONFLICT,
+                requestUri);
     }
 
 }

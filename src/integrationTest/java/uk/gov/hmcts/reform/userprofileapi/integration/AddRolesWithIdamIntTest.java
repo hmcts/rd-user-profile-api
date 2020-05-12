@@ -16,7 +16,6 @@ import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDat
 import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfile;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -24,15 +23,11 @@ import java.util.UUID;
 
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
@@ -47,13 +42,6 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest {
 
     String id =  UUID.randomUUID().toString();
-    private MockMvc mockMvc;
-
-    @Autowired
-    protected WebApplicationContext webApplicationContext;
-
-    @Rule
-    public WireMockRule idamService = new WireMockRule(5000);
 
     @Before
     public void setUpWireMock() {
@@ -65,6 +53,7 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
                         .withHeader("Location", "/api/v1/users/" + id)
                         .withStatus(409)
                 ));
+
     }
 
     public void mockWithGetSuccess(boolean withoutStatusFields) {
