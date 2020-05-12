@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.domain;
 
+import static java.util.Objects.nonNull;
 import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.resolveStatusAndReturnMessage;
 
 import java.util.List;
@@ -20,11 +21,9 @@ public class IdamRolesInfo {
     private Boolean pending;
     private HttpStatus responseStatusCode;
     private String statusMessage;
-    private ResponseEntity responseEntity;
 
     public IdamRolesInfo(ResponseEntity entity) {
-        responseEntity = entity;
-        if (entity != null && entity.getBody() != null && entity.getBody() instanceof IdamUserResponse) {
+        if (nonNull(entity)  && nonNull(entity.getBody()) && entity.getBody() instanceof IdamUserResponse) {
             IdamUserResponse idamUserResponse = (IdamUserResponse) entity.getBody();
             this.id = idamUserResponse.getId();
             this.roles = idamUserResponse.getRoles();
@@ -34,11 +33,11 @@ public class IdamRolesInfo {
             this.active = idamUserResponse.getActive();
             this.pending = idamUserResponse.getPending();
         }
-        loadStatusCodes(entity.getStatusCode());
+        loadStatusCodes(entity);
     }
 
-    private void loadStatusCodes(HttpStatus idamGetResponseStatusCode) {
-        this.responseStatusCode = idamGetResponseStatusCode;
+    private void loadStatusCodes(ResponseEntity responseEntity) {
+        this.responseStatusCode = nonNull(responseEntity) ? responseEntity.getStatusCode() : HttpStatus.INTERNAL_SERVER_ERROR;
         this.statusMessage = resolveStatusAndReturnMessage(responseEntity);
     }
 

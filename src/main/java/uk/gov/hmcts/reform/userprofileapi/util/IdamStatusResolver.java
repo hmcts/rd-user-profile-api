@@ -61,7 +61,7 @@ public final class IdamStatusResolver {
 
     public static String resolveStatusAndReturnMessage(ResponseEntity responseEntity) {
         String errorMessage = null;
-        if (Objects.nonNull(responseEntity)) {
+        if (nonNull(responseEntity)) {
             Object responseBody = responseEntity.getBody();
             if (nonNull(responseBody) && responseBody instanceof IdamErrorResponse) {
                 errorMessage = getErrorMessageFromSidamResponse(responseBody);
