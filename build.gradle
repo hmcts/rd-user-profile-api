@@ -188,7 +188,7 @@ task runAndPublishConsumerPactTests(type: Test, description: 'Publish pact test 
 }
 
 jacoco {
-    toolVersion = "0.8.1"
+    toolVersion = "0.8.5"
 }
 
 jacocoTestReport {
