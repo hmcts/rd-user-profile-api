@@ -41,24 +41,10 @@ public class DeleteUserProfileFuncTest extends AbstractFunctional {
     @Test
     public void should_delete_pending_user_profile_successfully_return_204() throws Exception {
         UserProfileCreationData data = createUserProfileData();
-        List<String> roles = new ArrayList<>();
-        roles.add(puiUserManager);
-        String email = idamClient.createUser(roles);
-        data.setEmail(email);
         //creating user profile
         UserProfileCreationResponse userProfileResponse = createUserProfile(data, HttpStatus.CREATED);
+        verifyDeleteUserProfile(userProfileResponse.getIdamId());
 
-        List<String> userIds = new ArrayList<String>();
-        userIds.add(userProfileResponse.getIdamId());
-        UserProfileDataRequest deletionRequest = buildUserProfileDataRequest(userIds);
-        //delete user profile
-        testRequestHandler.sendDelete(
-                objectMapper.writeValueAsString(deletionRequest),
-                HttpStatus.NO_CONTENT, requestUri);
-
-        //verify user profile deleted or not
-        testRequestHandler.sendGet(HttpStatus.NOT_FOUND,
-                requestUri + "?userId=" + userProfileResponse.getIdamId());
     }
 
     @Test
@@ -68,18 +54,8 @@ public class DeleteUserProfileFuncTest extends AbstractFunctional {
         //creating user profile
         UserProfileCreationResponse activeUserProfile = createActiveUserProfile(data);
         verifyCreateUserProfile(activeUserProfile);
+        verifyDeleteUserProfile(activeUserProfile.getIdamId());
 
-        List<String> userIds = new ArrayList<String>();
-        userIds.add(activeUserProfile.getIdamId());
-        UserProfileDataRequest deletionRequest = buildUserProfileDataRequest(userIds);
-        //delete user profile
-        testRequestHandler.sendDelete(
-                objectMapper.writeValueAsString(deletionRequest),
-                HttpStatus.NO_CONTENT, requestUri);
-
-        //verify user profile deleted or not
-        testRequestHandler.sendGet(HttpStatus.NOT_FOUND,
-                requestUri + "?userId=" + activeUserProfile.getIdamId());
     }
 
     @Test
@@ -92,5 +68,20 @@ public class DeleteUserProfileFuncTest extends AbstractFunctional {
         testRequestHandler.sendDelete(
                 objectMapper.writeValueAsString(deletionRequest),
                 HttpStatus.NOT_FOUND, requestUri);
+    }
+
+    private void verifyDeleteUserProfile(String idamId) throws Exception {
+
+        List<String> userIds = new ArrayList<String>();
+        userIds.add(idamId);
+        UserProfileDataRequest deletionRequest = buildUserProfileDataRequest(userIds);
+        //delete user profile
+        testRequestHandler.sendDelete(
+                objectMapper.writeValueAsString(deletionRequest),
+                HttpStatus.NO_CONTENT, requestUri);
+
+        //verify user profile deleted or not
+        testRequestHandler.sendGet(HttpStatus.NOT_FOUND,
+                requestUri + "?userId=" + idamId);
     }
 }
