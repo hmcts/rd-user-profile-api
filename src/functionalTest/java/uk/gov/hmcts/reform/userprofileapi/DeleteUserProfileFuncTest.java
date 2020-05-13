@@ -1,13 +1,10 @@
 package uk.gov.hmcts.reform.userprofileapi;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,7 +17,6 @@ import uk.gov.hmcts.reform.userprofileapi.client.IdamClient;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 
@@ -43,13 +39,13 @@ public class DeleteUserProfileFuncTest extends AbstractFunctional {
     }
 
     @Test
-    public void should_delete_user_profile_successfully_return_204() throws Exception {
+    public void should_delete_pending_user_profile_successfully_return_204() throws Exception {
         UserProfileCreationData data = createUserProfileData();
         List<String> roles = new ArrayList<>();
         roles.add(puiUserManager);
         String email = idamClient.createUser(roles);
-
         data.setEmail(email);
+        //creating user profile
         UserProfileCreationResponse userProfileResponse = createUserProfile(data, HttpStatus.CREATED);
 
         List<String> userIds = new ArrayList<String>();
@@ -61,20 +57,15 @@ public class DeleteUserProfileFuncTest extends AbstractFunctional {
                 HttpStatus.NO_CONTENT, requestUri);
 
         //verify user profile deleted or not
-        UserProfileResponse resource =
-                testRequestHandler.sendGet(
-                        requestUri + "?id=" + userProfileResponse.getIdamId(),
-                        UserProfileResponse.class
-                );
-        LOG.info("UserProfileResponse ::" + resource);
-        assertThat(resource).isNotNull();
-
+        testRequestHandler.sendGet(HttpStatus.NOT_FOUND,
+                requestUri + "?userId=" + userProfileResponse.getIdamId());
     }
 
     @Test
-    public void should_create_active_user_profile_successfully_return_204() throws Exception {
+    public void should_delete_active_user_profile_successfully_return_204() throws Exception {
 
         UserProfileCreationData data = createUserProfileData();
+        //creating user profile
         UserProfileCreationResponse activeUserProfile = createActiveUserProfile(data);
         verifyCreateUserProfile(activeUserProfile);
 
@@ -87,14 +78,19 @@ public class DeleteUserProfileFuncTest extends AbstractFunctional {
                 HttpStatus.NO_CONTENT, requestUri);
 
         //verify user profile deleted or not
-        UserProfileResponse resource =
-                testRequestHandler.sendGet(
-                        requestUri + "?id=" + activeUserProfile.getIdamId(),
-                        UserProfileResponse.class
-                );
-        LOG.info("UserProfileResponse ::" + resource);
-        assertThat(resource).isNull();
-
+        testRequestHandler.sendGet(HttpStatus.NOT_FOUND,
+                requestUri + "?userId=" + activeUserProfile.getIdamId());
     }
 
+    @Test
+    public void should_not_delete_user_profile_with_unknown_user_Id_return_404() throws Exception {
+
+        List<String> userIds = new ArrayList<String>();
+        userIds.add("1234567");
+        UserProfileDataRequest deletionRequest = buildUserProfileDataRequest(userIds);
+        //delete user profile
+        testRequestHandler.sendDelete(
+                objectMapper.writeValueAsString(deletionRequest),
+                HttpStatus.NOT_FOUND, requestUri);
+    }
 }
