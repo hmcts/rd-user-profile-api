@@ -129,9 +129,7 @@ public class IdamStatusResolverTest {
 
     @Test
     public void test_resolveStatusAndReturnMessage_when_responseEntity_body_has_IdamErrorResponse() {
-        IdamErrorResponse idamErrorResponse = new IdamErrorResponse();
-        idamErrorResponse.setStatus(400);
-        idamErrorResponse.setErrorMessage("some test error message");
+        IdamErrorResponse idamErrorResponse = getIdamErrorResponse(null, "some test error message");
         ResponseEntity<Object> responseEntity = ResponseEntity.status(CREATED).body(idamErrorResponse);
         String errorMessage = resolveStatusAndReturnMessage(responseEntity);
         assertThat(errorMessage).isEqualTo("some test error message");
@@ -142,10 +140,7 @@ public class IdamStatusResolverTest {
         List<String> errorMessages = new ArrayList<>();
         errorMessages.add("errorMessage1");
         errorMessages.add("errorMessage2");
-        IdamErrorResponse idamErrorResponse = new IdamErrorResponse();
-        idamErrorResponse.setStatus(400);
-        idamErrorResponse.setErrorMessage("some test error message");
-        idamErrorResponse.setErrorMessages(errorMessages);
+        IdamErrorResponse idamErrorResponse = getIdamErrorResponse(errorMessages, "some test error message");
         String errorMessage = getErrorMessageFromSidamResponse(idamErrorResponse);
         assertThat(errorMessage).isEqualTo("errorMessage1");
     }
@@ -155,29 +150,31 @@ public class IdamStatusResolverTest {
         List<String> errorMessages = new ArrayList<>();
         errorMessages.add("errorMessage1");
         errorMessages.add("errorMessage2");
-        IdamErrorResponse idamErrorResponse = new IdamErrorResponse();
-        idamErrorResponse.setStatus(400);
-        idamErrorResponse.setErrorMessages(errorMessages);
+        IdamErrorResponse idamErrorResponse = getIdamErrorResponse(errorMessages, null);
         String errorMessage = getErrorMessageFromSidamResponse(idamErrorResponse);
         assertThat(errorMessage).isEqualTo("errorMessage1");
     }
 
     @Test
     public void test_getErrorMessageFromSidamResponse_when_responseEntity_body_has_IdamErrorResponse_with_ErrorMessages_field_is_empty() {
-        List<String> errorMessages = new ArrayList<>();
-        IdamErrorResponse idamErrorResponse = new IdamErrorResponse();
-        idamErrorResponse.setStatus(400);
-        idamErrorResponse.setErrorMessages(errorMessages);
+        IdamErrorResponse idamErrorResponse = getIdamErrorResponse(new ArrayList<String>(), null);
         String errorMessage = getErrorMessageFromSidamResponse(idamErrorResponse);
         assertThat(errorMessage).isNull();
     }
 
     @Test
     public void test_getErrorMessageFromSidamResponse_when_responseEntity_body_has_IdamErrorResponse_with_ErrorMessage_fields() {
-        IdamErrorResponse idamErrorResponse = new IdamErrorResponse();
-        idamErrorResponse.setStatus(400);
-        idamErrorResponse.setErrorMessage("some test error message");
+        IdamErrorResponse idamErrorResponse = getIdamErrorResponse(null, "some test error message");
         String errorMessage = getErrorMessageFromSidamResponse(idamErrorResponse);
         assertThat(errorMessage).isEqualTo("some test error message");
     }
+
+    public IdamErrorResponse getIdamErrorResponse(List<String> errorMessages, String errorMessage) {
+        IdamErrorResponse idamErrorResponse = new IdamErrorResponse();
+        idamErrorResponse.setStatus(400);
+        idamErrorResponse.setErrorMessages(errorMessages);
+        idamErrorResponse.setErrorMessage(errorMessage);
+        return idamErrorResponse;
+    }
+
 }

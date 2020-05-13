@@ -29,20 +29,13 @@ import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamErrorResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 
+@SuppressWarnings("unchecked")
 public class JsonFeignResponseHelperTest {
 
     @Test
     public void testDecode_with_gzip() {
-        Request request = mock(Request.class);
 
-        Collection<String> list = Arrays.asList("gzip", "");
-
-        Map<String, Collection<String>> header = new HashMap<>();
-        header.put("content-encoding", list);
-
-        Response response = Response.builder().status(200).reason("OK").headers(header).body("{\"idamId\": 1}", UTF_8).request(request).build();
-
-        Optional<UserProfileCreationResponse> createUserProfileResponseOptional = JsonFeignResponseHelper.decode(response, Optional.of(UserProfileCreationResponse.class));
+        Optional<UserProfileCreationResponse> createUserProfileResponseOptional = JsonFeignResponseHelper.decode(getResponse(200, false), Optional.of(UserProfileCreationResponse.class));
 
         assertThat(createUserProfileResponseOptional).isEmpty();
     }
@@ -152,15 +145,8 @@ public class JsonFeignResponseHelperTest {
 
     @Test
     public void test_toResponseEntity_with_payload_not_empty() {
-        Request request = mock(Request.class);
 
-        Map<String, Collection<String>> header = new HashMap<>();
-        Collection<String> list = Arrays.asList("a", "b");
-        header.put("content-encoding", list);
-
-        Response response = Response.builder().status(200).reason("OK").headers(header).body("{\"idamId\": 1}", UTF_8).request(request).build();
-
-        ResponseEntity entity = JsonFeignResponseHelper.toResponseEntity(response, Optional.of(UserProfileCreationResponse.class));
+        ResponseEntity entity = JsonFeignResponseHelper.toResponseEntity(getResponse(200, true), Optional.of(UserProfileCreationResponse.class));
 
         assertThat(entity).isNotNull();
         assertThat(entity.getStatusCode().value()).isEqualTo(200);
@@ -177,38 +163,47 @@ public class JsonFeignResponseHelperTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void test_getResponseMapperClass_when_response_success_and_expected_mapper_class_is_passed() {
-        Response response = Response.builder().status(200).reason("OK").body("{\"idamId\": 1}", UTF_8).request(mock(Request.class)).build();
-        Optional<ErrorResponse> optionalObj = getResponseMapperClass(response, ErrorResponse.class);
+        Optional<ErrorResponse> optionalObj = getResponseMapperClass(getResponse(200, false), ErrorResponse.class);
         assertTrue(optionalObj.isPresent());
         assertThat(optionalObj.get()).isEqualTo(ErrorResponse.class);
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void test_getResponseMapperClass_when_response_success_and_expected_mapper_class_is_passed_empty() {
-        Response response = Response.builder().status(200).reason("OK").body("{\"idamId\": 1}", UTF_8).request(mock(Request.class)).build();
-        Optional optionalObj = getResponseMapperClass(response, null);
+        Optional optionalObj = getResponseMapperClass(getResponse(200,false), null);
         assertFalse(optionalObj.isPresent());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void test_getResponseMapperClass_when_response_failure() {
-        Response response = Response.builder().status(400).reason("OK").body("{\"idamId\": 1}", UTF_8).request(mock(Request.class)).build();
-        Optional optionalObj = getResponseMapperClass(response, IdamErrorResponse.class);
+        Optional optionalObj = getResponseMapperClass(getResponse(400,false), IdamErrorResponse.class);
         assertTrue(optionalObj.isPresent());
         assertThat(optionalObj.get()).isEqualTo(IdamErrorResponse.class);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void test_getResponseMapperClass_when_response_failure_with_error_code_100() {
-        Response response = Response.builder().status(100).reason("OK").body("{\"idamId\": 1}", UTF_8).request(mock(Request.class)).build();
-        Optional<IdamErrorResponse> optionalObj = getResponseMapperClass(response, null);
+        Optional<IdamErrorResponse> optionalObj = getResponseMapperClass(getResponse(100, false), null);
         assertTrue(optionalObj.isPresent());
         assertThat(optionalObj.get()).isEqualTo(IdamErrorResponse.class);
 
+    }
+
+    public Response getResponse(int statusCode, boolean isMultiHeader) {
+
+        return Response.builder().status(statusCode).reason("OK").headers(getHeader(isMultiHeader)).body("{\"idamId\": 1}", UTF_8).request(mock(Request.class)).build();
+    }
+
+    public Map<String, Collection<String>>  getHeader(boolean isMultiheader) {
+        Collection<String> list;
+        Map<String, Collection<String>> header = new HashMap<>();
+        if (isMultiheader) {
+            list = Arrays.asList("a", "b");
+        } else {
+            list = Arrays.asList("gzip", "");
+        }
+        header.put("content-encoding", list);
+        return header;
     }
 }

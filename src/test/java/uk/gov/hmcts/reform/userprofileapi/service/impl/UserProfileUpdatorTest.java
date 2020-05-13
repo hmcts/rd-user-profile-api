@@ -426,6 +426,7 @@ public class UserProfileUpdatorTest {
         when(feignExceptionMock.status()).thenReturn(400);
         HttpStatus httpStatus = sut.getHttpStatusFromFeignException(feignExceptionMock);
         assertThat(httpStatus).isEqualTo(HttpStatus.BAD_REQUEST);
+        verify(feignExceptionMock, times(1)).status();
     }
 
 }
