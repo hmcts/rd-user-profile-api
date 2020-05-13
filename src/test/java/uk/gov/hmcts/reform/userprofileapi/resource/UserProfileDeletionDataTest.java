@@ -9,7 +9,7 @@ import org.junit.Test;
 public class UserProfileDeletionDataTest {
 
     @Test
-    public void should_add_userIds_when_add_to_setter() {
+    public void testShould_add_userIds_when_add_to_setter() {
         UserProfilesDeletionData userProfilesDeletionData = new UserProfilesDeletionData();
         List<String> userIds = new ArrayList<String>();
         userIds.add("12345");
