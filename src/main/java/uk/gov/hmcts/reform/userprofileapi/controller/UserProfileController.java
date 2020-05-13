@@ -89,6 +89,10 @@ public class UserProfileController {
                     message = "An invalid request has been provided"
             ),
             @ApiResponse(
+                    code = 401,
+                    message = "Unauthorized Error : The requested resource is restricted and requires authentication"
+            ),
+            @ApiResponse(
                     code = 403,
                     message = "Forbidden Error: Access denied"
             ),
@@ -144,6 +148,10 @@ public class UserProfileController {
                     message = "An invalid request has been provided"
             ),
             @ApiResponse(
+                    code = 401,
+                    message = "Unauthorized Error : The requested resource is restricted and requires authentication"
+            ),
+            @ApiResponse(
                     code = 403,
                     message = "Forbidden Error: Access denied"
             ),
@@ -186,6 +194,10 @@ public class UserProfileController {
                     message = "An invalid request has been provided"
             ),
             @ApiResponse(
+                    code = 401,
+                    message = "Unauthorized Error : The requested resource is restricted and requires authentication"
+            ),
+            @ApiResponse(
                     code = 403,
                     message = "Forbidden Error: Access denied"
             ),
@@ -226,6 +238,10 @@ public class UserProfileController {
             @ApiResponse(
                     code = 400,
                     message = "An invalid request has been provided"
+            ),
+            @ApiResponse(
+                    code = 401,
+                    message = "Unauthorized Error : The requested resource is restricted and requires authentication"
             ),
             @ApiResponse(
                     code = 403,
@@ -280,6 +296,10 @@ public class UserProfileController {
             @ApiResponse(
                     code = 400,
                     message = "An invalid request has been provided"
+            ),
+            @ApiResponse(
+            code = 401,
+            message = "Unauthorized Error : The requested resource is restricted and requires authentication"
             ),
             @ApiResponse(
                     code = 403,
@@ -348,6 +368,10 @@ public class UserProfileController {
                     message = "An invalid request has been provided"
             ),
             @ApiResponse(
+                    code = 401,
+                    message = "Unauthorized Error : The requested resource is restricted and requires authentication"
+            ),
+            @ApiResponse(
                     code = 403,
                     message = "Forbidden Error: Access denied"
             ),
@@ -414,6 +438,7 @@ public class UserProfileController {
             consumes = APPLICATION_JSON_VALUE,
             produces = APPLICATION_JSON_VALUE
     )
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @ResponseBody
     public ResponseEntity<UserProfilesDeletionResponse> deleteUserProfiles(@Valid @RequestBody UserProfileDataRequest userProfilesDeletionDataReq) {
 

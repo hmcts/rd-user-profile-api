@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataRes
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfilesDeletionResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.exception.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
@@ -215,5 +216,17 @@ public class UserProfileControllerTest {
         verify(userProfileServiceMock, times(1)).delete(any(UserProfilesDeletionData.class));
         assertThat(responseEntityActual.getStatusCodeValue()).isEqualTo(204);
         assertThat(responseEntityActual.getBody().getMessage()).isEqualTo("UserProfiles Successfully Deleted");
+    }
+
+    @Test(expected = RequiredFieldMissingException.class)
+    public void testDeleteUserProfilesWithEmptyUserIdInTheRequest() {
+
+        UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
+        List<String> userIds = new ArrayList<>();
+        userIds.add("");
+        UserProfileDataRequest userProfileDataRequest = new UserProfileDataRequest(userIds);
+        sut.deleteUserProfiles(userProfileDataRequest);
+        verify(userProfileServiceMock, times(0)).delete(any(UserProfilesDeletionData.class));
+
     }
 }

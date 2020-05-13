@@ -12,10 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfilesDeletionResponse;
-import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
-import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfilesDeletionData;
 import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
@@ -27,9 +25,6 @@ public class UserProfileDeleter implements ResourceDeleter<UserProfilesDeletionD
 
     @Autowired
     private UserProfileRepository userProfileRepository;
-
-    @Autowired
-    private AuditRepository auditRepository;
 
     @Autowired
     private AuditService auditService;
@@ -51,9 +46,6 @@ public class UserProfileDeleter implements ResourceDeleter<UserProfilesDeletionD
      */
     private UserProfilesDeletionResponse deleteUserProfiles(List<UserProfile> userProfiles) {
 
-        List<Audit> deleteAuditRecords = new ArrayList<Audit>();
-        userProfiles.forEach(userProfile -> deleteAuditRecords.addAll(userProfile.getResponses()));
-        auditRepository.deleteAll(deleteAuditRecords);
         userProfileRepository.deleteAll(userProfiles);
         UserProfilesDeletionResponse deletionResponse = new UserProfilesDeletionResponse();
         HttpStatus status = HttpStatus.NO_CONTENT;
@@ -65,14 +57,13 @@ public class UserProfileDeleter implements ResourceDeleter<UserProfilesDeletionD
     }
 
     /**
-     * This method is used to find the user profile exist or not with the give idamId.
+     * This method is used to find the user profile exist or not with the give userId.
      *
      */
     private UserProfile validateUserStatus(String userId) {
-        String idamId = userId.equals("") ? userId : userId.trim();
-        Optional<UserProfile> userProfileOptional = userProfileRepository.findByIdamId(idamId);
+        Optional<UserProfile> userProfileOptional = userProfileRepository.findByIdamId(userId.trim());
         if (!userProfileOptional.isPresent()) {
-            throw new ResourceNotFoundException("could not find user profile for userId:" + idamId);
+            throw new ResourceNotFoundException("could not find user profile for userId:" + userId);
         }
         return userProfileOptional.get();
     }

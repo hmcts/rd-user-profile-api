@@ -100,9 +100,18 @@ public interface UserProfileValidator {
 
     static void validateUserIds(UserProfileDataRequest userProfileDataRequest) {
         if (CollectionUtils.isEmpty(userProfileDataRequest.getUserIds())
-             || userProfileDataRequest.getUserIds().contains(" ")) {
+             || userProfileDataRequest.getUserIds().contains(" ")
+             || userProfileDataRequest.getUserIds().stream().anyMatch(userId -> isUserIdInValid(userId))) {
             throw new RequiredFieldMissingException("no user id in request");
         }
+    }
+
+    static boolean isUserIdInValid(String userId) {
+        boolean isInValid = false;
+        if (StringUtils.isBlank(userId)) {
+            isInValid = true;
+        }
+        return isInValid;
     }
 
     static void validateUserProfileDataAndUserId(UpdateUserProfileData userProfileData, String userId) {

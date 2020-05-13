@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
@@ -12,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfilesDeletionResponse;
+import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
+import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 @RunWith(SpringIntegrationSerenityRunner.class)
@@ -55,6 +58,9 @@ public class DeleteUserProfileIntTest extends AuthorizationEnabledIntegrationTes
                 deletionRequest,
                 NO_CONTENT,
                 UserProfilesDeletionResponse.class);
+
+        verifyUserProfileDeletion();
+
     }
 
     @Test
@@ -93,10 +99,12 @@ public class DeleteUserProfileIntTest extends AuthorizationEnabledIntegrationTes
                 deletionRequest,
                 NO_CONTENT,
                 UserProfilesDeletionResponse.class);
+
+        verifyUserProfileDeletion();
     }
 
     @Test
-    public void should_return_404_when_no_user_profile_resource_to_delte() throws Exception {
+    public void should_return_404_when_no_user_profile_resource_to_delete() throws Exception {
         List<String> userIds = new ArrayList<String>();
         userIds.add("123456");
         UserProfileDataRequest deletionRequest = buildUserProfileDataRequest(userIds);
@@ -118,8 +126,29 @@ public class DeleteUserProfileIntTest extends AuthorizationEnabledIntegrationTes
                 UserProfilesDeletionResponse.class);
     }
 
-    @After
-    public void tearDown() {
+    @Test
+    public void should_return_400_when_emptyUserId_in_the_request_to_delete_user_profile_resource() throws Exception {
+        List<String> userIds = new ArrayList<String>();
+        userIds.add("123456");
+        userIds.add("");
+        UserProfileDataRequest deletionRequest = buildUserProfileDataRequest(userIds);
+        userProfileRequestHandlerTest.sendDelete(mockMvc,
+                APP_BASE_PATH,
+                deletionRequest,
+                BAD_REQUEST,
+                UserProfilesDeletionResponse.class);
+    }
 
+    private void verifyUserProfileDeletion() {
+
+        List<UserProfile> userProfiles = (List<UserProfile>) userProfileRepository.findAll();
+        assertThat(userProfiles.size()).isEqualTo(0);
+
+        List<Audit> matchedAuditRecords = auditRepository.findAll();
+        assertThat(matchedAuditRecords.size()).isEqualTo(1);
+        Audit audit = matchedAuditRecords.get(0);
+        assertThat(audit.getIdamRegistrationResponse()).isEqualTo(204);
+        assertThat(audit.getSource()).isEqualTo(ResponseSource.API);
+        assertThat(audit.getAuditTs()).isNotNull();
     }
 }

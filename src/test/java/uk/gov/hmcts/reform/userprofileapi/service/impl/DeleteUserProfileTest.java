@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
 import uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder;
-import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfilesDeletionData;
@@ -34,16 +33,12 @@ public class DeleteUserProfileTest {
     @Mock
     private UserProfileRepository userProfileRepositoryMock;
 
-    @Mock
-    private AuditService auditServiceMock;
-
-    @Mock
-    private AuditRepository auditRepositoryMock;
-
-
     private UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
 
     private UserProfile userProfile = new UserProfile(userProfileCreationData, HttpStatus.OK);
+
+    @Mock
+    private AuditService auditServiceMock;
 
     @InjectMocks
     private UserProfileDeleter sut;
@@ -72,7 +67,7 @@ public class DeleteUserProfileTest {
 
         verify(userProfileRepositoryMock, times(1)).findByIdamId(any(String.class));
         verify(userProfileRepositoryMock, times(1)).deleteAll(any());
-        verify(auditRepositoryMock, times(1)).deleteAll(any());
+        verify(auditServiceMock, times(1)).persistAudit(deletionUserResponse);
 
     }
 
@@ -87,7 +82,6 @@ public class DeleteUserProfileTest {
         sut.delete(userProfilesDeletionData);
         verify(userProfileRepositoryMock, times(1)).findByIdamId(any(String.class));
         verify(userProfileRepositoryMock, times(0)).deleteAll(any());
-        verify(auditRepositoryMock, times(0)).deleteAll(any());
 
     }
 
