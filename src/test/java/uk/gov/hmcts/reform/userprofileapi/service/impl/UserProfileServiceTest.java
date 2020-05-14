@@ -19,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
@@ -35,8 +36,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
-import uk.gov.hmcts.reform.userprofileapi.resource.UserProfilesDeletionData;
-import uk.gov.hmcts.reform.userprofileapi.service.ResourceDeleter;
+import uk.gov.hmcts.reform.userprofileapi.service.DeleteResourceService;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceUpdator;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -55,7 +55,7 @@ public class UserProfileServiceTest {
     private UserProfileService<RequestData> userProfileService;
 
     @Mock
-    private ResourceDeleter<UserProfilesDeletionData> userProfileDeleterMock;
+    private DeleteResourceService<UserProfileDataRequest> userProfileDeleterMock;
 
     @Test
     public void testUpdateRoles() {
@@ -74,7 +74,7 @@ public class UserProfileServiceTest {
         userProfileResponse = userProfileService.updateRoles(updateUserProfileData, "1234");
 
         assertThat(userProfileResponse).isNotNull();
-        verify(resourceUpdatorMock, Mockito.times(1)).updateRoles(any(), any(String.class));
+        verify(resourceUpdatorMock, times(1)).updateRoles(any(), any(String.class));
     }
 
     @Test
@@ -115,7 +115,7 @@ public class UserProfileServiceTest {
 
         assertThat(resource).isEqualToComparingFieldByField(expected);
 
-        verify(userProfileRetriever, Mockito.times(1)).retrieve(any(), any(boolean.class));
+        verify(userProfileRetriever, times(1)).retrieve(any(), any(boolean.class));
 
     }
 
@@ -132,7 +132,7 @@ public class UserProfileServiceTest {
 
         assertThat(resource).isEqualToComparingFieldByField(expected);
 
-        verify(userProfileRetriever, Mockito.times(1)).retrieve(any(), any(boolean.class));
+        verify(userProfileRetriever, times(1)).retrieve(any(), any(boolean.class));
 
     }
 
@@ -150,14 +150,14 @@ public class UserProfileServiceTest {
 
         assertThat(resource).isNotNull();
 
-        verify(userProfileRetriever, Mockito.times(1)).retrieveMultipleProfiles(any(), any(boolean.class), any(boolean.class));
+        verify(userProfileRetriever, times(1)).retrieveMultipleProfiles(any(), any(boolean.class), any(boolean.class));
     }
 
 
     @Test
     public void testDeleteUserProfiles_successfully() {
 
-        UserProfilesDeletionData deletionData = mock(UserProfilesDeletionData.class);
+        UserProfileDataRequest deletionData = mock(UserProfileDataRequest.class);
         final UserProfilesDeletionResponse userProfilesDeletionResponse = new UserProfilesDeletionResponse(204, "successfully deleted");
 
         when(userProfileDeleterMock.delete(deletionData)).thenReturn(userProfilesDeletionResponse);
@@ -167,6 +167,6 @@ public class UserProfileServiceTest {
         assertThat(userProfilesDelResponse).isNotNull();
         assertThat(userProfilesDelResponse.getStatusCode()).isEqualTo(204);
         assertThat(userProfilesDelResponse.getMessage()).isEqualTo("successfully deleted");
-        verify(userProfileDeleterMock, Mockito.times(1)).delete(any());
+        verify(userProfileDeleterMock, times(1)).delete(any());
     }
 }

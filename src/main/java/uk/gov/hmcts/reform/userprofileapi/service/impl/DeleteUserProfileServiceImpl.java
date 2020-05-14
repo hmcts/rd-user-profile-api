@@ -11,17 +11,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfilesDeletionResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
-import uk.gov.hmcts.reform.userprofileapi.resource.UserProfilesDeletionData;
 import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
-import uk.gov.hmcts.reform.userprofileapi.service.ResourceDeleter;
+import uk.gov.hmcts.reform.userprofileapi.service.DeleteResourceService;
 
 @Service
 @Slf4j
-public class UserProfileDeleter implements ResourceDeleter<UserProfilesDeletionData> {
+public class DeleteUserProfileServiceImpl implements DeleteResourceService<UserProfileDataRequest> {
 
     @Autowired
     private UserProfileRepository userProfileRepository;
@@ -31,7 +31,7 @@ public class UserProfileDeleter implements ResourceDeleter<UserProfilesDeletionD
 
     @Override
     @Transactional
-    public UserProfilesDeletionResponse delete(UserProfilesDeletionData profilesData) {
+    public UserProfilesDeletionResponse delete(UserProfileDataRequest profilesData) {
 
         List<UserProfile> userProfiles = new ArrayList<UserProfile>();
         Set<String> userIds = new HashSet<String>(profilesData.getUserIds());

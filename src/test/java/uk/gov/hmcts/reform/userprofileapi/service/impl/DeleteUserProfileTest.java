@@ -16,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
+import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfilesDeletionResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
@@ -23,7 +24,6 @@ import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
 import uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
-import uk.gov.hmcts.reform.userprofileapi.resource.UserProfilesDeletionData;
 import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
 
 
@@ -41,7 +41,7 @@ public class DeleteUserProfileTest {
     private AuditService auditServiceMock;
 
     @InjectMocks
-    private UserProfileDeleter sut;
+    private DeleteUserProfileServiceImpl sut;
 
     @Before
     public void setUp() {
@@ -60,7 +60,7 @@ public class DeleteUserProfileTest {
         deletionResponse.setMessage("UserProfiles Successfully Deleted");
         deletionResponse.setStatusCode(status.value());
         when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
-        UserProfilesDeletionData userProfilesDeletionData = new UserProfilesDeletionData(userIds);
+        UserProfileDataRequest userProfilesDeletionData = new UserProfileDataRequest(userIds);
         UserProfilesDeletionResponse deletionUserResponse = sut.delete(userProfilesDeletionData);
         assertThat(deletionResponse.getStatusCode()).isEqualTo(deletionResponse.getStatusCode());
         assertThat(deletionResponse.getMessage()).isEqualTo(deletionResponse.getMessage());
@@ -76,7 +76,7 @@ public class DeleteUserProfileTest {
 
         List<String> userIds = new ArrayList<String>();
         userIds.add("1234");
-        UserProfilesDeletionData userProfilesDeletionData = new UserProfilesDeletionData(userIds);
+        UserProfileDataRequest userProfilesDeletionData = new UserProfileDataRequest(userIds);
         when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(any()));
 
         sut.delete(userProfilesDeletionData);

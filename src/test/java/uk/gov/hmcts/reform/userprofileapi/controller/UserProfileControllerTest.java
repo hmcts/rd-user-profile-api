@@ -39,7 +39,6 @@ import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
-import uk.gov.hmcts.reform.userprofileapi.resource.UserProfilesDeletionData;
 import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileService;
 
 
@@ -209,11 +208,11 @@ public class UserProfileControllerTest {
         UserProfileDataRequest userProfileDataRequest = new UserProfileDataRequest(userIds);
         UserProfilesDeletionResponse userProfilesDeletionResponse = new UserProfilesDeletionResponse(204,"UserProfiles Successfully Deleted");
 
-        when(userProfileServiceMock.delete(any(UserProfilesDeletionData.class))).thenReturn(userProfilesDeletionResponse);
+        when(userProfileServiceMock.delete(any(UserProfileDataRequest.class))).thenReturn(userProfilesDeletionResponse);
         ResponseEntity<UserProfilesDeletionResponse> responseEntityActual = sut.deleteUserProfiles(userProfileDataRequest);
         assertThat(responseEntityActual).isNotNull();
 
-        verify(userProfileServiceMock, times(1)).delete(any(UserProfilesDeletionData.class));
+        verify(userProfileServiceMock, times(1)).delete(any(UserProfileDataRequest.class));
         assertThat(responseEntityActual.getStatusCodeValue()).isEqualTo(204);
         assertThat(responseEntityActual.getBody().getMessage()).isEqualTo("UserProfiles Successfully Deleted");
     }
@@ -226,7 +225,7 @@ public class UserProfileControllerTest {
         userIds.add("");
         UserProfileDataRequest userProfileDataRequest = new UserProfileDataRequest(userIds);
         sut.deleteUserProfiles(userProfileDataRequest);
-        verify(userProfileServiceMock, times(0)).delete(any(UserProfilesDeletionData.class));
+        verify(userProfileServiceMock, times(0)).delete(any(UserProfileDataRequest.class));
 
     }
 }

@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.userprofileapi.integration;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
@@ -18,13 +17,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfilesDeletionResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
-import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 @RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
@@ -39,26 +35,8 @@ public class DeleteUserProfileIntTest extends AuthorizationEnabledIntegrationTes
     @Test
     public void should_return_204_and_delete_user_profile_resource() throws Exception {
 
-        UserProfileCreationData data = buildCreateUserProfileData();
-        UserProfileCreationResponse createdResource =
-            userProfileRequestHandlerTest.sendPost(
-                mockMvc,
-                APP_BASE_PATH,
-                data,
-                CREATED,
-                UserProfileCreationResponse.class
-            );
-
-        verifyUserProfileCreation(createdResource, CREATED, data);
-        List<String> userIds = new ArrayList<String>();
-        userIds.add(createdResource.getIdamId());
-        UserProfileDataRequest deletionRequest = buildUserProfileDataRequest(userIds);
-        userProfileRequestHandlerTest.sendDelete(mockMvc,
-                APP_BASE_PATH,
-                deletionRequest,
-                NO_CONTENT,
-                UserProfilesDeletionResponse.class);
-
+        //user profile create and  delete
+        createAndDeleteSingleUserProfile(buildCreateUserProfileData());
         verifyUserProfileDeletion();
 
     }
@@ -66,64 +44,48 @@ public class DeleteUserProfileIntTest extends AuthorizationEnabledIntegrationTes
     @Test
     public void should_return_204_and_delete_multiple_user_profile_resource() throws Exception {
 
-        UserProfileCreationData data = buildCreateUserProfileData();
-        //user profile one created
-        UserProfileCreationResponse createdResourceOne =
-                userProfileRequestHandlerTest.sendPost(
-                        mockMvc,
-                        APP_BASE_PATH,
-                        data,
-                        CREATED,
-                        UserProfileCreationResponse.class
-                );
+        UserProfileCreationResponse response1 = createUserProfile(buildCreateUserProfileData());
+        UserProfileCreationResponse response2 = createUserProfile(buildCreateUserProfileData());
 
-        verifyUserProfileCreation(createdResourceOne, CREATED, data);
-        UserProfileCreationData data2 = buildCreateUserProfileData();
         //user profile two created
-        UserProfileCreationResponse createdResourceTwo =
-                userProfileRequestHandlerTest.sendPost(
-                        mockMvc,
-                        APP_BASE_PATH,
-                        data2,
-                        CREATED,
-                        UserProfileCreationResponse.class
-                );
-
         List<String> userIds = new ArrayList<String>();
-        userIds.add(createdResourceOne.getIdamId());
-        userIds.add(createdResourceTwo.getIdamId());
-        UserProfileDataRequest deletionRequest = buildUserProfileDataRequest(userIds);
-        //user profiles deleted
-        userProfileRequestHandlerTest.sendDelete(mockMvc,
-                APP_BASE_PATH,
-                deletionRequest,
-                NO_CONTENT,
-                UserProfilesDeletionResponse.class);
-
+        userIds.add(response1.getIdamId());
+        userIds.add(response2.getIdamId());
+        //user profile to delete
+        deleteUserProfiles(userIds, NO_CONTENT);
         verifyUserProfileDeletion();
+    }
+
+    @Test
+    public void should_return_404_when_unable_to_find_profile_for_one_of_user_id_in_the_delete_request_for_multiple_user_profiles() throws Exception {
+
+        UserProfileCreationResponse response1 = createUserProfile(buildCreateUserProfileData());
+        //user profile two created
+        List<String> userIds = new ArrayList<String>();
+        userIds.add(response1.getIdamId());
+        userIds.add("12345");
+        //user profile to delete
+        deleteUserProfiles(userIds, NOT_FOUND);
+        List<UserProfile> userProfiles = (List<UserProfile>) userProfileRepository.findAll();
+        assertThat(userProfiles.size()).isEqualTo(1);
+
+        List<Audit> matchedAuditRecords = auditRepository.findAll();
+        assertThat(matchedAuditRecords.size()).isEqualTo(1);
     }
 
     @Test
     public void should_return_404_when_no_user_profile_resource_to_delete() throws Exception {
         List<String> userIds = new ArrayList<String>();
         userIds.add("123456");
-        UserProfileDataRequest deletionRequest = buildUserProfileDataRequest(userIds);
-        userProfileRequestHandlerTest.sendDelete(mockMvc,
-                APP_BASE_PATH,
-                deletionRequest,
-                NOT_FOUND,
-                UserProfilesDeletionResponse.class);
+        //user profile to delete
+        deleteUserProfiles(userIds, NOT_FOUND);
     }
 
     @Test
     public void should_return_400_when_empty_request_to_delete_user_profile_resource() throws Exception {
         List<String> userIds = new ArrayList<String>();
-        UserProfileDataRequest deletionRequest = buildUserProfileDataRequest(userIds);
-        userProfileRequestHandlerTest.sendDelete(mockMvc,
-                APP_BASE_PATH,
-                deletionRequest,
-                BAD_REQUEST,
-                UserProfilesDeletionResponse.class);
+        //user profile to delete
+        deleteUserProfiles(userIds, BAD_REQUEST);
     }
 
     @Test
@@ -131,12 +93,8 @@ public class DeleteUserProfileIntTest extends AuthorizationEnabledIntegrationTes
         List<String> userIds = new ArrayList<String>();
         userIds.add("123456");
         userIds.add("");
-        UserProfileDataRequest deletionRequest = buildUserProfileDataRequest(userIds);
-        userProfileRequestHandlerTest.sendDelete(mockMvc,
-                APP_BASE_PATH,
-                deletionRequest,
-                BAD_REQUEST,
-                UserProfilesDeletionResponse.class);
+        //user profile to delete
+        deleteUserProfiles(userIds, BAD_REQUEST);
     }
 
     private void verifyUserProfileDeletion() {

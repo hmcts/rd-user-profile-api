@@ -43,7 +43,29 @@ public class DeleteUserProfileFuncTest extends AbstractFunctional {
         UserProfileCreationData data = createUserProfileData();
         //creating user profile
         UserProfileCreationResponse userProfileResponse = createUserProfile(data, HttpStatus.CREATED);
-        verifyDeleteUserProfile(userProfileResponse.getIdamId());
+        List<String> userIds = new ArrayList<String>();
+        userIds.add(userProfileResponse.getIdamId());
+        //delete user profile
+        verifyDeleteUserProfile(userIds, HttpStatus.NO_CONTENT, HttpStatus.NOT_FOUND);
+
+    }
+
+    @Test
+    public void should_delete_multiple_user_profile_successfully_return_204() throws Exception {
+        UserProfileCreationData data1 = createUserProfileData();
+        //creating user profile
+        UserProfileCreationResponse userProfileResponse = createUserProfile(data1, HttpStatus.CREATED);
+
+        UserProfileCreationData data2 = createUserProfileData();
+        //creating user profile
+        UserProfileCreationResponse userProfileResponseTwo = createUserProfile(data2, HttpStatus.CREATED);
+
+        //user profile two created
+        List<String> userIds = new ArrayList<String>();
+        userIds.add(userProfileResponse.getIdamId());
+        userIds.add(userProfileResponseTwo.getIdamId());
+        //delete user profile
+        verifyDeleteUserProfile(userIds, HttpStatus.NO_CONTENT, HttpStatus.NOT_FOUND);
 
     }
 
@@ -54,34 +76,44 @@ public class DeleteUserProfileFuncTest extends AbstractFunctional {
         //creating user profile
         UserProfileCreationResponse activeUserProfile = createActiveUserProfile(data);
         verifyCreateUserProfile(activeUserProfile);
-        verifyDeleteUserProfile(activeUserProfile.getIdamId());
+        List<String> userIds = new ArrayList<String>();
+        userIds.add(activeUserProfile.getIdamId());
+        //delete user profile
+        verifyDeleteUserProfile(userIds, HttpStatus.NO_CONTENT, HttpStatus.NOT_FOUND);
 
     }
 
     @Test
     public void should_not_delete_user_profile_with_unknown_user_Id_return_404() throws Exception {
 
+        UserProfileCreationData data = createUserProfileData();
+        //creating user profile
+        UserProfileCreationResponse activeUserProfile = createActiveUserProfile(data);
         List<String> userIds = new ArrayList<String>();
+        userIds.add(activeUserProfile.getIdamId());
         userIds.add("1234567");
         UserProfileDataRequest deletionRequest = buildUserProfileDataRequest(userIds);
         //delete user profile
         testRequestHandler.sendDelete(
                 objectMapper.writeValueAsString(deletionRequest),
                 HttpStatus.NOT_FOUND, requestUri);
+
+        //verify user profile deleted or not
+        testRequestHandler.sendGet(HttpStatus.OK,
+                requestUri + "?userId=" + activeUserProfile.getIdamId());
+
     }
 
-    private void verifyDeleteUserProfile(String idamId) throws Exception {
+    private void verifyDeleteUserProfile(List<String> userIds, HttpStatus deleteStatus, HttpStatus getStatus) throws Exception {
 
-        List<String> userIds = new ArrayList<String>();
-        userIds.add(idamId);
         UserProfileDataRequest deletionRequest = buildUserProfileDataRequest(userIds);
         //delete user profile
         testRequestHandler.sendDelete(
                 objectMapper.writeValueAsString(deletionRequest),
-                HttpStatus.NO_CONTENT, requestUri);
+                deleteStatus, requestUri);
 
         //verify user profile deleted or not
-        testRequestHandler.sendGet(HttpStatus.NOT_FOUND,
-                requestUri + "?userId=" + idamId);
+        testRequestHandler.sendGet(getStatus,
+                requestUri + "?userId=" + userIds.get(0));
     }
 }

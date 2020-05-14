@@ -45,7 +45,6 @@ import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
-import uk.gov.hmcts.reform.userprofileapi.resource.UserProfilesDeletionData;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
 import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileService;
@@ -444,7 +443,7 @@ public class UserProfileController {
 
         UserProfilesDeletionResponse resource = null;
         validateUserIds(userProfilesDeletionDataReq);
-        resource = userProfileService.delete(new UserProfilesDeletionData(userProfilesDeletionDataReq.getUserIds()));
+        resource = userProfileService.delete(userProfilesDeletionDataReq);
         return ResponseEntity.status(resource.getStatusCode()).body(resource);
 
     }
