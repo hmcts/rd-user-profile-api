@@ -116,7 +116,7 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
 
     }
 
-    public void updateUserStatusAndVerify(UserProfile persistedUserProfile ,String message, int errorCode) throws Exception {
+    public void updateUserStatusAndVerify(UserProfile persistedUserProfile, String message, int errorCode) throws Exception {
         persistedUserProfile.setStatus(IdamStatus.ACTIVE);
         userProfileRepository.save(persistedUserProfile);
         String idamId = persistedUserProfile.getIdamId();
