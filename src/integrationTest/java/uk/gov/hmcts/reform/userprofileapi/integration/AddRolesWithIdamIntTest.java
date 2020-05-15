@@ -42,6 +42,8 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest {
 
     String id =  UUID.randomUUID().toString();
+    RoleName role1 = new RoleName("pui-case-manager");
+    RoleName role2 = new RoleName("prd-Admin");
 
     @Before
     public void setUpWireMock() {
@@ -167,9 +169,6 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
 
         UpdateUserProfileData userRoles = new UpdateUserProfileData();
 
-        RoleName role1 = new RoleName("pui-case-manager");
-        RoleName role2 = new RoleName("prd-Admin");
-
         Set<RoleName> roles = new HashSet<>();
         roles.add(role1);
         roles.add(role2);
@@ -187,9 +186,6 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
     @Test
     public void should_return_400_and_not_create_user_profile_when_empty_body() throws Exception {
         UpdateUserProfileData userRoles = new UpdateUserProfileData();
-        RoleName role1 = new RoleName("pui-case-manager");
-        RoleName role2 = new RoleName("prd-Admin");
-
         Set<RoleName> roles = new HashSet<>();
         roles.add(role1);
         roles.add(role2);
@@ -227,8 +223,6 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
         assertThat(userId).isNotNull();
 
         UpdateUserProfileData userRoles = new UpdateUserProfileData();
-        RoleName role1 = new RoleName("pui-case-manager");
-        RoleName role2 = new RoleName("prd-Admin");
 
         Set<RoleName> roles = new HashSet<>();
         roles.add(role1);
@@ -259,8 +253,6 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
     @Test
     public void should_return_400_and_not_create_user_profile_when_empty_body_delete_roles() throws Exception {
         UpdateUserProfileData userRoles = new UpdateUserProfileData();
-        RoleName role1 = new RoleName("pui-case-manager");
-        RoleName role2 = new RoleName("prd-Admin");
 
         Set<RoleName> roles = new HashSet<>();
         roles.add(role1);
@@ -290,9 +282,6 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
         mockWithUpdateRolesFailure(HttpStatus.PRECONDITION_FAILED, true, userId);
 
         UpdateUserProfileData userRoles = new UpdateUserProfileData();
-
-        RoleName role1 = new RoleName("puicase-manager");
-        RoleName role2 = new RoleName("prd-Admin");
 
         Set<RoleName> roles = new HashSet<>();
         roles.add(role1);
@@ -326,9 +315,6 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
 
         UpdateUserProfileData userRoles = new UpdateUserProfileData();
 
-        RoleName role1 = new RoleName("puicase-manager");
-        RoleName role2 = new RoleName("prd-Admin");
-
         Set<RoleName> roles = new HashSet<>();
         roles.add(role1);
         roles.add(role2);
@@ -360,9 +346,6 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
         mockWithDeleteRoleFailure(HttpStatus.PRECONDITION_FAILED, true);
 
         UpdateUserProfileData userRoles = new UpdateUserProfileData();
-
-        RoleName role1 = new RoleName("puicase-manager");
-        RoleName role2 = new RoleName("prd-Admin");
 
         Set<RoleName> roles = new HashSet<>();
         roles.add(role1);
@@ -397,9 +380,6 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
         mockWithDeleteRoleFailure(HttpStatus.PRECONDITION_FAILED, false);
 
         UpdateUserProfileData userRoles = new UpdateUserProfileData();
-
-        RoleName role1 = new RoleName("puicase-manager");
-        RoleName role2 = new RoleName("prd-Admin");
 
         Set<RoleName> roles = new HashSet<>();
         roles.add(role1);

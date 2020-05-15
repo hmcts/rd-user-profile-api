@@ -40,7 +40,7 @@ public class IdamRegistrationInfoTest {
     }
 
     @Test
-    public void isSuccessFromIdam() {
+    public void testIsSuccessFromIdam() {
 
         IdamRegistrationInfo sut = new IdamRegistrationInfo(responseEntityMock);
         Boolean actual = sut.isSuccessFromIdam();
@@ -49,7 +49,7 @@ public class IdamRegistrationInfoTest {
     }
 
     @Test
-    public void isDuplicateUser() {
+    public void testIsDuplicateUser() {
         IdamRegistrationInfo sut = new IdamRegistrationInfo(status(CONFLICT).build());
         assertThat(sut.isDuplicateUser()).isTrue();
     }

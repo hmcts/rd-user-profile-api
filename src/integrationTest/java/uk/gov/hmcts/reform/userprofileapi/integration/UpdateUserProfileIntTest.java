@@ -101,39 +101,28 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
     @Test
     public void should_see_idam_error_message_and_when_IdamStatus_is_updated_by_exui_and_idam_fails() throws Exception {
 
-
         UserProfile persistedUserProfile = userProfileMap.get("user");
-        persistedUserProfile.setStatus(IdamStatus.ACTIVE);
-        userProfileRepository.save(persistedUserProfile);
-        String idamId = persistedUserProfile.getIdamId();
-        UpdateUserProfileData data = buildUpdateUserProfileData();
-        data.setIdamStatus("Active");
-        setSidamUserUpdateMockWithStatus(NOT_FOUND.value(), false, idamId);
-        UserProfileRolesResponse userProfileRolesResponse = userProfileRequestHandlerTest.sendPut(
-                mockMvc,
-                APP_BASE_PATH + SLASH + idamId + "?origin=EXUI",
-                data,
-                NOT_FOUND,
-                UserProfileRolesResponse.class
-        );
+        setSidamUserUpdateMockWithStatus(NOT_FOUND.value(), false, persistedUserProfile.getIdamId());
+        updateUserStatusAndVerify(persistedUserProfile, "Not Found", 404);
 
-        assertThat(userProfileRolesResponse).isNotNull();
-        assertThat(userProfileRolesResponse.getAttributeResponse().getIdamStatusCode()).isEqualTo(404);
-        assertThat(userProfileRolesResponse.getAttributeResponse().getIdamMessage()).isEqualTo("Not Found");
     }
 
     @Test
     public void should_see_idam_error_message_and_when_IdamStatus_is_updated_by_exui_and_idam_failsand_does_not_give_body() throws Exception {
 
-
         UserProfile persistedUserProfile = userProfileMap.get("user");
+        setSidamUserUpdateMockWithStatus(NOT_FOUND.value(), true, persistedUserProfile.getIdamId());
+        updateUserStatusAndVerify(persistedUserProfile, "16 Resource not found", 404);
+
+    }
+
+    public void updateUserStatusAndVerify(UserProfile persistedUserProfile ,String message, int errorCode) throws Exception {
         persistedUserProfile.setStatus(IdamStatus.ACTIVE);
         userProfileRepository.save(persistedUserProfile);
         String idamId = persistedUserProfile.getIdamId();
         UpdateUserProfileData data = buildUpdateUserProfileData();
         data.setIdamStatus("Active");
-        setSidamUserUpdateMockWithStatus(NOT_FOUND.value(), true, idamId);
-        UserProfileRolesResponse userProfileRolesResponse = userProfileRequestHandlerTest.sendPut(
+        UserProfileRolesResponse userProfileRolesResponse =  userProfileRequestHandlerTest.sendPut(
                 mockMvc,
                 APP_BASE_PATH + SLASH + idamId + "?origin=EXUI",
                 data,
@@ -142,9 +131,10 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
         );
 
         assertThat(userProfileRolesResponse).isNotNull();
-        assertThat(userProfileRolesResponse.getAttributeResponse().getIdamStatusCode()).isEqualTo(404);
-        assertThat(userProfileRolesResponse.getAttributeResponse().getIdamMessage()).isEqualTo("16 Resource not found");
+        assertThat(userProfileRolesResponse.getAttributeResponse().getIdamStatusCode()).isEqualTo(errorCode);
+        assertThat(userProfileRolesResponse.getAttributeResponse().getIdamMessage()).isEqualTo(message);
     }
+
 
 
     private void verifyUserProfileCreation(UpdateUserProfileData data, UserProfile persistedUserProfile) {
