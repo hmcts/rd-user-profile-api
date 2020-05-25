@@ -691,6 +691,9 @@ file name: ant*.jar: readline.jar
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/javax\.websocket/javax\.websocket\-api@.*$</packageUrl>
         <cve>CVE-2020-11050</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
    file name: spring-security-oauth2-core-5.2.1.RELEASE.jar
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-oauth2\-core@.*$</packageUrl>
