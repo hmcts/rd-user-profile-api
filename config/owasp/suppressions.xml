@@ -615,4 +615,11 @@
         <packageUrl regex="true">^pkg:maven/javax\.websocket/javax\.websocket\-api@.*$</packageUrl>
         <cve>CVE-2020-11050</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+    file name: ant*.jar
+    ]]></notes>
+        <filePath regex="true">.*\**\.jar</filePath>
+        <cpe>cpe:/a:apache:ant</cpe>
+    </suppress>
 </suppressions>
