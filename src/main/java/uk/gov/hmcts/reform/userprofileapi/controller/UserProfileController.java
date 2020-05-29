@@ -429,7 +429,7 @@ public class UserProfileController {
             ),
             @ApiResponse(
                     code = 500,
-                    message = "User Profiles not deleted successfully"
+                    message = "Internal Server Error"
             )
     })
 
