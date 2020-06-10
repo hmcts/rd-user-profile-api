@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import uk.gov.hmcts.reform.userprofileapi.config.FeignInterceptorConfiguration;
 
-@FeignClient(name = "IdamFeignClient", url = "${auth.idam.client.baseUrl}", configuration = FeignInterceptorConfiguration.class)
+@FeignClient(name = "IdamFeignClient", url = "${idam.api.url}", configuration = FeignInterceptorConfiguration.class)
 public interface IdamFeignClient {
 
     @PostMapping(value = "/api/v1/users/registration")
