@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
-// tbc remove this and put in a validaiton service
 public interface UserProfileValidator {
 
     static boolean isUserIdValid(String userId, boolean hasExceptionThrown) {

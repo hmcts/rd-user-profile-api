@@ -12,25 +12,17 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
-import static uk.gov.hmcts.reform.userprofileapi.integration.AuthorizationEnabledIntegrationTest.getMatchedAuditRecords;
-
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import java.util.List;
 import java.util.Optional;
 
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
-import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRequestHandlerTest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
@@ -39,8 +31,6 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserType;
-import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
-import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
@@ -48,26 +38,7 @@ import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 @RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
 @Transactional
-public class CreateNewUserProfileWithDuplicateUserIntTest {
-
-    private MockMvc mockMvc;
-
-    private static final String APP_BASE_PATH = "/v1/userprofile";
-
-    @Autowired
-    protected UserProfileRequestHandlerTest userProfileRequestHandlerTest;
-
-    @Autowired
-    protected UserProfileRepository userProfileRepository;
-
-    @Autowired
-    protected AuditRepository auditRepository;
-
-    @Autowired
-    protected WebApplicationContext webApplicationContext;
-
-    @Rule
-    public WireMockRule idamService = new WireMockRule(5000);
+public class CreateNewUserProfileWithDuplicateUserIntTest extends AuthorizationEnabledIntegrationTest {
 
 
     @Before

@@ -5,6 +5,7 @@ import feign.Response;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -47,7 +48,7 @@ public class JsonFeignResponseHelper {
                 Optional<Collection<String>> encodings = Optional.ofNullable(response.headers().get("content-encoding"));
                 result = Optional.of((encodings.isPresent() && encodings.get().contains("gzip"))
                         ? json.readValue(new GZIPInputStream(new BufferedInputStream(response.body().asInputStream())), clazz.get())
-                        : json.readValue(response.body().asReader(), clazz.get()));
+                        : json.readValue(response.body().asReader(Charset.defaultCharset()), clazz.get()));
             } catch (IOException e) {
                 log.warn("Error could not decode!");
             }
