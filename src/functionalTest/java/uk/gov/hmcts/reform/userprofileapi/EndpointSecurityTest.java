@@ -13,31 +13,19 @@ import java.util.List;
 
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import net.serenitybdd.rest.SerenityRest;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.TestPropertySource;
 
 @RunWith(SpringIntegrationSerenityRunner.class)
 @TestPropertySource("classpath:application-functional.yaml")
-public class EndpointSecurityTest {
+public class EndpointSecurityTest extends AbstractFunctional {
 
-    @Value("${targetInstance}") private String targetInstance;
 
     private final List<String> endpoints =
         ImmutableList.of("/v1/userprofile/1", "/v1/userprofile");
-
-    @Before
-    public void setUp() {
-        RestAssured.baseURI = targetInstance;
-        RestAssured.useRelaxedHTTPSValidation();
-        // TO enable for local testing
-        //RestAssured.proxy("proxyout.reform.hmcts.net",8080);
-        //SerenityRest.proxy("proxyout.reform.hmcts.net", 8080);
-    }
 
     @Test
     public void should_allow_unauthenticated_requests_to_welcome_message_and_return_200_response_code() {
@@ -74,7 +62,7 @@ public class EndpointSecurityTest {
     }
 
     @Test
-    public void should_not_allow_unauthenticated_requests_and_return_403_response_code() {
+    public void should_not_allow_unauthenticated_requests_and_return_401_response_code() {
 
         endpoints.forEach(callbackEndpoint ->
 
@@ -84,12 +72,12 @@ public class EndpointSecurityTest {
                 .when()
                 .get(callbackEndpoint)
                 .then()
-                .statusCode(HttpStatus.FORBIDDEN.value())
+                .statusCode(HttpStatus.UNAUTHORIZED.value())
         );
     }
 
     @Test
-    public void should_not_allow_requests_without_valid_service_authorisation_and_return_403_response_code() {
+    public void should_not_allow_requests_without_valid_service_authorisation_and_return_401_response_code() {
 
         String invalidServiceToken = "invalid";
 
@@ -102,7 +90,7 @@ public class EndpointSecurityTest {
                 .when()
                 .get(endpoint)
                 .then()
-                .statusCode(HttpStatus.FORBIDDEN.value())
+                .statusCode(HttpStatus.UNAUTHORIZED.value())
         );
     }
 

@@ -1,11 +1,10 @@
 targetInstance: ${TEST_URL:http://localhost:8091}
 spring.flyway.enabled: false
-idamUrl: ${IDAM_URL_TO_TEST:https://idam-api.aat.platform.hmcts.net}
 
 idam.api.url: ${IDAM_URL_TO_TEST:https://idam-api.aat.platform.hmcts.net}
 
 generated.user.email.pattern: ${GENERATED_USER_EMAIL_PATTERN:freg-test-user-%s@feemail.com}
-test.url: ${TEST_URL:http://rd-user-profile-api-aat.service.core-compute-aat.internal}
+
 test.user.password: ${TEST_USER_PASSWORD:Hmcts123}
 
 s2s.auth.secret: ${S2S_SECRET:OLMEJQA7UHU6EZKG}
