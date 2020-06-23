@@ -34,8 +34,6 @@ public class IdamRegistrationInfoTest {
 
         IdamRegistrationInfo sut = new IdamRegistrationInfo(status(UNAUTHORIZED).build());
         String actualMessage = sut.getStatusMessage();
-
-        assertThat(actualMessage).isNotNull();
         assertThat(actualMessage).isEqualTo(expectMessage);
     }
 

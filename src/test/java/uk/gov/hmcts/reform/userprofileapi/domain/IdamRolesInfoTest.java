@@ -36,6 +36,6 @@ public class IdamRolesInfoTest {
         assertThat(idamRolesInfo.getRoles()).isNotEmpty();
         assertThat(idamRolesInfo.getResponseStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(idamRolesInfo.getStatusMessage()).isNotEmpty();
-        assertThat(idamRolesInfo.isSuccessFromIdam()).isEqualTo(true);
+        assertThat(idamRolesInfo.isSuccessFromIdam()).isTrue();
     }
 }

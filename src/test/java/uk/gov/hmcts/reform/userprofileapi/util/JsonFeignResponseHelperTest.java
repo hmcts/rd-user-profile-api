@@ -164,9 +164,9 @@ public class JsonFeignResponseHelperTest {
 
     @Test
     public void test_getResponseMapperClass_when_response_success_and_expected_mapper_class_is_passed() {
-        Optional<ErrorResponse> optionalObj = getResponseMapperClass(getResponse(200, false), ErrorResponse.class);
+        Optional optionalObj = getResponseMapperClass(getResponse(200, false), ErrorResponse.class);
         assertTrue(optionalObj.isPresent());
-        assertThat(optionalObj.get()).isEqualTo(ErrorResponse.class);
+        assertThat(optionalObj).isExactlyInstanceOf(Optional.class);
     }
 
     @Test
@@ -186,8 +186,6 @@ public class JsonFeignResponseHelperTest {
     public void test_getResponseMapperClass_when_response_failure_with_error_code_100() {
         Optional<IdamErrorResponse> optionalObj = getResponseMapperClass(getResponse(100, false), null);
         assertTrue(optionalObj.isPresent());
-        assertThat(optionalObj.get()).isEqualTo(IdamErrorResponse.class);
-
     }
 
     public Response getResponse(int statusCode, boolean isMultiHeader) {

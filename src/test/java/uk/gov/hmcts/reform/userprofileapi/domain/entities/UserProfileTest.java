@@ -31,8 +31,8 @@ public class UserProfileTest {
         assertThat(userProfile.getEmailCommsConsentTs()).isNull();
         assertThat(userProfile.getPostalCommsConsentTs()).isNull();
 
-        assertThat(userProfile.getUserCategory().toString()).isEqualTo(data.getUserCategory());
-        assertThat(userProfile.getUserType().toString()).isEqualTo(data.getUserType());
+        assertThat(userProfile.getUserCategory()).hasToString(data.getUserCategory());
+        assertThat(userProfile.getUserType()).hasToString(data.getUserType());
 
         assertThat(userProfile.getStatus()).isEqualTo(IdamStatus.PENDING);
         assertThat(userProfile.getIdamRegistrationResponse())
