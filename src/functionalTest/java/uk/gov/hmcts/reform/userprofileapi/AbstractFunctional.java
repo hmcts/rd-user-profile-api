@@ -21,6 +21,7 @@ import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.reform.userprofileapi.client.FuncTestRequestHandler;
 import uk.gov.hmcts.reform.userprofileapi.client.IdamClient;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
+import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
@@ -176,5 +177,9 @@ public class AbstractFunctional {
                 UserProfileRolesResponse.class);
     }
 
+
+    public  UserProfileDataRequest buildUserProfileDataRequest(List<String> userIds) {
+        return new UserProfileDataRequest(userIds);
+    }
 
 }
