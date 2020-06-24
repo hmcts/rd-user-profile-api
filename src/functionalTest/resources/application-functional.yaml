@@ -26,3 +26,5 @@ resendInterval: 60
 
 # sync time interval in minutes
 syncInterval: 60
+
+logging-component-name: RD-User-Profile-Api
