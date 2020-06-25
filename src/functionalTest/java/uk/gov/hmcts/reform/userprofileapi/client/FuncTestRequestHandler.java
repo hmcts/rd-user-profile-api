@@ -120,7 +120,7 @@ public class FuncTestRequestHandler {
         String s2sToken = getS2sToken();
         String bearerToken = getBearerToken();
 
-        log.info("S2S Token : {}, Bearer Token : {}",s2sToken, bearerToken);
+        log.info("S2S Token : {}, Bearer Token : {}", s2sToken, bearerToken);
 
         return SerenityRest
             .given()
