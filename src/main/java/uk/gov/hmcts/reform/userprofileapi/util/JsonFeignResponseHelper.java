@@ -53,7 +53,7 @@ public class JsonFeignResponseHelper {
                         ? json.readValue(new GZIPInputStream(new BufferedInputStream(response.body().asInputStream())), clazz.get())
                         : json.readValue(response.body().asReader(Charset.defaultCharset()), clazz.get()));
             } catch (IOException e) {
-                log.warn("Error could not decoded : " + e.getLocalizedMessage());
+                log.warn("Error could not decoded : {}", e.getLocalizedMessage());
             }
         }
         return result;
