@@ -53,7 +53,7 @@ public class WelcomeController {
     @ResponseBody
     public ResponseEntity<String> welcome() {
 
-        log.info(loggingComponentName,"Welcome message '{}' from running instance: {}", MESSAGE, INSTANCE_ID);
+        log.info("{}::  Welcome message '{}' from running instance: {}",loggingComponentName, MESSAGE, INSTANCE_ID);
 
         return ResponseEntity
             .ok()

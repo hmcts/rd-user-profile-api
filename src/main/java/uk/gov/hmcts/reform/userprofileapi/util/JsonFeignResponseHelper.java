@@ -54,7 +54,7 @@ public class JsonFeignResponseHelper {
                         ? json.readValue(new GZIPInputStream(new BufferedInputStream(response.body().asInputStream())), clazz.get())
                         : json.readValue(response.body().asReader(Charset.defaultCharset()), clazz.get()));
             } catch (IOException e) {
-                log.warn(loggingComponentName,"Error could not decode!");
+                log.warn("{}:: Error could not decode!",loggingComponentName);
             }
         }
         return result;

@@ -108,7 +108,7 @@ public class IdamServiceImpl implements IdamService {
             response = idamClient.updateUserDetails(updateUserDetails, userId);
             httpStatus = JsonFeignResponseHelper.toResponseEntity(response, Optional.empty()).getStatusCode();
         } catch (FeignException ex) {
-            log.error(loggingComponentName,"SIDAM call failed:", ex);
+            log.error("{}:: SIDAM call failed:",loggingComponentName, ex);
             httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         }
         return new AttributeResponse(httpStatus);
