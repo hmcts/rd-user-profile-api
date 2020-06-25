@@ -38,7 +38,7 @@ public class FeignInterceptorConfiguration {
                         }
                     }
                 } else {
-                    log.warn("{}:: FeignHeadConfiguration",loggingComponentName , "Failed to get request header!");
+                    log.warn("{}:: FeignHeadConfiguration", loggingComponentName, "Failed to get request header!");
                 }
             }
         };
