@@ -703,4 +703,13 @@ file name: ant*.jar: readline.jar
         <cve>CVE-2020-5407</cve>
         <cve>CVE-2020-5408</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: postgresql-42.2.9.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.postgresql/postgresql@.*$</packageUrl>
+        <cpe>cpe:/a:postgresql:postgresql</cpe>
+        <cpe>cpe:/a:postgresql:postgresql_jdbc_driver</cpe>
+        <cve>CVE-2020-13692</cve>
+    </suppress>
 </suppressions>
