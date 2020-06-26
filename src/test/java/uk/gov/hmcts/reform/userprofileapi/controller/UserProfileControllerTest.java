@@ -7,6 +7,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.ResponseEntity.status;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildUpdateUserProfileData;
 
 import java.util.ArrayList;
@@ -138,14 +140,14 @@ public class UserProfileControllerTest {
     @Test
     public void testUpdateUserProfile() {
         UpdateUserProfileData updateUserProfileData = buildUpdateUserProfileData();
-        AttributeResponse attributeResponse = new AttributeResponse(HttpStatus.OK);
+        AttributeResponse attributeResponse = new AttributeResponse(status(OK).build());
 
         when(userProfileServiceMock.update(any(), any(), any())).thenReturn(attributeResponse);
 
         ResponseEntity actual = sut.updateUserProfile(updateUserProfileData, UUID.randomUUID().toString(), ORIGIN);
         verify(userProfileServiceMock, times(1)).update(any(), any(), any());
 
-        ResponseEntity expect = ResponseEntity.status(HttpStatus.OK).build();
+        ResponseEntity expect = status(OK).build();
         assertThat(actual.getStatusCode().value()).isEqualTo(expect.getStatusCode().value());
     }
 
