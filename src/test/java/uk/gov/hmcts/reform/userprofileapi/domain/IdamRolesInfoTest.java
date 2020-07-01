@@ -36,6 +36,26 @@ public class IdamRolesInfoTest {
         assertThat(idamRolesInfo.getRoles()).isNotEmpty();
         assertThat(idamRolesInfo.getResponseStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(idamRolesInfo.getStatusMessage()).isNotEmpty();
-        assertThat(idamRolesInfo.isSuccessFromIdam()).isEqualTo(true);
+        assertThat(idamRolesInfo.isSuccessFromIdam()).isTrue();
+    }
+
+    @Test
+    public void test_AlternativeConstructor() {
+        IdamRolesInfo idamRolesInfo = new IdamRolesInfo(HttpStatus.CREATED);
+
+        assertThat(idamRolesInfo.getResponseStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(idamRolesInfo.getStatusMessage()).isNotEmpty();
+
+        assertThat(idamRolesInfo.isSuccessFromIdam()).isTrue();
+    }
+
+    @Test
+    public void test_isSuccessFromIdam_ReturnsFalseWhenStatusIs400() {
+        IdamRolesInfo idamRolesInfo = new IdamRolesInfo(HttpStatus.BAD_REQUEST);
+
+        assertThat(idamRolesInfo.getResponseStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(idamRolesInfo.getStatusMessage()).isNotEmpty();
+
+        assertThat(idamRolesInfo.isSuccessFromIdam()).isFalse();
     }
 }

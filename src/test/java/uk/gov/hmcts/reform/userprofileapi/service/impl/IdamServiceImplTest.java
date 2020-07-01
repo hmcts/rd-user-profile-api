@@ -61,10 +61,10 @@ public class IdamServiceImplTest {
         IdamRegistrationInfo idamId = sut.registerUser(dataMock);
 
         assertThat(idamId.getIdamRegistrationResponse()).isNotNull();
-        assertThat(idamId.getIdamRegistrationResponse().value())
-                .isEqualTo(HttpStatus.ACCEPTED.value());
+        assertThat(idamId.getIdamRegistrationResponse().value()).isEqualTo(HttpStatus.ACCEPTED.value());
 
         verify(idamFeignClientMock, times(1)).createUserProfile(any());
+        verify(responseMock, times(1)).close();
     }
 
     @Test
@@ -78,8 +78,11 @@ public class IdamServiceImplTest {
         IdamRolesInfo idamRolesInfo = sut.fetchUserById(userId);
 
         assertThat(idamRolesInfo).isNotNull();
+        assertThat(idamRolesInfo.getResponseStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(idamRolesInfo.getStatusMessage()).isEqualTo("16 Resource not found");
 
         verify(idamFeignClientMock, times(1)).getUserById(any());
+        verify(responseMock, times(1)).close();
     }
 
     @Test
@@ -95,6 +98,7 @@ public class IdamServiceImplTest {
         assertThat(idamRolesInfo).isNotNull();
 
         verify(idamFeignClientMock, times(1)).getUserByEmail(any());
+        verify(responseMock, times(1)).close();
     }
 
     @Test
@@ -198,6 +202,7 @@ public class IdamServiceImplTest {
         verify(responseMock, times(2)).status();
 
         assertThat(result).isNotNull();
+        assertThat(result.getResponseStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Test
@@ -218,6 +223,9 @@ public class IdamServiceImplTest {
         verify(responseMock, times(2)).status();
 
         assertThat(result).isNotNull();
+        assertThat(result.getIdamStatusCode()).isEqualTo(200);
+        assertThat(result.getIdamMessage()).isEqualTo("11 OK");
+
     }
 
     @Test

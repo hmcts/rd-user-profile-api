@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.eq;
@@ -21,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -54,6 +56,7 @@ public class ValidationHelperServiceTest {
     private UserProfile userProfile = new UserProfile(userProfileCreationData, idamRegistrationInfo.getIdamRegistrationResponse());
     private UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("email@net.com", "firstName", "lastName", "ACTIVE", new HashSet<RoleName>(), new HashSet<RoleName>());
 
+    @Spy
     @InjectMocks
     private ValidationHelperService sut = new ValidationHelperServiceImpl();
 
@@ -237,6 +240,15 @@ public class ValidationHelperServiceTest {
     }
 
     @Test
+    public void test_validateUserLastUpdatedWithinSpecifiedTimeWithException_shouldReturnTrue_WithExpectedHoursEequalToLocalTime() {
+
+        userProfile.setLastUpdated(LocalDateTime.now().minusMinutes(60L));
+        sut.validateUserLastUpdatedWithinSpecifiedTime(userProfile, 60L);
+        verify(auditServiceMock, times(0)).persistAudit(any(HttpStatus.class), any(ResponseSource.class));
+        verify(exceptionServiceMock, times(0)).throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
+    }
+
+    @Test
     public void test_validateUserLastUpdatedWithinSpecifiedTimeWithException_should_throw_exception() {
         userProfile.setLastUpdated(LocalDateTime.now());
 
@@ -254,5 +266,8 @@ public class ValidationHelperServiceTest {
         Optional<UserProfile> userProfileOptional = Optional.of(userProfile);
         UserProfile userProfileResponse = sut.validateReInvitedUser(userProfileOptional);
         assertThat(userProfileResponse).isNotNull();
+        verify(sut, times(1)).validateUserIsPresent(userProfileOptional);
+        verify(sut, times(1)).validateUserStatus(userProfile, IdamStatus.PENDING);
+        verify(sut, times(1)).validateUserLastUpdatedWithinSpecifiedTime(any(UserProfile.class), anyLong());
     }
 }

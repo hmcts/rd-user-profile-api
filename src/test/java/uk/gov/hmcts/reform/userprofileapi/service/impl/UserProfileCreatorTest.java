@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -13,6 +14,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -24,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -66,6 +69,7 @@ public class UserProfileCreatorTest {
 
     private UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
 
+    @Spy
     private UserProfile userProfile = new UserProfile(userProfileCreationData, idamRegistrationInfo.getIdamRegistrationResponse());
 
     private IdamRolesInfo idamRolesInfo = mock(IdamRolesInfo.class);
@@ -268,9 +272,9 @@ public class UserProfileCreatorTest {
 
     public Map<Map<String, Boolean>, IdamStatus> createDecisionMap() {
         Map<Map<String, Boolean>, IdamStatus> idamStatusMap = new HashMap<Map<String, Boolean>, IdamStatus>();
-        idamStatusMap.put(addRule(false,true, false), IdamStatus.PENDING);
-        idamStatusMap.put(addRule(true, false,false), IdamStatus.ACTIVE);
-        idamStatusMap.put(addRule(false,false,false), IdamStatus.SUSPENDED);
+        idamStatusMap.put(addRule(false, true, false), IdamStatus.PENDING);
+        idamStatusMap.put(addRule(true, false, false), IdamStatus.ACTIVE);
+        idamStatusMap.put(addRule(false, false, false), IdamStatus.SUSPENDED);
         return idamStatusMap;
     }
 
@@ -346,7 +350,6 @@ public class UserProfileCreatorTest {
 
     @Test
     public void should_reinvite_user_successfully() {
-
         when(idamService.registerUser(any())).thenReturn(idamRegistrationInfo);
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
         when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);
@@ -361,7 +364,7 @@ public class UserProfileCreatorTest {
         inOrder.verify(idamService, times(1)).registerUser(any(IdamRegisterUserRequest.class));
         inOrder.verify(userProfileRepository, times(1)).save(any(UserProfile.class));
         verify(auditRepository, times(1)).save(any(Audit.class));
-
+        verify(userProfile, times(1)).setIdamRegistrationResponse(anyInt());
     }
 
     @Test
@@ -379,7 +382,7 @@ public class UserProfileCreatorTest {
         assertThat(raisedException).isInstanceOf(IdamServiceException.class)
                 .hasMessageContaining("7 : Resend invite failed as user is already active. Wait for 60 minutes for the system to refresh.");
 
-        InOrder inOrder = inOrder(idamService,auditRepository);
+        InOrder inOrder = inOrder(idamService, auditRepository);
         inOrder.verify(idamService, times(1)).registerUser(any(IdamRegisterUserRequest.class));
         verify(userProfileRepository, times(0)).save(any(UserProfile.class));
         inOrder.verify(auditRepository, times(1)).save(any(Audit.class));
@@ -400,7 +403,7 @@ public class UserProfileCreatorTest {
         assertThat(raisedException).isInstanceOf(IdamServiceException.class)
                 .hasMessageContaining("13 Required parameters or one of request field is missing or invalid");
 
-        InOrder inOrder = inOrder(idamService,auditRepository);
+        InOrder inOrder = inOrder(idamService, auditRepository);
         inOrder.verify(idamService, times(1)).registerUser(any(IdamRegisterUserRequest.class));
         verify(userProfileRepository, times(0)).save(any(UserProfile.class));
         inOrder.verify(auditRepository, times(1)).save(any(Audit.class));
@@ -419,7 +422,15 @@ public class UserProfileCreatorTest {
 
         verify(idamService, times(0)).registerUser(any(IdamRegisterUserRequest.class));
         verify(userProfileRepository, times(0)).save(any(UserProfile.class));
-
     }
 
+    @Test
+    public void test_createIdamRolesRequest() {
+        Set<String> rolesToUpdate = new HashSet<>();
+        rolesToUpdate.add("pui-user-manager");
+
+        Set<Map<String, String>> roles = userProfileCreator.createIdamRolesRequest(rolesToUpdate);
+
+        assertThat(roles).isNotEmpty();
+    }
 }

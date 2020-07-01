@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdentifierName;
 import uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder;
+import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
@@ -44,6 +45,9 @@ public class UserProfileServiceTest {
 
     @Mock
     private UserProfileRetriever userProfileRetriever;
+
+    @Mock
+    UserProfileRepository userProfileRepository;
 
     @Mock
     private ResourceUpdator<UpdateUserProfileData> resourceUpdatorMock;
@@ -145,5 +149,19 @@ public class UserProfileServiceTest {
         assertThat(resource).isNotNull();
 
         Mockito.verify(userProfileRetriever, Mockito.times(1)).retrieveMultipleProfiles(any(), any(boolean.class), any(boolean.class));
+    }
+
+    @Test
+    public void test_reInviteUser() {
+        UserProfileCreationData userProfileData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
+        UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
+
+        when(userProfileCreator.reInviteUser(userProfileData)).thenReturn(userProfile);
+
+        UserProfileCreationResponse response = userProfileService.reInviteUser(userProfileData);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getIdamId()).isEqualTo(userProfile.getIdamId());
+        assertThat(response.getIdamRegistrationResponse()).isEqualTo(201);
     }
 }
