@@ -69,11 +69,13 @@ public class ValidationServiceImplTest {
         assertThat(actual.getStatus()).isEqualTo(IdamStatus.SUSPENDED);
 
         verify(userProfileRepositoryMock, times(1)).findByIdamId(any(String.class));
+        verify(validationHelperServiceMock, times(1)).validateUserIsPresent(any());
     }
 
     @Test
     public void testIsValidForUserDetailUpdateHappyPath() {
-        assertThat(sut.isValidForUserDetailUpdate(updateUserProfileData, userProfile, ResponseSource.API)).isFalse();
+        when(validationHelperServiceMock.validateUserStatusBeforeUpdate(updateUserProfileData, userProfile, ResponseSource.API)).thenReturn(true);
+        assertThat(sut.isValidForUserDetailUpdate(updateUserProfileData, userProfile, ResponseSource.API)).isTrue();
     }
 
     @Test
@@ -85,6 +87,7 @@ public class ValidationServiceImplTest {
     @Test
     public void testIsExuiUpdateRequest() {
         assertThat(sut.isExuiUpdateRequest(ResponseSource.EXUI.name())).isTrue();
+        assertThat(sut.isExuiUpdateRequest("INVALID")).isFalse();
     }
 
 }

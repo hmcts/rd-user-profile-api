@@ -2,8 +2,15 @@ package uk.gov.hmcts.reform.userprofileapi.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
+
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UpdateUserDetails;
@@ -73,10 +80,15 @@ public class UserProfileMapperTest {
 
     @Test
     public void test_mapUpdatableFieldsForReInvite() {
-        UserProfile userProfile = new UserProfile();
-        UserProfileMapper.mapUpdatableFieldsForReInvite(userProfileCreationData, userProfile);
-        assertThat(userProfile.getFirstName()).isEqualTo(userProfileCreationData.getFirstName());
-        assertThat(userProfile.getLastName()).isEqualTo(userProfileCreationData.getLastName());
+        UserProfile userProfileMock = mock(UserProfile.class);
+        when(userProfileMock.getFirstName()).thenReturn(userProfileCreationData.getFirstName());
+        when(userProfileMock.getLastName()).thenReturn(userProfileCreationData.getLastName());
+
+        UserProfileMapper.mapUpdatableFieldsForReInvite(userProfileCreationData, userProfileMock);
+        
+        assertThat(userProfileMock.getFirstName()).isEqualTo(userProfileCreationData.getFirstName());
+        assertThat(userProfileMock.getLastName()).isEqualTo(userProfileCreationData.getLastName());
+        verify(userProfileMock, times(1)).setLastUpdated(any(LocalDateTime.class));
     }
 
 }

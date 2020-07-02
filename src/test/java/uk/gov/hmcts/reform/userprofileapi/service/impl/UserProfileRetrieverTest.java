@@ -243,7 +243,7 @@ public class UserProfileRetrieverTest {
         assertThat(profile.getEmail()).isEqualTo(up.getEmail());
         assertThat(profile.getFirstName()).isEqualTo(up.getFirstName());
         assertThat(profile.getLastName()).isEqualTo(up.getLastName());
-        assertThat(profile.getRoles().size()).isEqualTo(0);
+        assertThat(profile.getRoles().size()).isZero();
         assertThat(profile.getErrorMessage()).isNotEmpty();
         assertThat(profile.getErrorStatusCode()).isEqualTo("404");
 
@@ -272,7 +272,7 @@ public class UserProfileRetrieverTest {
         assertThat(profile.getEmail()).isEqualTo(up.getEmail());
         assertThat(profile.getFirstName()).isEqualTo(up.getFirstName());
         assertThat(profile.getLastName()).isEqualTo(up.getLastName());
-        assertThat(profile.getRoles().size()).isEqualTo(0);
+        assertThat(profile.getRoles().size()).isZero();
         assertThat(profile.getErrorMessage()).isNull();
         assertThat(profile.getErrorStatusCode()).isNull();
 
@@ -307,7 +307,7 @@ public class UserProfileRetrieverTest {
         assertThat(profile.getEmail()).isEqualTo(up.getEmail());
         assertThat(profile.getFirstName()).isEqualTo(up.getFirstName());
         assertThat(profile.getLastName()).isEqualTo(up.getLastName());
-        assertThat(profile.getRoles().size()).isEqualTo(0);
+        assertThat(profile.getRoles().size()).isZero();
         assertThat(profile.getErrorMessage()).isEqualTo(IdamStatusResolver.NO_IDAM_CALL);
         assertThat(profile.getErrorStatusCode()).isEqualTo(" ");
     }
