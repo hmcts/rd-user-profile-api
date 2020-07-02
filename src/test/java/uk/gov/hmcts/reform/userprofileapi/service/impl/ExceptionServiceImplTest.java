@@ -30,7 +30,8 @@ public class ExceptionServiceImplTest {
 
     @Test(expected = RequiredFieldMissingException.class)
     public void testThrowRequiredFieldMissingException() {
-        sut.throwCustomRuntimeException(ExceptionType.REQUIREDFIELDMISSINGEXCEPTION, "RequiredFieldMissingException Message");
+        sut.throwCustomRuntimeException(ExceptionType.REQUIREDFIELDMISSINGEXCEPTION,
+                "RequiredFieldMissingException Message");
     }
 
     @Test(expected = UndefinedException.class)
@@ -40,12 +41,14 @@ public class ExceptionServiceImplTest {
 
     @Test(expected = ResourceNotFoundException.class)
     public void testOverloadedException() {
-        sut.throwCustomRuntimeException(ExceptionType.RESOURCENOTFOUNDEXCEPTION, "ResourceNotFoundException Message", HttpStatus.ACCEPTED);
+        sut.throwCustomRuntimeException(ExceptionType.RESOURCENOTFOUNDEXCEPTION, "ResourceNotFoundException Message",
+                HttpStatus.ACCEPTED);
     }
 
     @Test(expected = ErrorPersistingException.class)
     public void testErrorPersistingException() {
-        sut.throwCustomRuntimeException(ExceptionType.ERRORPERSISTINGEXCEPTION, "Error while persisting user profile", HttpStatus.ACCEPTED);
+        sut.throwCustomRuntimeException(ExceptionType.ERRORPERSISTINGEXCEPTION, "Error while persisting user profile",
+                HttpStatus.ACCEPTED);
     }
 
     @Test(expected = InvalidRequest.class)

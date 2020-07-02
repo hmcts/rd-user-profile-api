@@ -23,7 +23,8 @@ import org.springframework.util.MultiValueMap;
 public class JsonFeignResponseHelper {
     private static final ObjectMapper json = new ObjectMapper();
 
-    private JsonFeignResponseHelper() { }
+    private JsonFeignResponseHelper() {
+    }
 
     public static <U> ResponseEntity<U> toResponseEntity(Response response, Optional<Class<U>> classOpt) {
         Optional<U> payload = decode(response, classOpt);
@@ -45,9 +46,11 @@ public class JsonFeignResponseHelper {
         Optional<T> result = Optional.empty();
         if (isStatusCodeSuccessful(response.status()) && clazz.isPresent()) {
             try {
-                Optional<Collection<String>> encodings = Optional.ofNullable(response.headers().get("content-encoding"));
+                Optional<Collection<String>> encodings = Optional.ofNullable(response.headers()
+                        .get("content-encoding"));
                 result = Optional.of((encodings.isPresent() && encodings.get().contains("gzip"))
-                        ? json.readValue(new GZIPInputStream(new BufferedInputStream(response.body().asInputStream())), clazz.get())
+                        ? json.readValue(new GZIPInputStream(new BufferedInputStream(response.body().asInputStream())),
+                        clazz.get())
                         : json.readValue(response.body().asReader(Charset.defaultCharset()), clazz.get()));
             } catch (IOException e) {
                 log.warn("Error could not decode!");

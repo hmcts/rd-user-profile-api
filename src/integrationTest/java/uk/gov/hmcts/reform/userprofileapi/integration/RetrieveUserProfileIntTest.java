@@ -113,7 +113,8 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
         Optional<UserProfile> optionalUserProfile = userProfileRepository.findByIdamId(retrievedResource.getIdamId());
         UserProfile persistedUserProfile = optionalUserProfile.get();
 
-        List<Audit> matchedAuditRecords = getMatchedAuditRecords(auditRepository.findAll(), persistedUserProfile.getIdamId());
+        List<Audit> matchedAuditRecords = getMatchedAuditRecords(auditRepository.findAll(),
+                persistedUserProfile.getIdamId());
         assertThat(matchedAuditRecords.size()).isEqualTo(1);
         Audit audit = matchedAuditRecords.get(0);
 
@@ -143,7 +144,8 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
         Optional<UserProfile> optionalUserProfile = userProfileRepository.findByIdamId(retrievedResource.getIdamId());
         UserProfile persistedUserProfile = optionalUserProfile.get();
 
-        List<Audit> matchedAuditRecords = getMatchedAuditRecords(auditRepository.findAll(), persistedUserProfile.getIdamId());
+        List<Audit> matchedAuditRecords = getMatchedAuditRecords(auditRepository.findAll(),
+                persistedUserProfile.getIdamId());
         assertThat(matchedAuditRecords.size()).isEqualTo(1);
         Audit audit = matchedAuditRecords.get(0);
 

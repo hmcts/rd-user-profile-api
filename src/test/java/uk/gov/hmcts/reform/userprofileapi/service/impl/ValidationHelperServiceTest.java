@@ -49,10 +49,14 @@ public class ValidationHelperServiceTest {
 
     private ExceptionServiceImpl exceptionServiceMock = mock(ExceptionServiceImpl.class, Mockito.CALLS_REAL_METHODS);
 
-    private UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
+    private UserProfileCreationData userProfileCreationData
+            = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
     private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.ACCEPTED);
-    private UserProfile userProfile = new UserProfile(userProfileCreationData, idamRegistrationInfo.getIdamRegistrationResponse());
-    private UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("email@net.com", "firstName", "lastName", "ACTIVE", new HashSet<RoleName>(), new HashSet<RoleName>());
+    private UserProfile userProfile = new UserProfile(userProfileCreationData,
+            idamRegistrationInfo.getIdamRegistrationResponse());
+    private UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("email@net.com",
+            "firstName", "lastName", "ACTIVE", new HashSet<RoleName>(),
+            new HashSet<RoleName>());
 
     @InjectMocks
     private ValidationHelperService sut = new ValidationHelperServiceImpl();
@@ -100,7 +104,8 @@ public class ValidationHelperServiceTest {
     public void testValidateUpdateUserProfileRequestValidHappyPath() {
         updateUserProfileData.setIdamStatus("SUSPENDED");
 
-        boolean actual = sut.validateUpdateUserProfileRequestValid(updateUserProfileData, "f56e5539-a8f7-4ae6-b378-cc1015b72dcc", API);
+        boolean actual = sut.validateUpdateUserProfileRequestValid(updateUserProfileData,
+                "f56e5539-a8f7-4ae6-b378-cc1015b72dcc", API);
 
         assertThat(actual).isTrue();
     }
@@ -109,14 +114,17 @@ public class ValidationHelperServiceTest {
     public void testValidateUpdateUserProfileRequestValidException() {
         updateUserProfileData.setIdamStatus(null);
 
-        sut.validateUpdateUserProfileRequestValid(updateUserProfileData, "f56e5539-a8f7-4ae6-b378-cc1015b72dcc", API);
+        sut.validateUpdateUserProfileRequestValid(updateUserProfileData,
+                "f56e5539-a8f7-4ae6-b378-cc1015b72dcc", API);
     }
 
     @Test
     public void test_ValidateUpdateUserProfileRequestValid_PersistAuditOnException() {
         updateUserProfileData.setIdamStatus(null);
 
-        final Throwable raisedException = catchThrowable(() -> sut.validateUpdateUserProfileRequestValid(updateUserProfileData, "f56e5539-a8f7-4ae6-b378-cc1015b72dcc", API));
+        final Throwable raisedException = catchThrowable(() ->
+                sut.validateUpdateUserProfileRequestValid(updateUserProfileData,
+                "f56e5539-a8f7-4ae6-b378-cc1015b72dcc", API));
         assertThat(raisedException).isInstanceOf(RequiredFieldMissingException.class);
 
         verify(auditServiceMock, times(1)).persistAudit(eq(HttpStatus.BAD_REQUEST), eq(API));
@@ -124,9 +132,11 @@ public class ValidationHelperServiceTest {
 
     @Test
     public void testvalidateUserStatusBeforeUpdate_scenario1() {
-        final Throwable raisedException = catchThrowable(() -> sut.validateUserStatusBeforeUpdate(updateUserProfileData, userProfile, API));
+        final Throwable raisedException = catchThrowable(() -> sut.validateUserStatusBeforeUpdate(updateUserProfileData,
+                userProfile, API));
 
-        assertThat(raisedException.getMessage()).contains("User is PENDING or input status is PENDING and only be changed to ACTIVE or SUSPENDED for userId: null");
+        assertThat(raisedException.getMessage()).contains("User is PENDING or input status is PENDING and only be "
+                + "changed to ACTIVE or SUSPENDED for userId: null");
         assertThat(raisedException).isInstanceOf(RequiredFieldMissingException.class);
 
         verify(auditServiceMock, times(1)).persistAudit(eq(HttpStatus.BAD_REQUEST), eq(API));
@@ -134,9 +144,11 @@ public class ValidationHelperServiceTest {
 
     @Test
     public void testvalidateUserStatusBeforeUpdate_scenario2() {
-        final Throwable raisedException = catchThrowable(() -> sut.validateUserStatusBeforeUpdate(updateUserProfileData, userProfile, API));
+        final Throwable raisedException = catchThrowable(() -> sut.validateUserStatusBeforeUpdate(updateUserProfileData,
+                userProfile, API));
 
-        assertThat(raisedException.getMessage()).contains("User is PENDING or input status is PENDING and only be changed to ACTIVE or SUSPENDED for userId: null");
+        assertThat(raisedException.getMessage()).contains("User is PENDING or input status is PENDING and only be "
+                + "changed to ACTIVE or SUSPENDED for userId: null");
         assertThat(raisedException).isInstanceOf(RequiredFieldMissingException.class);
 
         verify(auditServiceMock, times(1)).persistAudit(eq(HttpStatus.BAD_REQUEST), eq(API));
@@ -150,24 +162,32 @@ public class ValidationHelperServiceTest {
 
     @Test
     public void test_validateUserStatusBeforeUpdate_should_throw_exception_when_user_is_pending() {
-        final Throwable raisedException = catchThrowable(() -> sut.validateUserStatusBeforeUpdate(updateUserProfileData, userProfile, API));
+        final Throwable raisedException = catchThrowable(() -> sut.validateUserStatusBeforeUpdate(updateUserProfileData,
+                userProfile, API));
 
-        assertThat(raisedException.getMessage()).contains("User is PENDING or input status is PENDING and only be changed to ACTIVE or SUSPENDED for userId: null");
+        assertThat(raisedException.getMessage()).contains("User is PENDING or input status is PENDING and only be "
+                + "changed to ACTIVE or SUSPENDED for userId: null");
         assertThat(raisedException).isInstanceOf(RequiredFieldMissingException.class);
 
-        verify(auditServiceMock, times(1)).persistAudit(any(HttpStatus.class), any(ResponseSource.class));
-        verify(exceptionServiceMock, times(1)).throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
+        verify(auditServiceMock, times(1)).persistAudit(any(HttpStatus.class),
+                any(ResponseSource.class));
+        verify(exceptionServiceMock, times(1))
+                .throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
     }
 
     @Test
     public void test_validateUserStatusBeforeUpdate_should_throw_exception_when_user_is_pending_in_request() {
-        final Throwable raisedException = catchThrowable(() -> sut.validateUserStatusBeforeUpdate(updateUserProfileData, userProfile, API));
+        final Throwable raisedException = catchThrowable(() -> sut.validateUserStatusBeforeUpdate(updateUserProfileData,
+                userProfile, API));
 
-        assertThat(raisedException.getMessage()).contains("User is PENDING or input status is PENDING and only be changed to ACTIVE or SUSPENDED for userId: null");
+        assertThat(raisedException.getMessage()).contains("User is PENDING or input status is PENDING and only be "
+                + "changed to ACTIVE or SUSPENDED for userId: null");
         assertThat(raisedException).isInstanceOf(RequiredFieldMissingException.class);
 
-        verify(auditServiceMock, times(1)).persistAudit(any(HttpStatus.class), any(ResponseSource.class));
-        verify(exceptionServiceMock, times(1)).throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
+        verify(auditServiceMock, times(1)).persistAudit(any(HttpStatus.class),
+                any(ResponseSource.class));
+        verify(exceptionServiceMock, times(1))
+                .throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
     }
 
     @Test
@@ -195,10 +215,12 @@ public class ValidationHelperServiceTest {
     public void testvalidateUserStatusBeforeUpdate_PendingUserStatus() {
         userProfile.setStatus(IdamStatus.PENDING);
 
-        final Throwable raisedException = catchThrowable(() -> sut.validateUserStatusBeforeUpdate(updateUserProfileData, userProfile, API));
+        final Throwable raisedException = catchThrowable(() -> sut.validateUserStatusBeforeUpdate(updateUserProfileData,
+                userProfile, API));
         assertThat(raisedException).isInstanceOf(RequiredFieldMissingException.class);
 
-        verify(auditServiceMock, times(1)).persistAudit(any(HttpStatus.class), any(ResponseSource.class));
+        verify(auditServiceMock, times(1)).persistAudit(any(HttpStatus.class),
+                any(ResponseSource.class));
     }
 
     @Test
@@ -212,8 +234,10 @@ public class ValidationHelperServiceTest {
     @Test
     public void test_validateUserStatusWithException_should_return_true() {
         sut.validateUserStatus(userProfile, IdamStatus.PENDING);
-        verify(auditServiceMock, times(0)).persistAudit(any(HttpStatus.class), any(ResponseSource.class));
-        verify(exceptionServiceMock, times(0)).throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
+        verify(auditServiceMock, times(0)).persistAudit(any(HttpStatus.class),
+                any(ResponseSource.class));
+        verify(exceptionServiceMock, times(0))
+                .throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
     }
 
     @Test
@@ -223,8 +247,10 @@ public class ValidationHelperServiceTest {
         final Throwable raisedException = catchThrowable(() -> sut.validateUserStatus(userProfile, IdamStatus.PENDING));
         assertThat(raisedException).isInstanceOf(InvalidRequest.class);
 
-        verify(auditServiceMock, times(1)).persistAudit(any(HttpStatus.class), any(ResponseSource.class));
-        verify(exceptionServiceMock, times(1)).throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
+        verify(auditServiceMock, times(1)).persistAudit(any(HttpStatus.class),
+                any(ResponseSource.class));
+        verify(exceptionServiceMock, times(1))
+                .throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
     }
 
     @Test
@@ -232,19 +258,24 @@ public class ValidationHelperServiceTest {
 
         userProfile.setLastUpdated(LocalDateTime.now().minusMinutes(120L));
         sut.validateUserLastUpdatedWithinSpecifiedTime(userProfile, 60L);
-        verify(auditServiceMock, times(0)).persistAudit(any(HttpStatus.class), any(ResponseSource.class));
-        verify(exceptionServiceMock, times(0)).throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
+        verify(auditServiceMock, times(0)).persistAudit(any(HttpStatus.class),
+                any(ResponseSource.class));
+        verify(exceptionServiceMock, times(0))
+                .throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
     }
 
     @Test
     public void test_validateUserLastUpdatedWithinSpecifiedTimeWithException_should_throw_exception() {
         userProfile.setLastUpdated(LocalDateTime.now());
 
-        final Throwable raisedException = catchThrowable(() -> sut.validateUserLastUpdatedWithinSpecifiedTime(userProfile, 60L));
+        final Throwable raisedException = catchThrowable(() ->
+                sut.validateUserLastUpdatedWithinSpecifiedTime(userProfile, 60L));
         assertThat(raisedException).isInstanceOf(HttpClientErrorException.class);
 
-        verify(auditServiceMock, times(1)).persistAudit(any(HttpStatus.class), any(ResponseSource.class));
-        verify(exceptionServiceMock, times(1)).throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
+        verify(auditServiceMock, times(1)).persistAudit(any(HttpStatus.class),
+                any(ResponseSource.class));
+        verify(exceptionServiceMock, times(1))
+                .throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
     }
 
     @Test

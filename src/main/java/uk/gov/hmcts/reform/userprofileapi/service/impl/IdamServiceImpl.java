@@ -117,7 +117,8 @@ public class IdamServiceImpl implements IdamService {
     }
 
     private IdamRolesInfo buildIdamResponseResult(Response response) {
-        ResponseEntity<IdamUserResponse> entity = JsonFeignResponseHelper.toResponseEntity(response, Optional.of(IdamUserResponse.class));
+        ResponseEntity<IdamUserResponse> entity = JsonFeignResponseHelper.toResponseEntity(response,
+                Optional.of(IdamUserResponse.class));
         return new IdamRolesInfo(entity, entity.getStatusCode());
     }
 

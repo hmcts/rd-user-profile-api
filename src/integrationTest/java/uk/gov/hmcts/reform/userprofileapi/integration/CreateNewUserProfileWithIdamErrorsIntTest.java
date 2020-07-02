@@ -73,7 +73,8 @@ public class CreateNewUserProfileWithIdamErrorsIntTest  extends AuthorizationEna
 
         List<Audit> audits = auditRepository.findAll();
         if (!CollectionUtils.isEmpty(audits)) {
-            audits = audits.stream().sorted((Comparator.comparing(Audit::getAuditTs)).reversed()).collect(Collectors.toList());
+            audits = audits.stream().sorted((Comparator.comparing(Audit::getAuditTs)).reversed())
+                    .collect(Collectors.toList());
             Optional<Audit> optionalAudit = auditRepository.findById(audits.get(0).getId());
             Audit audit = optionalAudit.orElse(null);
 

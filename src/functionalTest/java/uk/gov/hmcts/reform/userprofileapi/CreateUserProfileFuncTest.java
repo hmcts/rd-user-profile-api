@@ -38,7 +38,8 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
     }
 
     @Test
-    public void should_create_user_profile_for_duplicate_idam_user_and_verify_successfully_for_prd_roles() throws Exception {
+    public void should_create_user_profile_for_duplicate_idam_user_and_verify_successfully_for_prd_roles()
+            throws Exception {
 
         UserProfileCreationData data = createUserProfileData();
         UserProfileCreationResponse duplicateUserResource = createActiveUserProfile(data);
@@ -58,7 +59,8 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
     }
 
     @Test
-    public void should_create_user_profile_for_duplicate_idam_user_and_verify_roles_updated_successfully_for_user_having_citizen_role() throws Exception {
+    public void should_create_up_for_duplicate_idam_user_and_verify_roles_updated_successfully_for_user_citizen_role()
+            throws Exception {
 
         //create user with citizen role in SIDAM
         List<String> roles = new ArrayList<>();

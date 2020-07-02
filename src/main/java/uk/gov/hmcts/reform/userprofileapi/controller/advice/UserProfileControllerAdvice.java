@@ -91,7 +91,8 @@ public class UserProfileControllerAdvice {
             HttpServletRequest request,
             HttpClientErrorException e
     ) {
-        return errorDetailsResponseEntity(e, HttpStatus.TOO_MANY_REQUESTS, String.format(ErrorConstants.TOO_MANY_REQUESTS.getErrorMessage(), resendInterval));
+        return errorDetailsResponseEntity(e, HttpStatus.TOO_MANY_REQUESTS,
+                String.format(ErrorConstants.TOO_MANY_REQUESTS.getErrorMessage(), resendInterval));
     }
 
     @ExceptionHandler(IdamServiceException.class)
@@ -135,12 +136,14 @@ public class UserProfileControllerAdvice {
                 errorDetails, httpStatus);
     }
 
-    private ResponseEntity<Object> patternErrorDetailsResponseEntity(Exception ex, HttpStatus httpStatus, String errorMsg) {
+    private ResponseEntity<Object> patternErrorDetailsResponseEntity(Exception ex, HttpStatus httpStatus,
+                                                                     String errorMsg) {
         String errorDesc;
 
         try {
             errorDesc = ex.getMessage().substring(ex.getMessage().lastIndexOf("default message"));
-            errorDesc = errorDesc.replace("default message [", "").replace("]]", "");
+            errorDesc = errorDesc.replace("default message [", "").replace("]]",
+                    "");
         } catch (IndexOutOfBoundsException e) {
             errorDesc = getRootException(ex).getLocalizedMessage();
         }

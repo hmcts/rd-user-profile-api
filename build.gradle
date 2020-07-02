@@ -9,7 +9,7 @@ buildscript {
 
 plugins {
     id 'application'
-    id 'checkstyle'
+    id 'uk.gov.hmcts.java' version '0.9.0'
     id 'jacoco'
     id 'pmd'
     id 'com.github.ben-manes.versions' version '0.27.0'
@@ -35,7 +35,7 @@ def versions = [
         reformHealthStarter: '0.0.5',
         reformLogging      : '5.1.0',
         reformS2sClient    : '3.1.1',
-        serenity           : '2.0.23',
+        serenity           : '2.0.76',
         sonarPitest        : '0.5',
         springBoot         : '2.1.4.RELEASE',
         springHystrix      : '2.1.1.RELEASE',
@@ -138,12 +138,6 @@ configurations {
     functionalTestRuntime.extendsFrom testRuntime
 }
 
-checkstyle {
-    maxWarnings = 0
-    toolVersion = '8.10.1'
-    // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
-    configDir = new File(rootDir, 'config/checkstyle')
-}
 
 pmd {
     toolVersion = "6.12.0"
@@ -263,7 +257,12 @@ dependencies {
     compile group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.4.0'
 
 
-    compile group: 'io.rest-assured', name: 'rest-assured', version: '3.0.7'
+    compile (group: 'io.rest-assured', name: 'rest-assured', version: '3.3.0') {
+        exclude group: "com.sun.xml.bind", module: "jaxb-osgi"
+    }
+
+    compile group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
+
     compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
     compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
 
@@ -354,14 +353,15 @@ dependencies {
 
     testPactCompile sourceSets.main.runtimeClasspath
     testPactCompile sourceSets.test.runtimeClasspath
+
+
 }
+
 
 // https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/configuration.html
 dependencyCheck {
-    // Specifies if the build should be failed if a CVSS score above a specified level is identified.
-    // range of 0-10 fails the build, anything greater and it doesn't fail the build
-    failBuildOnCVSS = System.getProperty('dependencyCheck.failBuild') == 'true' ? 0 : 11
-    suppressionFiles = ['config/owasp/suppressions.xml']
+
+    suppressionFile = 'config/owasp/suppressions.xml'
 }
 
 dependencyUpdates.resolutionStrategy = {

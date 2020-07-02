@@ -74,7 +74,8 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         return attributeResponse;
     }
 
-    public AttributeResponse updateSidamAndUserProfile(UpdateUserProfileData updateUserProfileData, UserProfile userProfile, ResponseSource source, String userId) {
+    public AttributeResponse updateSidamAndUserProfile(UpdateUserProfileData updateUserProfileData,
+                                                       UserProfile userProfile, ResponseSource source, String userId) {
         validationService.isValidForUserDetailUpdate(updateUserProfileData, userProfile, source);
         UpdateUserDetails updateUserDetails = UserProfileMapper.mapIdamUpdateStatusRequest(updateUserProfileData);
         AttributeResponse attributeResponse = idamService.updateUserDetails(updateUserDetails, userId);
@@ -122,7 +123,8 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         if (!CollectionUtils.isEmpty(profileData.getRolesDelete())) {
             //Delete idam roles for the given userId
             List<RoleDeletionResponse> roleDeletionResponse = new ArrayList<>();
-            profileData.getRolesDelete().forEach(role -> roleDeletionResponse.add(deleteRolesInIdam(userId, role.getName(), userProfile)));
+            profileData.getRolesDelete().forEach(role -> roleDeletionResponse.add(deleteRolesInIdam(userId,
+                    role.getName(), userProfile)));
             userProfileResponse.setRoleDeletionResponse(roleDeletionResponse);
         }
         return userProfileResponse;
@@ -148,7 +150,8 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
     private UserProfile validateUserStatus(String userId) {
         Optional<UserProfile> userProfileOptional = userProfileRepository.findByIdamId(userId);
         if (!userProfileOptional.isPresent()) {
-            throw new ResourceNotFoundException("could not find user profile for userId: or status is not active " + userId);
+            throw new ResourceNotFoundException("could not find user profile for userId: or status is not active "
+                    + userId);
         } else if (!IdamStatus.ACTIVE.equals(userProfileOptional.get().getStatus())) {
             throw new InvalidRequest("UserId status is not active");
         }

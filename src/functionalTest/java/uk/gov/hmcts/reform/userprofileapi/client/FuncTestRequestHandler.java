@@ -39,7 +39,8 @@ public class FuncTestRequestHandler {
     public static final String BEARER = "Bearer ";
 
 
-    public <T> T sendPost(Object data, HttpStatus expectedStatus, String path, Class<T> clazz) throws JsonProcessingException {
+    public <T> T sendPost(Object data, HttpStatus expectedStatus, String path, Class<T> clazz)
+            throws JsonProcessingException {
         return
             sendPost(objectMapper.writeValueAsString(data),
                 expectedStatus,
@@ -64,7 +65,8 @@ public class FuncTestRequestHandler {
                 .statusCode(expectedStatus.value()).extract().response();
     }
 
-    public <T> T sendPut(Object data, HttpStatus expectedStatus, String path, Class<T> clazz) throws JsonProcessingException {
+    public <T> T sendPut(Object data, HttpStatus expectedStatus, String path, Class<T> clazz)
+            throws JsonProcessingException {
 
         return sendPut(objectMapper.writeValueAsString(data),
                expectedStatus,
@@ -88,7 +90,8 @@ public class FuncTestRequestHandler {
                 .statusCode(expectedStatus.value()).extract().response();
     }
 
-    public <T> T sendDelete(Object data, HttpStatus expectedStatus, String path, Class<T> clazz) throws JsonProcessingException {
+    public <T> T sendDelete(Object data, HttpStatus expectedStatus, String path, Class<T> clazz)
+            throws JsonProcessingException {
 
         return sendPut(objectMapper.writeValueAsString(data),
                 expectedStatus,

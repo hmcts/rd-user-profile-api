@@ -71,7 +71,8 @@ public class UserProfileRetrieverTest {
         String surName = "lastName";
         Boolean pending = false;
 
-        IdamUserResponse idamUserResponse = new IdamUserResponse(active, email, foreName, userId, pending, roles, surName);
+        IdamUserResponse idamUserResponse = new IdamUserResponse(active, email, foreName, userId, pending, roles,
+                surName);
         entity = new ResponseEntity<>(idamUserResponse, HttpStatus.CREATED);
     }
 
@@ -145,13 +146,15 @@ public class UserProfileRetrieverTest {
         up2.setStatus(IdamStatus.ACTIVE);
         userProfiles.add(up2);
 
-        UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID_LIST, Arrays.asList(UUID.randomUUID().toString(), UUID.randomUUID().toString()));
+        UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID_LIST,
+                Arrays.asList(UUID.randomUUID().toString(), UUID.randomUUID().toString()));
 
         when(querySupplier.getProfilesByIds(identifier, true)).thenReturn(Optional.of(userProfiles));
         when(idamServiceMock.fetchUserById(any(String.class))).thenReturn(idamRolesInfo);
         when(auditRepository.save(any())).thenReturn(audit);
 
-        List<UserProfile> userProfilesWithRoles = userProfileRetriever.retrieveMultipleProfiles(identifier, true, true);
+        List<UserProfile> userProfilesWithRoles = userProfileRetriever.retrieveMultipleProfiles(identifier,
+                true, true);
         assertThat(userProfilesWithRoles.size()).isEqualTo(2);
 
         UserProfile getUserProfile1 = userProfilesWithRoles.get(0);
@@ -173,7 +176,8 @@ public class UserProfileRetrieverTest {
 
         when(querySupplier.getProfilesByIds(identifier, true)).thenThrow(ResourceNotFoundException.class);
 
-        assertThatThrownBy(() -> userProfileRetriever.retrieveMultipleProfiles(identifier, true, true))
+        assertThatThrownBy(() -> userProfileRetriever.retrieveMultipleProfiles(identifier, true,
+                true))
                 .isInstanceOf(ResourceNotFoundException.class);
         verify(querySupplier, times(1)).getProfilesByIds(identifier, true);
     }

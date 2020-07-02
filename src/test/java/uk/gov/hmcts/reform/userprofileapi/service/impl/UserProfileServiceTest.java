@@ -68,7 +68,8 @@ public class UserProfileServiceTest {
         userProfileResponse = userProfileService.updateRoles(updateUserProfileData, "1234");
 
         assertThat(userProfileResponse).isNotNull();
-        Mockito.verify(resourceUpdatorMock, Mockito.times(1)).updateRoles(any(), any(String.class));
+        Mockito.verify(resourceUpdatorMock, Mockito.times(1)).updateRoles(any(),
+                any(String.class));
     }
 
     @Test
@@ -76,7 +77,8 @@ public class UserProfileServiceTest {
         AttributeResponse attributeResponseMock = Mockito.mock(AttributeResponse.class);
         when(resourceUpdatorMock.update(any(), any(), any())).thenReturn(attributeResponseMock);
 
-        assertThat(userProfileService.update(null, null, null)).isInstanceOf(AttributeResponse.class);
+        assertThat(userProfileService.update(null, null, null))
+                .isInstanceOf(AttributeResponse.class);
 
         verify(resourceUpdatorMock, times(1)).update(any(), any(), any());
     }
@@ -109,7 +111,8 @@ public class UserProfileServiceTest {
 
         assertThat(resource).isEqualToComparingFieldByField(expected);
 
-        Mockito.verify(userProfileRetriever, Mockito.times(1)).retrieve(any(), any(boolean.class));
+        Mockito.verify(userProfileRetriever, Mockito.times(1)).retrieve(any(),
+                any(boolean.class));
 
     }
 
@@ -126,7 +129,8 @@ public class UserProfileServiceTest {
 
         assertThat(resource).isEqualToComparingFieldByField(expected);
 
-        Mockito.verify(userProfileRetriever, Mockito.times(1)).retrieve(any(), any(boolean.class));
+        Mockito.verify(userProfileRetriever, Mockito.times(1)).retrieve(any(),
+                any(boolean.class));
 
     }
 
@@ -138,12 +142,15 @@ public class UserProfileServiceTest {
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         profileList.add(userProfile);
 
-        when(userProfileRetriever.retrieveMultipleProfiles(identifier, true, true)).thenReturn(profileList);
+        when(userProfileRetriever.retrieveMultipleProfiles(identifier, true, true))
+                .thenReturn(profileList);
 
-        UserProfileDataResponse resource = userProfileService.retrieveWithRoles(identifier, true, true);
+        UserProfileDataResponse resource = userProfileService.retrieveWithRoles(identifier, true,
+                true);
 
         assertThat(resource).isNotNull();
 
-        Mockito.verify(userProfileRetriever, Mockito.times(1)).retrieveMultipleProfiles(any(), any(boolean.class), any(boolean.class));
+        Mockito.verify(userProfileRetriever, Mockito.times(1)).retrieveMultipleProfiles(any(),
+                any(boolean.class), any(boolean.class));
     }
 }

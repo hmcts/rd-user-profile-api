@@ -64,9 +64,12 @@ public class IdamStatusResolverTest {
 
     @Test
     public void should_resolve_and_return_idam_status_by_idam_flags() {
-        assertThat(IdamStatusResolver.resolveIdamStatus(createIdamRoleInfo(false,true))).isEqualTo(IdamStatus.PENDING);
-        assertThat(IdamStatusResolver.resolveIdamStatus(createIdamRoleInfo(true,false))).isEqualTo(IdamStatus.ACTIVE);
-        assertThat(IdamStatusResolver.resolveIdamStatus(createIdamRoleInfo(false,false))).isEqualTo(IdamStatus.SUSPENDED);
+        assertThat(IdamStatusResolver.resolveIdamStatus(createIdamRoleInfo(false,true)))
+                .isEqualTo(IdamStatus.PENDING);
+        assertThat(IdamStatusResolver.resolveIdamStatus(createIdamRoleInfo(true,false)))
+                .isEqualTo(IdamStatus.ACTIVE);
+        assertThat(IdamStatusResolver.resolveIdamStatus(createIdamRoleInfo(false,false)))
+                .isEqualTo(IdamStatus.SUSPENDED);
     }
 
 
@@ -84,8 +87,10 @@ public class IdamStatusResolverTest {
         List<String> roles = Collections.singletonList("pui-case-manger");
         String surName = "lastName";
 
-        IdamUserResponse idamUserResponse = new IdamUserResponse(active, email, foreName, userId,pending, roles, surName);
-        ResponseEntity<IdamUserResponse> entity = new ResponseEntity<IdamUserResponse>(idamUserResponse, HttpStatus.CREATED);
+        IdamUserResponse idamUserResponse = new IdamUserResponse(active, email, foreName, userId,pending,
+                roles, surName);
+        ResponseEntity<IdamUserResponse> entity = new ResponseEntity<IdamUserResponse>(idamUserResponse,
+                HttpStatus.CREATED);
         return new IdamRolesInfo(entity, HttpStatus.CREATED);
     }
 

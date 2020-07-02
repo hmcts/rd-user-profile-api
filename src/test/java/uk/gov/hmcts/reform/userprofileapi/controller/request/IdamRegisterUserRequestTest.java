@@ -19,7 +19,8 @@ public class IdamRegisterUserRequestTest {
         List<String> roles = new ArrayList<>();
         roles.add("pui_case_manager");
 
-        IdamRegisterUserRequest idamRegisterUserRequest = new IdamRegisterUserRequest(email, firstName, lastName, id, roles);
+        IdamRegisterUserRequest idamRegisterUserRequest = new IdamRegisterUserRequest(email, firstName, lastName, id,
+                roles);
 
         assertThat(idamRegisterUserRequest.getEmail()).isEqualTo(email);
         assertThat(idamRegisterUserRequest.getFirstName()).isEqualTo(firstName);
