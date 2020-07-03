@@ -182,7 +182,7 @@ public class UserProfileUpdatorTest {
     }
 
     @Test
-    public void addRoles_FeignException() {
+    public void test_updateRoles_FeignException_WhenAddRoles() {
         RoleName roleName1 = new RoleName("pui-case-manager");
         RoleName roleName2 = new RoleName("pui-case-organisation");
         Set<RoleName> roles = new HashSet<>();
@@ -191,7 +191,6 @@ public class UserProfileUpdatorTest {
 
         updateUserProfileData.setRolesAdd(roles);
 
-        UserProfileResponse userProfileResponse = new UserProfileResponse();
         RoleAdditionResponse roleAdditionResponse = new RoleAdditionResponse();
         roleAdditionResponse.setIdamStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.toString());
         roleAdditionResponse.setIdamMessage("Failure");
@@ -210,7 +209,7 @@ public class UserProfileUpdatorTest {
     }
 
     @Test
-    public void deleteRoles_InternalServerError() throws Exception {
+    public void test_updateRoles_InternalServerError_WhenDeleteRoles() throws Exception {
         RoleName roleName1 = new RoleName("pui-case-manager");
         Set<RoleName> roles = new HashSet<>();
         roles.add(roleName1);
@@ -243,7 +242,7 @@ public class UserProfileUpdatorTest {
     }
 
     @Test
-    public void deleteRoles_FeignException() {
+    public void test_updateRoles_FeignException_WhenDeleteRoles() {
         RoleName roleName1 = new RoleName("pui-case-manager");
         Set<RoleName> roles = new HashSet<>();
         roles.add(roleName1);
@@ -270,7 +269,7 @@ public class UserProfileUpdatorTest {
     }
 
     @Test(expected = InvalidRequest.class)
-    public void addRoles_InvalidRequest() throws Exception {
+    public void test_updateRoles_addRoles_InvalidRequest() {
         RoleName roleName1 = new RoleName("pui-case-manager");
         RoleName roleName2 = new RoleName("pui-case-organisation");
         Set<RoleName> roles = new HashSet<>();
@@ -292,7 +291,7 @@ public class UserProfileUpdatorTest {
     }
 
     @Test
-    public void should_update_user_profile_successfully() {
+    public void test_update_user_profile_successfully() {
 
         String userId = UUID.randomUUID().toString();
 
@@ -311,7 +310,7 @@ public class UserProfileUpdatorTest {
     }
 
     @Test
-    public void should_update_user_profile_successfully_for_sync() {
+    public void test_update_user_profile_successfully_for_sync() {
         when(userProfileRepositoryMock.save(any(UserProfile.class))).thenReturn(userProfile);
         when(validationServiceMock.validateUpdate(any(), any(), any())).thenReturn(userProfile);
         when(validationHelperServiceMock.validateUserPersisted(any())).thenReturn(true);
@@ -325,7 +324,7 @@ public class UserProfileUpdatorTest {
     }
 
     @Test
-    public void should_update_idam_user_details_successfully() {
+    public void test_update_idam_user_details_successfully() {
 
         String userId = UUID.randomUUID().toString();
 
@@ -345,7 +344,7 @@ public class UserProfileUpdatorTest {
     }
 
     @Test(expected = ResourceNotFoundException.class)
-    public void should_throw_ResourceNotFound_when_userId_not_valid() {
+    public void test_update_should_throw_ResourceNotFound_when_userId_not_valid() {
 
         when(validationServiceMock.validateUpdate(any(), any(), any())).thenThrow(ResourceNotFoundException.class);
 
@@ -356,7 +355,7 @@ public class UserProfileUpdatorTest {
     }
 
     @Test(expected = ResourceNotFoundException.class)
-    public void should_throw_IdamServiceException_when_user_user_profile_not_found_in_db() {
+    public void test_update_should_throw_IdamServiceException_when_user_user_profile_not_found_in_db() {
 
         String userId = UUID.randomUUID().toString();
 
@@ -368,7 +367,7 @@ public class UserProfileUpdatorTest {
     }
 
     @Test(expected = RequiredFieldMissingException.class)
-    public void should_throw_IdamServiceException_when_request_invalid() {
+    public void test_update_should_throw_IdamServiceException_when_request_invalid() {
 
         String userId = UUID.randomUUID().toString();
 
@@ -380,7 +379,7 @@ public class UserProfileUpdatorTest {
     }
 
     @Test(expected = ResourceNotFoundException.class)
-    public void userProfileRolesResponse_addRoles_nullProfile() throws Exception {
+    public void test_userProfileRolesResponse_addRoles_nullProfile() throws Exception {
         RoleName roleName1 = new RoleName("pui-case-manager");
         RoleName roleName2 = new RoleName("pui-case-organisation");
         Set<RoleName> roles = new HashSet<>();
@@ -399,7 +398,7 @@ public class UserProfileUpdatorTest {
     }
 
     @Test(expected = ResourceNotFoundException.class)
-    public void userProfileRolesResponse_update_invalid_user() {
+    public void test_userProfileRolesResponse_update_invalid_user() {
 
         when(validationServiceMock.validateUpdate(any(), any(), any())).thenThrow(ResourceNotFoundException.class);
 

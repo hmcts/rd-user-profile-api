@@ -89,6 +89,8 @@ public class UserProfileMapperTest {
         assertThat(userProfileMock.getFirstName()).isEqualTo(userProfileCreationData.getFirstName());
         assertThat(userProfileMock.getLastName()).isEqualTo(userProfileCreationData.getLastName());
         verify(userProfileMock, times(1)).setLastUpdated(any(LocalDateTime.class));
+        verify(userProfileMock, times(1)).getFirstName();
+        verify(userProfileMock, times(1)).getLastName();
     }
 
 }

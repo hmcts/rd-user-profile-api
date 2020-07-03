@@ -228,7 +228,7 @@ public class UserProfileRetrieverTest {
     }
 
     @Test
-    public void should_retrieve_user_multiple_profiles_without_roles_when_idam_fails() {
+    public void test_getRolesFromIdam_should_retrieve_multiple_profiles_without_roles_when_idam_fails() {
         idamRolesInfo = new IdamRolesInfo(entity, HttpStatus.NOT_FOUND);
 
         UserProfile up = UserProfileTestDataBuilder.buildUserProfile();
@@ -283,7 +283,7 @@ public class UserProfileRetrieverTest {
     }
 
     @Test
-    public void should_throw_404_single_user_profile_without_roles_when_idam_fails() {
+    public void test_getRolesFromIdam_should_throw_404_single_user_profile_without_roles_when_idam_fails() {
         idamRolesInfo = new IdamRolesInfo(entity, HttpStatus.NOT_FOUND);
 
         UserProfile up = UserProfileTestDataBuilder.buildUserProfile();
