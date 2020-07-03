@@ -4,11 +4,10 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
 
 @Getter
 @Setter
-public class UserProfileDataRequest implements RequestData {
+public class UserProfileDataRequest {
 
     private List<String> userIds;
 

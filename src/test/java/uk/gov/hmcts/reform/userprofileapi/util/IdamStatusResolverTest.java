@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -18,6 +18,7 @@ import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.resolve
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -101,7 +102,7 @@ public class IdamStatusResolverTest {
     @Test
     public void privateConstructorTest_for_IdamStatusResolver() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         Constructor<IdamStatusResolver> constructor = IdamStatusResolver.class.getDeclaredConstructor();
-        assertFalse(constructor.isAccessible());
+        assertTrue(Modifier.isPrivate(constructor.getModifiers()));
         constructor.setAccessible(true);
         constructor.newInstance((Object[]) null);
     }

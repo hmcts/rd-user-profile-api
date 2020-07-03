@@ -90,7 +90,6 @@ public class UserProfile {
     @Transient
     private String errorStatusCode;
 
-
     public UserProfile(UserProfileCreationData data, HttpStatus idamStatus) {
         this.email = data.getEmail().trim().toLowerCase();
         this.firstName = data.getFirstName().trim();
