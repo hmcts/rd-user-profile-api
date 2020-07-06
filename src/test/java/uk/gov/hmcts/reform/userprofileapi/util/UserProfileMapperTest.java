@@ -30,7 +30,7 @@ public class UserProfileMapperTest {
     private UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("email@net.com", "firstName", "lastName", "ACTIVE", new HashSet<RoleName>(), new HashSet<RoleName>());
 
     @Test
-    public void mapUpdatableFields() {
+    public void test_mapUpdatableFields() {
         UserProfileMapper.mapUpdatableFields(updateUserProfileData, userProfile, false);
 
         assertThat(userProfile.getEmail()).isEqualTo("email@net.com");

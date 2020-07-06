@@ -14,7 +14,7 @@ public class WelcomeControllerTest {
     private final WelcomeController welcomeController = new WelcomeController();
 
     @Test
-    public void should_return_welcome_response() {
+    public void test_return_welcome_response() {
         String expectedMessage = "Welcome to the User Profile API";
         ResponseEntity<String> responseEntity = welcomeController.welcome();
 

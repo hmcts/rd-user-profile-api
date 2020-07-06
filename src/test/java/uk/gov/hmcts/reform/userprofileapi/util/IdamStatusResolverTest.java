@@ -33,7 +33,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 public class IdamStatusResolverTest {
 
     @Test
-    public void should_return_error_message_by_HttpStatus_provided() {
+    public void test_return_error_message_by_HttpStatus_provided() {
         String httpStatusString = IdamStatusResolver.resolveStatusAndReturnMessage(HttpStatus.OK);
         assertThat(httpStatusString).isEqualTo(OK);
 
@@ -63,7 +63,7 @@ public class IdamStatusResolverTest {
     }
 
     @Test
-    public void should_resolve_and_return_idam_status_by_idam_flags() {
+    public void test_resolve_and_return_idam_status_by_idam_flags() {
         assertThat(IdamStatusResolver.resolveIdamStatus(createIdamRoleInfo(false,true))).isEqualTo(IdamStatus.PENDING);
         assertThat(IdamStatusResolver.resolveIdamStatus(createIdamRoleInfo(true,false))).isEqualTo(IdamStatus.ACTIVE);
         assertThat(IdamStatusResolver.resolveIdamStatus(createIdamRoleInfo(false,false))).isEqualTo(IdamStatus.SUSPENDED);
@@ -90,7 +90,7 @@ public class IdamStatusResolverTest {
     }
 
     @Test
-    public void privateConstructorTest_for_IdamStatusResolver() throws Exception {
+    public void test_privateConstructor_for_IdamStatusResolver() throws Exception {
         Constructor<IdamStatusResolver> constructor = IdamStatusResolver.class.getDeclaredConstructor();
         assertTrue(Modifier.isPrivate(constructor.getModifiers()));
         constructor.setAccessible(true);

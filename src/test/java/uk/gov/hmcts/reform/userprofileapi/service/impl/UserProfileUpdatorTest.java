@@ -109,7 +109,7 @@ public class UserProfileUpdatorTest {
     }
 
     @Test
-    public void updateRolesForAdd() throws Exception {
+    public void test_updateRolesForAdd() throws Exception {
         UserProfileRolesResponse response = addRoles();
 
         assertThat(response).isNotNull();
@@ -119,7 +119,7 @@ public class UserProfileUpdatorTest {
     }
 
     @Test
-    public void updateRolesForAddAndDelete() throws Exception {
+    public void test_updateRolesForAddAndDelete() throws Exception {
 
         UserProfileRolesResponse response;
         response = addRoles();
@@ -139,7 +139,7 @@ public class UserProfileUpdatorTest {
     }
 
     @Test
-    public void updateRolesForDelete() throws Exception {
+    public void test_updateRolesForDelete() throws Exception {
         UserProfileRolesResponse response1 = deleteRoles();
 
         assertThat(response1).isNotNull();
@@ -151,7 +151,7 @@ public class UserProfileUpdatorTest {
     }
 
     @Test
-    public void addRoles_InternalServerError() throws Exception {
+    public void test_addRoles_InternalServerError() throws Exception {
         RoleName roleName1 = new RoleName("pui-case-manager");
         RoleName roleName2 = new RoleName("pui-case-organisation");
         Set<RoleName> roles = new HashSet<>();

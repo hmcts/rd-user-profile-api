@@ -56,7 +56,7 @@ public class UserProfileServiceTest {
     private UserProfileService<RequestData> userProfileService;
 
     @Test
-    public void testUpdateRoles() {
+    public void test_UpdateRoles() {
         UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData();
 
         Set<RoleName> roles = new HashSet<>();
@@ -76,7 +76,7 @@ public class UserProfileServiceTest {
     }
 
     @Test
-    public void testUpdate() {
+    public void test_Update() {
         AttributeResponse attributeResponseMock = Mockito.mock(AttributeResponse.class);
         when(resourceUpdatorMock.update(any(), any(), any())).thenReturn(attributeResponseMock);
 
@@ -86,7 +86,7 @@ public class UserProfileServiceTest {
     }
 
     @Test
-    public void should_call_creator_create_method_successfully() {
+    public void test_call_creator_create_method_successfully() {
         UserProfileCreationData userProfileData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         UserProfileCreationResponse expected = new UserProfileCreationResponse(userProfile);
@@ -101,7 +101,7 @@ public class UserProfileServiceTest {
     }
 
     @Test
-    public void should_call_retriever_retrieve_method_successfully() {
+    public void test_call_retriever_retrieve_method_successfully() {
         UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID, UUID.randomUUID().toString());
 
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
@@ -118,7 +118,7 @@ public class UserProfileServiceTest {
     }
 
     @Test
-    public void should_call_retriever_retrieve_with_roles_method_successfully() {
+    public void test_call_retriever_retrieve_with_roles_method_successfully() {
         UserProfileIdentifier identifier = mock(UserProfileIdentifier.class);
 
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
@@ -135,7 +135,7 @@ public class UserProfileServiceTest {
     }
 
     @Test
-    public void should_call_retriever_retrieve_multiple_users_with_roles_method_successfully() {
+    public void test_call_retriever_retrieve_multiple_users_with_roles_method_successfully() {
         UserProfileIdentifier identifier = mock(UserProfileIdentifier.class);
 
         List<UserProfile> profileList = new ArrayList<>();

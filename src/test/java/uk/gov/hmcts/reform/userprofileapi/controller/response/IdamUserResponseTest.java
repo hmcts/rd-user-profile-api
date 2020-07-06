@@ -9,7 +9,7 @@ import org.junit.Test;
 public class IdamUserResponseTest {
 
     @Test
-    public void should_hold_values_after_creation() {
+    public void test_hold_values_after_creation() {
         final boolean expectedActive = true;
         final String expectedEmail = "someemail@abc.com";
         final String expectedForename = "forename";

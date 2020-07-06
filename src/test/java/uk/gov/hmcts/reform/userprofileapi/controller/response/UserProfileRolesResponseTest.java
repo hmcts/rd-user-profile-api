@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 public class UserProfileRolesResponseTest {
 
     @Test
-    public void testAddAndDeleteRoleResponse() {
+    public void test_AddAndDeleteRoleResponse() {
         RoleAdditionResponse roleAdditionResponse = new RoleAdditionResponse(HttpStatus.OK);
         roleAdditionResponse.setIdamMessage("Success");
 
@@ -29,7 +29,7 @@ public class UserProfileRolesResponseTest {
     }
 
     @Test
-    public void testAddRolesViaConstructor() {
+    public void test_AddRolesViaConstructor() {
         RoleAdditionResponse roleAdditionResponse = new RoleAdditionResponse(HttpStatus.OK);
 
         RoleDeletionResponse deletionResponse = new RoleDeletionResponse("pui-case-manager",HttpStatus.OK);

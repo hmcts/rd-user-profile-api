@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamUserResponse;
 public class IdamRolesInfoTest {
 
     @Test
-    public void should_populate_all_fields() {
+    public void test_populate_all_fields() {
         Boolean active = true;
         String email = "some@hmcts.net";
         String foreName = "firstName";

@@ -78,7 +78,7 @@ public class UserProfileRetrieverTest {
     }
 
     @Test
-    public void should_run_query_and_respond_with_user_profile() {
+    public void test_run_query_and_respond_with_user_profile() {
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
 
         Stream.of(IdentifierName.values())
@@ -97,7 +97,7 @@ public class UserProfileRetrieverTest {
     }
 
     @Test
-    public void should_run_query_and_respond_with_user_profile_withFetchRolesTrue() {
+    public void test_run_query_and_respond_with_user_profile_withFetchRolesTrue() {
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
 
         UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.EMAIL, String.valueOf(new Random().nextInt()));
@@ -112,7 +112,7 @@ public class UserProfileRetrieverTest {
     }
 
     @Test
-    public void should_throw_exception_when_query_returns_empty_result() {
+    public void test_throw_exception_when_query_returns_empty_result() {
         UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID, UUID.randomUUID().toString());
 
         when(querySupplier.getRetrieveByIdQuery(identifier)).thenReturn(supplier);
@@ -126,7 +126,7 @@ public class UserProfileRetrieverTest {
     }
 
     @Test
-    public void should_throw_exception_when_query_provider_throws_exception() {
+    public void test_throw_exception_when_query_provider_throws_exception() {
         UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID, UUID.randomUUID().toString());
 
         when(querySupplier.getRetrieveByIdQuery(identifier)).thenThrow(IllegalStateException.class);
@@ -137,7 +137,7 @@ public class UserProfileRetrieverTest {
     }
 
     @Test
-    public void should_throw_exception_when_query_throws_exception() {
+    public void test_throw_exception_when_query_throws_exception() {
         UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID, UUID.randomUUID().toString());
 
         when(querySupplier.getRetrieveByIdQuery(identifier)).thenReturn(supplier);
@@ -149,7 +149,7 @@ public class UserProfileRetrieverTest {
     }
 
     @Test
-    public void should_retrieve_Multiple_Profiles() {
+    public void test_retrieve_Multiple_Profiles() {
         idamRolesInfo = new IdamRolesInfo(entity, HttpStatus.CREATED);
 
         List<UserProfile> userProfiles = new ArrayList<>();
@@ -185,7 +185,7 @@ public class UserProfileRetrieverTest {
     }
 
     @Test
-    public void should_retrieve_Multiple_Profiles_RolesRequiredFalse() {
+    public void test_retrieve_Multiple_Profiles_RolesRequiredFalse() {
         idamRolesInfo = new IdamRolesInfo(entity, HttpStatus.CREATED);
 
         List<UserProfile> userProfiles = new ArrayList<>();
@@ -217,7 +217,7 @@ public class UserProfileRetrieverTest {
     }
 
     @Test
-    public void should_throw_404_when_no_profiles_found_in_db() {
+    public void test_throw_404_when_no_profiles_found_in_db() {
         UserProfileIdentifier identifier = mock(UserProfileIdentifier.class);
 
         when(querySupplier.getProfilesByIds(identifier, true)).thenThrow(ResourceNotFoundException.class);
@@ -251,7 +251,7 @@ public class UserProfileRetrieverTest {
     }
 
     @Test
-    public void should_retrieve_user_multiple_profiles_with_roles_when_idam_success() {
+    public void test_retrieve_user_multiple_profiles_with_roles_when_idam_success() {
         idamRolesInfo = new IdamRolesInfo(entity, HttpStatus.OK);
 
         UserProfile up = UserProfileTestDataBuilder.buildUserProfile();
@@ -299,7 +299,7 @@ public class UserProfileRetrieverTest {
     }
 
     @Test
-    public void should_not_call_idam_when_status_is_pending() {
+    public void test_not_call_idam_when_status_is_pending() {
         UserProfile up = UserProfileTestDataBuilder.buildUserProfile();
         UserProfile profile = userProfileRetriever.getRolesFromIdam(up, true);
 

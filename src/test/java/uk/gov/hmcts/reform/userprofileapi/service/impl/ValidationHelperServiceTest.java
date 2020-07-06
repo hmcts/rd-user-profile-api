@@ -61,19 +61,19 @@ public class ValidationHelperServiceTest {
     private ValidationHelperService sut = new ValidationHelperServiceImpl();
 
     @Test
-    public void testValidateUserIdHappyPath() {
+    public void test_ValidateUserIdHappyPath() {
         boolean actual = sut.validateUserId("f56e5539-a8f7-4ae6-b378-cc1015b72dcc");
 
         assertThat(actual).isTrue();
     }
 
     @Test(expected = ResourceNotFoundException.class)
-    public void testValidateUserIdException() {
+    public void test_ValidateUserIdException() {
         sut.validateUserId("");
     }
 
     @Test
-    public void testValidateUserIdPersistAuditOnException() {
+    public void test_ValidateUserIdPersistAuditOnException() {
         final Throwable raisedException = catchThrowable(() -> sut.validateUserId(""));
         assertThat(raisedException).isInstanceOf(ResourceNotFoundException.class);
 
@@ -81,17 +81,17 @@ public class ValidationHelperServiceTest {
     }
 
     @Test
-    public void testValidateUserIsPresentWithExceptionHappyPath() {
+    public void test_ValidateUserIsPresentWithExceptionHappyPath() {
         sut.validateUserIsPresent(Optional.of(userProfile));
     }
 
     @Test(expected = ResourceNotFoundException.class)
-    public void testValidateUserIsPresentWithException() {
+    public void test_ValidateUserIsPresentWithException() {
         sut.validateUserIsPresent(Optional.empty());
     }
 
     @Test
-    public void testValidateUserIsPresentWithExceptionPersistAuditOnException() {
+    public void test_ValidateUserIsPresentWithExceptionPersistAuditOnException() {
         doNothing().when(exceptionServiceMock).throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
 
         sut.validateUserIsPresent(Optional.empty());
@@ -100,7 +100,7 @@ public class ValidationHelperServiceTest {
     }
 
     @Test
-    public void testValidateUpdateUserProfileRequestValidHappyPath() {
+    public void test_ValidateUpdateUserProfileRequestValidHappyPath() {
         updateUserProfileData.setIdamStatus("SUSPENDED");
 
         boolean actual = sut.validateUpdateUserProfileRequestValid(updateUserProfileData, "f56e5539-a8f7-4ae6-b378-cc1015b72dcc", API);
@@ -109,7 +109,7 @@ public class ValidationHelperServiceTest {
     }
 
     @Test(expected = RequiredFieldMissingException.class)
-    public void testValidateUpdateUserProfileRequestValidException() {
+    public void test_ValidateUpdateUserProfileRequestValidException() {
         updateUserProfileData.setIdamStatus(null);
 
         sut.validateUpdateUserProfileRequestValid(updateUserProfileData, "f56e5539-a8f7-4ae6-b378-cc1015b72dcc", API);
@@ -126,7 +126,7 @@ public class ValidationHelperServiceTest {
     }
 
     @Test
-    public void testvalidateUserStatusBeforeUpdate_scenario1() {
+    public void test_validateUserStatusBeforeUpdate_scenario1() {
         final Throwable raisedException = catchThrowable(() -> sut.validateUserStatusBeforeUpdate(updateUserProfileData, userProfile, API));
 
         assertThat(raisedException.getMessage()).contains("User is PENDING or input status is PENDING and only be changed to ACTIVE or SUSPENDED for userId: null");
@@ -136,7 +136,7 @@ public class ValidationHelperServiceTest {
     }
 
     @Test
-    public void testvalidateUserStatusBeforeUpdate_scenario2() {
+    public void test_validateUserStatusBeforeUpdate_scenario2() {
         final Throwable raisedException = catchThrowable(() -> sut.validateUserStatusBeforeUpdate(updateUserProfileData, userProfile, API));
 
         assertThat(raisedException.getMessage()).contains("User is PENDING or input status is PENDING and only be changed to ACTIVE or SUSPENDED for userId: null");
@@ -146,7 +146,7 @@ public class ValidationHelperServiceTest {
     }
 
     @Test
-    public void testvalidateUserStatusBeforeUpdate_scenario3() {
+    public void test_validateUserStatusBeforeUpdate_scenario3() {
         userProfile.setStatus(IdamStatus.ACTIVE);
         assertThat(sut.validateUserStatusBeforeUpdate(updateUserProfileData, userProfile, API)).isTrue();
     }
@@ -184,18 +184,18 @@ public class ValidationHelperServiceTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testvalidateUserPersistedWithException_withInvalidHttpStatus() {
+    public void test_validateUserPersistedWithException_withInvalidHttpStatus() {
         assertThat(sut.validateUserPersisted(HttpStatus.valueOf("test"))).isTrue();
     }
 
     @Test(expected = ErrorPersistingException.class)
-    public void testvalidateUserPersistedWithException_withInvalidHttpStatusCode() {
+    public void test_validateUserPersistedWithException_withInvalidHttpStatusCode() {
         assertThat(sut.validateUserPersisted(HttpStatus.I_AM_A_TEAPOT)).isTrue();
     }
 
 
     @Test
-    public void testvalidateUserStatusBeforeUpdate_PendingUserStatus() {
+    public void test_validateUserStatusBeforeUpdate_PendingUserStatus() {
         userProfile.setStatus(IdamStatus.PENDING);
 
         final Throwable raisedException = catchThrowable(() -> sut.validateUserStatusBeforeUpdate(updateUserProfileData, userProfile, API));
@@ -205,7 +205,7 @@ public class ValidationHelperServiceTest {
     }
 
     @Test
-    public void testvalidateUserStatusBeforeUpdate_ActiveUserStatus() {
+    public void test_validateUserStatusBeforeUpdate_ActiveUserStatus() {
         userProfile.setStatus(IdamStatus.ACTIVE);
         updateUserProfileData.setIdamStatus(IdamStatus.ACTIVE.name());
 

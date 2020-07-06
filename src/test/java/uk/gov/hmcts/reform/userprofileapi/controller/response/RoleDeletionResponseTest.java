@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 public class RoleDeletionResponseTest {
 
     @Test
-    public void testDeleteRoleResponse() {
+    public void test_DeleteRoleResponse() {
         final String caseWorker = "caseworker";
         final HttpStatus status = HttpStatus.OK;
 

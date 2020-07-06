@@ -50,7 +50,7 @@ public class IdamServiceImplTest {
     private IdamService sut = new IdamServiceImpl();
 
     @Test
-    public void testRegisterUser() {
+    public void test_RegisterUser() {
         IdamRegisterUserRequest dataMock = Mockito.mock(IdamRegisterUserRequest.class);
         Response responseMock = Mockito.mock(Response.class);
 
@@ -68,7 +68,7 @@ public class IdamServiceImplTest {
     }
 
     @Test
-    public void testFetchUserById() {
+    public void test_FetchUserById() {
         Response responseMock = Mockito.mock(Response.class);
 
         when(idamFeignClientMock.getUserById(userId)).thenReturn(responseMock);
@@ -86,7 +86,7 @@ public class IdamServiceImplTest {
     }
 
     @Test
-    public void testFetchUserByEmail() {
+    public void test_FetchUserByEmail() {
         Response responseMock = Mockito.mock(Response.class);
 
         when(idamFeignClientMock.getUserByEmail(anyString())).thenReturn(responseMock);
@@ -102,7 +102,7 @@ public class IdamServiceImplTest {
     }
 
     @Test
-    public void testFetchUserByEmailWithFeignExceptionThrown() {
+    public void test_FetchUserByEmailWithFeignExceptionThrown() {
         FeignException feignExceptionMock = Mockito.mock(FeignException.class);
 
         when(idamFeignClientMock.getUserByEmail(email)).thenThrow(feignExceptionMock);
@@ -116,7 +116,7 @@ public class IdamServiceImplTest {
     }
 
     @Test
-    public void testRegisterUserWithFeignExceptionThrown() {
+    public void test_RegisterUserWithFeignExceptionThrown() {
         FeignException feignExceptionMock = Mockito.mock(FeignException.class);
         IdamRegisterUserRequest dataMock = Mockito.mock(IdamRegisterUserRequest.class);
 
@@ -133,7 +133,7 @@ public class IdamServiceImplTest {
     }
 
     @Test
-    public void testGetHttpStatusFromFeignException() {
+    public void test_GetHttpStatusFromFeignException() {
         IdamServiceImpl idamService = new IdamServiceImpl();
         RetryableException retryableExceptionMock = mock(RetryableException.class);
 
@@ -148,7 +148,7 @@ public class IdamServiceImplTest {
     }
 
     @Test
-    public void testUpdateUserRoles() {
+    public void test_UpdateUserRoles() {
         List<String> roleRequest = new ArrayList<>();
 
         Response responseMock = Mockito.mock(Response.class);
@@ -169,7 +169,7 @@ public class IdamServiceImplTest {
     }
 
     @Test
-    public void testUpdateUserRolesWhenFeignException() {
+    public void test_UpdateUserRolesWhenFeignException() {
         List<String> roleRequest = new ArrayList<>();
 
         FeignException feignExceptionMock = Mockito.mock(FeignException.class);
@@ -184,7 +184,7 @@ public class IdamServiceImplTest {
     }
 
     @Test
-    public void testAddUserRoles() {
+    public void test_AddUserRoles() {
         Set<String> roleRequest = new HashSet<>();
 
         Response responseMock = Mockito.mock(Response.class);
@@ -206,7 +206,7 @@ public class IdamServiceImplTest {
     }
 
     @Test
-    public void testUpdateUserDetails() {
+    public void test_UpdateUserDetails() {
         UpdateUserDetails updateUserDetailsMock = Mockito.mock(UpdateUserDetails.class);
 
         Response responseMock = Mockito.mock(Response.class);
@@ -229,7 +229,7 @@ public class IdamServiceImplTest {
     }
 
     @Test
-    public void testUpdateUserDetails_withFailure() {
+    public void test_UpdateUserDetails_withFailure() {
         UpdateUserDetails updateUserDetailsMock = Mockito.mock(UpdateUserDetails.class);
 
         FeignException feignExceptionMock = Mockito.mock(FeignException.class);
@@ -244,7 +244,7 @@ public class IdamServiceImplTest {
     }
 
     @Test
-    public void testAddUserRolesWhenFeignException() {
+    public void test_AddUserRolesWhenFeignException() {
         Set<String> roleRequest = new HashSet<>();
 
         FeignException feignExceptionMock = Mockito.mock(FeignException.class);

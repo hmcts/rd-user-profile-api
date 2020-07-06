@@ -75,7 +75,7 @@ public class UserProfileCreatorTest {
     private IdamRolesInfo idamRolesInfo = mock(IdamRolesInfo.class);
 
     @Test
-    public void should_create_user_profile_successfully() {
+    public void test_create_user_profile_successfully() {
 
         when(idamService.registerUser(any())).thenReturn(idamRegistrationInfo);
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(null));
@@ -93,7 +93,7 @@ public class UserProfileCreatorTest {
     }
 
     @Test
-    public void should_create_user_profile_successfully_profileData_has_status_populated() {
+    public void test_create_user_profile_successfully_profileData_has_status_populated() {
 
         when(idamService.registerUser(any())).thenReturn(idamRegistrationInfo);
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(null));
@@ -115,7 +115,7 @@ public class UserProfileCreatorTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void should_throw_runtime_when_create_user_profile_fails_to_save() {
+    public void test_throw_runtime_when_create_user_profile_fails_to_save() {
 
         when(idamService.registerUser(any())).thenReturn(idamRegistrationInfo);
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(null));
@@ -134,7 +134,7 @@ public class UserProfileCreatorTest {
     }
 
     @Test
-    public void should_throw_IdamServiceException_when_user_already_exist() {
+    public void test_throw_IdamServiceException_when_user_already_exist() {
 
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
         assertThatThrownBy(() -> userProfileCreator.create(userProfileCreationData)).isExactlyInstanceOf(IdamServiceException.class);
@@ -143,7 +143,7 @@ public class UserProfileCreatorTest {
     }
 
     @Test
-    public void should_throw_IdamServiceException_when_idam_registration_fail() {
+    public void test_throw_IdamServiceException_when_idam_registration_fail() {
 
         idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.BAD_REQUEST);
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(null));
@@ -155,7 +155,7 @@ public class UserProfileCreatorTest {
     }
 
     @Test
-    public void should_register_when_idam_registration_conflicts() {
+    public void test_register_when_idam_registration_conflicts() {
 
         List<String> roles = new ArrayList<>();
         roles.add("pui-case-manager");
@@ -189,7 +189,7 @@ public class UserProfileCreatorTest {
     }
 
     @Test
-    public void should_register_when_idam_registration_conflicts_and_roles_null() {
+    public void test_register_when_idam_registration_conflicts_and_roles_null() {
 
         ResponseEntity entity = mock(ResponseEntity.class);
         HttpHeaders headers = new HttpHeaders();
@@ -222,7 +222,7 @@ public class UserProfileCreatorTest {
     }
 
     @Test
-    public void should_set_CreateUserProfileData_fields() {
+    public void test_set_CreateUserProfileData_fields() {
 
         createDecisionMap();
 
@@ -243,7 +243,7 @@ public class UserProfileCreatorTest {
     }
 
     @Test
-    public void should_set_CreateUserProfileData_fields_with_idamStatus_null() {
+    public void test_set_CreateUserProfileData_fields_with_idamStatus_null() {
 
         createDecisionMap();
 
@@ -350,7 +350,7 @@ public class UserProfileCreatorTest {
     }
 
     @Test
-    public void should_reinvite_user_successfully() {
+    public void test_reinvite_user_successfully() {
         when(idamService.registerUser(any())).thenReturn(idamRegistrationInfo);
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
         when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);
@@ -369,7 +369,7 @@ public class UserProfileCreatorTest {
     }
 
     @Test
-    public void should_not_reinvite_user_when_sidam_returns_409() {
+    public void test_not_reinvite_user_when_sidam_returns_409() {
 
         ReflectionTestUtils.setField(userProfileCreator, "syncInterval", "60");
         IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.CONFLICT);
@@ -391,7 +391,7 @@ public class UserProfileCreatorTest {
     }
 
     @Test
-    public void should_not_reinvite_user_when_sidam_returns_400() {
+    public void test_not_reinvite_user_when_sidam_returns_400() {
 
         IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.BAD_REQUEST);
         when(idamService.registerUser(any())).thenReturn(idamRegistrationInfo);
@@ -412,7 +412,7 @@ public class UserProfileCreatorTest {
     }
 
     @Test
-    public void should_not_reinvite_user_when_validation_fails_returns_400() {
+    public void test_not_reinvite_user_when_validation_fails_returns_400() {
 
         userProfile.setStatus(IdamStatus.ACTIVE);
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));

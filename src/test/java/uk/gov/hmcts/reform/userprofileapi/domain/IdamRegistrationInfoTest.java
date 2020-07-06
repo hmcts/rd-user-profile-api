@@ -33,7 +33,7 @@ public class IdamRegistrationInfoTest {
     }
 
     @Test
-    public void testOneArgConstructor() {
+    public void test_OneArgConstructor() {
         final HttpStatus inputMessage = UNAUTHORIZED;
         final String expectMessage = resolveStatusAndReturnMessage(inputMessage);
 
@@ -47,7 +47,7 @@ public class IdamRegistrationInfoTest {
     }
 
     @Test
-    public void isSuccessFromIdam() {
+    public void test_isSuccessFromIdam() {
         when(httpStatusMock.is2xxSuccessful()).thenReturn(true);
 
         IdamRegistrationInfo sut = new IdamRegistrationInfo(httpStatusMock);
@@ -57,7 +57,7 @@ public class IdamRegistrationInfoTest {
     }
 
     @Test
-    public void isDuplicateUser() {
+    public void test_isDuplicateUser() {
         IdamRegistrationInfo sut = new IdamRegistrationInfo(CONFLICT);
 
         assertThat(sut.isDuplicateUser()).isTrue();
@@ -68,12 +68,12 @@ public class IdamRegistrationInfoTest {
     }
 
     @Test
-    public void getIdamRegistrationResponse() {
+    public void test_getIdamRegistrationResponse() {
         assertThat(sut.getIdamRegistrationResponse()).isEqualTo(httpStatusMock);
     }
 
     @Test
-    public void getResponse() {
+    public void test_getResponse() {
         assertThat(sut.getResponse()).isEqualTo(responseEntityMockOptional.get());
     }
 }

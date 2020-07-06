@@ -13,7 +13,7 @@ public class AttributeResponseTest {
     private AttributeResponse sut = new AttributeResponse(httpStatus);
 
     @Test
-    public void testAttributeResponse() {
+    public void test_AttributeResponse() {
         final Integer expectedIdamStatusCode = httpStatus.value();
         final String expectedIdamMessage = resolveStatusAndReturnMessage(httpStatus);
 

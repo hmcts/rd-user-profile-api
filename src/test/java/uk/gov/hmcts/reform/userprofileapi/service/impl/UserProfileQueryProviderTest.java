@@ -51,7 +51,7 @@ public class UserProfileQueryProviderTest {
     }
 
     @Test
-    public void getRetrieveByIdQueryTest_with_userIdentifier_email() {
+    public void test_getRetrieveByIdQuery_with_userIdentifier_email() {
         userProfileRepositoryMock.save(userProfile);
 
         when(userProfileRepositoryMock.findByEmail(any(String.class))).thenReturn(Optional.of(userProfile));
@@ -67,7 +67,7 @@ public class UserProfileQueryProviderTest {
     }
 
     @Test
-    public void getRetrieveByIdQueryTest_with_userIdentifier_userId() {
+    public void test_getRetrieveByIdQuery_with_userIdentifier_userId() {
         userProfileRepositoryMock.save(userProfile);
 
         UUID userId = UUID.randomUUID();
@@ -86,13 +86,13 @@ public class UserProfileQueryProviderTest {
 
 
     @Test(expected = IllegalStateException.class)
-    public void getRetrieveByIdQueryTest_ThrowsIllegalStateException() {
+    public void test_getRetrieveByIdQuery_ThrowsIllegalStateException() {
         UserProfileIdentifier userProfileIdentifierWithOneValue = new UserProfileIdentifier(null, userProfile.getEmail());
         userProfileQueryProvider.getRetrieveByIdQuery(userProfileIdentifierWithOneValue);
     }
 
     @Test
-    public void getProfilesByIdsTest() {
+    public void test_getProfilesByIds() {
         List<UserProfile> userProfiles = Collections.singletonList(userProfile);
 
         userProfileRepositoryMock.save(userProfile);
@@ -109,7 +109,7 @@ public class UserProfileQueryProviderTest {
     }
 
     @Test
-    public void getProfilesByIdsTest_with_show_deleted_false() {
+    public void test_getProfilesByIds_with_show_deleted_false() {
         List<UserProfile> userProfiles = Collections.singletonList(userProfile);
 
         userProfileRepositoryMock.save(userProfile);
