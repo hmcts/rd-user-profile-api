@@ -65,8 +65,8 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
                                                          ResponseSource source) {
         if (!validateUserProfileStatus(updateUserProfileData)) {
             auditService.persistAudit(BAD_REQUEST, source);
-            final String exceptionMsg = String.format("RequiredFieldMissingException - Update user profile request has "
-                    .concat("invalid status %s for userId: %s"), updateUserProfileData.getIdamStatus(), userId);
+            final String exceptionMsg = String.format("RequiredFieldMissingException - Update user profile request has"
+                    + " invalid status %s for userId: %s", updateUserProfileData.getIdamStatus(), userId);
             exceptionService.throwCustomRuntimeException(REQUIREDFIELDMISSINGEXCEPTION, exceptionMsg);
         }
         return true;
@@ -79,7 +79,7 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
                 .equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
             auditService.persistAudit(BAD_REQUEST, source);
             final String exceptionMsg = String.format("User is PENDING or input status is PENDING and only be changed"
-                    .concat(" to ACTIVE or SUSPENDED for userId: %s"), userProfile.getIdamId());
+                    + " to ACTIVE or SUSPENDED for userId: %s", userProfile.getIdamId());
             exceptionService.throwCustomRuntimeException(REQUIREDFIELDMISSINGEXCEPTION, exceptionMsg);
         }
         return true;
