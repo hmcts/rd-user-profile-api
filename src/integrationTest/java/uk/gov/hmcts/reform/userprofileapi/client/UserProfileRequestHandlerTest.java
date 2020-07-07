@@ -89,6 +89,28 @@ public class UserProfileRequestHandlerTest {
         return objectMapper.readValue(result.getResponse().getContentAsString(), clazz);
     }
 
+    public <T> T sendPut(MockMvc mockMvc,
+                         String path,
+                         Object body,
+                         HttpStatus expectedHttpStatus,
+                         Class<T> clazz) throws Exception {
+
+        MvcResult result = sendPut(mockMvc, path, body, expectedHttpStatus);
+        assertThat(result.getResponse().getContentAsString())
+                .as("Expected json content was empty")
+                .isNotEmpty();
+
+        return objectMapper.readValue(result.getResponse().getContentAsString(), clazz);
+    }
+
+    public MvcResult sendPut(MockMvc mockMvc,
+                        String path,
+                        Object body,
+                        HttpStatus expectedHttpStatus) throws Exception {
+
+        return sendPut(mockMvc, path, objectMapper.writeValueAsString(body), expectedHttpStatus);
+    }
+
     public MvcResult sendPut(MockMvc mockMvc,
                               String path,
                               String jsonBody,
@@ -101,13 +123,7 @@ public class UserProfileRequestHandlerTest {
                 .andExpect(status().is(expectedHttpStatus.value())).andReturn();
     }
 
-    public void sendPut(MockMvc mockMvc,
-                              String path,
-                              Object body,
-                              HttpStatus expectedHttpStatus) throws Exception {
 
-        sendPut(mockMvc, path, objectMapper.writeValueAsString(body), expectedHttpStatus);
-    }
 
     public MvcResult sendDelete(MockMvc mockMvc,
                               String path,
@@ -146,8 +162,6 @@ public class UserProfileRequestHandlerTest {
 
     private HttpHeaders getMultipleAuthHeaders() {
 
-        log.info("JWT TOKEN::" + JWT_TOKEN);
-        log.info("IDAM_TOKEN::" + IDAM_TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(APPLICATION_JSON);
 
