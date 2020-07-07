@@ -386,7 +386,7 @@ public class UserProfileCreatorTest {
 
         assertThat(raisedException).isInstanceOf(IdamServiceException.class)
                 .hasMessageContaining("7 : Resend invite failed as user is already active. Wait for 60 minutes for "
-                        + "the system to refresh.");
+                        .concat("the system to refresh."));
 
         InOrder inOrder = inOrder(idamService,auditRepository);
         inOrder.verify(idamService, times(1)).registerUser(any(IdamRegisterUserRequest.class));

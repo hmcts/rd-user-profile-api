@@ -103,7 +103,7 @@ public class RetrieveUserProfileInternalServerErrorIntTest extends Authorization
                 .thenThrow(new RuntimeException("This is a test exception"));
 
         MvcResult result = userProfileRequestHandlerTest.sendGet(mockMvc, APP_BASE_PATH + "?email="
-                + "randomemail@somewhere.com", INTERNAL_SERVER_ERROR);
+                .concat("randomemail@somewhere.com"), INTERNAL_SERVER_ERROR);
 
         assertThat(result.getResponse().getContentAsString()).isNotEmpty();
     }

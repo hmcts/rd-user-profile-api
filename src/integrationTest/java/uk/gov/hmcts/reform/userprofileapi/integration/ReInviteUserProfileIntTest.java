@@ -109,7 +109,7 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
         data.setEmail(pendingUserRequest.getEmail());
         ErrorResponse errorResponse = (ErrorResponse) createUser(data, BAD_REQUEST, ErrorResponse.class);
         assertThat(errorResponse.getErrorMessage()).isEqualTo("3 : There is a problem with your request. "
-                + "Please check and try again");
+                .concat("Please check and try again"));
         assertThat(errorResponse.getErrorDescription()).isEqualTo("User is not in PENDING state");
 
     }
@@ -122,9 +122,9 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
         data.setEmail(pendingUserRequest.getEmail());
         ErrorResponse errorResponse = (ErrorResponse) createUser(data, TOO_MANY_REQUESTS, ErrorResponse.class);
         assertThat(errorResponse.getErrorMessage()).isEqualTo(String.format("10 : The request was last made less "
-                + "than %s minutes ago. Please try after some time", resendInterval));
+                .concat("than %s minutes ago. Please try after some time"), resendInterval));
         assertThat(errorResponse.getErrorDescription()).contains(String.format("The request was last made less than"
-                + " %s minutes ago. Please try after some time", resendInterval));
+                .concat(" %s minutes ago. Please try after some time"), resendInterval));
 
     }
 
@@ -139,9 +139,9 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
         data.setEmail(pendingUserRequest.getEmail());
         ErrorResponse errorResponse = (ErrorResponse) createUser(data, HttpStatus.CONFLICT, ErrorResponse.class);
         assertThat(errorResponse.getErrorMessage()).isEqualTo(String.format("7 : Resend invite failed as user is "
-                + "already active. Wait for %s minutes for the system to refresh.", syncInterval));
+                .concat("already active. Wait for %s minutes for the system to refresh."), syncInterval));
         assertThat(errorResponse.getErrorDescription()).contains(String.format("Resend invite failed as user is "
-                + "already active. Wait for %s minutes for the system to refresh.", syncInterval));
+                .concat("already active. Wait for %s minutes for the system to refresh."), syncInterval));
     }
 
     // resend invite fail with 429 if user is already invited and again within 1 hour
@@ -160,9 +160,9 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
 
         ErrorResponse errorResponse = (ErrorResponse) createUser(data, TOO_MANY_REQUESTS, ErrorResponse.class);
         assertThat(errorResponse.getErrorMessage()).isEqualTo(String.format("10 : The request was last made less than "
-                + "%s minutes ago. Please try after some time", resendInterval));
+                .concat("%s minutes ago. Please try after some time"), resendInterval));
         assertThat(errorResponse.getErrorDescription()).contains(String.format("The request was last made less than "
-                + "%s minutes ago. Please try after some time", resendInterval));
+                .concat("%s minutes ago. Please try after some time"), resendInterval));
     }
 
     // resend invite fail with 429 if user is already invited and again within 1 hour and fields are not changed
@@ -181,9 +181,9 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
         ErrorResponse errorResponse = (ErrorResponse) createUser(pendingUserRequest, TOO_MANY_REQUESTS,
                 ErrorResponse.class);
         assertThat(errorResponse.getErrorMessage()).isEqualTo(String.format("10 : The request was last made less than "
-                + "%s minutes ago. Please try after some time", resendInterval));
+                .concat("%s minutes ago. Please try after some time"), resendInterval));
         assertThat(errorResponse.getErrorDescription()).contains(String.format("The request was last made less than "
-                + "%s minutes ago. Please try after some time", resendInterval));
+                .concat("%s minutes ago. Please try after some time"), resendInterval));
     }
 
 }

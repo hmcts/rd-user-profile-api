@@ -148,7 +148,7 @@ public class ValidationHelperServiceTest {
                 userProfile, API));
 
         assertThat(raisedException.getMessage()).contains("User is PENDING or input status is PENDING and only be "
-                + "changed to ACTIVE or SUSPENDED for userId: null");
+                .concat("changed to ACTIVE or SUSPENDED for userId: null"));
         assertThat(raisedException).isInstanceOf(RequiredFieldMissingException.class);
 
         verify(auditServiceMock, times(1)).persistAudit(eq(HttpStatus.BAD_REQUEST), eq(API));
@@ -166,7 +166,7 @@ public class ValidationHelperServiceTest {
                 userProfile, API));
 
         assertThat(raisedException.getMessage()).contains("User is PENDING or input status is PENDING and only be "
-                + "changed to ACTIVE or SUSPENDED for userId: null");
+                .concat("changed to ACTIVE or SUSPENDED for userId: null"));
         assertThat(raisedException).isInstanceOf(RequiredFieldMissingException.class);
 
         verify(auditServiceMock, times(1)).persistAudit(any(HttpStatus.class),
@@ -181,7 +181,7 @@ public class ValidationHelperServiceTest {
                 userProfile, API));
 
         assertThat(raisedException.getMessage()).contains("User is PENDING or input status is PENDING and only be "
-                + "changed to ACTIVE or SUSPENDED for userId: null");
+                .concat("changed to ACTIVE or SUSPENDED for userId: null"));
         assertThat(raisedException).isInstanceOf(RequiredFieldMissingException.class);
 
         verify(auditServiceMock, times(1)).persistAudit(any(HttpStatus.class),

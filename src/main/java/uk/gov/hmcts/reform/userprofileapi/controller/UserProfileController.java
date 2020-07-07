@@ -211,8 +211,7 @@ public class UserProfileController {
         return ResponseEntity.ok(response);
     }
 
-    @ApiOperation(value = "Retrieves a User Profile by Email or ID. If both are present then Email is used to "
-            + "retrieve.",
+    @ApiOperation(value = "Retrieve a User Profile by Email or ID. If both are present then Email is used to retrieve.",
             authorizations = {
                     @Authorization(value = "ServiceAuthorization"),
                     @Authorization(value = "Authorization")
