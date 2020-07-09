@@ -10,6 +10,8 @@ test.user.password: ${TEST_USER_PASSWORD:Hmcts123}
 s2s.auth.secret: ${S2S_SECRET:OLMEJQA7UHU6EZKG}
 s2s.auth.url: ${S2S_URL_TO_TEST:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
 
+s2s-name: rd_professional_api
+
 idam.auth.tokenAuth: ${IDAM_TOKEN_ATUH:cmQtcHJvZmVzc2lvbmFsLWFwaTpjYzVmMmE2LTk2OTAtMTFlOS1iYzQyLTUyNmFmNzc2NGY2NA==}
 idam.auth.redirectUrl: ${IDAM_REDIRECT_URL:https://rd-professional-api-aat.service.core-compute-aat.internal/oauth2redirect}
 idam.auth.clientId: rd-professional-api
