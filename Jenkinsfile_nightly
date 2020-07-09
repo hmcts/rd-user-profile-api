@@ -18,7 +18,7 @@ def component = "user-profile-api"
 
 def secrets = [
         's2s-${env}': [
-                secret('microservicekey-rd-professional-api', 'S2S_SECRET')
+                secret('microservicekey-rd-user-profile-api', 'S2S_SECRET')
         ]
 ]
 
@@ -39,7 +39,7 @@ def vaultOverrides = [
 withNightlyPipeline(type, product, component) {
 
     env.TEST_URL = "http://rd-user-profile-api-aat.service.core-compute-aat.internal"
-    //env.S2S_URL_FOR_TESTS = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+    env.S2S_URL_FOR_TESTS = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     env.Rules = params.SecurityRules
 
     overrideVaultEnvironments(vaultOverrides)
