@@ -86,6 +86,7 @@ public class UserProfileCreatorTest {
 
         InOrder inOrder = inOrder(idamService, userProfileRepository);
         inOrder.verify(idamService, times(1)).registerUser(any(IdamRegisterUserRequest.class));
+        verify(userProfileRepository, times(1)).findByEmail(any());
         inOrder.verify(userProfileRepository, times(1)).save(any(UserProfile.class));
         verify(auditRepository, times(1)).save(any(Audit.class));
 
@@ -105,6 +106,7 @@ public class UserProfileCreatorTest {
 
         InOrder inOrder = inOrder(idamService, userProfileRepository);
         inOrder.verify(idamService, times(1)).registerUser(any(IdamRegisterUserRequest.class));
+        verify(userProfileRepository, times(1)).findByEmail(any());
         inOrder.verify(userProfileRepository, times(1)).save(any(UserProfile.class));
 
         verify(auditRepository, times(1)).save(any(Audit.class));
@@ -126,6 +128,7 @@ public class UserProfileCreatorTest {
 
         InOrder inOrder = inOrder(idamService, userProfileRepository);
         inOrder.verify(idamService, times(1)).registerUser(any(IdamRegisterUserRequest.class));
+        verify(userProfileRepository, times(1)).findByEmail(any());
         inOrder.verify(userProfileRepository, times(1)).save(any(UserProfile.class));
 
         verify(auditRepository, times(1)).save(any(Audit.class));
@@ -181,8 +184,17 @@ public class UserProfileCreatorTest {
         ReflectionTestUtils.setField(userProfileCreator, "sidamGetUri", "/api/v1/users/");
 
         UserProfile responseUserProfile = userProfileCreator.create(userProfileCreationData);
+        verify(userProfileRepository, times(1)).findByEmail(any());
         verify(userProfileRepository, times(1)).save(any(UserProfile.class));
         verify(auditRepository, times(1)).save(any(Audit.class));
+        verify(auditRepository, times(1)).save(any(Audit.class));
+        verify(idamRolesInfo, times(1)).getRoles();
+        verify(idamRolesInfo, times(2)).getResponseStatusCode();
+        verify(idamRolesInfo, times(2)).getStatusMessage();
+        verify(idamRolesInfo, times(2)).isSuccessFromIdam();
+        verify(idamRolesInfo, times(2)).getEmail();
+        verify(idamRolesInfo, times(2)).getForename();
+        verify(idamRolesInfo, times(2)).getSurname();
         assertThat(responseUserProfile).isNotNull();
     }
 
@@ -215,6 +227,13 @@ public class UserProfileCreatorTest {
         verify(userProfileRepository, times(1)).findByEmail(any());
         verify(userProfileRepository, times(1)).save(any(UserProfile.class));
         verify(auditRepository, times(1)).save(any(Audit.class));
+        verify(idamRolesInfo, times(1)).getRoles();
+        verify(idamRolesInfo, times(2)).getResponseStatusCode();
+        verify(idamRolesInfo, times(2)).getStatusMessage();
+        verify(idamRolesInfo, times(2)).isSuccessFromIdam();
+        verify(idamRolesInfo, times(2)).getEmail();
+        verify(idamRolesInfo, times(2)).getForename();
+        verify(idamRolesInfo, times(2)).getSurname();
         assertThat(responseUserProfile).isNotNull();
     }
 
@@ -236,6 +255,11 @@ public class UserProfileCreatorTest {
         verify(userProfileCreationData, times(1)).setFirstName("fname");
         verify(userProfileCreationData, times(1)).setLastName("lastName");
         verify(userProfileCreationData, times(1)).setStatus(any(IdamStatus.class));
+        verify(idamRolesInfo, times(2)).getEmail();
+        verify(idamRolesInfo, times(2)).getForename();
+        verify(idamRolesInfo, times(2)).getSurname();
+        verify(idamRolesInfo, times(2)).getActive();
+        verify(idamRolesInfo, times(2)).getPending();
 
     }
 
@@ -256,6 +280,11 @@ public class UserProfileCreatorTest {
         verify(userProfileCreationData, times(1)).setFirstName("fname");
         verify(userProfileCreationData, times(1)).setLastName("lastName");
         verify(userProfileCreationData, times(1)).setStatus(any());
+        verify(idamRolesInfo, times(2)).getEmail();
+        verify(idamRolesInfo, times(2)).getForename();
+        verify(idamRolesInfo, times(2)).getSurname();
+        verify(idamRolesInfo, times(2)).getActive();
+        verify(idamRolesInfo, times(2)).getPending();
 
     }
 
@@ -297,6 +326,9 @@ public class UserProfileCreatorTest {
 
         assertThat(rolesToUpdate.size()).isEqualTo(1);
         assertThat(rolesToUpdate).contains("prd-admin");
+        verify(userProfileCreationDataMock, times(1)).getRoles();
+        verify(idamRolesInfoMock, times(1)).getRoles();
+
     }
 
     @Test
@@ -320,6 +352,9 @@ public class UserProfileCreatorTest {
 
         assertThat(rolesToUpdate.size()).isEqualTo(2);
         assertThat(rolesToUpdate).contains("pui-case-manager", "pui-user-manager");
+        verify(userProfileCreationDataMock, times(1)).getRoles();
+        verify(idamRolesInfoMock, times(1)).getRoles();
+
     }
 
     @Test
@@ -342,6 +377,9 @@ public class UserProfileCreatorTest {
         Set<String> rolesToUpdate = userProfileCreator.consolidateRolesFromXuiAndIdam(userProfileCreationDataMock, idamRolesInfoMock);
 
         assertThat(rolesToUpdate.size()).isZero();
+        verify(userProfileCreationDataMock, times(1)).getRoles();
+        verify(idamRolesInfoMock, times(1)).getRoles();
+
     }
 
     @Test
@@ -359,8 +397,11 @@ public class UserProfileCreatorTest {
 
         InOrder inOrder = inOrder(idamService, userProfileRepository);
         inOrder.verify(idamService, times(1)).registerUser(any(IdamRegisterUserRequest.class));
+        inOrder.verify(userProfileRepository, times(0)).findByEmail(any(String.class));
         inOrder.verify(userProfileRepository, times(1)).save(any(UserProfile.class));
+
         verify(auditRepository, times(1)).save(any(Audit.class));
+        verify(validationHelperService,times(1)).validateReInvitedUser(any());
 
     }
 
@@ -383,6 +424,7 @@ public class UserProfileCreatorTest {
         inOrder.verify(idamService, times(1)).registerUser(any(IdamRegisterUserRequest.class));
         verify(userProfileRepository, times(0)).save(any(UserProfile.class));
         inOrder.verify(auditRepository, times(1)).save(any(Audit.class));
+        verify(validationHelperService,times(1)).validateReInvitedUser(any());
 
     }
 
@@ -404,7 +446,7 @@ public class UserProfileCreatorTest {
         inOrder.verify(idamService, times(1)).registerUser(any(IdamRegisterUserRequest.class));
         verify(userProfileRepository, times(0)).save(any(UserProfile.class));
         inOrder.verify(auditRepository, times(1)).save(any(Audit.class));
-
+        verify(validationHelperService,times(1)).validateReInvitedUser(any());
     }
 
     @Test
@@ -419,6 +461,7 @@ public class UserProfileCreatorTest {
 
         verify(idamService, times(0)).registerUser(any(IdamRegisterUserRequest.class));
         verify(userProfileRepository, times(0)).save(any(UserProfile.class));
+        verify(validationHelperService,times(1)).validateReInvitedUser(any());
 
     }
 

@@ -100,7 +100,7 @@ public class IdamStatusResolverTest {
     }
 
     @Test
-    public void privateConstructorTest_for_IdamStatusResolver() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    public void test_IdamStatusResolver_private_constructor() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         Constructor<IdamStatusResolver> constructor = IdamStatusResolver.class.getDeclaredConstructor();
         assertTrue(Modifier.isPrivate(constructor.getModifiers()));
         constructor.setAccessible(true);
