@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -17,12 +18,15 @@ import uk.gov.hmcts.reform.userprofileapi.service.ExceptionService;
 @Slf4j
 public class ExceptionServiceImpl implements ExceptionService {
 
+    @Value("${logging-component-name}")
+    protected static String loggingComponentName;
+
     public void throwCustomRuntimeException(ExceptionType className, String msg) {
         throwCustomRuntimeException(className, msg, HttpStatus.OK);
     }
 
     public void throwCustomRuntimeException(ExceptionType className, String msg, HttpStatus httpStatus) {
-        log.error(msg);
+        log.error(loggingComponentName, msg);
         switch (className) {
             case IDAMSERVICEEXCEPTION : throw new IdamServiceException(msg, httpStatus);
             case REQUIREDFIELDMISSINGEXCEPTION : throw new RequiredFieldMissingException(msg);
