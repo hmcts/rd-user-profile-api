@@ -9,6 +9,7 @@ import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstant
 import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.INVALID_REQUEST;
 import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.RESOURCE_NOT_FOUND;
 import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.UNKNOWN_EXCEPTION;
+import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.resolveStatusAndReturnMessage;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -99,7 +100,7 @@ public class UserProfileControllerAdvice {
             HttpServletRequest request,
             IdamServiceException e
     ) {
-        return errorDetailsResponseEntity(e, e.getHttpStatus(), e.getMessage());
+        return errorDetailsResponseEntity(e, e.getHttpStatus(), resolveStatusAndReturnMessage(e.getHttpStatus()));
     }
 
     @ExceptionHandler(Exception.class)

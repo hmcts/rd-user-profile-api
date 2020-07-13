@@ -25,9 +25,9 @@ public class IdamRolesInfoTest {
         Boolean pending = false;
 
         IdamUserResponse idamUserResponse = new IdamUserResponse(active, email, foreName, userId, pending, roles, surName);
-        ResponseEntity<IdamUserResponse> entity = new ResponseEntity<>(idamUserResponse, HttpStatus.CREATED);
+        ResponseEntity<Object> entity = new ResponseEntity<>(idamUserResponse, HttpStatus.CREATED);
 
-        IdamRolesInfo idamRolesInfo = new IdamRolesInfo(entity, HttpStatus.CREATED);
+        IdamRolesInfo idamRolesInfo = new IdamRolesInfo(entity);
 
         assertThat(idamRolesInfo.getEmail()).isEqualTo(email);
         assertThat(idamRolesInfo.getForename()).isEqualTo(foreName);
@@ -36,6 +36,6 @@ public class IdamRolesInfoTest {
         assertThat(idamRolesInfo.getRoles()).isNotEmpty();
         assertThat(idamRolesInfo.getResponseStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(idamRolesInfo.getStatusMessage()).isNotEmpty();
-        assertThat(idamRolesInfo.isSuccessFromIdam()).isEqualTo(true);
+        assertThat(idamRolesInfo.isSuccessFromIdam()).isTrue();
     }
 }

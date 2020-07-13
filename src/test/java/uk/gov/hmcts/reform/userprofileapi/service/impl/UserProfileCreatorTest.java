@@ -4,12 +4,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.ACCEPTED;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.ResponseEntity.status;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,7 +65,7 @@ public class UserProfileCreatorTest {
     @Mock
     private ValidationHelperService validationHelperService;
 
-    private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.ACCEPTED);
+    private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(status(ACCEPTED).build());
 
     private UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
 
@@ -83,6 +86,7 @@ public class UserProfileCreatorTest {
 
         InOrder inOrder = inOrder(idamService, userProfileRepository);
         inOrder.verify(idamService, times(1)).registerUser(any(IdamRegisterUserRequest.class));
+        verify(userProfileRepository, times(1)).findByEmail(any());
         inOrder.verify(userProfileRepository, times(1)).save(any(UserProfile.class));
         verify(auditRepository, times(1)).save(any(Audit.class));
 
@@ -102,6 +106,7 @@ public class UserProfileCreatorTest {
 
         InOrder inOrder = inOrder(idamService, userProfileRepository);
         inOrder.verify(idamService, times(1)).registerUser(any(IdamRegisterUserRequest.class));
+        verify(userProfileRepository, times(1)).findByEmail(any());
         inOrder.verify(userProfileRepository, times(1)).save(any(UserProfile.class));
 
         verify(auditRepository, times(1)).save(any(Audit.class));
@@ -123,6 +128,7 @@ public class UserProfileCreatorTest {
 
         InOrder inOrder = inOrder(idamService, userProfileRepository);
         inOrder.verify(idamService, times(1)).registerUser(any(IdamRegisterUserRequest.class));
+        verify(userProfileRepository, times(1)).findByEmail(any());
         inOrder.verify(userProfileRepository, times(1)).save(any(UserProfile.class));
 
         verify(auditRepository, times(1)).save(any(Audit.class));
@@ -141,7 +147,7 @@ public class UserProfileCreatorTest {
     @Test
     public void should_throw_IdamServiceException_when_idam_registration_fail() {
 
-        idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.BAD_REQUEST);
+        idamRegistrationInfo = new IdamRegistrationInfo(status(BAD_REQUEST).build());
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(null));
         when(idamService.registerUser(any(IdamRegisterUserRequest.class))).thenReturn(idamRegistrationInfo);
         assertThatThrownBy(() -> userProfileCreator.create(userProfileCreationData)).isExactlyInstanceOf(IdamServiceException.class);
@@ -158,12 +164,11 @@ public class UserProfileCreatorTest {
         ResponseEntity entity = mock(ResponseEntity.class);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", "/api/v1/users/" + UUID.randomUUID().toString());
-        idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.CONFLICT, Optional.ofNullable(entity));
+        idamRegistrationInfo = new IdamRegistrationInfo(status(CONFLICT).build());
 
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(null));
         when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);
         when(idamService.registerUser(any(IdamRegisterUserRequest.class))).thenReturn(idamRegistrationInfo);
-        when(entity.getHeaders()).thenReturn(headers);
         when(idamRolesInfo.getRoles()).thenReturn(roles);
         when(idamRolesInfo.getResponseStatusCode()).thenReturn(HttpStatus.OK);
         when(idamRolesInfo.getStatusMessage()).thenReturn("test error message");
@@ -172,15 +177,24 @@ public class UserProfileCreatorTest {
         when(idamRolesInfo.getForename()).thenReturn("fname");
         when(idamRolesInfo.getSurname()).thenReturn("lastName");
 
-        when(idamService.fetchUserById(any(String.class))).thenReturn(idamRolesInfo);
-        when(idamService.addUserRoles(any(), anyString())).thenReturn(idamRolesInfo);
+        when(idamService.fetchUserById(any())).thenReturn(idamRolesInfo);
+        when(idamService.addUserRoles(any(), any())).thenReturn(idamRolesInfo);
 
         createDecisionMap();
         ReflectionTestUtils.setField(userProfileCreator, "sidamGetUri", "/api/v1/users/");
 
         UserProfile responseUserProfile = userProfileCreator.create(userProfileCreationData);
+        verify(userProfileRepository, times(1)).findByEmail(any());
         verify(userProfileRepository, times(1)).save(any(UserProfile.class));
         verify(auditRepository, times(1)).save(any(Audit.class));
+        verify(auditRepository, times(1)).save(any(Audit.class));
+        verify(idamRolesInfo, times(1)).getRoles();
+        verify(idamRolesInfo, times(2)).getResponseStatusCode();
+        verify(idamRolesInfo, times(2)).getStatusMessage();
+        verify(idamRolesInfo, times(2)).isSuccessFromIdam();
+        verify(idamRolesInfo, times(2)).getEmail();
+        verify(idamRolesInfo, times(2)).getForename();
+        verify(idamRolesInfo, times(2)).getSurname();
         assertThat(responseUserProfile).isNotNull();
     }
 
@@ -190,12 +204,11 @@ public class UserProfileCreatorTest {
         ResponseEntity entity = mock(ResponseEntity.class);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", "/api/v1/users/" + UUID.randomUUID().toString());
-        idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.CONFLICT, Optional.ofNullable(entity));
+        idamRegistrationInfo = new IdamRegistrationInfo(status(CONFLICT).build());
 
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(null));
         when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);
         when(idamService.registerUser(any(IdamRegisterUserRequest.class))).thenReturn(idamRegistrationInfo);
-        when(entity.getHeaders()).thenReturn(headers);
         when(idamRolesInfo.getRoles()).thenReturn(null);
         when(idamRolesInfo.getResponseStatusCode()).thenReturn(HttpStatus.OK);
         when(idamRolesInfo.getStatusMessage()).thenReturn("test error message");
@@ -204,8 +217,8 @@ public class UserProfileCreatorTest {
         when(idamRolesInfo.getForename()).thenReturn("fname");
         when(idamRolesInfo.getSurname()).thenReturn("lastName");
 
-        when(idamService.fetchUserById(any(String.class))).thenReturn(idamRolesInfo);
-        when(idamService.addUserRoles(any(), anyString())).thenReturn(idamRolesInfo);
+        when(idamService.fetchUserById(any())).thenReturn(idamRolesInfo);
+        when(idamService.addUserRoles(any(), any())).thenReturn(idamRolesInfo);
 
         createDecisionMap();
         ReflectionTestUtils.setField(userProfileCreator, "sidamGetUri", "/api/v1/users/");
@@ -214,6 +227,13 @@ public class UserProfileCreatorTest {
         verify(userProfileRepository, times(1)).findByEmail(any());
         verify(userProfileRepository, times(1)).save(any(UserProfile.class));
         verify(auditRepository, times(1)).save(any(Audit.class));
+        verify(idamRolesInfo, times(1)).getRoles();
+        verify(idamRolesInfo, times(2)).getResponseStatusCode();
+        verify(idamRolesInfo, times(2)).getStatusMessage();
+        verify(idamRolesInfo, times(2)).isSuccessFromIdam();
+        verify(idamRolesInfo, times(2)).getEmail();
+        verify(idamRolesInfo, times(2)).getForename();
+        verify(idamRolesInfo, times(2)).getSurname();
         assertThat(responseUserProfile).isNotNull();
     }
 
@@ -235,6 +255,11 @@ public class UserProfileCreatorTest {
         verify(userProfileCreationData, times(1)).setFirstName("fname");
         verify(userProfileCreationData, times(1)).setLastName("lastName");
         verify(userProfileCreationData, times(1)).setStatus(any(IdamStatus.class));
+        verify(idamRolesInfo, times(2)).getEmail();
+        verify(idamRolesInfo, times(2)).getForename();
+        verify(idamRolesInfo, times(2)).getSurname();
+        verify(idamRolesInfo, times(2)).getActive();
+        verify(idamRolesInfo, times(2)).getPending();
 
     }
 
@@ -255,6 +280,11 @@ public class UserProfileCreatorTest {
         verify(userProfileCreationData, times(1)).setFirstName("fname");
         verify(userProfileCreationData, times(1)).setLastName("lastName");
         verify(userProfileCreationData, times(1)).setStatus(any());
+        verify(idamRolesInfo, times(2)).getEmail();
+        verify(idamRolesInfo, times(2)).getForename();
+        verify(idamRolesInfo, times(2)).getSurname();
+        verify(idamRolesInfo, times(2)).getActive();
+        verify(idamRolesInfo, times(2)).getPending();
 
     }
 
@@ -296,6 +326,9 @@ public class UserProfileCreatorTest {
 
         assertThat(rolesToUpdate.size()).isEqualTo(1);
         assertThat(rolesToUpdate).contains("prd-admin");
+        verify(userProfileCreationDataMock, times(1)).getRoles();
+        verify(idamRolesInfoMock, times(1)).getRoles();
+
     }
 
     @Test
@@ -318,8 +351,10 @@ public class UserProfileCreatorTest {
         Set<String> rolesToUpdate = userProfileCreator.consolidateRolesFromXuiAndIdam(userProfileCreationDataMock, idamRolesInfoMock);
 
         assertThat(rolesToUpdate.size()).isEqualTo(2);
-        assertThat(rolesToUpdate).contains("pui-case-manager");
-        assertThat(rolesToUpdate).contains("pui-user-manager");
+        assertThat(rolesToUpdate).contains("pui-case-manager", "pui-user-manager");
+        verify(userProfileCreationDataMock, times(1)).getRoles();
+        verify(idamRolesInfoMock, times(1)).getRoles();
+
     }
 
     @Test
@@ -341,7 +376,10 @@ public class UserProfileCreatorTest {
 
         Set<String> rolesToUpdate = userProfileCreator.consolidateRolesFromXuiAndIdam(userProfileCreationDataMock, idamRolesInfoMock);
 
-        assertThat(rolesToUpdate.size()).isEqualTo(0);
+        assertThat(rolesToUpdate.size()).isZero();
+        verify(userProfileCreationDataMock, times(1)).getRoles();
+        verify(idamRolesInfoMock, times(1)).getRoles();
+
     }
 
     @Test
@@ -359,8 +397,11 @@ public class UserProfileCreatorTest {
 
         InOrder inOrder = inOrder(idamService, userProfileRepository);
         inOrder.verify(idamService, times(1)).registerUser(any(IdamRegisterUserRequest.class));
+        inOrder.verify(userProfileRepository, times(0)).findByEmail(any(String.class));
         inOrder.verify(userProfileRepository, times(1)).save(any(UserProfile.class));
+
         verify(auditRepository, times(1)).save(any(Audit.class));
+        verify(validationHelperService,times(1)).validateReInvitedUser(any());
 
     }
 
@@ -368,7 +409,7 @@ public class UserProfileCreatorTest {
     public void should_not_reinvite_user_when_sidam_returns_409() {
 
         ReflectionTestUtils.setField(userProfileCreator, "syncInterval", "60");
-        IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.CONFLICT);
+        IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(status(CONFLICT).build());
         when(idamService.registerUser(any())).thenReturn(idamRegistrationInfo);
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
         when(validationHelperService.validateReInvitedUser(any())).thenReturn(userProfile);
@@ -377,19 +418,20 @@ public class UserProfileCreatorTest {
         final Throwable raisedException = catchThrowable(() -> userProfileCreator.reInviteUser(userProfileCreationData));
 
         assertThat(raisedException).isInstanceOf(IdamServiceException.class)
-                .hasMessageContaining("7 : Resend invite failed as user is already active. Wait for 60 minutes for the system to refresh.");
+                .hasMessageContaining("7 : Resend invite failed as user is already active. Wait for some time for the system to refresh.");
 
         InOrder inOrder = inOrder(idamService,auditRepository);
         inOrder.verify(idamService, times(1)).registerUser(any(IdamRegisterUserRequest.class));
         verify(userProfileRepository, times(0)).save(any(UserProfile.class));
         inOrder.verify(auditRepository, times(1)).save(any(Audit.class));
+        verify(validationHelperService,times(1)).validateReInvitedUser(any());
 
     }
 
     @Test
     public void should_not_reinvite_user_when_sidam_returns_400() {
 
-        IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.BAD_REQUEST);
+        IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(status(BAD_REQUEST).build());
         when(idamService.registerUser(any())).thenReturn(idamRegistrationInfo);
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
         when(validationHelperService.validateReInvitedUser(any())).thenReturn(userProfile);
@@ -404,7 +446,7 @@ public class UserProfileCreatorTest {
         inOrder.verify(idamService, times(1)).registerUser(any(IdamRegisterUserRequest.class));
         verify(userProfileRepository, times(0)).save(any(UserProfile.class));
         inOrder.verify(auditRepository, times(1)).save(any(Audit.class));
-
+        verify(validationHelperService,times(1)).validateReInvitedUser(any());
     }
 
     @Test
@@ -419,6 +461,7 @@ public class UserProfileCreatorTest {
 
         verify(idamService, times(0)).registerUser(any(IdamRegisterUserRequest.class));
         verify(userProfileRepository, times(0)).save(any(UserProfile.class));
+        verify(validationHelperService,times(1)).validateReInvitedUser(any());
 
     }
 

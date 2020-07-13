@@ -1,14 +1,12 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
@@ -37,14 +36,8 @@ public class CreateNewUserProfileWithIdamErrorsIntTest  extends AuthorizationEna
     @Before
     public void setUpWireMock() {
 
-        idamService.stubFor(post(urlEqualTo("/api/v1/users/registration"))
-                .willReturn(aResponse()
-                        .withHeader("Content-Type", "application/json")
-                        .withStatus(400)
-                ));
-
+        setSidamRegistrationMockWithStatus(BAD_REQUEST.value(), true);
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
-
     }
 
     @Test
@@ -63,6 +56,46 @@ public class CreateNewUserProfileWithIdamErrorsIntTest  extends AuthorizationEna
 
         verifyUserProfileCreation(BAD_REQUEST, data);
 
+    }
+
+    @Test
+    public void should_return_400_when_create_user_profile_has_invalid_role() throws Exception {
+
+        UserProfileCreationData data = buildCreateUserProfileData();
+        List<String> roles = new ArrayList<String>();
+        roles.add("puicasemanager");
+        data.setRoles(roles);
+        setSidamRegistrationMockWithStatus(BAD_REQUEST.value(), false);
+        ErrorResponse errorResponse =
+                userProfileRequestHandlerTest.sendPost(
+                        mockMvc,
+                        APP_BASE_PATH,
+                        data,
+                        BAD_REQUEST,
+                        ErrorResponse.class
+                );
+        assertThat(errorResponse.getErrorMessage()).isEqualTo("13 Required parameters or one of request field is missing or invalid");
+        assertThat(errorResponse.getErrorDescription()).isEqualTo("Role to be assigned does not exist.");
+    }
+
+    @Test
+    public void should_return_400_when_create_user_profile_has_invalid_role_and_response_is_null_from_sidam() throws Exception {
+
+        UserProfileCreationData data = buildCreateUserProfileData();
+        List<String> roles = new ArrayList<String>();
+        roles.add("puicasemanager");
+        data.setRoles(roles);
+        setSidamRegistrationMockWithStatus(BAD_REQUEST.value(), true);
+        ErrorResponse errorResponse =
+                userProfileRequestHandlerTest.sendPost(
+                        mockMvc,
+                        APP_BASE_PATH,
+                        data,
+                        BAD_REQUEST,
+                        ErrorResponse.class
+                );
+        assertThat(errorResponse.getErrorMessage()).isEqualTo("13 Required parameters or one of request field is missing or invalid");
+        assertThat(errorResponse.getErrorDescription()).isEqualTo("13 Required parameters or one of request field is missing or invalid");
     }
 
     private void verifyUserProfileCreation(HttpStatus idamStatus, UserProfileCreationData data) {

@@ -68,7 +68,7 @@ public class UserProfileServiceTest {
         userProfileResponse = userProfileService.updateRoles(updateUserProfileData, "1234");
 
         assertThat(userProfileResponse).isNotNull();
-        Mockito.verify(resourceUpdatorMock, Mockito.times(1)).updateRoles(any(), any(String.class));
+        verify(resourceUpdatorMock, times(1)).updateRoles(any(), any(String.class));
     }
 
     @Test
@@ -82,7 +82,7 @@ public class UserProfileServiceTest {
     }
 
     @Test
-    public void should_call_creator_create_method_successfully() {
+    public void testShould_call_creator_create_method_successfully() {
         UserProfileCreationData userProfileData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         UserProfileCreationResponse expected = new UserProfileCreationResponse(userProfile);
@@ -97,7 +97,7 @@ public class UserProfileServiceTest {
     }
 
     @Test
-    public void should_call_retriever_retrieve_method_successfully() {
+    public void testShould_call_retriever_retrieve_method_successfully() {
         UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID, UUID.randomUUID().toString());
 
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
@@ -109,12 +109,12 @@ public class UserProfileServiceTest {
 
         assertThat(resource).isEqualToComparingFieldByField(expected);
 
-        Mockito.verify(userProfileRetriever, Mockito.times(1)).retrieve(any(), any(boolean.class));
+        verify(userProfileRetriever, times(1)).retrieve(any(), any(boolean.class));
 
     }
 
     @Test
-    public void should_call_retriever_retrieve_with_roles_method_successfully() {
+    public void testShould_call_retriever_retrieve_with_roles_method_successfully() {
         UserProfileIdentifier identifier = mock(UserProfileIdentifier.class);
 
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
@@ -126,12 +126,12 @@ public class UserProfileServiceTest {
 
         assertThat(resource).isEqualToComparingFieldByField(expected);
 
-        Mockito.verify(userProfileRetriever, Mockito.times(1)).retrieve(any(), any(boolean.class));
+        verify(userProfileRetriever, times(1)).retrieve(any(), any(boolean.class));
 
     }
 
     @Test
-    public void should_call_retriever_retrieve_multiple_users_with_roles_method_successfully() {
+    public void testShould_call_retriever_retrieve_multiple_users_with_roles_method_successfully() {
         UserProfileIdentifier identifier = mock(UserProfileIdentifier.class);
 
         List<UserProfile> profileList = new ArrayList<>();
@@ -144,6 +144,6 @@ public class UserProfileServiceTest {
 
         assertThat(resource).isNotNull();
 
-        Mockito.verify(userProfileRetriever, Mockito.times(1)).retrieveMultipleProfiles(any(), any(boolean.class), any(boolean.class));
+        verify(userProfileRetriever, times(1)).retrieveMultipleProfiles(any(), any(boolean.class), any(boolean.class));
     }
 }
