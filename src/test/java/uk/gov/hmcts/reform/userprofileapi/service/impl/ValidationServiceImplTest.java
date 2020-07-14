@@ -59,7 +59,7 @@ public class ValidationServiceImplTest {
     }
 
     @Test
-    public void testValidateUpdateWithoutId() {
+    public void test_ValidateUpdateWithoutId() {
         userProfile.setStatus(IdamStatus.SUSPENDED);
 
         when(validationHelperServiceMock.validateUserId(eq(userId))).thenReturn(true);
@@ -70,22 +70,25 @@ public class ValidationServiceImplTest {
         assertThat(actual.getStatus()).isEqualTo(IdamStatus.SUSPENDED);
 
         verify(userProfileRepositoryMock, times(1)).findByIdamId(any(String.class));
+        verify(validationHelperServiceMock, times(1)).validateUserIsPresent(any());
     }
 
     @Test
-    public void testIsValidForUserDetailUpdateHappyPath() {
-        assertThat(sut.isValidForUserDetailUpdate(updateUserProfileData, userProfile, ResponseSource.API)).isFalse();
+    public void test_IsValidForUserDetailUpdateHappyPath() {
+        when(validationHelperServiceMock.validateUserStatusBeforeUpdate(updateUserProfileData, userProfile, ResponseSource.API)).thenReturn(true);
+        assertThat(sut.isValidForUserDetailUpdate(updateUserProfileData, userProfile, ResponseSource.API)).isTrue();
     }
 
     @Test
-    public void testIsValidForUserDetailUpdateSadPath() {
+    public void test_IsValidForUserDetailUpdateSadPath() {
         assertThat(sut.isValidForUserDetailUpdate(updateUserProfileData, userProfile, ResponseSource.API)).isFalse();
         verify(validationHelperServiceMock, times(1)).validateUserStatusBeforeUpdate(any(UpdateUserProfileData.class), any(UserProfile.class), any(ResponseSource.class));
     }
 
     @Test
-    public void testIsExuiUpdateRequest() {
+    public void test_IsExuiUpdateRequest() {
         assertThat(sut.isExuiUpdateRequest(ResponseSource.EXUI.name())).isTrue();
+        assertThat(sut.isExuiUpdateRequest("INVALID")).isFalse();
     }
 
 }

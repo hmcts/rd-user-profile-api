@@ -19,42 +19,42 @@ public class ExceptionServiceImplTest {
     private ExceptionServiceImpl sut = new ExceptionServiceImpl();
 
     @Test(expected = ResourceNotFoundException.class)
-    public void testThrowRuntimeException() {
+    public void test_ThrowRuntimeException() {
         sut.throwCustomRuntimeException(ExceptionType.RESOURCENOTFOUNDEXCEPTION, "ResourceNotFoundException Message");
     }
 
     @Test(expected = IdamServiceException.class)
-    public void testThrowIdamServiceException() {
+    public void test_ThrowIdamServiceException() {
         sut.throwCustomRuntimeException(ExceptionType.IDAMSERVICEEXCEPTION, "IdamServiceException Message");
     }
 
     @Test(expected = RequiredFieldMissingException.class)
-    public void testThrowRequiredFieldMissingException() {
+    public void test_ThrowRequiredFieldMissingException() {
         sut.throwCustomRuntimeException(ExceptionType.REQUIREDFIELDMISSINGEXCEPTION, "RequiredFieldMissingException Message");
     }
 
     @Test(expected = UndefinedException.class)
-    public void testThrowDefaultException() {
+    public void test_ThrowDefaultException() {
         sut.throwCustomRuntimeException(ExceptionType.UNDEFINDEDEXCEPTION, "ExceptionNotFound Message");
     }
 
     @Test(expected = ResourceNotFoundException.class)
-    public void testOverloadedException() {
+    public void test_OverloadedException() {
         sut.throwCustomRuntimeException(ExceptionType.RESOURCENOTFOUNDEXCEPTION, "ResourceNotFoundException Message", HttpStatus.ACCEPTED);
     }
 
     @Test(expected = ErrorPersistingException.class)
-    public void testErrorPersistingException() {
+    public void test_ErrorPersistingException() {
         sut.throwCustomRuntimeException(ExceptionType.ERRORPERSISTINGEXCEPTION, "Error while persisting user profile", HttpStatus.ACCEPTED);
     }
 
     @Test(expected = InvalidRequest.class)
-    public void testBadRequestException() {
+    public void test_BadRequestException() {
         sut.throwCustomRuntimeException(ExceptionType.BADREQUEST, "Bad request", HttpStatus.BAD_REQUEST);
     }
 
     @Test(expected = HttpClientErrorException.class)
-    public void testTooManyRequestException() {
+    public void test_TooManyRequestException() {
         sut.throwCustomRuntimeException(ExceptionType.TOOMANYREQUESTS, "too many request", HttpStatus.ACCEPTED);
     }
 

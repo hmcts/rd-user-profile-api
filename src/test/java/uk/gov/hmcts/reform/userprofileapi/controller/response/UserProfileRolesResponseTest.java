@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 public class UserProfileRolesResponseTest {
 
     @Test
-    public void testAddAndDeleteRoleResponse() {
+    public void test_AddAndDeleteRoleResponse() {
         RoleAdditionResponse roleAdditionResponse = new RoleAdditionResponse(ResponseEntity.status(OK).build());
         roleAdditionResponse.setIdamMessage("Success");
 
@@ -30,7 +30,7 @@ public class UserProfileRolesResponseTest {
     }
 
     @Test
-    public void testAddRolesViaConstructor() {
+    public void test_AddRolesViaConstructor() {
         RoleAdditionResponse roleAdditionResponse = new RoleAdditionResponse(ResponseEntity.status(OK).build());
 
         RoleDeletionResponse deletionResponse = new RoleDeletionResponse("pui-case-manager", ResponseEntity.status(OK).build());

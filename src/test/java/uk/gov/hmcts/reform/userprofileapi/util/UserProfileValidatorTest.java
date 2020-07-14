@@ -114,7 +114,7 @@ public class UserProfileValidatorTest {
     }
 
     @Test
-    public void validateCreateUserProfileRequest_ThrowsRequiredFieldMissingExceptionIfGetUserTypeIsNull() {
+    public void test_validateCreateUserProfileRequest_ThrowsRequiredFieldMissingExceptionIfGetUserTypeIsNull() {
         userProfileData.setUserType("invalid");
 
         assertThatThrownBy(() -> UserProfileValidator.validateCreateUserProfileRequest(userProfileData))
@@ -122,7 +122,7 @@ public class UserProfileValidatorTest {
     }
 
     @Test
-    public void validateCreateUserProfileRequest_ThrowsRequiredFieldMissingExceptionIfGetUserCategoryIsNull() {
+    public void test_validateCreateUserProfileRequest_ThrowsRequiredFieldMissingExceptionIfGetUserCategoryIsNull() {
         UserProfileCreationData userProfileCreationDataMock = mock(UserProfileCreationData.class);
         when(userProfileCreationDataMock.getUserCategory()).thenReturn("invalid");
 

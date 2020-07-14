@@ -28,7 +28,7 @@ spring:
           registration:
             oidc:
               client-id: microservicekey-rd-user-profile-api
-              client-secret: ${S2S_SECRET:K6KA6PRLRFWQLSD6}
+              client-secret: ${S2S_SECRET:OLMEJQA7UHU6EZKG}
 
 ### database configuration
   datasource:

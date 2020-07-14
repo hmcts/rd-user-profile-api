@@ -53,7 +53,7 @@ public class UserProfileControllerTest {
     private static final String ORIGIN = "EXUI";
 
     @Test
-    public void testCreateUserProfile() {
+    public void test_CreateUserProfile() {
 
         UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
@@ -69,7 +69,7 @@ public class UserProfileControllerTest {
     }
 
     @Test
-    public void testReInviteUserProfile() {
+    public void test_ReInviteUserProfile() {
 
         UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData(true);
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
@@ -85,7 +85,7 @@ public class UserProfileControllerTest {
     }
 
     @Test
-    public void testCreateUserProfileThrowsException() {
+    public void test_CreateUserProfileThrowsException() {
         UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
         IllegalStateException ex = new IllegalStateException("this is a test exception");
 
@@ -97,7 +97,7 @@ public class UserProfileControllerTest {
     }
 
     @Test
-    public void testCreateUserProfileWithNullParam() {
+    public void test_CreateUserProfileWithNullParam() {
         assertThatThrownBy(() -> sut.createUserProfile(null))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessageContaining("createUserProfileData");
@@ -106,7 +106,7 @@ public class UserProfileControllerTest {
     }
 
     @Test
-    public void testGetUserProfileWithRolesById() {
+    public void test_GetUserProfileWithRolesById() {
         String id = "a833c2e2-2c73-4900-96ca-74b1efb37928";
         UserProfileWithRolesResponse responseMock = Mockito.mock(UserProfileWithRolesResponse.class);
 
@@ -117,13 +117,13 @@ public class UserProfileControllerTest {
     }
 
     @Test
-    public void should_throw_exception_when_get_with_uuid_null_parameters_passed_in() {
+    public void test_throw_exception_when_get_with_uuid_null_parameters_passed_in() {
         verifyNoInteractions(userProfileServiceMock);
     }
 
 
     @Test
-    public void testGetUserProfileWithRolesByEmail() {
+    public void test_GetUserProfileWithRolesByEmail() {
         String email = "test@test.com";
         UserProfileWithRolesResponse responseMock = Mockito.mock(UserProfileWithRolesResponse.class);
 
@@ -135,7 +135,7 @@ public class UserProfileControllerTest {
     }
 
     @Test
-    public void testUpdateUserProfile() {
+    public void test_UpdateUserProfile() {
         UpdateUserProfileData updateUserProfileData = buildUpdateUserProfileData();
         AttributeResponse attributeResponse = new AttributeResponse(status(OK).build());
 
@@ -150,12 +150,12 @@ public class UserProfileControllerTest {
 
 
     @Test
-    public void should_throw_exception_when_get_with_idamId_null_parameters_passed_in() {
+    public void test_throw_exception_when_get_with_idamId_null_parameters_passed_in() {
         verifyNoInteractions(userProfileServiceMock);
     }
 
     @Test
-    public void testUpdateUserProfileRoles() {
+    public void test_UpdateUserProfileRoles() {
         UpdateUserProfileData updateUserProfileData = buildUpdateUserProfileData();
 
         Set<RoleName> roles = new HashSet<>();
@@ -172,7 +172,7 @@ public class UserProfileControllerTest {
     }
 
     @Test
-    public void testretrieveUserProfiles() {
+    public void test_retrieveUserProfiles() {
         List<String> userIds = Arrays.asList("1", "2");
         UserProfileDataRequest userProfileDataRequest = new UserProfileDataRequest(userIds);
 
@@ -183,7 +183,7 @@ public class UserProfileControllerTest {
     }
 
     @Test
-    public void testUpdateUserProfileRolesForDelete() {
+    public void test_UpdateUserProfileRolesForDelete() {
         UpdateUserProfileData updateUserProfileData = buildUpdateUserProfileData();
 
         Set<RoleName> roles = new HashSet<>();

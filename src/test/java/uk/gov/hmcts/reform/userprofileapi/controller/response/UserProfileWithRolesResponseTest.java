@@ -43,7 +43,7 @@ public class UserProfileWithRolesResponseTest {
     }
 
     @Test
-    public void testUserProfileWithRolesResponse() {
+    public void test_UserProfileWithRolesResponse() {
         sut = new UserProfileWithRolesResponse(userProfile, true);
 
         assertThat(sut).isNotNull();
@@ -58,7 +58,7 @@ public class UserProfileWithRolesResponseTest {
     }
 
     @Test
-    public void testUserProfileWithRolesNotRequired() {
+    public void test_UserProfileWithRolesNotRequired() {
         sut = new UserProfileWithRolesResponse(userProfile, false);
 
         assertThat(sut.getRoles()).isNull();
@@ -67,7 +67,7 @@ public class UserProfileWithRolesResponseTest {
     }
 
     @Test
-    public void testUserProfileWithRolesResponseStatusPending() {
+    public void test_UserProfileWithRolesResponseStatusPending() {
         userProfile.setStatus(IdamStatus.PENDING);
 
         sut = new UserProfileWithRolesResponse(userProfile, true);

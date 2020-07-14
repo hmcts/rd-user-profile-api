@@ -34,15 +34,23 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreatio
 public class JsonFeignResponseHelperTest {
 
     @Test
-    public void testDecode_with_gzip() {
+    public void test_Decode_with_gzip() {
+        Request request = mock(Request.class);
 
-        Optional<UserProfileCreationResponse> createUserProfileResponseOptional = JsonFeignResponseHelper.decode(getResponse(200, false), Optional.of(UserProfileCreationResponse.class));
+        Collection<String> list = Arrays.asList("gzip", "");
+
+        Map<String, Collection<String>> header = new HashMap<>();
+        header.put("content-encoding", list);
+
+        Response response = Response.builder().status(200).reason("OK").headers(header).body("{\"idamId\": 1}", UTF_8).request(request).build();
+
+        Optional<UserProfileCreationResponse> createUserProfileResponseOptional = JsonFeignResponseHelper.decode(response, Optional.of(UserProfileCreationResponse.class));
 
         assertThat(createUserProfileResponseOptional).isEmpty();
     }
 
     @Test
-    public void testDecode_without_gzip() {
+    public void test_Decode_without_gzip() {
         Request request = mock(Request.class);
 
         Map<String, Collection<String>> header = new HashMap<>();
@@ -57,7 +65,7 @@ public class JsonFeignResponseHelperTest {
     }
 
     @Test
-    public void testDecode_with_status_code_not_200() {
+    public void test_Decode_with_status_code_not_200() {
         Request request = mock(Request.class);
 
         Map<String, Collection<String>> header = new HashMap<>();
@@ -72,7 +80,7 @@ public class JsonFeignResponseHelperTest {
     }
 
     @Test
-    public void testDecode_with_class_to_decode_is_passed_null() {
+    public void test_Decode_with_class_to_decode_is_passed_null() {
         Request request = mock(Request.class);
 
         Map<String, Collection<String>> header = new HashMap<>();
@@ -87,7 +95,7 @@ public class JsonFeignResponseHelperTest {
     }
 
     @Test
-    public void testDecode_for_non_gzip_with_decode_fails_with_ioException() {
+    public void test_Decode_for_non_gzip_with_decode_fails_with_ioException() {
         Request request = mock(Request.class);
         Response.Body bodyMock = mock(Response.Body.class);
 
@@ -109,7 +117,7 @@ public class JsonFeignResponseHelperTest {
     }
 
     @Test
-    public void testDecode_for_gzip_with_decode_fails_with_ioException() {
+    public void test_Decode_for_gzip_with_decode_fails_with_ioException() {
 
         Map<String, Collection<String>> header = new HashMap<>();
         Collection<String> list = Arrays.asList("gzip", "");
@@ -156,7 +164,7 @@ public class JsonFeignResponseHelperTest {
     }
 
     @Test
-    public void privateConstructorTest() throws Exception {
+    public void test_privateConstructor() throws Exception {
         Constructor<JsonFeignResponseHelper> constructor = JsonFeignResponseHelper.class.getDeclaredConstructor();
         assertTrue(Modifier.isPrivate(constructor.getModifiers()));
         constructor.setAccessible(true);

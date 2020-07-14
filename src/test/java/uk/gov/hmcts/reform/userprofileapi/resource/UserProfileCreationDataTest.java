@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserType;
 public class UserProfileCreationDataTest {
 
     @Test
-    public void should_hold_values_after_creation() {
+    public void test_hold_values_after_creation() {
         UserProfileCreationData userProfileData =
             new UserProfileCreationData(
                 "test-email-@somewhere.com",

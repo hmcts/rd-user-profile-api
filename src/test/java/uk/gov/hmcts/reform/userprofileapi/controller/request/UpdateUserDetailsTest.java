@@ -7,7 +7,7 @@ import org.junit.Test;
 public class UpdateUserDetailsTest {
 
     @Test
-    public void should_hold_values_after_creation() {
+    public void test_hold_values_after_creation() {
         String firstName = "fname";
         String lastName = "lname";
         Boolean statusTrue = Boolean.TRUE;

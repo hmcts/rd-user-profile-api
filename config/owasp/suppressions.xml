@@ -63,13 +63,9 @@
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-core@.*$</packageUrl>
         <cpe>cpe:/a:pivotal_software:spring_security</cpe>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: spring-security-core-5.2.1.RELEASE.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-core@.*$</packageUrl>
         <cve>CVE-2018-1258</cve>
+        <vulnerabilityName>CVE-2020-5407</vulnerabilityName>
+        <vulnerabilityName>CVE-2020-5408</vulnerabilityName>
     </suppress>
     <suppress>
         <notes><![CDATA[
@@ -164,6 +160,7 @@
         <cve>CVE-2020-1745</cve>
         <cve>CVE-2020-1935</cve>
         <cve>CVE-2020-1938</cve>
+        <vulnerabilityName>CVE-2020-9484</vulnerabilityName>
     </suppress>
     <suppress>
         <notes><![CDATA[
