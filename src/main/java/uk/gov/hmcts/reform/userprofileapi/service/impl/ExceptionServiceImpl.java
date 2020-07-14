@@ -19,14 +19,14 @@ import uk.gov.hmcts.reform.userprofileapi.service.ExceptionService;
 public class ExceptionServiceImpl implements ExceptionService {
 
     @Value("${logging-component-name}")
-    protected static String loggingComponentName;
+    private static String loggingComponentName;
 
     public void throwCustomRuntimeException(ExceptionType className, String msg) {
         throwCustomRuntimeException(className, msg, HttpStatus.OK);
     }
 
     public void throwCustomRuntimeException(ExceptionType className, String msg, HttpStatus httpStatus) {
-        log.error(loggingComponentName, msg);
+        log.error("{}::, {}", loggingComponentName, msg);
         switch (className) {
             case IDAMSERVICEEXCEPTION : throw new IdamServiceException(msg, httpStatus);
             case REQUIREDFIELDMISSINGEXCEPTION : throw new RequiredFieldMissingException(msg);

@@ -14,7 +14,7 @@ public class IdamRepository {
     private final IdamClient idamClient;
 
     @Value("${logging-component-name}")
-    protected static String loggingComponentName;
+    private static String loggingComponentName;
 
     @Autowired
     public IdamRepository(IdamClient idamClient) {

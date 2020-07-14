@@ -18,7 +18,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 public class FeignInterceptorConfiguration {
 
     @Value("${logging-component-name}")
-    protected static String loggingComponentName;
+    private static String loggingComponentName;
 
     @Bean
     public RequestInterceptor requestInterceptor(FeignHeaderConfig config) {
@@ -38,7 +38,7 @@ public class FeignInterceptorConfiguration {
                         }
                     }
                 } else {
-                    log.warn(loggingComponentName, "FeignHeadConfiguration", "Failed to get request header!");
+                    log.warn("{}::, {}, {}", loggingComponentName, "FeignHeadConfiguration", "Failed to get request header!");
                 }
             }
         };

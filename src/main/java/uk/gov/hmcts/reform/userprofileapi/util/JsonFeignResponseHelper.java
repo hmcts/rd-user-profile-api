@@ -28,7 +28,7 @@ public class JsonFeignResponseHelper {
     private static final ObjectMapper json = new ObjectMapper();
 
     @Value("${logging-component-name}")
-    protected static String loggingComponentName;
+    private static String loggingComponentName;
 
     private JsonFeignResponseHelper() { }
 

@@ -55,7 +55,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
     String syncInterval;
 
     @Value("${logging-component-name}")
-    protected static String loggingComponentName;
+    private static String loggingComponentName;
 
     public UserProfile create(UserProfileCreationData profileData) {
 

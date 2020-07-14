@@ -33,7 +33,7 @@ public class IdamServiceImpl implements IdamService {
     private IdamFeignClient idamClient;
 
     @Value("${logging-component-name}")
-    protected static String loggingComponentName;
+    private static String loggingComponentName;
 
     @Override
     public IdamRegistrationInfo registerUser(IdamRegisterUserRequest requestData) {
@@ -109,7 +109,7 @@ public class IdamServiceImpl implements IdamService {
             Response response = idamClient.updateUserDetails(updateUserDetails, userId);
             responseEntity = JsonFeignResponseHelper.toResponseEntity(response, getResponseMapperClass(response, null));
         } catch (FeignException ex) {
-            log.error(loggingComponentName, "SIDAM call failed:", ex);
+            log.error("{}::, {}, {}", loggingComponentName, "SIDAM call failed:", ex);
             responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
         return new AttributeResponse(responseEntity);

@@ -27,7 +27,7 @@ public class WelcomeController {
     private static final String MESSAGE = "Welcome to the User Profile API";
 
     @Value("${logging-component-name}")
-    protected static String loggingComponentName;
+    private static String loggingComponentName;
 
     /**
      * Root GET endpoint.
