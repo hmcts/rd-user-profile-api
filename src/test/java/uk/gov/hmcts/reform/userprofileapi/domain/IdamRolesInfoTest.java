@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,18 +41,11 @@ public class IdamRolesInfoTest {
     }
 
     @Test
-    public void test_AlternativeConstructor() {
-        IdamRolesInfo idamRolesInfo = new IdamRolesInfo(HttpStatus.CREATED);
-
-        assertThat(idamRolesInfo.getResponseStatusCode()).isEqualTo(HttpStatus.CREATED);
-        assertThat(idamRolesInfo.getStatusMessage()).isNotEmpty();
-
-        assertThat(idamRolesInfo.isSuccessFromIdam()).isTrue();
-    }
-
-    @Test
     public void test_isSuccessFromIdam_ReturnsFalseWhenStatusIs400() {
-        IdamRolesInfo idamRolesInfo = new IdamRolesInfo(HttpStatus.BAD_REQUEST);
+        IdamUserResponse idamUserResponse = mock(IdamUserResponse.class);
+        ResponseEntity<Object> entity = new ResponseEntity<>(idamUserResponse, HttpStatus.BAD_REQUEST);
+
+        IdamRolesInfo idamRolesInfo = new IdamRolesInfo(entity);
 
         assertThat(idamRolesInfo.getResponseStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(idamRolesInfo.getStatusMessage()).isNotEmpty();

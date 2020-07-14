@@ -187,7 +187,7 @@ public class UserProfileRetrieverTest {
 
     @Test
     public void test_retrieve_Multiple_Profiles_RolesRequiredFalse() {
-        idamRolesInfo = new IdamRolesInfo(entity, HttpStatus.CREATED);
+        idamRolesInfo = new IdamRolesInfo(entity);
 
         List<UserProfile> userProfiles = new ArrayList<>();
 
@@ -254,7 +254,7 @@ public class UserProfileRetrieverTest {
 
     @Test
     public void test_retrieve_user_multiple_profiles_with_roles_when_idam_success() {
-        idamRolesInfo = new IdamRolesInfo(entity, HttpStatus.OK);
+        idamRolesInfo = new IdamRolesInfo(entity);
 
         UserProfile up = UserProfileTestDataBuilder.buildUserProfile();
         up.setStatus(IdamStatus.ACTIVE);

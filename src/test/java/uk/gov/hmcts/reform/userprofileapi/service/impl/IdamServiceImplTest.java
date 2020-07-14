@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyString;
@@ -11,6 +12,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.userprofileapi.service.impl.IdamServiceImplTest.StatusCode.CREATED;
 
 import feign.FeignException;
+import feign.Request;
 import feign.Response;
 import feign.RetryableException;
 
@@ -49,6 +51,10 @@ public class IdamServiceImplTest {
     @InjectMocks
     private IdamService sut = new IdamServiceImpl();
 
+    Map<String, Collection<String>> header = new HashMap<>();
+    Request request = mock(Request.class);
+    Response responseMock = Response.builder().status(200).reason("OK").headers(header).body("{\"idamId\": 1}", UTF_8).request(request).build();
+
     @Test
     public void test_RegisterUser() {
         IdamRegisterUserRequest dataMock = Mockito.mock(IdamRegisterUserRequest.class);
@@ -69,11 +75,13 @@ public class IdamServiceImplTest {
 
     @Test
     public void test_FetchUserById() {
+        Response response = Response.builder().status(200).reason("OK").headers(header).body("{\"idamId\": 1}", UTF_8).request(request).build();
         Response responseMock = Mockito.mock(Response.class);
 
         when(idamFeignClientMock.getUserById(userId)).thenReturn(responseMock);
         when(responseMock.headers()).thenReturn(headerData);
         when(responseMock.status()).thenReturn(StatusCode.NOT_FOUND.getStatus());
+        when(responseMock.body()).thenReturn(response.body());
 
         IdamRolesInfo idamRolesInfo = sut.fetchUserById(userId);
 
@@ -87,11 +95,13 @@ public class IdamServiceImplTest {
 
     @Test
     public void test_FetchUserByEmail() {
+        Response response = Response.builder().status(200).reason("OK").headers(header).body("{\"idamId\": 1}", UTF_8).request(request).build();
         Response responseMock = Mockito.mock(Response.class);
 
         when(idamFeignClientMock.getUserByEmail(anyString())).thenReturn(responseMock);
         when(responseMock.headers()).thenReturn(new HashMap<>());
         when(responseMock.status()).thenReturn(StatusCode.NOT_FOUND.getStatus());
+        when(responseMock.body()).thenReturn(response.body());
 
         IdamRolesInfo idamRolesInfo = sut.fetchUserByEmail(email);
 
@@ -150,11 +160,13 @@ public class IdamServiceImplTest {
     @Test
     public void test_UpdateUserRoles() {
         List<String> roleRequest = new ArrayList<>();
+        Response response = Response.builder().status(200).reason("OK").headers(header).body("{\"idamId\": 1}", UTF_8).request(request).build();
 
         Response responseMock = Mockito.mock(Response.class);
 
         when(idamFeignClientMock.updateUserRoles(roleRequest, userId)).thenReturn(responseMock);
         when(responseMock.headers()).thenReturn(headerData);
+        when(responseMock.body()).thenReturn(response.body());
 
         // NB, technical exception to avoid coupling test to logic inside static method of a separate class
         when(responseMock.status()).thenReturn(StatusCode.INTERNAL_SERVER_ERROR.getStatus());
@@ -162,8 +174,8 @@ public class IdamServiceImplTest {
         IdamRolesInfo result = sut.updateUserRoles(roleRequest, userId);
 
         verify(idamFeignClientMock, times(1)).updateUserRoles(roleRequest, userId);
-        verify(responseMock, times(1)).headers();
-        verify(responseMock, times(2)).status();
+        verify(responseMock, times(2)).headers();
+        verify(responseMock, times(3)).status();
 
         assertThat(result).isNotNull();
     }
@@ -184,25 +196,14 @@ public class IdamServiceImplTest {
     }
 
     @Test
-    public void test_AddUserRoles() {
+    public void testAddUserRoles() {
         Set<String> roleRequest = new HashSet<>();
 
-        Response responseMock = Mockito.mock(Response.class);
-
         when(idamFeignClientMock.addUserRoles(roleRequest, userId)).thenReturn(responseMock);
-        when(responseMock.headers()).thenReturn(headerData);
-
-        // NB, technical exception to avoid coupling test to logic inside static method of a separate class
-        when(responseMock.status()).thenReturn(StatusCode.INTERNAL_SERVER_ERROR.getStatus());
-
         IdamRolesInfo result = sut.addUserRoles(roleRequest, userId);
 
         verify(idamFeignClientMock, times(1)).addUserRoles(roleRequest, userId);
-        verify(responseMock, times(1)).headers();
-        verify(responseMock, times(2)).status();
-
         assertThat(result).isNotNull();
-        assertThat(result.getResponseStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Test
