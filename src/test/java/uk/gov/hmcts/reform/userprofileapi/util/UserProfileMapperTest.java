@@ -7,12 +7,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.ResponseEntity.status;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
 
 import org.junit.Test;
-import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UpdateUserDetails;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
@@ -25,7 +26,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 public class UserProfileMapperTest {
 
     private UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
-    private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.ACCEPTED);
+    private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(status(CREATED).build());
     private UserProfile userProfile = new UserProfile(userProfileCreationData, idamRegistrationInfo.getIdamRegistrationResponse());
     private UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("email@net.com", "firstName", "lastName", "ACTIVE", new HashSet<RoleName>(), new HashSet<RoleName>());
 
@@ -85,7 +86,7 @@ public class UserProfileMapperTest {
         when(userProfileMock.getLastName()).thenReturn(userProfileCreationData.getLastName());
 
         UserProfileMapper.mapUpdatableFieldsForReInvite(userProfileCreationData, userProfileMock);
-        
+
         assertThat(userProfileMock.getFirstName()).isEqualTo(userProfileCreationData.getFirstName());
         assertThat(userProfileMock.getLastName()).isEqualTo(userProfileCreationData.getLastName());
         verify(userProfileMock, times(1)).setLastUpdated(any(LocalDateTime.class));

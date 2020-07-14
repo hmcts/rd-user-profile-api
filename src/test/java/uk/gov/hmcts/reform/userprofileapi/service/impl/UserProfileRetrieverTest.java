@@ -56,8 +56,9 @@ public class UserProfileRetrieverTest {
     @Mock
     private Supplier<Optional<UserProfile>> supplier;
 
-    private ResponseEntity<IdamUserResponse> entity;
+    private ResponseEntity<Object> entity;
     private IdamRolesInfo idamRolesInfo;
+    private IdamUserResponse idamUserResponse;
 
     AuditRepository auditRepository = mock(AuditRepository.class);
     Audit audit = mock(Audit.class);
@@ -73,7 +74,7 @@ public class UserProfileRetrieverTest {
         String surName = "lastName";
         Boolean pending = false;
 
-        IdamUserResponse idamUserResponse = new IdamUserResponse(active, email, foreName, userId, pending, roles, surName);
+        idamUserResponse = new IdamUserResponse(active, email, foreName, userId, pending, roles, surName);
         entity = new ResponseEntity<>(idamUserResponse, HttpStatus.CREATED);
     }
 
@@ -150,7 +151,7 @@ public class UserProfileRetrieverTest {
 
     @Test
     public void test_retrieve_Multiple_Profiles() {
-        idamRolesInfo = new IdamRolesInfo(entity, HttpStatus.CREATED);
+        idamRolesInfo = new IdamRolesInfo(entity);
 
         List<UserProfile> userProfiles = new ArrayList<>();
 
@@ -229,7 +230,8 @@ public class UserProfileRetrieverTest {
 
     @Test
     public void test_getRolesFromIdam_should_retrieve_multiple_profiles_without_roles_when_idam_fails() {
-        idamRolesInfo = new IdamRolesInfo(entity, HttpStatus.NOT_FOUND);
+        entity = new ResponseEntity<>(idamUserResponse, HttpStatus.NOT_FOUND);
+        idamRolesInfo = new IdamRolesInfo(entity);
 
         UserProfile up = UserProfileTestDataBuilder.buildUserProfile();
         up.setStatus(IdamStatus.ACTIVE);
@@ -283,8 +285,9 @@ public class UserProfileRetrieverTest {
     }
 
     @Test
-    public void test_getRolesFromIdam_should_throw_404_single_user_profile_without_roles_when_idam_fails() {
-        idamRolesInfo = new IdamRolesInfo(entity, HttpStatus.NOT_FOUND);
+    public void should_throw_404_single_user_profile_without_roles_when_idam_fails() {
+        entity = new ResponseEntity<>(idamUserResponse, HttpStatus.NOT_FOUND);
+        idamRolesInfo = new IdamRolesInfo(entity);
 
         UserProfile up = UserProfileTestDataBuilder.buildUserProfile();
         up.setStatus(IdamStatus.ACTIVE);

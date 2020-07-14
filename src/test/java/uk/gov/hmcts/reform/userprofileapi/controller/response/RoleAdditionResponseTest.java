@@ -6,6 +6,7 @@ import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.resolve
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 public class RoleAdditionResponseTest {
 
@@ -14,7 +15,7 @@ public class RoleAdditionResponseTest {
 
     @Before
     public void setUp() {
-        sut = new RoleAdditionResponse(okStatus);
+        sut = new RoleAdditionResponse(ResponseEntity.status(okStatus).build());
     }
 
     @Test

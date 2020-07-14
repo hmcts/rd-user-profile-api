@@ -88,6 +88,28 @@ public class UserProfileRequestHandlerTest {
         return objectMapper.readValue(result.getResponse().getContentAsString(), clazz);
     }
 
+    public <T> T sendPut(MockMvc mockMvc,
+                         String path,
+                         Object body,
+                         HttpStatus expectedHttpStatus,
+                         Class<T> clazz) throws Exception {
+
+        MvcResult result = sendPut(mockMvc, path, body, expectedHttpStatus);
+        assertThat(result.getResponse().getContentAsString())
+                .as("Expected json content was empty")
+                .isNotEmpty();
+
+        return objectMapper.readValue(result.getResponse().getContentAsString(), clazz);
+    }
+
+    public MvcResult sendPut(MockMvc mockMvc,
+                        String path,
+                        Object body,
+                        HttpStatus expectedHttpStatus) throws Exception {
+
+        return sendPut(mockMvc, path, objectMapper.writeValueAsString(body), expectedHttpStatus);
+    }
+
     public MvcResult sendPut(MockMvc mockMvc,
                               String path,
                               String jsonBody,
@@ -100,13 +122,6 @@ public class UserProfileRequestHandlerTest {
                 .andExpect(status().is(expectedHttpStatus.value())).andReturn();
     }
 
-    public void sendPut(MockMvc mockMvc,
-                              String path,
-                              Object body,
-                              HttpStatus expectedHttpStatus) throws Exception {
-
-        sendPut(mockMvc, path, objectMapper.writeValueAsString(body), expectedHttpStatus);
-    }
 
     private HttpHeaders getMultipleAuthHeaders() {
 

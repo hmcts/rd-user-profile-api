@@ -1,22 +1,23 @@
 package uk.gov.hmcts.reform.userprofileapi.controller.response;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpStatus.OK;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Test;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 public class UserProfileRolesResponseTest {
 
     @Test
     public void test_AddAndDeleteRoleResponse() {
-        RoleAdditionResponse roleAdditionResponse = new RoleAdditionResponse(HttpStatus.OK);
+        RoleAdditionResponse roleAdditionResponse = new RoleAdditionResponse(ResponseEntity.status(OK).build());
         roleAdditionResponse.setIdamMessage("Success");
 
         RoleDeletionResponse deletionResponse = new RoleDeletionResponse();
-        deletionResponse.setIdamStatusCode(HttpStatus.OK.toString());
+        deletionResponse.setIdamStatusCode(OK.toString());
         deletionResponse.setIdamMessage("success");
         List<RoleDeletionResponse> roleDeletionResponseData = Arrays.asList(deletionResponse);
 
@@ -30,9 +31,9 @@ public class UserProfileRolesResponseTest {
 
     @Test
     public void test_AddRolesViaConstructor() {
-        RoleAdditionResponse roleAdditionResponse = new RoleAdditionResponse(HttpStatus.OK);
+        RoleAdditionResponse roleAdditionResponse = new RoleAdditionResponse(ResponseEntity.status(OK).build());
 
-        RoleDeletionResponse deletionResponse = new RoleDeletionResponse("pui-case-manager",HttpStatus.OK);
+        RoleDeletionResponse deletionResponse = new RoleDeletionResponse("pui-case-manager", ResponseEntity.status(OK).build());
         List<RoleDeletionResponse> roleDeletionResponseData = new ArrayList<>();
         roleDeletionResponseData.add(deletionResponse);
 

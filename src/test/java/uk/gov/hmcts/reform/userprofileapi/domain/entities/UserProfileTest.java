@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.userprofileapi.domain.entities;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.ResponseEntity.status;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 
 import org.junit.Test;
@@ -13,7 +15,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 public class UserProfileTest {
 
-    private final IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.CREATED);
+    private final IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(status(CREATED).build());
 
 
     @Test
@@ -29,8 +31,8 @@ public class UserProfileTest {
         assertThat(userProfile.getEmailCommsConsentTs()).isNull();
         assertThat(userProfile.getPostalCommsConsentTs()).isNull();
 
-        assertThat(userProfile.getUserCategory().toString()).isEqualTo(data.getUserCategory());
-        assertThat(userProfile.getUserType().toString()).isEqualTo(data.getUserType());
+        assertThat(userProfile.getUserCategory()).hasToString(data.getUserCategory());
+        assertThat(userProfile.getUserType()).hasToString(data.getUserType());
 
         assertThat(userProfile.getStatus()).isEqualTo(IdamStatus.PENDING);
         assertThat(userProfile.getIdamRegistrationResponse())

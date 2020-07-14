@@ -7,6 +7,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.ResponseEntity.status;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,9 +17,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import feign.Request;
 import feign.Response;
-
+import feign.RetryableException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -74,9 +78,9 @@ public class UserProfileUpdatorTest {
     @Mock
     private ValidationHelperService validationHelperServiceMock;
 
-    private AttributeResponse attributeResponse = new AttributeResponse(HttpStatus.OK);
+    private AttributeResponse attributeResponse = new AttributeResponse(status(OK).build());
 
-    private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.ACCEPTED);
+    private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(status(CREATED).build());
 
     private UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
 
@@ -466,6 +470,24 @@ public class UserProfileUpdatorTest {
         assertThat(response).isNotNull();
 
         verify(userProfileRepositoryMock, times(1)).save(any());
+    }
+
+    @Test
+    public void test_getHttpStatusFromFeignException_with_RetryableException() {
+        FeignException feignException = new RetryableException(400, "some message", Request.HttpMethod.GET, new Date(),
+                Request.create(Request.HttpMethod.DELETE, "", new HashMap<>(), Request.Body.empty(),null));
+        HttpStatus httpStatus = sut.getHttpStatusFromFeignException(feignException);
+        assertThat(httpStatus).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Test
+    public void test_getHttpStatusFromFeignException_with_no_RetryableException() {
+
+        FeignException feignExceptionMock = mock(FeignException.class);
+        when(feignExceptionMock.status()).thenReturn(400);
+        HttpStatus httpStatus = sut.getHttpStatusFromFeignException(feignExceptionMock);
+        assertThat(httpStatus).isEqualTo(HttpStatus.BAD_REQUEST);
+        verify(feignExceptionMock, times(1)).status();
     }
 
 }
