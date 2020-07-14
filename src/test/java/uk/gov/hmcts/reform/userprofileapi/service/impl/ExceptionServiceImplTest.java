@@ -4,6 +4,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
+import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ExceptionType;
 import uk.gov.hmcts.reform.userprofileapi.exception.ErrorPersistingException;
 import uk.gov.hmcts.reform.userprofileapi.exception.IdamServiceException;
@@ -18,44 +20,42 @@ public class ExceptionServiceImplTest {
 
     @Test(expected = ResourceNotFoundException.class)
     public void testThrowRuntimeException() {
-
-        sut.throwCustomRuntimeException(ExceptionType.RESOURCENOTFOUNDEXCEPTION,"ResourceNotFoundException Message");
-
+        sut.throwCustomRuntimeException(ExceptionType.RESOURCENOTFOUNDEXCEPTION, "ResourceNotFoundException Message");
     }
 
     @Test(expected = IdamServiceException.class)
     public void testThrowIdamServiceException() {
-
-        sut.throwCustomRuntimeException(ExceptionType.IDAMSERVICEEXCEPTION,"IdamServiceException Message");
-
+        sut.throwCustomRuntimeException(ExceptionType.IDAMSERVICEEXCEPTION, "IdamServiceException Message");
     }
 
     @Test(expected = RequiredFieldMissingException.class)
     public void testThrowRequiredFieldMissingException() {
-
-        sut.throwCustomRuntimeException(ExceptionType.REQUIREDFIELDMISSINGEXCEPTION,"RequiredFieldMissingException Message");
-
+        sut.throwCustomRuntimeException(ExceptionType.REQUIREDFIELDMISSINGEXCEPTION, "RequiredFieldMissingException Message");
     }
 
     @Test(expected = UndefinedException.class)
     public void testThrowDefaultException() {
-
-        sut.throwCustomRuntimeException(ExceptionType.UNDEFINDEDEXCEPTION,"ExceptionNotFound Message");
-
+        sut.throwCustomRuntimeException(ExceptionType.UNDEFINDEDEXCEPTION, "ExceptionNotFound Message");
     }
 
     @Test(expected = ResourceNotFoundException.class)
     public void testOverloadedException() {
-
-        sut.throwCustomRuntimeException(ExceptionType.RESOURCENOTFOUNDEXCEPTION,"ResourceNotFoundException Message", HttpStatus.ACCEPTED);
-
+        sut.throwCustomRuntimeException(ExceptionType.RESOURCENOTFOUNDEXCEPTION, "ResourceNotFoundException Message", HttpStatus.ACCEPTED);
     }
 
     @Test(expected = ErrorPersistingException.class)
     public void testErrorPersistingException() {
+        sut.throwCustomRuntimeException(ExceptionType.ERRORPERSISTINGEXCEPTION, "Error while persisting user profile", HttpStatus.ACCEPTED);
+    }
 
-        sut.throwCustomRuntimeException(ExceptionType.ERRORPERSISTINGEXCEPTION,"Error while persisting user profile", HttpStatus.ACCEPTED);
+    @Test(expected = InvalidRequest.class)
+    public void testBadRequestException() {
+        sut.throwCustomRuntimeException(ExceptionType.BADREQUEST, "Bad request", HttpStatus.BAD_REQUEST);
+    }
 
+    @Test(expected = HttpClientErrorException.class)
+    public void testTooManyRequestException() {
+        sut.throwCustomRuntimeException(ExceptionType.TOOMANYREQUESTS, "too many request", HttpStatus.ACCEPTED);
     }
 
 }

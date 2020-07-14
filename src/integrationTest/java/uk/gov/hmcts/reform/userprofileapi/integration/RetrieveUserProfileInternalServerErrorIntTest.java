@@ -8,9 +8,11 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
-import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
+import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 
 import java.util.UUID;
+
+import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,7 +20,6 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +31,7 @@ import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 
-@RunWith(SpringRunner.class)
+@RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
 @Transactional
 public class RetrieveUserProfileInternalServerErrorIntTest extends AuthorizationEnabledIntegrationTest {
@@ -60,15 +61,15 @@ public class RetrieveUserProfileInternalServerErrorIntTest extends Authorization
     public void should_return_500_and_not_create_user_profile_when_idam_service_throws_exception() throws Exception {
 
         when(idamService.registerUser(any(IdamRegisterUserRequest.class)))
-            .thenThrow(new RuntimeException("This is a test exception"));
+                .thenThrow(new RuntimeException("Runtime Exception"));
 
         UserProfileCreationData data = buildCreateUserProfileData();
 
         MvcResult result = userProfileRequestHandlerTest.sendPost(
-            mockMvc,
-            APP_BASE_PATH,
-            data,
-            INTERNAL_SERVER_ERROR
+                mockMvc,
+                APP_BASE_PATH,
+                data,
+                INTERNAL_SERVER_ERROR
         );
 
         assertThat(result.getResponse().getContentAsString()).isNotEmpty();
@@ -81,16 +82,16 @@ public class RetrieveUserProfileInternalServerErrorIntTest extends Authorization
         IdamRegisterUserRequest request = Mockito.mock(IdamRegisterUserRequest.class);
         IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(CREATED);
         when(idamService.registerUser(request))
-            .thenReturn(idamRegistrationInfo);
+                .thenReturn(idamRegistrationInfo);
         when(userProfileRepository.findByIdamId(any(String.class)))
-            .thenThrow(new RuntimeException("This is a test exception"));
+                .thenThrow(new RuntimeException("Runtime Exception"));
 
         MvcResult result =
-            userProfileRequestHandlerTest.sendGet(
-                mockMvc,
-                APP_BASE_PATH + "?" + "userId=" + UUID.randomUUID().toString(),
-                INTERNAL_SERVER_ERROR
-            );
+                userProfileRequestHandlerTest.sendGet(
+                        mockMvc,
+                        APP_BASE_PATH + "?" + "userId=" + UUID.randomUUID().toString(),
+                        INTERNAL_SERVER_ERROR
+                );
 
         assertThat(result.getResponse().getContentAsString()).isNotEmpty();
 
@@ -98,47 +99,19 @@ public class RetrieveUserProfileInternalServerErrorIntTest extends Authorization
 
     @Test
     public void should_return_500_when_query_by_email_and_repository_throws_an_unknown_exception() throws Exception {
+        when(userProfileRepository.findByEmail(anyString())).thenThrow(new RuntimeException("This is a test exception"));
 
-        IdamRegisterUserRequest request = Mockito.mock(IdamRegisterUserRequest.class);
-        IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(CREATED);
-
-        when(idamService.registerUser(request))
-            .thenReturn(idamRegistrationInfo);
-
-        when(userProfileRepository.findByEmail(anyString()))
-            .thenThrow(new RuntimeException("This is a test exception"));
-
-        MvcResult result =
-            userProfileRequestHandlerTest.sendGet(
-                mockMvc,
-                APP_BASE_PATH + "?email=" + "randomemail@somewhere.com",
-                INTERNAL_SERVER_ERROR
-            );
+        MvcResult result = userProfileRequestHandlerTest.sendGet(mockMvc, APP_BASE_PATH + "?email=" + "randomemail@somewhere.com", INTERNAL_SERVER_ERROR);
 
         assertThat(result.getResponse().getContentAsString()).isNotEmpty();
-
     }
 
     @Test
     public void should_return_500_when_query_by_userId_and_repository_throws_an_unknown_exception() throws Exception {
+        when(userProfileRepository.findByIdamId(any(String.class))).thenThrow(new RuntimeException("This is a test exception"));
 
-        IdamRegisterUserRequest request = Mockito.mock(IdamRegisterUserRequest.class);
-        IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(CREATED);
-        when(idamService.registerUser(request))
-            .thenReturn(idamRegistrationInfo);
-        when(userProfileRepository.findByIdamId(any(String.class)))
-            .thenThrow(new RuntimeException("This is a test exception"));
-
-        MvcResult result =
-            userProfileRequestHandlerTest.sendGet(
-                mockMvc,
-                APP_BASE_PATH + "?userId=" + UUID.randomUUID().toString(),
-                INTERNAL_SERVER_ERROR
-            );
+        MvcResult result = userProfileRequestHandlerTest.sendGet(mockMvc, APP_BASE_PATH + "?userId=" + UUID.randomUUID().toString(), INTERNAL_SERVER_ERROR);
 
         assertThat(result.getResponse().getContentAsString()).isNotEmpty();
-
     }
-
-
 }

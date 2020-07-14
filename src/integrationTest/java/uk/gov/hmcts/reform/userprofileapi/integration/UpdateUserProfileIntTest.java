@@ -6,19 +6,21 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
-import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
-import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildUpdateUserProfileData;
-import static uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder.buildUserProfile;
+import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
+import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildUpdateUserProfileData;
+import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfile;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+
+import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.util.Lists;
 import org.json.JSONObject;
@@ -27,7 +29,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
@@ -36,7 +37,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
-@RunWith(SpringRunner.class)
+@RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
 @Transactional
 public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
@@ -117,9 +118,10 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
         assertThat(updatedUserProfile.getPostalCommsConsentTs()).isEqualTo(persistedUserProfile.getPostalCommsConsentTs());
         assertThat(updatedUserProfile.getCreated()).isEqualTo(persistedUserProfile.getCreated());
 
-        Optional<Audit> optional = auditRepository.findByUserProfile(updatedUserProfile);
+        List<Audit> matchedAuditRecords = getMatchedAuditRecords(auditRepository.findAll(), updatedUserProfile.getIdamId());
+        assertThat(matchedAuditRecords.size()).isEqualTo(1);
+        Audit audit = matchedAuditRecords.get(0);
 
-        Audit audit = optional.get();
         assertThat(audit).isNotNull();
         assertThat(audit.getIdamRegistrationResponse()).isEqualTo(200);
         assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.OK);
@@ -196,7 +198,7 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
 
                 mockMvc.perform(put(APP_BASE_PATH + SLASH + idamId.toString())
                     .content(jsonObject.toString())
-                    .contentType(APPLICATION_JSON_UTF8))
+                    .contentType(APPLICATION_JSON))
                     .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
                     .andReturn();
 
@@ -208,7 +210,7 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
 
     }
 
-    //@Test
+    @Test
     public void should_return_200_and_update_user_profile_resource_with_valid_email() throws Exception {
 
         UserProfile persistedUserProfile = userProfileMap.get("user");

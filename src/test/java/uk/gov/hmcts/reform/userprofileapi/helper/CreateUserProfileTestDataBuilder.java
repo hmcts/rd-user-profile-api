@@ -1,52 +1,52 @@
-package uk.gov.hmcts.reform.userprofileapi.data;
+package uk.gov.hmcts.reform.userprofileapi.helper;
+
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Setter;
 import org.apache.commons.lang.RandomStringUtils;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.*;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.LanguagePreference;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserCategory;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserType;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 @Setter
-public class CreateUserProfileDataTestBuilder {
+public class CreateUserProfileTestDataBuilder {
 
-    private CreateUserProfileDataTestBuilder() {
+    private CreateUserProfileTestDataBuilder() {
         //not meant to be instantiated.
     }
 
     public static UserProfileCreationData buildCreateUserProfileData() {
+        return buildCreateUserProfileData(false);
+    }
+
+    public static UserProfileCreationData buildCreateUserProfileData(boolean isReinviteUser) {
         return new UserProfileCreationData(
             buildRandomEmail(),
-            RandomStringUtils.randomAlphabetic(20),
-            RandomStringUtils.randomAlphabetic(20),
+            randomAlphabetic(20),
+            randomAlphabetic(20),
             LanguagePreference.EN.toString(),
             false,
             false,
             UserCategory.PROFESSIONAL.toString(),
             UserType.EXTERNAL.toString(),
-            getIdamRolesJson());
+            getIdamRolesJson(),
+                isReinviteUser);
     }
 
     public static UpdateUserProfileData buildUpdateUserProfileData() {
         return new UpdateUserProfileData(
                 buildRandomEmail(),
-                RandomStringUtils.randomAlphabetic(20),
-                RandomStringUtils.randomAlphabetic(20),
+                randomAlphabetic(10) + " " + randomAlphabetic(10),
+                randomAlphabetic(10) + " " + randomAlphabetic(10),
                 IdamStatus.ACTIVE.toString(),
                 null,null
                 );
-    }
-
-    public static UpdateUserProfileData buildUpdateUserProfileDataForUpdatingStatus() {
-        return new UpdateUserProfileData(
-                buildRandomEmail(),
-                RandomStringUtils.randomAlphabetic(20),
-                RandomStringUtils.randomAlphabetic(20),
-                IdamStatus.ACTIVE.toString(),
-                null,null
-        );
     }
 
     private static String buildRandomEmail() {

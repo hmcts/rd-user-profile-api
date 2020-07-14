@@ -1,48 +1,27 @@
 package uk.gov.hmcts.reform.userprofileapi.controller.response;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 import org.junit.Test;
-import org.mockito.Mockito;
+import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
-
 
 public class UserProfileResponseTest {
 
     @Test
     public void testUserProfileResponse() {
-        final String dummyIdamId = UUID.randomUUID().toString();
-        final String dummyEmail = "april.oneil@noreply.com";
-        final String dummyFirstName = "APRIL";
-        final String dummyLastName = "O'NEIL";
-        List<String> roles = new ArrayList<>();
-        roles.add("pui-case-manager");
+        UserProfile userProfile = new UserProfile(buildCreateUserProfileData(), HttpStatus.CREATED);
 
-        UserProfile userProfileMock = Mockito.mock(UserProfile.class);
-
-        when(userProfileMock.getIdamId()).thenReturn(dummyIdamId);
-        when(userProfileMock.getIdamRegistrationResponse()).thenReturn(201);
-        when(userProfileMock.getEmail()).thenReturn(dummyEmail);
-        when(userProfileMock.getFirstName()).thenReturn(dummyFirstName);
-        when(userProfileMock.getLastName()).thenReturn(dummyLastName);
-        when(userProfileMock.getStatus()).thenReturn(IdamStatus.ACTIVE);
-        when(userProfileMock.getRoles()).thenReturn(roles);
-        when(userProfileMock.getErrorMessage()).thenReturn("someErrorMessage");
-        when(userProfileMock.getErrorStatusCode()).thenReturn("200");
-
-        UserProfileResponse userProfileResponse = new UserProfileResponse(userProfileMock);
+        UserProfileResponse userProfileResponse = new UserProfileResponse(userProfile);
 
         assertThat(userProfileResponse).isNotNull();
-        assertThat(userProfileResponse.getIdamId()).isEqualTo(dummyIdamId);
-        assertThat(userProfileResponse.getEmail()).isEqualTo(dummyEmail);
-        assertThat(userProfileResponse.getFirstName()).isEqualTo(dummyFirstName);
-        assertThat(userProfileResponse.getLastName()).isEqualTo(dummyLastName);
-        assertThat(userProfileResponse.getIdamStatus()).isEqualTo(IdamStatus.ACTIVE.name());
+        assertThat(userProfileResponse.getIdamId()).isEqualTo(userProfile.getIdamId());
+        assertThat(userProfileResponse.getEmail()).isEqualTo(userProfile.getEmail());
+        assertThat(userProfileResponse.getFirstName()).isEqualTo(userProfile.getFirstName());
+        assertThat(userProfileResponse.getLastName()).isEqualTo(userProfile.getLastName());
+        assertThat(userProfileResponse.getIdamStatus()).isEqualTo(IdamStatus.PENDING.name());
     }
 
     @Test

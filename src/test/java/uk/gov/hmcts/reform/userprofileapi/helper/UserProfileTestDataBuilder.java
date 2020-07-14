@@ -1,7 +1,7 @@
-package uk.gov.hmcts.reform.userprofileapi.data;
+package uk.gov.hmcts.reform.userprofileapi.helper;
 
 import static org.apache.commons.lang.RandomStringUtils.randomAlphanumeric;
-import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
+import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;

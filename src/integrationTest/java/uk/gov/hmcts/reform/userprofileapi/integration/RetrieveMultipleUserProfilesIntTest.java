@@ -7,15 +7,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
-import static uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder.buildUserProfile;
-import static uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder.buildUserProfileWithDeletedStatus;
-import static uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder.buildUserProfileWithSuspendedStatus;
+import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfile;
+import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfileWithDeletedStatus;
+import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfileWithSuspendedStatus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -23,7 +25,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
@@ -33,7 +34,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
-@RunWith(SpringRunner.class)
+@RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
 @Transactional
 public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledIntegrationTest {
@@ -76,28 +77,28 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
     public void setUp() {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
 
-        testUserProfileRepository.deleteAll();
+        userProfileRepository.deleteAll();
         auditRepository.deleteAll();
 
-        Iterable<UserProfile> userProfiles = testUserProfileRepository.findAll();
+        Iterable<UserProfile> userProfiles = userProfileRepository.findAll();
         assertThat(userProfiles).isEmpty();
 
         //adding 2 userprofiles with PENDING and 2 with DELETED status
         UserProfile user1 = buildUserProfile();
         user1.setStatus(IdamStatus.ACTIVE);
-        user1 = testUserProfileRepository.save(user1);
+        user1 = userProfileRepository.save(user1);
 
         UserProfile user2 = buildUserProfile();
         user2.setStatus(IdamStatus.ACTIVE);
-        user2 = testUserProfileRepository.save(user2);
+        user2 = userProfileRepository.save(user2);
 
         userProfileMap = new HashMap<>();
         userProfileMap.put("user1", user1);
         userProfileMap.put("user2", user2);
 
-        UserProfile user3 = testUserProfileRepository.save(buildUserProfileWithDeletedStatus());
-        UserProfile user4 = testUserProfileRepository.save(buildUserProfileWithDeletedStatus());
-        UserProfile user5 = testUserProfileRepository.save(buildUserProfileWithSuspendedStatus());
+        UserProfile user3 = userProfileRepository.save(buildUserProfileWithDeletedStatus());
+        UserProfile user4 = userProfileRepository.save(buildUserProfileWithDeletedStatus());
+        UserProfile user5 = userProfileRepository.save(buildUserProfileWithSuspendedStatus());
         
         userProfileMap.put("user3", user3);
         userProfileMap.put("user4", user4);
@@ -145,19 +146,23 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
             }
         });
 
-        Audit audit1 = auditRepository.findByUserProfile(userProfileMap.get("user1")).orElse(null);
-        assertThat(audit1).isNotNull();
-        assertThat(audit1.getIdamRegistrationResponse()).isEqualTo(200);
+        List<Audit> audits = auditRepository.findAll();
 
-        Audit audit2 = auditRepository.findByUserProfile(userProfileMap.get("user2")).orElse(null);
-        assertThat(audit2).isNotNull();
-        assertThat(audit2.getIdamRegistrationResponse()).isEqualTo(200);
+        List<Audit> matchedAudit = getMatchedAuditRecords(audits, userProfileMap.get("user1").getIdamId());
+        assertThat(matchedAudit.size()).isEqualTo(1);
+        Audit actualAudit = matchedAudit.get(0);
+        assertThat(actualAudit.getIdamRegistrationResponse()).isEqualTo(200);
 
-        Audit audit3 = auditRepository.findByUserProfile(userProfileMap.get("user3")).orElse(null);
-        assertThat(audit3).isNull();
+        matchedAudit = getMatchedAuditRecords(audits, userProfileMap.get("user2").getIdamId());
+        assertThat(matchedAudit.size()).isEqualTo(1);
+        Audit actualAudit1 = matchedAudit.get(0);
+        assertThat(actualAudit1.getIdamRegistrationResponse()).isEqualTo(200);
 
-        Audit audit4 = auditRepository.findByUserProfile(userProfileMap.get("user4")).orElse(null);
-        assertThat(audit4).isNull();
+        matchedAudit = getMatchedAuditRecords(audits, userProfileMap.get("user3").getIdamId());
+        assertThat(matchedAudit.size()).isEqualTo(0);
+
+        matchedAudit = getMatchedAuditRecords(audits, userProfileMap.get("user4").getIdamId());
+        assertThat(matchedAudit.size()).isEqualTo(0);
     }
 
     @Test
@@ -202,7 +207,6 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
             assertThat(getUserProfilesResponse.getIdamStatus()).isEqualTo(up.getStatus().name());
             assertThat(getUserProfilesResponse.getRoles()).isNull();
             assertThat(getUserProfilesResponse.getIdamMessage()).isNotEmpty();
-            //todo clarify this requirement
             if (IdamStatus.ACTIVE == up.getStatus()) {
                 assertThat(getUserProfilesResponse.getIdamStatusCode()).isEqualTo("404");
             } else {
@@ -210,19 +214,21 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
             }
         });
 
-        Audit audit1 = auditRepository.findByUserProfile(userProfileMap.get("user1")).orElse(null);
-        assertThat(audit1).isNotNull();
-        assertThat(audit1.getIdamRegistrationResponse()).isEqualTo(404);
+        List<Audit> audits = auditRepository.findAll();
 
-        Audit audit2 = auditRepository.findByUserProfile(userProfileMap.get("user2")).orElse(null);
-        assertThat(audit2).isNotNull();
-        assertThat(audit2.getIdamRegistrationResponse()).isEqualTo(404);
+        List<Audit> actualMatchedAudits = getMatchedAuditRecords(audits, userProfileMap.get("user1").getIdamId());
+        assertThat(actualMatchedAudits).isNotEmpty().hasSize(1);
+        assertThat(actualMatchedAudits.get(0).getIdamRegistrationResponse()).isEqualTo(404);
 
-        Audit audit3 = auditRepository.findByUserProfile(userProfileMap.get("user3")).orElse(null);
-        assertThat(audit3).isNull();
+        actualMatchedAudits = getMatchedAuditRecords(audits, userProfileMap.get("user2").getIdamId());
+        assertThat(actualMatchedAudits).isNotEmpty().hasSize(1);
+        assertThat(actualMatchedAudits.get(0).getIdamRegistrationResponse()).isEqualTo(404);
 
-        Audit audit4 = auditRepository.findByUserProfile(userProfileMap.get("user4")).orElse(null);
-        assertThat(audit4).isNull();
+        actualMatchedAudits = getMatchedAuditRecords(audits, userProfileMap.get("user3").getIdamId());
+        assertThat(actualMatchedAudits).isEmpty();
+
+        actualMatchedAudits = getMatchedAuditRecords(audits, userProfileMap.get("user4").getIdamId());
+        assertThat(actualMatchedAudits).isEmpty();
     }
 
     @Test

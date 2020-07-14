@@ -1,14 +1,26 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import static uk.gov.hmcts.reform.userprofileapi.service.impl.IdamServiceImplTest.StatusCode.CREATED;
 
 import feign.FeignException;
 import feign.Response;
 import feign.RetryableException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,15 +39,15 @@ import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IdamServiceImplTest {
+
     private final String userId = "test796-d05e-480d-bf3d-7cbfacb3ca29";
     private final String email = "test.user@test.com";
-    private final  Map<String, Collection<String>> headerData = new HashMap<>();
+    private final Map<String, Collection<String>> headerData = new HashMap<>();
 
     private IdamFeignClient idamFeignClientMock = Mockito.mock(IdamFeignClient.class);
 
     @InjectMocks
     private IdamService sut = new IdamServiceImpl();
-
 
     @Test
     public void testRegisterUser() {
@@ -51,6 +63,8 @@ public class IdamServiceImplTest {
         assertThat(idamId.getIdamRegistrationResponse()).isNotNull();
         assertThat(idamId.getIdamRegistrationResponse().value())
                 .isEqualTo(HttpStatus.ACCEPTED.value());
+
+        verify(idamFeignClientMock, times(1)).createUserProfile(any());
     }
 
     @Test
@@ -64,6 +78,8 @@ public class IdamServiceImplTest {
         IdamRolesInfo idamRolesInfo = sut.fetchUserById(userId);
 
         assertThat(idamRolesInfo).isNotNull();
+
+        verify(idamFeignClientMock, times(1)).getUserById(any());
     }
 
     @Test
@@ -77,12 +93,13 @@ public class IdamServiceImplTest {
         IdamRolesInfo idamRolesInfo = sut.fetchUserByEmail(email);
 
         assertThat(idamRolesInfo).isNotNull();
+
+        verify(idamFeignClientMock, times(1)).getUserByEmail(any());
     }
 
     @Test
     public void testFetchUserByEmailWithFeignExceptionThrown() {
         FeignException feignExceptionMock = Mockito.mock(FeignException.class);
-        Response responseMock = Mockito.mock(Response.class);
 
         when(idamFeignClientMock.getUserByEmail(email)).thenThrow(feignExceptionMock);
         when(feignExceptionMock.status()).thenReturn(StatusCode.INTERNAL_SERVER_ERROR.getStatus());
@@ -90,6 +107,8 @@ public class IdamServiceImplTest {
         IdamRolesInfo idamRolesInfo = sut.fetchUserByEmail(email);
 
         assertThat(idamRolesInfo).isNotNull();
+
+        verify(idamFeignClientMock, times(1)).getUserByEmail(any());
     }
 
     @Test
@@ -105,6 +124,8 @@ public class IdamServiceImplTest {
         assertThat(idamId.getIdamRegistrationResponse()).isNotNull();
         assertThat(idamId.getIdamRegistrationResponse().value())
                 .isEqualTo(HttpStatus.NOT_FOUND.value());
+
+        verify(idamFeignClientMock, times(1)).createUserProfile(any());
     }
 
     @Test
@@ -203,7 +224,6 @@ public class IdamServiceImplTest {
     public void testUpdateUserDetails_withFailure() {
         UpdateUserDetails updateUserDetailsMock = Mockito.mock(UpdateUserDetails.class);
 
-        Response responseMock = Mockito.mock(Response.class);
         FeignException feignExceptionMock = Mockito.mock(FeignException.class);
 
         when(idamFeignClientMock.updateUserDetails(updateUserDetailsMock, userId)).thenThrow(feignExceptionMock);

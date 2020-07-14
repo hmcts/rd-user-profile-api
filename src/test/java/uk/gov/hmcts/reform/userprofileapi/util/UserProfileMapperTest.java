@@ -1,97 +1,82 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertEquals;
 
-import org.junit.Before;
+import java.util.HashSet;
 import org.junit.Test;
-import org.mockito.Mockito;
+import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UpdateUserDetails;
+import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
+import uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder;
+import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 public class UserProfileMapperTest {
 
-    private UpdateUserProfileData updateUserProfileDataMock = Mockito.mock(UpdateUserProfileData.class);
-
-    private UserProfile userProfileMock = Mockito.mock(UserProfile.class);
-
-    private final String dummyEmail = "aon@noreply.com";
-
-    private final String dummyFirstName = "April";
-
-    private final String dummyLastName = "O'Neil";
-
-    @Before
-    public void setUp() {
-        when(updateUserProfileDataMock.getEmail()).thenReturn(dummyEmail);
-        when(updateUserProfileDataMock.getFirstName()).thenReturn(dummyFirstName);
-        when(updateUserProfileDataMock.getLastName()).thenReturn(dummyLastName);
-    }
+    private UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
+    private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.ACCEPTED);
+    private UserProfile userProfile = new UserProfile(userProfileCreationData, idamRegistrationInfo.getIdamRegistrationResponse());
+    private UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("email@net.com", "firstName", "lastName", "ACTIVE", new HashSet<RoleName>(), new HashSet<RoleName>());
 
     @Test
     public void mapUpdatableFields() {
-        UserProfileMapper.mapUpdatableFields(updateUserProfileDataMock, userProfileMock, false);
+        UserProfileMapper.mapUpdatableFields(updateUserProfileData, userProfile, false);
 
-        verify(updateUserProfileDataMock, times(1)).isSameAsUserProfile(any());
-        verify(userProfileMock, times(1)).setEmail(eq(dummyEmail));
-        verify(userProfileMock, times(1)).setFirstName(eq(dummyFirstName));
-        verify(userProfileMock, times(1)).setLastName(eq(dummyLastName));
+        assertThat(userProfile.getEmail()).isEqualTo("email@net.com");
+        assertThat(userProfile.getFirstName()).isEqualTo("firstName");
+        assertThat(userProfile.getLastName()).isEqualTo("lastName");
+        assertThat(userProfile.getStatus().name()).isEqualTo("ACTIVE");
     }
 
     @Test
-    public void test_deriveStatusFlag_scenario1() {
-
-        when(updateUserProfileDataMock.getIdamStatus()).thenReturn(IdamStatus.ACTIVE.toString());
-        assertThat(UserProfileMapper.deriveStatusFlag(updateUserProfileDataMock)).isTrue();
-
+    public void test_deriveStatusFlagWhenStatusIsActive() {
+        updateUserProfileData.setIdamStatus(IdamStatus.ACTIVE.name());
+        assertEquals(true, UserProfileMapper.deriveStatusFlag(updateUserProfileData));
     }
 
     @Test
-    public void test_deriveStatusFlag_scenario2() {
-
-        when(updateUserProfileDataMock.getIdamStatus()).thenReturn(IdamStatus.SUSPENDED.toString());
-        assertThat(UserProfileMapper.deriveStatusFlag(updateUserProfileDataMock)).isFalse();
-
+    public void test_deriveStatusFlagWhenStatusIsSuspended() {
+        updateUserProfileData.setIdamStatus(IdamStatus.SUSPENDED.name());
+        assertEquals(false, UserProfileMapper.deriveStatusFlag(updateUserProfileData));
     }
-
-    /*
-    static UpdateUserDetails mapIdamUpdateStatusRequest(UpdateUserProfileData updateUserProfileData) {
-        return new UpdateUserDetails(updateUserProfileData.getFirstName(), updateUserProfileData.getLastName(), deriveStatusFlag(updateUserProfileData));
-    }
-     */
 
     @Test
-    public void test_mapIdamUpdateStatusRequest_senario1() {
+    public void test_deriveStatusFlagWhenStatusIsNull() {
+        updateUserProfileData.setIdamStatus(null);
+        assertEquals(false, UserProfileMapper.deriveStatusFlag(updateUserProfileData));
+    }
 
-        when(updateUserProfileDataMock.getFirstName()).thenReturn("fname");
-        when(updateUserProfileDataMock.getLastName()).thenReturn("lname");
-        when(updateUserProfileDataMock.getIdamStatus()).thenReturn(IdamStatus.ACTIVE.toString());
-        UpdateUserDetails updateUserDetails = UserProfileMapper.mapIdamUpdateStatusRequest(updateUserProfileDataMock);
 
-        assertThat(updateUserDetails.getForename()).isEqualTo("fname");
-        assertThat(updateUserDetails.getSurname()).isEqualTo("lname");
+    @Test
+    public void test_mapIdamUpdateStatusRequestWhenStatusIsActive() {
+        updateUserProfileData.setIdamStatus(IdamStatus.ACTIVE.name());
+        UpdateUserDetails updateUserDetails = UserProfileMapper.mapIdamUpdateStatusRequest(updateUserProfileData);
+
+        assertThat(updateUserDetails.getForename()).isEqualTo("firstName");
+        assertThat(updateUserDetails.getSurname()).isEqualTo("lastName");
         assertThat(updateUserDetails.getActive()).isTrue();
-
     }
 
     @Test
-    public void test_mapIdamUpdateStatusRequest_senario2() {
+    public void test_mapIdamUpdateStatusRequestWhenStatusIsSuspended() {
+        updateUserProfileData.setIdamStatus(IdamStatus.SUSPENDED.name());
+        UpdateUserDetails updateUserDetails = UserProfileMapper.mapIdamUpdateStatusRequest(updateUserProfileData);
 
-        when(updateUserProfileDataMock.getFirstName()).thenReturn("fname");
-        when(updateUserProfileDataMock.getLastName()).thenReturn("lname");
-        when(updateUserProfileDataMock.getIdamStatus()).thenReturn(IdamStatus.SUSPENDED.toString());
-        UpdateUserDetails updateUserDetails = UserProfileMapper.mapIdamUpdateStatusRequest(updateUserProfileDataMock);
-
-        assertThat(updateUserDetails.getForename()).isEqualTo("fname");
-        assertThat(updateUserDetails.getSurname()).isEqualTo("lname");
+        assertThat(updateUserDetails.getForename()).isEqualTo("firstName");
+        assertThat(updateUserDetails.getSurname()).isEqualTo("lastName");
         assertThat(updateUserDetails.getActive()).isFalse();
+    }
 
+    @Test
+    public void test_mapUpdatableFieldsForReInvite() {
+        UserProfile userProfile = new UserProfile();
+        UserProfileMapper.mapUpdatableFieldsForReInvite(userProfileCreationData, userProfile);
+        assertThat(userProfile.getFirstName()).isEqualTo(userProfileCreationData.getFirstName());
+        assertThat(userProfile.getLastName()).isEqualTo(userProfileCreationData.getLastName());
     }
 
 }

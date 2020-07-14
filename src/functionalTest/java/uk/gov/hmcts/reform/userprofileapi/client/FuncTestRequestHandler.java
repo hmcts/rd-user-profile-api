@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.client;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -125,7 +125,7 @@ public class FuncTestRequestHandler {
         return SerenityRest
             .given()
             //.headers(authorizationHeadersProvider.getServiceAuthorization())
-            .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
             .baseUri(baseUrl)
             .header("ServiceAuthorization", BEARER + s2sToken)
             .header("Authorization", BEARER + bearerToken)
@@ -153,8 +153,8 @@ public class FuncTestRequestHandler {
                 .baseUri(baseUrl)
                 .header("ServiceAuthorization", BEARER + s2sToken)
                 .header("Authorization", BEARER + bearerToken)
-                .header("Content-Type", APPLICATION_JSON_UTF8_VALUE)
-                .header("Accepts", APPLICATION_JSON_UTF8_VALUE);
+                .header("Content-Type", APPLICATION_JSON_VALUE)
+                .header("Accepts", APPLICATION_JSON_VALUE);
     }
 
     private String getBearerToken() {

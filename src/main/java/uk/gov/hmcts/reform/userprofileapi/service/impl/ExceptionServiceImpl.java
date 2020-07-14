@@ -3,8 +3,14 @@ package uk.gov.hmcts.reform.userprofileapi.service.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ExceptionType;
-import uk.gov.hmcts.reform.userprofileapi.exception.*;
+import uk.gov.hmcts.reform.userprofileapi.exception.ErrorPersistingException;
+import uk.gov.hmcts.reform.userprofileapi.exception.IdamServiceException;
+import uk.gov.hmcts.reform.userprofileapi.exception.RequiredFieldMissingException;
+import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
+import uk.gov.hmcts.reform.userprofileapi.exception.UndefinedException;
 import uk.gov.hmcts.reform.userprofileapi.service.ExceptionService;
 
 @Service
@@ -22,6 +28,8 @@ public class ExceptionServiceImpl implements ExceptionService {
             case REQUIREDFIELDMISSINGEXCEPTION : throw new RequiredFieldMissingException(msg);
             case RESOURCENOTFOUNDEXCEPTION : throw new ResourceNotFoundException(msg);
             case ERRORPERSISTINGEXCEPTION : throw new ErrorPersistingException(msg);
+            case BADREQUEST: throw new InvalidRequest(msg);
+            case TOOMANYREQUESTS: throw new HttpClientErrorException(HttpStatus.TOO_MANY_REQUESTS, msg);
             default: throw new UndefinedException("Unhandled exception:" + msg);
         }
     }
