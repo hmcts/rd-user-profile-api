@@ -26,8 +26,8 @@ public class WelcomeController {
     private static final String INSTANCE_ID = UUID.randomUUID().toString();
     private static final String MESSAGE = "Welcome to the User Profile API";
 
-    @Value("${logging-component-name}")
-    private static String loggingComponentName;
+    @Value("${loggingComponentName}")
+    private String loggingComponentName;
 
     /**
      * Root GET endpoint.

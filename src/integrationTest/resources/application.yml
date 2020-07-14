@@ -44,4 +44,4 @@ idam:
 
 oidc.issuer: ${OIDC_ISSUER_URL:https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts}
 
-logging-component-name: RD_User_Profile_API
+loggingComponentName: RD_User_Profile_API

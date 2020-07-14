@@ -17,8 +17,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @Slf4j
 public class FeignInterceptorConfiguration {
 
-    @Value("${logging-component-name}")
-    private static String loggingComponentName;
+    @Value("${loggingComponentName}")
+    private String loggingComponentName;
 
     @Bean
     public RequestInterceptor requestInterceptor(FeignHeaderConfig config) {

@@ -32,8 +32,8 @@ public class IdamServiceImpl implements IdamService {
     @Autowired
     private IdamFeignClient idamClient;
 
-    @Value("${logging-component-name}")
-    private static String loggingComponentName;
+    @Value("${loggingComponentName}")
+    private String loggingComponentName;
 
     @Override
     public IdamRegistrationInfo registerUser(IdamRegisterUserRequest requestData) {

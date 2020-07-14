@@ -13,8 +13,8 @@ public class IdamRepository {
 
     private final IdamClient idamClient;
 
-    @Value("${logging-component-name}")
-    private static String loggingComponentName;
+    @Value("${loggingComponentName}")
+    private String loggingComponentName;
 
     @Autowired
     public IdamRepository(IdamClient idamClient) {

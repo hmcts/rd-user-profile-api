@@ -18,19 +18,21 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamErrorResponse;
 
-
+@Component
 @Slf4j
 public class JsonFeignResponseHelper {
+
     private static final ObjectMapper json = new ObjectMapper();
 
-    @Value("${logging-component-name}")
     private static String loggingComponentName;
 
-    private JsonFeignResponseHelper() { }
+    private JsonFeignResponseHelper() {
+    }
 
     public static <U> ResponseEntity<U> toResponseEntity(Response response, Optional<Class<U>> classOpt) {
         Optional<U> payload = decode(response, classOpt);
@@ -71,4 +73,8 @@ public class JsonFeignResponseHelper {
         }
     }
 
+    @Value("${loggingComponentName}")
+    public void setLoggingComponentName(String loggingComponentName) {
+        JsonFeignResponseHelper.loggingComponentName = loggingComponentName;
+    }
 }

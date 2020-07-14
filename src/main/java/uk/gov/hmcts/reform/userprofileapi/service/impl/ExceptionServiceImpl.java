@@ -18,8 +18,8 @@ import uk.gov.hmcts.reform.userprofileapi.service.ExceptionService;
 @Slf4j
 public class ExceptionServiceImpl implements ExceptionService {
 
-    @Value("${logging-component-name}")
-    private static String loggingComponentName;
+    @Value("${loggingComponentName}")
+    private String loggingComponentName;
 
     public void throwCustomRuntimeException(ExceptionType className, String msg) {
         throwCustomRuntimeException(className, msg, HttpStatus.OK);
