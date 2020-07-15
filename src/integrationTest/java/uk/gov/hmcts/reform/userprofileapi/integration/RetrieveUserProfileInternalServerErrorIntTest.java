@@ -20,6 +20,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
@@ -80,7 +81,7 @@ public class RetrieveUserProfileInternalServerErrorIntTest extends Authorization
     public void should_return_500_when_repository_throws_an_unknown_exception() throws Exception {
 
         IdamRegisterUserRequest request = Mockito.mock(IdamRegisterUserRequest.class);
-        IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(CREATED);
+        IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(ResponseEntity.status(CREATED).build());
         when(idamService.registerUser(request))
                 .thenReturn(idamRegistrationInfo);
         when(userProfileRepository.findByIdamId(any(String.class)))

@@ -24,8 +24,8 @@ public interface UserProfileMapper {
                                               UserProfile userProfile) {
         setFirstName(userProfileCreationData.getFirstName(), userProfile);
         setLastName(userProfileCreationData.getLastName(), userProfile);
-        // explicitly setting this because hibernate does not update lastupdated if resend invite request has no
-        // change in fields
+        // explicitly setting this because hibernate does not update lastupdated
+        // if resend invite request has no change in fields
         userProfile.setLastUpdated(LocalDateTime.now());
     }
 

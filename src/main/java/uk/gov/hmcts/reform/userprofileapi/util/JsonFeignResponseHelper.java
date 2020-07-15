@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
+import static java.util.Objects.nonNull;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Response;
 
@@ -17,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamErrorResponse;
 
 
 @Slf4j
@@ -44,7 +47,7 @@ public class JsonFeignResponseHelper {
 
     public static <T> Optional<T> decode(Response response, Optional<Class<T>> clazz) {
         Optional<T> result = Optional.empty();
-        if (isStatusCodeSuccessful(response.status()) && clazz.isPresent()) {
+        if (clazz.isPresent()) {
             try {
                 Optional<Collection<String>> encodings = Optional.ofNullable(response.headers()
                         .get("content-encoding"));
@@ -53,14 +56,18 @@ public class JsonFeignResponseHelper {
                         clazz.get())
                         : json.readValue(response.body().asReader(Charset.defaultCharset()), clazz.get()));
             } catch (IOException e) {
-                log.warn("Error could not decode!");
+                log.warn("Error could not decoded : {}", e.getLocalizedMessage());
             }
         }
         return result;
     }
 
-    public static boolean isStatusCodeSuccessful(int statusCode) {
-        return statusCode >= 200 && statusCode < 300;
+    public static Optional getResponseMapperClass(Response response, Class expectedClass) {
+        if (response.status() >= 200 && response.status() < 300) {
+            return nonNull(expectedClass) ? Optional.of(expectedClass) : Optional.empty();
+        } else {
+            return Optional.of(IdamErrorResponse.class);
+        }
     }
 
 }

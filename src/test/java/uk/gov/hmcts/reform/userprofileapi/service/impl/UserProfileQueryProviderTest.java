@@ -5,6 +5,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.ACCEPTED;
+import static org.springframework.http.ResponseEntity.status;
 
 import java.util.Collections;
 import java.util.List;
@@ -18,7 +20,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
@@ -37,11 +38,11 @@ public class UserProfileQueryProviderTest {
 
     private UserProfileQueryProvider userProfileQueryProvider;
 
-    private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.ACCEPTED);
-    private UserProfileCreationData userProfileCreationData
-            = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
-    private UserProfile userProfile = new UserProfile(userProfileCreationData,
-            idamRegistrationInfo.getIdamRegistrationResponse());
+    private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(status(ACCEPTED).build());
+    private UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder
+            .buildCreateUserProfileData();
+    private UserProfile userProfile = new UserProfile(userProfileCreationData, idamRegistrationInfo
+            .getIdamRegistrationResponse());
 
     @Before
     public void setUp() {
@@ -53,7 +54,7 @@ public class UserProfileQueryProviderTest {
     }
 
     @Test
-    public void getRetrieveByIdQueryTest_with_userIdentifier_email() {
+    public void test_getRetrieveByIdQuery_with_userIdentifier_email() {
         userProfileRepositoryMock.save(userProfile);
 
         when(userProfileRepositoryMock.findByEmail(any(String.class))).thenReturn(Optional.of(userProfile));
@@ -71,7 +72,7 @@ public class UserProfileQueryProviderTest {
     }
 
     @Test
-    public void getRetrieveByIdQueryTest_with_userIdentifier_userId() {
+    public void test_getRetrieveByIdQuery_with_userIdentifier_userId() {
         userProfileRepositoryMock.save(userProfile);
 
         UUID userId = UUID.randomUUID();
@@ -92,14 +93,14 @@ public class UserProfileQueryProviderTest {
 
 
     @Test(expected = IllegalStateException.class)
-    public void getRetrieveByIdQueryTest_ThrowsIllegalStateException() {
+    public void test_getRetrieveByIdQuery_ThrowsIllegalStateException() {
         UserProfileIdentifier userProfileIdentifierWithOneValue = new UserProfileIdentifier(null,
                 userProfile.getEmail());
         userProfileQueryProvider.getRetrieveByIdQuery(userProfileIdentifierWithOneValue);
     }
 
     @Test
-    public void getProfilesByIdsTest() {
+    public void test_getProfilesByIds() {
         List<UserProfile> userProfiles = Collections.singletonList(userProfile);
 
         userProfileRepositoryMock.save(userProfile);
@@ -119,7 +120,7 @@ public class UserProfileQueryProviderTest {
     }
 
     @Test
-    public void getProfilesByIdsTest_with_show_deleted_false() {
+    public void test_getProfilesByIds_with_show_deleted_false() {
         List<UserProfile> userProfiles = Collections.singletonList(userProfile);
 
         userProfileRepositoryMock.save(userProfile);

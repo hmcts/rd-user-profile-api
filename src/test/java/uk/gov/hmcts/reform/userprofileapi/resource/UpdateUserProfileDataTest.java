@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 public class UpdateUserProfileDataTest {
 
     @Test
-    public void should_add_roles_add_when_updated() {
+    public void test_add_roles_add_when_updated() {
         UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData();
 
         Set<RoleName> roles = new HashSet<>();

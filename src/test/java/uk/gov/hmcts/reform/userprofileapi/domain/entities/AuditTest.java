@@ -12,7 +12,7 @@ public class AuditTest {
     UserProfile userProfile = new UserProfile(buildCreateUserProfileData(), HttpStatus.CREATED);
 
     @Test
-    public void should_populate_all_fields() {
+    public void test_populate_all_fields() {
         Audit audit = new Audit(200, "testErrorMessage", ResponseSource.API, userProfile);
 
         assertThat(audit.getIdamRegistrationResponse()).isEqualTo(200);

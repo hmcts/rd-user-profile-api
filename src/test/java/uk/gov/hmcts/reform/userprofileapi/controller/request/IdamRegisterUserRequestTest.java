@@ -11,7 +11,7 @@ import org.junit.Test;
 public class IdamRegisterUserRequestTest {
 
     @Test
-    public void should_populate_fields() {
+    public void test_populate_fields() {
         String email = "some@hmcts.com";
         String firstName = "fname";
         String lastName = "lname";

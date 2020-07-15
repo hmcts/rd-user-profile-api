@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateCreateUserProfileRequest;
+import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateUserIds;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -85,6 +86,10 @@ public class UserProfileController {
                     message = "An invalid request has been provided"
             ),
             @ApiResponse(
+                    code = 401,
+                    message = "Unauthorized Error : The requested resource is restricted and requires authentication"
+            ),
+            @ApiResponse(
                     code = 403,
                     message = "Forbidden Error: Access denied"
             ),
@@ -141,6 +146,10 @@ public class UserProfileController {
                     message = "An invalid request has been provided"
             ),
             @ApiResponse(
+                    code = 401,
+                    message = "Unauthorized Error : The requested resource is restricted and requires authentication"
+            ),
+            @ApiResponse(
                     code = 403,
                     message = "Forbidden Error: Access denied"
             ),
@@ -184,6 +193,10 @@ public class UserProfileController {
                     message = "An invalid request has been provided"
             ),
             @ApiResponse(
+                    code = 401,
+                    message = "Unauthorized Error : The requested resource is restricted and requires authentication"
+            ),
+            @ApiResponse(
                     code = 403,
                     message = "Forbidden Error: Access denied"
             ),
@@ -225,6 +238,10 @@ public class UserProfileController {
             @ApiResponse(
                     code = 400,
                     message = "An invalid request has been provided"
+            ),
+            @ApiResponse(
+                    code = 401,
+                    message = "Unauthorized Error : The requested resource is restricted and requires authentication"
             ),
             @ApiResponse(
                     code = 403,
@@ -283,6 +300,10 @@ public class UserProfileController {
             @ApiResponse(
                     code = 400,
                     message = "An invalid request has been provided"
+            ),
+            @ApiResponse(
+            code = 401,
+            message = "Unauthorized Error : The requested resource is restricted and requires authentication"
             ),
             @ApiResponse(
                     code = 403,
@@ -352,6 +373,10 @@ public class UserProfileController {
                     message = "An invalid request has been provided"
             ),
             @ApiResponse(
+                    code = 401,
+                    message = "Unauthorized Error : The requested resource is restricted and requires authentication"
+            ),
+            @ApiResponse(
                     code = 403,
                     message = "Forbidden Error: Access denied"
             ),
@@ -384,7 +409,7 @@ public class UserProfileController {
 
         boolean showDeletedBoolean = UserProfileValidator.validateAndReturnBooleanForParam(showDeleted);
         boolean rolesRequiredBoolean = UserProfileValidator.validateAndReturnBooleanForParam(rolesRequired);
-        UserProfileValidator.validateUserIds(userProfileDataRequest);
+        validateUserIds(userProfileDataRequest);
         UserProfileDataResponse userProfileDataResponse =
                 userProfileService.retrieveWithRoles(new UserProfileIdentifier(IdentifierName.UUID_LIST,
                         userProfileDataRequest.getUserIds()), showDeletedBoolean, rolesRequiredBoolean);

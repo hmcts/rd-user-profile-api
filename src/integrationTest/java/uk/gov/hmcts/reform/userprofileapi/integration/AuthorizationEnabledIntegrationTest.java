@@ -2,13 +2,16 @@ package uk.gov.hmcts.reform.userprofileapi.integration;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.patch;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpStatus.CREATED;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -79,7 +82,7 @@ public class AuthorizationEnabledIntegrationTest {
                         .withBody("rd_user_profile_api")));
 
 
-        setSidamRegistrationMockWithStatus(HttpStatus.CREATED.value());
+        setSidamRegistrationMockWithStatus(HttpStatus.CREATED.value(), true);
 
         idamService.stubFor(get(urlMatching("/api/v1/users/.*"))
                 .willReturn(aResponse()
@@ -130,13 +133,66 @@ public class AuthorizationEnabledIntegrationTest {
 
     }
 
-    protected void setSidamRegistrationMockWithStatus(int status) {
+    protected void setSidamUserUpdateMockWithStatus(int status, boolean setBodyEmpty, String idamId) {
+        String body = null;
+        if (status == 404 && !setBodyEmpty) {
+            body = "{"
+                    + "\"status\": \"404\","
+                    + "\"errorMessage\": \"Not Found\""
+                    + "}";
+        }
+        idamService.stubFor(patch(urlMatching("/api/v1/users/" + idamId))
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withStatus(status)
+                        .withBody(body)
+                ));
+    }
+
+
+    protected void setSidamRegistrationMockWithStatus(int status, boolean setBodyEmpty) {
+        String body = null;
+        if (status == 400 && !setBodyEmpty) {
+            body = "{"
+                    + "\"status\": \"400\","
+                    + "\"errorMessages\": ["
+                    + "\"Role to be assigned does not exist.\""
+                    + "]"
+                    + "}";
+        } else  if (status == 409 && !setBodyEmpty) {
+            body = "{"
+                    + "\"status\": \"409\","
+                    + "\"errorMessages\": ["
+                    + "\"A user is already registered with this email.\""
+                    + "]"
+                    + "}";
+        }
         idamService.stubFor(post(urlEqualTo("/api/v1/users/registration"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withHeader("Location", "/api/v1/users/7f3c076c-e954-4d6f-80f7-6292160bf0bc")
                         .withStatus(status)
+                        .withBody(body)
                 ));
+    }
+
+    public void mockWithGetFail(HttpStatus httpStatus, boolean isBodyRequired) {
+        String body = null;
+        if (httpStatus == HttpStatus.NOT_FOUND && isBodyRequired) {
+            body = "{"
+                    + "\"status\": \"404\","
+                    + "\"errorMessages\": ["
+                    + "\"The user could not be found: c5d631f-af11-4816-abbe-ac6fd9b99ee9\""
+                    + "]"
+                    + "}";
+        }
+        idamService.stubFor(get(urlMatching("/api/v1/users/.*"))
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withStatus(httpStatus.value())
+                        .withBody(body)
+                ));
+
     }
 
     protected UserProfileDataResponse getMultipleUsers(UserProfileDataRequest request, HttpStatus expectedStatus,
@@ -209,5 +265,24 @@ public class AuthorizationEnabledIntegrationTest {
     public static List<Audit> getMatchedAuditRecords(List<Audit> audits, String idamId) {
         return audits.stream().filter(audit -> audit.getUserProfile().getIdamId().equalsIgnoreCase(idamId))
                 .collect(Collectors.toList());
+    }
+
+    public static UserProfileDataRequest buildUserProfileDataRequest(List<String> userIds) {
+        return new UserProfileDataRequest(userIds);
+    }
+
+    public UserProfileCreationResponse createUserProfile(UserProfileCreationData data) throws Exception {
+
+        UserProfileCreationResponse createdResource =
+                userProfileRequestHandlerTest.sendPost(
+                        mockMvc,
+                        APP_BASE_PATH,
+                        data,
+                        CREATED,
+                        UserProfileCreationResponse.class
+                );
+
+        verifyUserProfileCreation(createdResource, CREATED, data);
+        return createdResource;
     }
 }

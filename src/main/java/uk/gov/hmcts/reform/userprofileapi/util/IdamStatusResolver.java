@@ -1,8 +1,16 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
+import static java.util.Objects.nonNull;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.ResponseEntity.status;
+import static org.springframework.util.CollectionUtils.isEmpty;
+
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamErrorResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
+
 
 @SuppressWarnings("HideUtilityClassConstructor")
 public final class IdamStatusResolver {
@@ -21,11 +29,11 @@ public final class IdamStatusResolver {
     public static final String NO_IDAM_CALL = "19 No call made to SIDAM to get the user roles as user status is not "
             .concat("'ACTIVE'");
     public static final String NO_CONTENT = "20 User Role Deleted";
+    public static final String PRECONDITION_FAILED = "Problem while role addition/deletion";
 
     public static final String ACTIVE = "ACTIVE";
     public static final String PENDING = "PENDING";
 
-    //tbc refactor this to an enum and use std valueOf method
     public static String resolveStatusAndReturnMessage(HttpStatus httpStatus) {
         switch (httpStatus) {
             case OK:
@@ -44,9 +52,39 @@ public final class IdamStatusResolver {
                 return USER_EXISTS;
             case NO_CONTENT:
                 return NO_CONTENT;
+            case PRECONDITION_FAILED:
+                return PRECONDITION_FAILED;
             default:
                 return UNKNOWN;
         }
+    }
+
+    public static String resolveStatusAndReturnMessage(ResponseEntity<Object> responseEntity) {
+        String errorMessage = null;
+        if (nonNull(responseEntity)) {
+            Object responseBody = responseEntity.getBody();
+            if (nonNull(responseBody) && responseBody instanceof IdamErrorResponse) {
+                errorMessage = getErrorMessageFromSidamResponse(responseBody);
+            }
+        } else {
+            responseEntity = status(INTERNAL_SERVER_ERROR).build();
+        }
+        return nonNull(errorMessage) ? errorMessage : resolveStatusAndReturnMessage(responseEntity.getStatusCode());
+    }
+
+    public static String getErrorMessageFromSidamResponse(Object responseBody) {
+        String errorMessage;
+        IdamErrorResponse idamErrorResponse = (IdamErrorResponse)responseBody;
+        if (!isEmpty(idamErrorResponse.getErrorMessages())) {
+            errorMessage = idamErrorResponse.getErrorMessages().get(0);
+        } else {
+            errorMessage = idamErrorResponse.getErrorMessage();
+        }
+        return errorMessage;
+    }
+
+    public static Integer getStatusCodeValueFromResponseEntity(ResponseEntity<Object> responseEntity) {
+        return nonNull(responseEntity) ? responseEntity.getStatusCodeValue() : INTERNAL_SERVER_ERROR.value();
     }
 
     public static IdamStatus resolveIdamStatus(IdamRolesInfo idamRolesInfo) {
@@ -65,5 +103,4 @@ public final class IdamStatusResolver {
                 return IdamStatus.SUSPENDED;
         }
     }
-
 }
