@@ -44,7 +44,7 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
     }
 
     @Test
-    public void should_update_user_profile_with_roles_successfully() throws Exception {
+    public void test_sld_update_usr_pfl_with_roles_successfully() throws Exception {
 
 
         UserProfileCreationData data = createUserProfileData();

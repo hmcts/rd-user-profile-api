@@ -153,7 +153,7 @@ public class UserProfileControllerTest {
 
 
     @Test
-    public void should_throw_exception_when_get_with_idamId_null_parameters_passed_in() {
+    public void shouldThrowExceptionWhenGetWittIdamIdNullParametersPassedIn() {
         verifyNoInteractions(userProfileServiceMock);
     }
 
