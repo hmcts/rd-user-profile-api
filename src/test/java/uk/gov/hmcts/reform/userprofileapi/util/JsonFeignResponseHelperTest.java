@@ -42,9 +42,11 @@ public class JsonFeignResponseHelperTest {
         Map<String, Collection<String>> header = new HashMap<>();
         header.put("content-encoding", list);
 
-        Response response = Response.builder().status(200).reason("OK").headers(header).body("{\"idamId\": 1}", UTF_8).request(request).build();
+        Response response = Response.builder().status(200).reason("OK").headers(header)
+                .body("{\"idamId\": 1}", UTF_8).request(request).build();
 
-        Optional<UserProfileCreationResponse> createUserProfileResponseOptional = JsonFeignResponseHelper.decode(response, Optional.of(UserProfileCreationResponse.class));
+        Optional<UserProfileCreationResponse> createUserProfileResponseOptional =
+                JsonFeignResponseHelper.decode(response, Optional.of(UserProfileCreationResponse.class));
 
         assertThat(createUserProfileResponseOptional).isEmpty();
     }
@@ -57,9 +59,11 @@ public class JsonFeignResponseHelperTest {
         Collection<String> list = new ArrayList<>();
         header.put("content-encoding", list);
 
-        Response response = Response.builder().status(200).reason("OK").headers(header).body("{\"idamId\": 1}", UTF_8).request(request).build();
+        Response response = Response.builder().status(200).reason("OK").headers(header)
+                .body("{\"idamId\": 1}", UTF_8).request(request).build();
 
-        Optional<UserProfileCreationResponse> createUserProfileResponseOptional = JsonFeignResponseHelper.decode(response, Optional.of(UserProfileCreationResponse.class));
+        Optional<UserProfileCreationResponse> createUserProfileResponseOptional =
+                JsonFeignResponseHelper.decode(response, Optional.of(UserProfileCreationResponse.class));
 
         assertThat(createUserProfileResponseOptional).isNotEmpty();
     }
@@ -72,9 +76,11 @@ public class JsonFeignResponseHelperTest {
         Collection<String> list = new ArrayList<>();
         header.put("content-encoding", list);
 
-        Response response = Response.builder().status(400).reason("OK").headers(header).body("{\"idamId\": 1}", UTF_8).request(request).build();
+        Response response = Response.builder().status(400).reason("OK").headers(header)
+                .body("{\"idamId\": 1}", UTF_8).request(request).build();
 
-        Optional<UserProfileCreationResponse> createUserProfileResponseOptional = JsonFeignResponseHelper.decode(response, Optional.of(UserProfileCreationResponse.class));
+        Optional<UserProfileCreationResponse> createUserProfileResponseOptional =
+                JsonFeignResponseHelper.decode(response, Optional.of(UserProfileCreationResponse.class));
 
         assertThat(createUserProfileResponseOptional).isNotEmpty();
     }
@@ -87,9 +93,11 @@ public class JsonFeignResponseHelperTest {
         Collection<String> list = new ArrayList<>();
         header.put("content-encoding", list);
 
-        Response response = Response.builder().status(400).reason("OK").headers(header).body("{\"idamId\": 1}", UTF_8).request(request).build();
+        Response response = Response.builder().status(400).reason("OK").headers(header)
+                .body("{\"idamId\": 1}", UTF_8).request(request).build();
 
-        Optional<UserProfileCreationResponse> createUserProfileResponseOptional = JsonFeignResponseHelper.decode(response, Optional.of(UserProfileCreationResponse.class));
+        Optional<UserProfileCreationResponse> createUserProfileResponseOptional = JsonFeignResponseHelper
+                .decode(response, Optional.of(UserProfileCreationResponse.class));
 
         assertThat(createUserProfileResponseOptional).isNotEmpty();
     }
@@ -103,7 +111,8 @@ public class JsonFeignResponseHelperTest {
         Collection<String> list = new ArrayList<>();
         header.put("content-encoding", list);
 
-        Response response = Response.builder().status(200).reason("OK").headers(header).body(bodyMock).request(request).build();
+        Response response = Response.builder().status(200).reason("OK").headers(header).body(bodyMock)
+                .request(request).build();
         try {
             when(bodyMock.asInputStream()).thenThrow(new IOException());
             when(bodyMock.asReader(Charset.defaultCharset())).thenThrow(new IOException());
@@ -111,7 +120,8 @@ public class JsonFeignResponseHelperTest {
             e.printStackTrace();
         }
 
-        Optional<UserProfileCreationResponse> createUserProfileResponseOptional = JsonFeignResponseHelper.decode(response, Optional.of(UserProfileCreationResponse.class));
+        Optional<UserProfileCreationResponse> createUserProfileResponseOptional = JsonFeignResponseHelper
+                .decode(response, Optional.of(UserProfileCreationResponse.class));
         
         assertThat(createUserProfileResponseOptional).isEmpty();
     }
@@ -124,14 +134,16 @@ public class JsonFeignResponseHelperTest {
         header.put("content-encoding", list);
         Request request = mock(Request.class);
         Response.Body bodyMock = mock(Response.Body.class);
-        Response response = Response.builder().status(200).reason("OK").headers(header).body(bodyMock).request(request).build();
+        Response response = Response.builder().status(200).reason("OK").headers(header).body(bodyMock)
+                .request(request).build();
         try {
             when(bodyMock.asInputStream()).thenThrow(new IOException());
             when(bodyMock.asReader(Charset.defaultCharset())).thenThrow(new IOException());
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Optional<UserProfileCreationResponse> createUserProfileResponseOptional = JsonFeignResponseHelper.decode(response, Optional.of(UserProfileCreationResponse.class));
+        Optional<UserProfileCreationResponse> createUserProfileResponseOptional =
+                JsonFeignResponseHelper.decode(response, Optional.of(UserProfileCreationResponse.class));
         assertThat(createUserProfileResponseOptional).isEmpty();
     }
 
@@ -155,7 +167,8 @@ public class JsonFeignResponseHelperTest {
     @Test
     public void test_toResponseEntity_with_payload_not_empty() {
 
-        ResponseEntity entity = JsonFeignResponseHelper.toResponseEntity(getResponse(200, true), Optional.of(UserProfileCreationResponse.class));
+        ResponseEntity entity = JsonFeignResponseHelper.toResponseEntity(getResponse(200, true),
+                Optional.of(UserProfileCreationResponse.class));
 
         assertThat(entity).isNotNull();
         assertThat(entity.getStatusCode().value()).isEqualTo(200);
@@ -173,7 +186,8 @@ public class JsonFeignResponseHelperTest {
 
     @Test
     public void test_getResponseMapperClass_when_response_success_and_expected_mapper_class_is_passed() {
-        Optional optionalObj = getResponseMapperClass(getResponse(200, false), ErrorResponse.class);
+        Optional optionalObj = getResponseMapperClass(getResponse(200, false),
+                ErrorResponse.class);
         assertTrue(optionalObj.isPresent());
         assertThat(optionalObj).isExactlyInstanceOf(Optional.class);
     }
@@ -186,20 +200,23 @@ public class JsonFeignResponseHelperTest {
 
     @Test
     public void test_getResponseMapperClass_when_response_failure() {
-        Optional optionalObj = getResponseMapperClass(getResponse(400,false), IdamErrorResponse.class);
+        Optional optionalObj = getResponseMapperClass(getResponse(400,false),
+                IdamErrorResponse.class);
         assertTrue(optionalObj.isPresent());
         assertThat(optionalObj.get()).isEqualTo(IdamErrorResponse.class);
     }
 
     @Test
     public void test_getResponseMapperClass_when_response_failure_with_error_code_100() {
-        Optional<IdamErrorResponse> optionalObj = getResponseMapperClass(getResponse(100, false), null);
+        Optional<IdamErrorResponse> optionalObj = getResponseMapperClass(getResponse(100, false),
+                null);
         assertTrue(optionalObj.isPresent());
     }
 
     public Response getResponse(int statusCode, boolean isMultiHeader) {
 
-        return Response.builder().status(statusCode).reason("OK").headers(getHeader(isMultiHeader)).body("{\"idamId\": 1}", UTF_8).request(mock(Request.class)).build();
+        return Response.builder().status(statusCode).reason("OK").headers(getHeader(isMultiHeader))
+                .body("{\"idamId\": 1}", UTF_8).request(mock(Request.class)).build();
     }
 
     public Map<String, Collection<String>>  getHeader(boolean isMultiheader) {

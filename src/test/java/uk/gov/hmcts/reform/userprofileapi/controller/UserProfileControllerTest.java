@@ -65,13 +65,15 @@ public class UserProfileControllerTest {
         assertThat(resource.getBody()).isEqualToComparingFieldByField(expectedBody);
 
         verify(userProfileServiceMock, times(1)).create(any(UserProfileCreationData.class));
-        verify(userProfileServiceMock, times(0)).reInviteUser(any(UserProfileCreationData.class));
+        verify(userProfileServiceMock, times(0))
+                .reInviteUser(any(UserProfileCreationData.class));
     }
 
     @Test
     public void test_ReInviteUserProfile() {
 
-        UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData(true);
+        UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder
+                .buildCreateUserProfileData(true);
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         UserProfileCreationResponse expectedBody = new UserProfileCreationResponse(userProfile);
 
@@ -81,7 +83,8 @@ public class UserProfileControllerTest {
         assertThat(resource.getBody()).isEqualToComparingFieldByField(expectedBody);
 
         verify(userProfileServiceMock, times(0)).create(any(UserProfileCreationData.class));
-        verify(userProfileServiceMock, times(1)).reInviteUser(any(UserProfileCreationData.class));
+        verify(userProfileServiceMock, times(1))
+                .reInviteUser(any(UserProfileCreationData.class));
     }
 
     @Test
@@ -113,7 +116,8 @@ public class UserProfileControllerTest {
         when(userProfileServiceMock.retrieveWithRoles(any(UserProfileIdentifier.class))).thenReturn(responseMock);
 
         assertThat(sut.getUserProfileWithRolesById(id)).isEqualTo(ResponseEntity.ok(responseMock));
-        verify(userProfileServiceMock, times(1)).retrieveWithRoles(any(UserProfileIdentifier.class));
+        verify(userProfileServiceMock, times(1))
+                .retrieveWithRoles(any(UserProfileIdentifier.class));
     }
 
     @Test
@@ -130,7 +134,8 @@ public class UserProfileControllerTest {
         when(userProfileServiceMock.retrieveWithRoles(any(UserProfileIdentifier.class))).thenReturn(responseMock);
 
         assertThat(sut.getUserProfileWithRolesByEmail(email)).isEqualTo(ResponseEntity.ok(responseMock));
-        verify(userProfileServiceMock, times(1)).retrieveWithRoles(any(UserProfileIdentifier.class));
+        verify(userProfileServiceMock, times(1))
+                .retrieveWithRoles(any(UserProfileIdentifier.class));
 
     }
 
@@ -176,10 +181,12 @@ public class UserProfileControllerTest {
         List<String> userIds = Arrays.asList("1", "2");
         UserProfileDataRequest userProfileDataRequest = new UserProfileDataRequest(userIds);
 
-        ResponseEntity<UserProfileDataResponse> responseEntity = sut.retrieveUserProfiles("false", "true", userProfileDataRequest);
+        ResponseEntity<UserProfileDataResponse> responseEntity = sut.retrieveUserProfiles("false",
+                "true", userProfileDataRequest);
         assertThat(responseEntity).isNotNull();
 
-        verify(userProfileServiceMock, times(1)).retrieveWithRoles(any(UserProfileIdentifier.class), any(Boolean.class), any(Boolean.class));
+        verify(userProfileServiceMock, times(1))
+                .retrieveWithRoles(any(UserProfileIdentifier.class), any(Boolean.class), any(Boolean.class));
     }
 
     @Test

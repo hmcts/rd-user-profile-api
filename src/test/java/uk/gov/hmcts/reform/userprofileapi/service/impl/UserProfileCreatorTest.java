@@ -70,10 +70,12 @@ public class UserProfileCreatorTest {
 
     private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(status(ACCEPTED).build());
 
-    private UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
+    private UserProfileCreationData userProfileCreationData
+            = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
 
     @Spy
-    private UserProfile userProfile = new UserProfile(userProfileCreationData, idamRegistrationInfo.getIdamRegistrationResponse());
+    private UserProfile userProfile = new UserProfile(userProfileCreationData,
+            idamRegistrationInfo.getIdamRegistrationResponse());
 
     private IdamRolesInfo idamRolesInfo = mock(IdamRolesInfo.class);
 
@@ -143,7 +145,8 @@ public class UserProfileCreatorTest {
     public void test_throw_IdamServiceException_when_user_already_exist() {
 
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
-        assertThatThrownBy(() -> userProfileCreator.create(userProfileCreationData)).isExactlyInstanceOf(IdamServiceException.class);
+        assertThatThrownBy(() -> userProfileCreator.create(userProfileCreationData))
+                .isExactlyInstanceOf(IdamServiceException.class);
         verify(userProfileRepository, times(0)).save(any(UserProfile.class));
         verify(auditRepository, times(1)).save(any(Audit.class));
     }
@@ -154,7 +157,8 @@ public class UserProfileCreatorTest {
         idamRegistrationInfo = new IdamRegistrationInfo(status(BAD_REQUEST).build());
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(null));
         when(idamService.registerUser(any(IdamRegisterUserRequest.class))).thenReturn(idamRegistrationInfo);
-        assertThatThrownBy(() -> userProfileCreator.create(userProfileCreationData)).isExactlyInstanceOf(IdamServiceException.class);
+        assertThatThrownBy(() -> userProfileCreator.create(userProfileCreationData))
+                .isExactlyInstanceOf(IdamServiceException.class);
         verify(userProfileRepository, times(0)).save(any(UserProfile.class));
         verify(idamService, times(1)).registerUser(any(IdamRegisterUserRequest.class));
         verify(auditRepository, times(1)).save(any(Audit.class));
@@ -326,7 +330,8 @@ public class UserProfileCreatorTest {
         IdamRolesInfo idamRolesInfoMock = mock(IdamRolesInfo.class);
         when(idamRolesInfoMock.getRoles()).thenReturn(idamRolesList);
 
-        Set<String> rolesToUpdate = userProfileCreator.consolidateRolesFromXuiAndIdam(userProfileCreationDataMock, idamRolesInfoMock);
+        Set<String> rolesToUpdate = userProfileCreator.consolidateRolesFromXuiAndIdam(userProfileCreationDataMock,
+                idamRolesInfoMock);
 
         assertThat(rolesToUpdate.size()).isEqualTo(1);
         assertThat(rolesToUpdate).contains("prd-admin");
@@ -352,7 +357,8 @@ public class UserProfileCreatorTest {
         IdamRolesInfo idamRolesInfoMock = mock(IdamRolesInfo.class);
         when(idamRolesInfoMock.getRoles()).thenReturn(idamRolesList);
 
-        Set<String> rolesToUpdate = userProfileCreator.consolidateRolesFromXuiAndIdam(userProfileCreationDataMock, idamRolesInfoMock);
+        Set<String> rolesToUpdate = userProfileCreator.consolidateRolesFromXuiAndIdam(userProfileCreationDataMock,
+                idamRolesInfoMock);
 
         assertThat(rolesToUpdate.size()).isEqualTo(2);
         assertThat(rolesToUpdate).contains("pui-case-manager", "pui-user-manager");
@@ -378,7 +384,8 @@ public class UserProfileCreatorTest {
         IdamRolesInfo idamRolesInfoMock = mock(IdamRolesInfo.class);
         when(idamRolesInfoMock.getRoles()).thenReturn(idamRolesList);
 
-        Set<String> rolesToUpdate = userProfileCreator.consolidateRolesFromXuiAndIdam(userProfileCreationDataMock, idamRolesInfoMock);
+        Set<String> rolesToUpdate = userProfileCreator.consolidateRolesFromXuiAndIdam(userProfileCreationDataMock,
+                idamRolesInfoMock);
 
         assertThat(rolesToUpdate.size()).isZero();
         verify(userProfileCreationDataMock, times(1)).getRoles();
@@ -419,10 +426,12 @@ public class UserProfileCreatorTest {
         when(validationHelperService.validateReInvitedUser(any())).thenReturn(userProfile);
 
 
-        final Throwable raisedException = catchThrowable(() -> userProfileCreator.reInviteUser(userProfileCreationData));
+        final Throwable raisedException = catchThrowable(() -> userProfileCreator
+                .reInviteUser(userProfileCreationData));
 
         assertThat(raisedException).isInstanceOf(IdamServiceException.class)
-                .hasMessageContaining("7 : Resend invite failed as user is already active. Wait for some time for the system to refresh.");
+                .hasMessageContaining("7 : Resend invite failed as user is already active."
+                        .concat(" Wait for some time for the system to refresh."));
 
         InOrder inOrder = inOrder(idamService, auditRepository);
         inOrder.verify(idamService, times(1)).registerUser(any(IdamRegisterUserRequest.class));
@@ -441,7 +450,8 @@ public class UserProfileCreatorTest {
         when(validationHelperService.validateReInvitedUser(any())).thenReturn(userProfile);
 
 
-        final Throwable raisedException = catchThrowable(() -> userProfileCreator.reInviteUser(userProfileCreationData));
+        final Throwable raisedException = catchThrowable(() -> userProfileCreator
+                .reInviteUser(userProfileCreationData));
 
         assertThat(raisedException).isInstanceOf(IdamServiceException.class)
                 .hasMessageContaining("13 Required parameters or one of request field is missing or invalid");
@@ -460,7 +470,8 @@ public class UserProfileCreatorTest {
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
         when(validationHelperService.validateReInvitedUser(any())).thenThrow(InvalidRequest.class);
 
-        final Throwable raisedException = catchThrowable(() -> userProfileCreator.reInviteUser(userProfileCreationData));
+        final Throwable raisedException = catchThrowable(() -> userProfileCreator
+                .reInviteUser(userProfileCreationData));
         assertThat(raisedException).isInstanceOf(InvalidRequest.class);
 
         verify(idamService, times(0)).registerUser(any(IdamRegisterUserRequest.class));

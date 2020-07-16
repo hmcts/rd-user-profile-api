@@ -101,7 +101,8 @@ public class UserProfileRetrieverTest {
     public void test_run_query_and_respond_with_user_profile_withFetchRolesTrue() {
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
 
-        UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.EMAIL, String.valueOf(new Random().nextInt()));
+        UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.EMAIL,
+                String.valueOf(new Random().nextInt()));
 
         when(querySupplier.getRetrieveByIdQuery(identifier)).thenReturn(supplier);
         when(supplier.get()).thenReturn(Optional.of(userProfile));
@@ -163,13 +164,15 @@ public class UserProfileRetrieverTest {
         up2.setStatus(IdamStatus.ACTIVE);
         userProfiles.add(up2);
 
-        UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID_LIST, Arrays.asList(UUID.randomUUID().toString(), UUID.randomUUID().toString()));
+        UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID_LIST,
+                Arrays.asList(UUID.randomUUID().toString(), UUID.randomUUID().toString()));
 
         when(querySupplier.getProfilesByIds(identifier, true)).thenReturn(Optional.of(userProfiles));
         when(idamServiceMock.fetchUserById(any(String.class))).thenReturn(idamRolesInfo);
         when(auditRepository.save(any())).thenReturn(audit);
 
-        List<UserProfile> userProfilesWithRoles = userProfileRetriever.retrieveMultipleProfiles(identifier, true, true);
+        List<UserProfile> userProfilesWithRoles = userProfileRetriever.retrieveMultipleProfiles(identifier,
+                true, true);
         assertThat(userProfilesWithRoles.size()).isEqualTo(2);
 
         UserProfile getUserProfile1 = userProfilesWithRoles.get(0);
@@ -199,11 +202,13 @@ public class UserProfileRetrieverTest {
         up2.setStatus(IdamStatus.ACTIVE);
         userProfiles.add(up2);
 
-        UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID_LIST, Arrays.asList(UUID.randomUUID().toString(), UUID.randomUUID().toString()));
+        UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID_LIST,
+                Arrays.asList(UUID.randomUUID().toString(), UUID.randomUUID().toString()));
 
         when(querySupplier.getProfilesByIds(identifier, true)).thenReturn(Optional.of(userProfiles));
 
-        List<UserProfile> userProfilesWithRoles = userProfileRetriever.retrieveMultipleProfiles(identifier, true, false);
+        List<UserProfile> userProfilesWithRoles = userProfileRetriever.retrieveMultipleProfiles(identifier,
+                true, false);
         assertThat(userProfilesWithRoles.size()).isEqualTo(2);
 
         UserProfile getUserProfile1 = userProfilesWithRoles.get(0);
@@ -223,7 +228,8 @@ public class UserProfileRetrieverTest {
 
         when(querySupplier.getProfilesByIds(identifier, true)).thenThrow(ResourceNotFoundException.class);
 
-        assertThatThrownBy(() -> userProfileRetriever.retrieveMultipleProfiles(identifier, true, true))
+        assertThatThrownBy(() -> userProfileRetriever.retrieveMultipleProfiles(identifier, true,
+                true))
                 .isInstanceOf(ResourceNotFoundException.class);
         verify(querySupplier, times(1)).getProfilesByIds(identifier, true);
     }

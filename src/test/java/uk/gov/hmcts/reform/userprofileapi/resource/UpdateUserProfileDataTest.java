@@ -34,7 +34,8 @@ public class UpdateUserProfileDataTest {
         userProfile.setLastName("lname");
         userProfile.setEmail("email");
 
-        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("email", "fname", "lname", "ACTIVE", new HashSet<RoleName>(), new HashSet<>());
+        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("email", "fname",
+                "lname", "ACTIVE", new HashSet<RoleName>(), new HashSet<>());
 
         assertThat(updateUserProfileData.isSameAsUserProfile(userProfile)).isTrue();
     }

@@ -33,7 +33,8 @@ public class UserProfileRolesResponseTest {
     public void test_AddRolesViaConstructor() {
         RoleAdditionResponse roleAdditionResponse = new RoleAdditionResponse(ResponseEntity.status(OK).build());
 
-        RoleDeletionResponse deletionResponse = new RoleDeletionResponse("pui-case-manager", ResponseEntity.status(OK).build());
+        RoleDeletionResponse deletionResponse = new RoleDeletionResponse("pui-case-manager",
+                ResponseEntity.status(OK).build());
         List<RoleDeletionResponse> roleDeletionResponseData = new ArrayList<>();
         roleDeletionResponseData.add(deletionResponse);
 

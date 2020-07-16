@@ -53,7 +53,8 @@ public class IdamServiceImplTest {
 
     Map<String, Collection<String>> header = new HashMap<>();
     Request request = mock(Request.class);
-    Response responseMock = Response.builder().status(200).reason("OK").headers(header).body("{\"idamId\": 1}", UTF_8).request(request).build();
+    Response responseMock = Response.builder().status(200).reason("OK").headers(header)
+            .body("{\"idamId\": 1}", UTF_8).request(request).build();
 
     @Test
     public void test_RegisterUser() {
@@ -75,7 +76,8 @@ public class IdamServiceImplTest {
 
     @Test
     public void test_FetchUserById() {
-        Response response = Response.builder().status(200).reason("OK").headers(header).body("{\"idamId\": 1}", UTF_8).request(request).build();
+        Response response = Response.builder().status(200).reason("OK").headers(header)
+                .body("{\"idamId\": 1}", UTF_8).request(request).build();
         Response responseMock = Mockito.mock(Response.class);
 
         when(idamFeignClientMock.getUserById(userId)).thenReturn(responseMock);
@@ -95,7 +97,8 @@ public class IdamServiceImplTest {
 
     @Test
     public void test_FetchUserByEmail() {
-        Response response = Response.builder().status(200).reason("OK").headers(header).body("{\"idamId\": 1}", UTF_8).request(request).build();
+        Response response = Response.builder().status(200).reason("OK").headers(header)
+                .body("{\"idamId\": 1}", UTF_8).request(request).build();
         Response responseMock = Mockito.mock(Response.class);
 
         when(idamFeignClientMock.getUserByEmail(anyString())).thenReturn(responseMock);
@@ -160,7 +163,8 @@ public class IdamServiceImplTest {
     @Test
     public void test_UpdateUserRoles() {
         List<String> roleRequest = new ArrayList<>();
-        Response response = Response.builder().status(200).reason("OK").headers(header).body("{\"idamId\": 1}", UTF_8).request(request).build();
+        Response response = Response.builder().status(200).reason("OK").headers(header)
+                .body("{\"idamId\": 1}", UTF_8).request(request).build();
 
         Response responseMock = Mockito.mock(Response.class);
 

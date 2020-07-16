@@ -73,14 +73,16 @@ public class AbstractFunctional {
         idamClient = new IdamClient(configProperties);
     }
 
-    protected UserProfileCreationResponse createActiveUserProfileWithGivenRoles(HttpStatus expectedStatus, List<String> roles) throws Exception {
+    protected UserProfileCreationResponse createActiveUserProfileWithGivenRoles(HttpStatus expectedStatus,
+                                                                                List<String> roles) throws Exception {
         UserProfileCreationData data = createUserProfileData();
         String email = idamClient.createUser(roles);
         data.setEmail(email);
         return createUserProfile(data, expectedStatus);
     }
 
-    protected UserProfileCreationResponse createUserProfile(UserProfileCreationData userProfileCreationData, HttpStatus expectedStatus) throws Exception {
+    protected UserProfileCreationResponse createUserProfile(UserProfileCreationData userProfileCreationData,
+                                                            HttpStatus expectedStatus) throws Exception {
 
         UserProfileCreationResponse resource = testRequestHandler.sendPost(
                 userProfileCreationData,
@@ -92,7 +94,8 @@ public class AbstractFunctional {
         return resource;
     }
 
-    protected UserProfileCreationResponse createActiveUserProfile(UserProfileCreationData userProfileCreationData) throws Exception {
+    protected UserProfileCreationResponse createActiveUserProfile(UserProfileCreationData userProfileCreationData)
+            throws Exception {
         List<String> xuiuRoles = new ArrayList();
         xuiuRoles.add("pui-user-manager");
         xuiuRoles.add("pui-case-manager");
@@ -108,7 +111,8 @@ public class AbstractFunctional {
         return createUserProfile(userProfileCreationData, HttpStatus.CREATED);
     }
 
-    protected void updateUserProfile(UpdateUserProfileData updateUserProfileData, String userId, HttpStatus expectedStatus) throws Exception {
+    protected void updateUserProfile(UpdateUserProfileData updateUserProfileData, String userId,
+                                     HttpStatus expectedStatus) throws Exception {
 
         testRequestHandler.sendPut(
                 updateUserProfileData,
@@ -121,6 +125,7 @@ public class AbstractFunctional {
     }
 
     protected UserProfileCreationData createUserProfileDataWithReInvite() {
+
         return buildCreateUserProfileData(true);
     }
 
@@ -145,13 +150,15 @@ public class AbstractFunctional {
         assertThat(resource.getIdamStatus()).isNotNull();
     }
 
-    protected void verifyGetUserProfileWithRoles(UserProfileWithRolesResponse resource, UserProfileCreationData expectedResource) {
+    protected void verifyGetUserProfileWithRoles(UserProfileWithRolesResponse resource,
+                                                 UserProfileCreationData expectedResource) {
 
         verifyGetUserProfile(resource, expectedResource);
 
     }
 
-    protected UserProfileRolesResponse addRoleRequestWithGivenRoles(Set<RoleName> roles, String idamId) throws JsonProcessingException {
+    protected UserProfileRolesResponse addRoleRequestWithGivenRoles(Set<RoleName> roles, String idamId)
+            throws JsonProcessingException {
         Set<RoleName> rolesToAdd = new HashSet<>();
         rolesToAdd.addAll(roles);
 
@@ -160,7 +167,8 @@ public class AbstractFunctional {
         return addDeleteRole(updateUserProfileData, idamId);
     }
 
-    protected UserProfileRolesResponse deleteRoleRequestWithGivenRoles(Set<RoleName> roles, String idamId) throws JsonProcessingException {
+    protected UserProfileRolesResponse deleteRoleRequestWithGivenRoles(Set<RoleName> roles, String idamId)
+            throws JsonProcessingException {
         Set<RoleName> rolesToDelete = new HashSet<>();
         rolesToDelete.addAll(roles);
 
@@ -169,7 +177,8 @@ public class AbstractFunctional {
         return addDeleteRole(updateUserProfileData, idamId);
     }
 
-    protected UserProfileRolesResponse addDeleteRole(UpdateUserProfileData updateUserProfileData, String idamId) throws JsonProcessingException {
+    protected UserProfileRolesResponse addDeleteRole(UpdateUserProfileData updateUserProfileData, String idamId)
+            throws JsonProcessingException {
         return testRequestHandler.sendDelete(
                 updateUserProfileData,
                 HttpStatus.OK,

@@ -74,9 +74,12 @@ public class IdamStatusResolverTest {
 
     @Test
     public void test_resolve_and_return_idam_status_by_idam_flags() {
-        assertThat(IdamStatusResolver.resolveIdamStatus(createIdamRoleInfo(false,true))).isEqualTo(IdamStatus.PENDING);
-        assertThat(IdamStatusResolver.resolveIdamStatus(createIdamRoleInfo(true,false))).isEqualTo(IdamStatus.ACTIVE);
-        assertThat(IdamStatusResolver.resolveIdamStatus(createIdamRoleInfo(false,false))).isEqualTo(IdamStatus.SUSPENDED);
+        assertThat(IdamStatusResolver.resolveIdamStatus(createIdamRoleInfo(false,true)))
+                .isEqualTo(IdamStatus.PENDING);
+        assertThat(IdamStatusResolver.resolveIdamStatus(createIdamRoleInfo(true,false)))
+                .isEqualTo(IdamStatus.ACTIVE);
+        assertThat(IdamStatusResolver.resolveIdamStatus(createIdamRoleInfo(false,false)))
+                .isEqualTo(IdamStatus.SUSPENDED);
     }
 
 
@@ -94,13 +97,15 @@ public class IdamStatusResolverTest {
         List<String> roles = Collections.singletonList("pui-case-manger");
         String surName = "lastName";
 
-        IdamUserResponse idamUserResponse = new IdamUserResponse(active, email, foreName, userId,pending, roles, surName);
+        IdamUserResponse idamUserResponse = new IdamUserResponse(active, email, foreName, userId,pending, roles,
+                surName);
         ResponseEntity<Object> entity = new ResponseEntity<Object>(idamUserResponse, HttpStatus.CREATED);
         return new IdamRolesInfo(entity);
     }
 
     @Test
-    public void test_IdamStatusResolver_private_constructor() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    public void test_IdamStatusResolver_private_constructor() throws NoSuchMethodException, IllegalAccessException,
+            InvocationTargetException, InstantiationException {
         Constructor<IdamStatusResolver> constructor = IdamStatusResolver.class.getDeclaredConstructor();
         assertTrue(Modifier.isPrivate(constructor.getModifiers()));
         constructor.setAccessible(true);
@@ -130,7 +135,8 @@ public class IdamStatusResolverTest {
 
     @Test
     public void test_resolveStatusAndReturnMessage_when_responseEntity_body_has_IdamErrorResponse() {
-        IdamErrorResponse idamErrorResponse = getIdamErrorResponse(null, "some test error message");
+        IdamErrorResponse idamErrorResponse = getIdamErrorResponse(null,
+                "some test error message");
         ResponseEntity<Object> responseEntity = ResponseEntity.status(CREATED).body(idamErrorResponse);
         String errorMessage = resolveStatusAndReturnMessage(responseEntity);
         assertThat(errorMessage).isEqualTo("some test error message");
@@ -141,13 +147,14 @@ public class IdamStatusResolverTest {
         List<String> errorMessages = new ArrayList<>();
         errorMessages.add("errorMessage1");
         errorMessages.add("errorMessage2");
-        IdamErrorResponse idamErrorResponse = getIdamErrorResponse(errorMessages, "some test error message");
+        IdamErrorResponse idamErrorResponse = getIdamErrorResponse(errorMessages,
+                "some test error message");
         String errorMessage = getErrorMessageFromSidamResponse(idamErrorResponse);
         assertThat(errorMessage).isEqualTo("errorMessage1");
     }
 
     @Test
-    public void test_getErrorMessageFromSidamResponse_when_responseEntity_body_has_IdamErrorResponse_with_ErrorMessages_field() {
+    public void test_getErrMsgFromSidamResponse_when_responseEntity_body_has_IdamErrorResponse_with_ErrMsg_field() {
         List<String> errorMessages = new ArrayList<>();
         errorMessages.add("errorMessage1");
         errorMessages.add("errorMessage2");
@@ -157,15 +164,16 @@ public class IdamStatusResolverTest {
     }
 
     @Test
-    public void test_getErrorMessageFromSidamResponse_when_responseEntity_body_has_IdamErrorResponse_with_ErrorMessages_field_is_empty() {
+    public void test_getErrMsgFromSidamResponse_when_responseEntity_body_has_IdamErrResponse_with_ErrMsg_field_empty() {
         IdamErrorResponse idamErrorResponse = getIdamErrorResponse(new ArrayList<String>(), null);
         String errorMessage = getErrorMessageFromSidamResponse(idamErrorResponse);
         assertThat(errorMessage).isNull();
     }
 
     @Test
-    public void test_getErrorMessageFromSidamResponse_when_responseEntity_body_has_IdamErrorResponse_with_ErrorMessage_fields() {
-        IdamErrorResponse idamErrorResponse = getIdamErrorResponse(null, "some test error message");
+    public void test_getErrMsgFromSidamResponse_when_responseEntity_body_has_IdamErrorResponse_with_ErrMsg_fields() {
+        IdamErrorResponse idamErrorResponse = getIdamErrorResponse(null,
+                "some test error message");
         String errorMessage = getErrorMessageFromSidamResponse(idamErrorResponse);
         assertThat(errorMessage).isEqualTo("some test error message");
     }

@@ -270,7 +270,8 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
 
 
     @Test
-    public void should_see_error_message_from_idam_when_role_addition_fails_and_sidam_returns_error_response() throws Exception {
+    public void should_see_error_message_from_idam_when_role_addition_fails_and_sidam_returns_error_response()
+            throws Exception {
 
         UserProfile userProfile = buildUserProfile();
         userProfile.setStatus(IdamStatus.ACTIVE);
@@ -297,12 +298,14 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
         );
 
         assertThat(userProfileRolesResponse.getRoleAdditionResponse().getIdamStatusCode()).isEqualTo("412");
-        assertThat(userProfileRolesResponse.getRoleAdditionResponse().getIdamMessage()).isEqualTo("One or more of the roles provided does not exist.");
+        assertThat(userProfileRolesResponse.getRoleAdditionResponse().getIdamMessage())
+                .isEqualTo("One or more of the roles provided does not exist.");
 
     }
 
     @Test
-    public void should_see_error_message_from_idam_when_role_addition_fails_and_sidam_does_not_returns_error_response() throws Exception {
+    public void sld_see_err_msg_from_idam_when_role_addition_fails_and_sidam_does_not_returns_error_response()
+            throws Exception {
 
         UserProfile userProfile = buildUserProfile();
         userProfile.setStatus(IdamStatus.ACTIVE);
@@ -329,12 +332,14 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
         );
 
         assertThat(userProfileRolesResponse.getRoleAdditionResponse().getIdamStatusCode()).isEqualTo("412");
-        assertThat(userProfileRolesResponse.getRoleAdditionResponse().getIdamMessage()).isEqualTo("Problem while role addition/deletion");
+        assertThat(userProfileRolesResponse.getRoleAdditionResponse().getIdamMessage())
+                .isEqualTo("Problem while role addition/deletion");
 
     }
 
     @Test
-    public void should_see_error_message_from_idam_when_role_deletion_fails_and_sidam_returns_error_response() throws Exception {
+    public void should_see_error_message_from_idam_when_role_deletion_fails_and_sidam_returns_error_response()
+            throws Exception {
 
         UserProfile userProfile = buildUserProfile();
         userProfile.setStatus(IdamStatus.ACTIVE);
@@ -362,13 +367,15 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
 
         userProfileRolesResponse.getRoleDeletionResponse().forEach(roleDeletionResponse -> {
             assertThat(roleDeletionResponse.getIdamStatusCode()).isEqualTo("412");
-            assertThat(roleDeletionResponse.getIdamMessage()).isEqualTo("One or more of the roles provided does not exist.");
+            assertThat(roleDeletionResponse.getIdamMessage())
+                    .isEqualTo("One or more of the roles provided does not exist.");
         });
 
     }
 
     @Test
-    public void should_see_error_message_from_idam_when_role_deletion_fails_and_sidam_does_not_returns_error_response() throws Exception {
+    public void should_see_error_message_from_idam_when_role_deletion_fails_and_sidam_does_not_returns_error_response()
+            throws Exception {
 
         UserProfile userProfile = buildUserProfile();
         userProfile.setStatus(IdamStatus.ACTIVE);

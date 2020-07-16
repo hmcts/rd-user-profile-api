@@ -67,7 +67,8 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
         pendingUserRequest = buildCreateUserProfileData();
         createUser(pendingUserRequest, CREATED, UserProfileCreationResponse.class);
 
-        Optional<UserProfile> persistedUserProfile = userProfileRepository.findByEmail(pendingUserRequest.getEmail().toLowerCase());
+        Optional<UserProfile> persistedUserProfile = userProfileRepository.findByEmail(pendingUserRequest
+                .getEmail().toLowerCase());
         userProfile = persistedUserProfile.get();
 
     }
@@ -80,7 +81,8 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
 
         UserProfileCreationData data = buildCreateUserProfileData(true);
         data.setEmail(pendingUserRequest.getEmail());
-        UserProfileCreationResponse reInvitedUserResponse = (UserProfileCreationResponse) createUser(data, CREATED, UserProfileCreationResponse.class);
+        UserProfileCreationResponse reInvitedUserResponse = (UserProfileCreationResponse) createUser(data, CREATED,
+                UserProfileCreationResponse.class);
         assertThat(reInvitedUserResponse.getIdamId()).isEqualTo(userProfile.getIdamId());
         verifyUserProfileCreation(reInvitedUserResponse, CREATED, data);
     }
@@ -106,7 +108,8 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
         UserProfileCreationData data = buildCreateUserProfileData(true);
         data.setEmail(pendingUserRequest.getEmail());
         ErrorResponse errorResponse = (ErrorResponse) createUser(data, BAD_REQUEST, ErrorResponse.class);
-        assertThat(errorResponse.getErrorMessage()).isEqualTo("3 : There is a problem with your request. Please check and try again");
+        assertThat(errorResponse.getErrorMessage()).isEqualTo("3 : There is a problem with your request. "
+                .concat("Please check and try again"));
         assertThat(errorResponse.getErrorDescription()).isEqualTo("User is not in PENDING state");
 
     }
@@ -118,8 +121,10 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
         UserProfileCreationData data = buildCreateUserProfileData(true);
         data.setEmail(pendingUserRequest.getEmail());
         ErrorResponse errorResponse = (ErrorResponse) createUser(data, TOO_MANY_REQUESTS, ErrorResponse.class);
-        assertThat(errorResponse.getErrorMessage()).isEqualTo(String.format("10 : The request was last made less than %s minutes ago. Please try after some time", resendInterval));
-        assertThat(errorResponse.getErrorDescription()).contains(String.format("The request was last made less than %s minutes ago. Please try after some time", resendInterval));
+        assertThat(errorResponse.getErrorMessage()).isEqualTo(String.format("10 : The request was last made less "
+                .concat("than %s minutes ago. Please try after some time"), resendInterval));
+        assertThat(errorResponse.getErrorDescription()).contains(String.format("The request was last made less than"
+                .concat(" %s minutes ago. Please try after some time"), resendInterval));
 
     }
 
@@ -133,40 +138,51 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
         data.setEmail(pendingUserRequest.getEmail());
         ErrorResponse errorResponse = (ErrorResponse) createUser(data, HttpStatus.CONFLICT, ErrorResponse.class);
         assertThat(errorResponse.getErrorMessage()).isEqualTo(String.format("17 User with this email already exists"));
-        assertThat(errorResponse.getErrorDescription()).contains("7 : Resend invite failed as user is already active. Wait for some time for the system to refresh.");
+        assertThat(errorResponse.getErrorDescription())
+                .contains("7 : Resend invite failed as user is already active. "
+                        .concat("Wait for some time for the system to refresh."));
     }
 
     // resend invite fail with 429 if user is already invited and again within 1 hour
     @Test
-    public void should_return_429_when_user_reinvited_successfully_and_again_reinvited_within_one_hour() throws Exception {
+    public void should_return_429_when_user_reinvited_successfully_and_again_reinvited_within_one_hour()
+            throws Exception {
 
         updateLastUpdatedTimestamp(userProfile.getIdamId());
 
         UserProfileCreationData data = buildCreateUserProfileData(true);
         data.setEmail(pendingUserRequest.getEmail());
-        UserProfileCreationResponse reInvitedUserResponse = (UserProfileCreationResponse) createUser(data, CREATED, UserProfileCreationResponse.class);
+        UserProfileCreationResponse reInvitedUserResponse = (UserProfileCreationResponse) createUser(data, CREATED,
+                UserProfileCreationResponse.class);
         assertThat(reInvitedUserResponse.getIdamId()).isEqualTo(userProfile.getIdamId());
         verifyUserProfileCreation(reInvitedUserResponse, CREATED, data);
 
         ErrorResponse errorResponse = (ErrorResponse) createUser(data, TOO_MANY_REQUESTS, ErrorResponse.class);
-        assertThat(errorResponse.getErrorMessage()).isEqualTo(String.format("10 : The request was last made less than %s minutes ago. Please try after some time", resendInterval));
-        assertThat(errorResponse.getErrorDescription()).contains(String.format("The request was last made less than %s minutes ago. Please try after some time", resendInterval));
+        assertThat(errorResponse.getErrorMessage()).isEqualTo(String.format("10 : The request was last made less than "
+                .concat("%s minutes ago. Please try after some time"), resendInterval));
+        assertThat(errorResponse.getErrorDescription()).contains(String.format("The request was last made less than "
+                .concat("%s minutes ago. Please try after some time"), resendInterval));
     }
 
     // resend invite fail with 429 if user is already invited and again within 1 hour and fields are not changed
     @Test
-    public void should_return_429_when_user_reinvited_successfully_and_again_reinvited_within_one_hour_with_no_request_fields_change() throws Exception {
+    public void sld_rtn_429_when_usr_reinvited_successfully_and_again_reinvited_in_1_hour_with_no_rqst_fields_change()
+            throws Exception {
 
         updateLastUpdatedTimestamp(userProfile.getIdamId());
 
         pendingUserRequest.setResendInvite(true);
-        UserProfileCreationResponse reInvitedUserResponse = (UserProfileCreationResponse) createUser(pendingUserRequest, CREATED, UserProfileCreationResponse.class);
+        UserProfileCreationResponse reInvitedUserResponse = (UserProfileCreationResponse) createUser(pendingUserRequest,
+                CREATED, UserProfileCreationResponse.class);
         assertThat(reInvitedUserResponse.getIdamId()).isEqualTo(userProfile.getIdamId());
         verifyUserProfileCreation(reInvitedUserResponse, CREATED, pendingUserRequest);
 
-        ErrorResponse errorResponse = (ErrorResponse) createUser(pendingUserRequest, TOO_MANY_REQUESTS, ErrorResponse.class);
-        assertThat(errorResponse.getErrorMessage()).isEqualTo(String.format("10 : The request was last made less than %s minutes ago. Please try after some time", resendInterval));
-        assertThat(errorResponse.getErrorDescription()).contains(String.format("The request was last made less than %s minutes ago. Please try after some time", resendInterval));
+        ErrorResponse errorResponse = (ErrorResponse) createUser(pendingUserRequest, TOO_MANY_REQUESTS,
+                ErrorResponse.class);
+        assertThat(errorResponse.getErrorMessage()).isEqualTo(String.format("10 : The request was last made less than "
+                .concat("%s minutes ago. Please try after some time"), resendInterval));
+        assertThat(errorResponse.getErrorDescription()).contains(String.format("The request was last made less than "
+                .concat("%s minutes ago. Please try after some time"), resendInterval));
     }
 
 }

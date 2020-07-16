@@ -108,7 +108,8 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
     }
 
     @Test
-    public void should_see_idam_error_message_and_when_IdamStatus_is_updated_by_exui_and_idam_failsand_does_not_give_body() throws Exception {
+    public void should_see_idam_err_msg_and_when_IdamStatus_is_updated_by_exui_and_idam_failsand_does_not_give_body()
+            throws Exception {
 
         UserProfile persistedUserProfile = userProfileMap.get("user");
         setSidamUserUpdateMockWithStatus(NOT_FOUND.value(), true, persistedUserProfile.getIdamId());
@@ -116,7 +117,8 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
 
     }
 
-    public void updateUserStatusAndVerify(UserProfile persistedUserProfile, String message, int errorCode) throws Exception {
+    public void updateUserStatusAndVerify(UserProfile persistedUserProfile, String message, int errorCode)
+            throws Exception {
         persistedUserProfile.setStatus(IdamStatus.ACTIVE);
         userProfileRepository.save(persistedUserProfile);
         String idamId = persistedUserProfile.getIdamId();
@@ -153,11 +155,14 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
         assertThat(updatedUserProfile.getStatus().toString()).isEqualTo(data.getIdamStatus());
         assertThat(updatedUserProfile.isEmailCommsConsent()).isEqualTo(persistedUserProfile.isEmailCommsConsent());
         assertThat(updatedUserProfile.isPostalCommsConsent()).isEqualTo(persistedUserProfile.isPostalCommsConsent());
-        assertThat(updatedUserProfile.getEmailCommsConsentTs()).isEqualTo(persistedUserProfile.getEmailCommsConsentTs());
-        assertThat(updatedUserProfile.getPostalCommsConsentTs()).isEqualTo(persistedUserProfile.getPostalCommsConsentTs());
+        assertThat(updatedUserProfile.getEmailCommsConsentTs())
+                .isEqualTo(persistedUserProfile.getEmailCommsConsentTs());
+        assertThat(updatedUserProfile.getPostalCommsConsentTs())
+                .isEqualTo(persistedUserProfile.getPostalCommsConsentTs());
         assertThat(updatedUserProfile.getCreated()).isEqualTo(persistedUserProfile.getCreated());
 
-        List<Audit> matchedAuditRecords = getMatchedAuditRecords(auditRepository.findAll(), updatedUserProfile.getIdamId());
+        List<Audit> matchedAuditRecords = getMatchedAuditRecords(auditRepository.findAll(),
+                updatedUserProfile.getIdamId());
         assertThat(matchedAuditRecords.size()).isEqualTo(1);
         Audit audit = matchedAuditRecords.get(0);
 

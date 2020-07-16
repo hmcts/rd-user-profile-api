@@ -25,7 +25,8 @@ public class IdamRolesInfoTest {
         String surName = "lastName";
         Boolean pending = false;
 
-        IdamUserResponse idamUserResponse = new IdamUserResponse(active, email, foreName, userId, pending, roles, surName);
+        IdamUserResponse idamUserResponse = new IdamUserResponse(active, email, foreName, userId, pending, roles,
+                surName);
         ResponseEntity<Object> entity = new ResponseEntity<>(idamUserResponse, HttpStatus.CREATED);
 
         IdamRolesInfo idamRolesInfo = new IdamRolesInfo(entity);

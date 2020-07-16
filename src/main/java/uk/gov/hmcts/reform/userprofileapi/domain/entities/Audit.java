@@ -42,7 +42,8 @@ public class Audit {
     @JoinColumn(name = "USER_PROFILE_ID")
     private UserProfile userProfile;
 
-    public Audit(Integer idamRegistrationResponse, String statusMessage, ResponseSource source, UserProfile userProfile) {
+    public Audit(Integer idamRegistrationResponse, String statusMessage, ResponseSource source,
+                 UserProfile userProfile) {
         this(idamRegistrationResponse, statusMessage, source);
         this.userProfile = userProfile;
     }

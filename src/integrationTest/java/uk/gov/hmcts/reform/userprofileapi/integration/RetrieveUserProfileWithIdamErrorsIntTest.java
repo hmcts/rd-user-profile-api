@@ -123,11 +123,13 @@ public class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabl
 
         assertThat(errorResponse).isNotNull();
         assertThat(errorResponse.getErrorMessage()).isEqualTo("16 Resource not found");
-        assertThat(errorResponse.getErrorDescription()).isEqualTo("The user could not be found: c5d631f-af11-4816-abbe-ac6fd9b99ee9");
+        assertThat(errorResponse.getErrorDescription())
+                .isEqualTo("The user could not be found: c5d631f-af11-4816-abbe-ac6fd9b99ee9");
     }
 
     @Test
-    public void should_see_idam_error_message_when_idam_returns_404_and_does_not_send_response_with_roles_by_id() throws Exception {
+    public void should_see_idam_error_message_when_idam_returns_404_and_does_not_send_response_with_roles_by_id()
+            throws Exception {
 
         mockWithGetFail(NOT_FOUND, false);
         UserProfile userProfile = userProfileMap.get("user");

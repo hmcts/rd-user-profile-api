@@ -80,7 +80,8 @@ public class UserProfileServiceTest {
         AttributeResponse attributeResponseMock = Mockito.mock(AttributeResponse.class);
         when(resourceUpdatorMock.update(any(), any(), any())).thenReturn(attributeResponseMock);
 
-        assertThat(userProfileService.update(null, null, null)).isInstanceOf(AttributeResponse.class);
+        assertThat(userProfileService.update(null, null, null))
+                .isInstanceOf(AttributeResponse.class);
 
         verify(resourceUpdatorMock, times(1)).update(any(), any(), any());
     }
@@ -142,9 +143,11 @@ public class UserProfileServiceTest {
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         profileList.add(userProfile);
 
-        when(userProfileRetriever.retrieveMultipleProfiles(identifier, true, true)).thenReturn(profileList);
+        when(userProfileRetriever.retrieveMultipleProfiles(identifier, true, true))
+                .thenReturn(profileList);
 
-        UserProfileDataResponse resource = userProfileService.retrieveWithRoles(identifier, true, true);
+        UserProfileDataResponse resource = userProfileService.retrieveWithRoles(identifier, true,
+                true);
 
         assertThat(resource).isNotNull();
 

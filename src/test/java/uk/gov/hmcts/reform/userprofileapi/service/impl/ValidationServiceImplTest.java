@@ -43,11 +43,15 @@ public class ValidationServiceImplTest {
     @Mock
     private ValidationHelperService validationHelperServiceMock;
 
-    private UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
+    private UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder
+            .buildCreateUserProfileData();
     private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(status(ACCEPTED).build());
-    private UserProfile userProfile = new UserProfile(userProfileCreationData, idamRegistrationInfo.getIdamRegistrationResponse());
+    private UserProfile userProfile = new UserProfile(userProfileCreationData, idamRegistrationInfo
+            .getIdamRegistrationResponse());
 
-    private UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("email@net.com", "firstName", "lastName", "ACTIVE", new HashSet<RoleName>(), new HashSet<RoleName>());
+    private UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("email@net.com",
+            "firstName", "lastName", "ACTIVE", new HashSet<RoleName>(),
+            new HashSet<RoleName>());
 
 
     @InjectMocks
@@ -63,7 +67,8 @@ public class ValidationServiceImplTest {
         userProfile.setStatus(IdamStatus.SUSPENDED);
 
         when(validationHelperServiceMock.validateUserId(eq(userId))).thenReturn(true);
-        when(validationHelperServiceMock.validateUpdateUserProfileRequestValid(updateUserProfileData, userId, ResponseSource.API)).thenReturn(true);
+        when(validationHelperServiceMock.validateUpdateUserProfileRequestValid(updateUserProfileData, userId,
+                ResponseSource.API)).thenReturn(true);
 
         UserProfile actual = sut.validateUpdate(updateUserProfileData, userId, ResponseSource.API);
 
@@ -75,14 +80,17 @@ public class ValidationServiceImplTest {
 
     @Test
     public void test_IsValidForUserDetailUpdateHappyPath() {
-        when(validationHelperServiceMock.validateUserStatusBeforeUpdate(updateUserProfileData, userProfile, ResponseSource.API)).thenReturn(true);
+        when(validationHelperServiceMock.validateUserStatusBeforeUpdate(updateUserProfileData, userProfile,
+                ResponseSource.API)).thenReturn(true);
         assertThat(sut.isValidForUserDetailUpdate(updateUserProfileData, userProfile, ResponseSource.API)).isTrue();
     }
 
     @Test
     public void test_IsValidForUserDetailUpdateSadPath() {
         assertThat(sut.isValidForUserDetailUpdate(updateUserProfileData, userProfile, ResponseSource.API)).isFalse();
-        verify(validationHelperServiceMock, times(1)).validateUserStatusBeforeUpdate(any(UpdateUserProfileData.class), any(UserProfile.class), any(ResponseSource.class));
+        verify(validationHelperServiceMock, times(1))
+                .validateUserStatusBeforeUpdate(any(UpdateUserProfileData.class), any(UserProfile.class),
+                        any(ResponseSource.class));
     }
 
     @Test
