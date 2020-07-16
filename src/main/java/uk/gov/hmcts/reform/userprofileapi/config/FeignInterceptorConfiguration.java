@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-
 @Slf4j
 public class FeignInterceptorConfiguration {
 
