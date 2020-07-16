@@ -15,18 +15,24 @@ import java.util.Optional;
 import java.util.zip.GZIPInputStream;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamErrorResponse;
 
-
+@Component
 @Slf4j
 public class JsonFeignResponseHelper {
+
     private static final ObjectMapper json = new ObjectMapper();
 
-    private JsonFeignResponseHelper() { }
+    private static String loggingComponentName;
+
+    private JsonFeignResponseHelper() {
+    }
 
     public static <U> ResponseEntity<U> toResponseEntity(Response response, Optional<Class<U>> classOpt) {
         Optional<U> payload = decode(response, classOpt);
@@ -53,7 +59,7 @@ public class JsonFeignResponseHelper {
                         ? json.readValue(new GZIPInputStream(new BufferedInputStream(response.body().asInputStream())), clazz.get())
                         : json.readValue(response.body().asReader(Charset.defaultCharset()), clazz.get()));
             } catch (IOException e) {
-                log.warn("Error could not decoded : {}", e.getLocalizedMessage());
+                log.warn("{}:: Error could not decoded : {}", loggingComponentName, e.getLocalizedMessage());
             }
         }
         return result;
@@ -67,4 +73,8 @@ public class JsonFeignResponseHelper {
         }
     }
 
+    @Value("${loggingComponentName}")
+    public void setLoggingComponentName(String loggingComponentName) {
+        JsonFeignResponseHelper.loggingComponentName = loggingComponentName;
+    }
 }

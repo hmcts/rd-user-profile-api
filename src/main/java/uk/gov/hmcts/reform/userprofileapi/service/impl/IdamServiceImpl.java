@@ -10,6 +10,7 @@ import java.util.Set;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -30,6 +31,9 @@ public class IdamServiceImpl implements IdamService {
 
     @Autowired
     private IdamFeignClient idamClient;
+
+    @Value("${loggingComponentName}")
+    private String loggingComponentName;
 
     @Override
     public IdamRegistrationInfo registerUser(IdamRegisterUserRequest requestData) {
@@ -105,7 +109,7 @@ public class IdamServiceImpl implements IdamService {
             Response response = idamClient.updateUserDetails(updateUserDetails, userId);
             responseEntity = JsonFeignResponseHelper.toResponseEntity(response, getResponseMapperClass(response, null));
         } catch (FeignException ex) {
-            log.error("SIDAM call failed:", ex);
+            log.error("{}:: {} {}", loggingComponentName, "SIDAM call failed:", ex);
             responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
         return new AttributeResponse(responseEntity);
