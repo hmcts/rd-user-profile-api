@@ -22,7 +22,7 @@ public class IdamRepository {
     }
 
     public UserInfo getUserInfo(String jwtToken) {
-        log.info("{}:: Inside getUserInfo:::", loggingComponentName);
+        log.info("{}:: Inside getUserInfo::", loggingComponentName);
         return idamClient.getUserInfo("Bearer " + jwtToken);
     }
 
