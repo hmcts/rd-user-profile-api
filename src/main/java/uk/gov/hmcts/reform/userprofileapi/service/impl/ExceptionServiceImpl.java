@@ -26,7 +26,7 @@ public class ExceptionServiceImpl implements ExceptionService {
     }
 
     public void throwCustomRuntimeException(ExceptionType className, String msg, HttpStatus httpStatus) {
-        log.error("{}::, {}", loggingComponentName, msg);
+        log.error("{}:: {}", loggingComponentName, msg);
         switch (className) {
             case IDAMSERVICEEXCEPTION : throw new IdamServiceException(msg, httpStatus);
             case REQUIREDFIELDMISSINGEXCEPTION : throw new RequiredFieldMissingException(msg);
