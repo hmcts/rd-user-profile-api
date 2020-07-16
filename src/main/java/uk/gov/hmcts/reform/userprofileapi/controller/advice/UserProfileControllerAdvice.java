@@ -37,6 +37,7 @@ import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
 public class UserProfileControllerAdvice {
 
     private static final String LOG_STRING = "handling exception: {}";
+
     @Value("${resendInterval}")
     private String resendInterval;
 
@@ -128,7 +129,7 @@ public class UserProfileControllerAdvice {
 
     private ResponseEntity<Object> errorDetailsResponseEntity(Exception ex, HttpStatus httpStatus, String errorMsg) {
 
-        log.error(loggingComponentName + LOG_STRING, ex);
+        log.error("{}:: {}", loggingComponentName, LOG_STRING, ex);
         ErrorResponse errorDetails = ErrorResponse.builder()
                 .errorMessage(errorMsg)
                 .errorDescription(getRootException(ex).getLocalizedMessage())
@@ -149,7 +150,7 @@ public class UserProfileControllerAdvice {
             errorDesc = getRootException(ex).getLocalizedMessage();
         }
 
-        log.error(loggingComponentName + LOG_STRING, ex);
+        log.error("{}:: {}", loggingComponentName, LOG_STRING, ex);
         ErrorResponse errorDetails = ErrorResponse.builder()
                 .errorMessage(errorMsg)
                 .errorDescription(errorDesc)
