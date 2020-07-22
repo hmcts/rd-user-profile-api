@@ -57,9 +57,4 @@ public class JwtGrantedAuthoritiesConverter implements Converter<Jwt, Collection
                 .collect(Collectors.toList());
     }
 
-    public  UserInfo getUserInfo() {
-
-        return userInfo;
-    }
-
 }
