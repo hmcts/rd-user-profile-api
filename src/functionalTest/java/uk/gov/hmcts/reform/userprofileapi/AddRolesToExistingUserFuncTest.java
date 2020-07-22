@@ -48,7 +48,7 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
     }
 
     @Test
-    public void should_update_user_profile_with_roles_successfully() throws Exception {
+    public void test_update_user_profile_with_roles_successfully() throws Exception {
 
 
         UserProfileCreationData data = createUserProfileData();
@@ -220,8 +220,10 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         Set<RoleName> rolesToAdd = new HashSet<>();
         rolesToAdd.add(rolesToBeAdded);
 
-        UserProfileRolesResponse addResourceResp = addRoleRequestWithGivenRoles(rolesToAdd, userProfileCreationResponse.getIdamId());
-        verifyAddRoleResponse(addResourceResp, "One or more of the roles provided does not exist.", "412");
+        UserProfileRolesResponse addResourceResp
+                = addRoleRequestWithGivenRoles(rolesToAdd, userProfileCreationResponse.getIdamId());
+        verifyAddRoleResponse(addResourceResp, "One or more of the roles provided does not exist.",
+                "412");
     }
 
     @Test
@@ -233,11 +235,14 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         Set<RoleName> rolesToAdd = new HashSet<>();
         rolesToAdd.add(new RoleName(puiUserManager));
 
-        UserProfileRolesResponse addResourceResp = addRoleRequestWithGivenRoles(rolesToAdd, userProfileCreationResponse.getIdamId());
-        verifyAddRoleResponse(addResourceResp, "One or more of the roles provided is already assigned to the user.", "412");
+        UserProfileRolesResponse addResourceResp
+                = addRoleRequestWithGivenRoles(rolesToAdd, userProfileCreationResponse.getIdamId());
+        verifyAddRoleResponse(addResourceResp,
+                "One or more of the roles provided is already assigned to the user.", "412");
     }
 
-    public void verifyAddRoleResponse(UserProfileRolesResponse addResourceResp, String errorMessage, String statusCode) {
+    public void verifyAddRoleResponse(UserProfileRolesResponse addResourceResp, String errorMessage,
+                                      String statusCode) {
         assertThat(addResourceResp).isNotNull();
         RoleAdditionResponse roleAdditionResponse = addResourceResp.getRoleAdditionResponse();
         assertThat(roleAdditionResponse.getIdamMessage()).isEqualTo(errorMessage);

@@ -11,7 +11,7 @@ import org.junit.Test;
 public class IdamRegisterUserRequestTest {
 
     @Test
-    public void should_populate_fields() {
+    public void test_populate_fields() {
         String email = "some@hmcts.com";
         String firstName = "fname";
         String lastName = "lname";
@@ -19,7 +19,8 @@ public class IdamRegisterUserRequestTest {
         List<String> roles = new ArrayList<>();
         roles.add("pui_case_manager");
 
-        IdamRegisterUserRequest idamRegisterUserRequest = new IdamRegisterUserRequest(email, firstName, lastName, id, roles);
+        IdamRegisterUserRequest idamRegisterUserRequest = new IdamRegisterUserRequest(email, firstName, lastName, id,
+                roles);
 
         assertThat(idamRegisterUserRequest.getEmail()).isEqualTo(email);
         assertThat(idamRegisterUserRequest.getFirstName()).isEqualTo(firstName);

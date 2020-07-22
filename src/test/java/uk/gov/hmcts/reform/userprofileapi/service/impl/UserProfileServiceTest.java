@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdentifierName;
 import uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder;
+import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
@@ -46,13 +47,16 @@ public class UserProfileServiceTest {
     private UserProfileRetriever userProfileRetriever;
 
     @Mock
+    UserProfileRepository userProfileRepository;
+
+    @Mock
     private ResourceUpdator<UpdateUserProfileData> resourceUpdatorMock;
 
     @InjectMocks
     private UserProfileService<RequestData> userProfileService;
 
     @Test
-    public void testUpdateRoles() {
+    public void test_UpdateRoles() {
         UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData();
 
         Set<RoleName> roles = new HashSet<>();
@@ -72,17 +76,18 @@ public class UserProfileServiceTest {
     }
 
     @Test
-    public void testUpdate() {
+    public void test_Update() {
         AttributeResponse attributeResponseMock = Mockito.mock(AttributeResponse.class);
         when(resourceUpdatorMock.update(any(), any(), any())).thenReturn(attributeResponseMock);
 
-        assertThat(userProfileService.update(null, null, null)).isInstanceOf(AttributeResponse.class);
+        assertThat(userProfileService.update(null, null, null))
+                .isInstanceOf(AttributeResponse.class);
 
         verify(resourceUpdatorMock, times(1)).update(any(), any(), any());
     }
 
     @Test
-    public void testShould_call_creator_create_method_successfully() {
+    public void test_call_creator_create_method_successfully() {
         UserProfileCreationData userProfileData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         UserProfileCreationResponse expected = new UserProfileCreationResponse(userProfile);
@@ -97,7 +102,7 @@ public class UserProfileServiceTest {
     }
 
     @Test
-    public void testShould_call_retriever_retrieve_method_successfully() {
+    public void test_call_retriever_retrieve_method_successfully() {
         UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID, UUID.randomUUID().toString());
 
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
@@ -114,7 +119,7 @@ public class UserProfileServiceTest {
     }
 
     @Test
-    public void testShould_call_retriever_retrieve_with_roles_method_successfully() {
+    public void test_call_retriever_retrieve_with_roles_method_successfully() {
         UserProfileIdentifier identifier = mock(UserProfileIdentifier.class);
 
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
@@ -131,19 +136,35 @@ public class UserProfileServiceTest {
     }
 
     @Test
-    public void testShould_call_retriever_retrieve_multiple_users_with_roles_method_successfully() {
+    public void test_call_retriever_retrieve_multiple_users_with_roles_method_successfully() {
         UserProfileIdentifier identifier = mock(UserProfileIdentifier.class);
 
         List<UserProfile> profileList = new ArrayList<>();
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         profileList.add(userProfile);
 
-        when(userProfileRetriever.retrieveMultipleProfiles(identifier, true, true)).thenReturn(profileList);
+        when(userProfileRetriever.retrieveMultipleProfiles(identifier, true, true))
+                .thenReturn(profileList);
 
-        UserProfileDataResponse resource = userProfileService.retrieveWithRoles(identifier, true, true);
+        UserProfileDataResponse resource = userProfileService.retrieveWithRoles(identifier, true,
+                true);
 
         assertThat(resource).isNotNull();
 
         verify(userProfileRetriever, times(1)).retrieveMultipleProfiles(any(), any(boolean.class), any(boolean.class));
+    }
+
+    @Test
+    public void test_reInviteUser() {
+        UserProfileCreationData userProfileData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
+        UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
+
+        when(userProfileCreator.reInviteUser(userProfileData)).thenReturn(userProfile);
+
+        UserProfileCreationResponse response = userProfileService.reInviteUser(userProfileData);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getIdamId()).isEqualTo(userProfile.getIdamId());
+        assertThat(response.getIdamRegistrationResponse()).isEqualTo(201);
     }
 }

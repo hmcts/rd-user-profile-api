@@ -8,7 +8,7 @@ import org.junit.Test;
 public class ErrorResponseTest {
 
     @Test
-    public void builder() {
+    public void test_builder() {
         final String errorMsg = "Some error";
         final String desc = "Some desc";
         final String tmstp = now().toString();

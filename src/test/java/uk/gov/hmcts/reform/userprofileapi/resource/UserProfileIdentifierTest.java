@@ -11,9 +11,12 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdentifierName;
 public class UserProfileIdentifierTest {
 
     @Test
-    public void should_hold_values_after_creation() {
-        UserProfileIdentifier userProfileIdentifierWithOneValue = new UserProfileIdentifier(IdentifierName.EMAIL, "test_email@hmcts.net");
-        UserProfileIdentifier userProfileIdentifierWithMultipleValue = new UserProfileIdentifier(IdentifierName.UUID_LIST, new ArrayList<>(Arrays.asList("UUID1", "UUID2", "UUID3")));
+    public void test_hold_values_after_creation() {
+        UserProfileIdentifier userProfileIdentifierWithOneValue = new UserProfileIdentifier(IdentifierName.EMAIL,
+                "test_email@hmcts.net");
+        UserProfileIdentifier userProfileIdentifierWithMultipleValue
+                = new UserProfileIdentifier(IdentifierName.UUID_LIST, new ArrayList<>(Arrays.asList("UUID1", "UUID2",
+                "UUID3")));
 
         assertThat(userProfileIdentifierWithOneValue.getName()).isEqualTo(IdentifierName.EMAIL);
         assertThat(userProfileIdentifierWithOneValue.getValue()).isEqualTo("test_email@hmcts.net");

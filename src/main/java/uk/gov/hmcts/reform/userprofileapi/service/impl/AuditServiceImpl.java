@@ -21,7 +21,8 @@ public class AuditServiceImpl implements AuditService {
 
     @Override
     public void persistAudit(HttpStatus idamStatus, UserProfile userProfile, ResponseSource responseSource) {
-        Audit audit = new Audit(idamStatus.value(), resolveStatusAndReturnMessage(idamStatus), responseSource, userProfile);
+        Audit audit = new Audit(idamStatus.value(), resolveStatusAndReturnMessage(idamStatus), responseSource,
+                userProfile);
         auditRepository.save(audit);
     }
 
@@ -33,7 +34,8 @@ public class AuditServiceImpl implements AuditService {
 
     @Override
     public void persistAudit(IdamRolesInfo idamRolesInfo, UserProfile userProfile) {
-        Audit audit = new Audit(idamRolesInfo.getResponseStatusCode().value(), idamRolesInfo.getStatusMessage(), ResponseSource.API, userProfile);
+        Audit audit = new Audit(idamRolesInfo.getResponseStatusCode().value(), idamRolesInfo.getStatusMessage(),
+                ResponseSource.API, userProfile);
         auditRepository.save(audit);
     }
 

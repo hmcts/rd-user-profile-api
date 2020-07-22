@@ -7,7 +7,7 @@ import org.junit.Test;
 public class RoleNameTest {
 
     @Test
-    public void should_hold_values_after_creation() {
+    public void test_hold_values_after_creation() {
         RoleName roleName = new RoleName("pui-case-manager");
         assertThat(roleName.getName()).isEqualTo("pui-case-manager");
 

@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.userprofileapi.exception.RequiredFieldMissingExceptio
 public class RequiredFieldMissingExceptionTest {
 
     @Test
-    public void should_create_exception_correctly() {
+    public void test_create_exception_correctly() {
         String message = "this-is-a-test-message";
         RequiredFieldMissingException exception = new RequiredFieldMissingException(message);
 

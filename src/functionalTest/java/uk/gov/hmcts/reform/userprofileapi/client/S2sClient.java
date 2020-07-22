@@ -25,7 +25,12 @@ public class S2sClient {
     public S2sClient(String s2sUrl, String microserviceName, String microserviceKey) {
         this.s2sUrl = s2sUrl;
         this.microserviceName = microserviceName;
-        log.info("Configured S2S secret: " + microserviceKey.substring(0, 2) + "************" + microserviceKey.substring(14));
+        try {
+            log.info("Configured S2S secret: ".concat(microserviceKey.substring(0, 2)).concat("************")
+                    .concat(microserviceKey.substring(14)));
+        } catch (Exception e) {
+            log.info(e.getMessage());
+        }
         this.microserviceKey = microserviceKey;
     }
 

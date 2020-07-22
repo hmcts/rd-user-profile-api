@@ -239,7 +239,8 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
     }
 
     @Test
-    public void should_see_idam_error_message_with_no_body_while_retrieve_multiple_user_profiles_with_idam_failure() throws Exception {
+    public void should_see_idam_error_message_with_no_body_while_retrieve_multiple_user_profiles_with_idam_failure()
+            throws Exception {
 
         mockWithGetFail(HttpStatus.NOT_FOUND, false);
         UserProfileDataRequest request = new UserProfileDataRequest(userIds);
@@ -250,7 +251,8 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
     }
 
     @Test
-    public void should_see_idam_error_message_with_body_while_retrieve_multiple_user_profiles_with_idam_failure() throws Exception {
+    public void should_see_idam_error_message_with_body_while_retrieve_multiple_user_profiles_with_idam_failure()
+            throws Exception {
 
         mockWithGetFail(HttpStatus.NOT_FOUND, true);
         UserProfileDataRequest request = new UserProfileDataRequest(userIds);
@@ -259,7 +261,8 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
         UserProfileDataResponse response = getMultipleUsers(request, OK, "true", "true");
 
         assertThat(response.getUserProfiles().size()).isEqualTo(5);
-        verifyMultipleUserResponse(response, "The user could not be found: c5d631f-af11-4816-abbe-ac6fd9b99ee9");
+        verifyMultipleUserResponse(response,
+                "The user could not be found: c5d631f-af11-4816-abbe-ac6fd9b99ee9");
 
     }
 
@@ -276,7 +279,8 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
                 assertThat(getUserProfilesResponse.getIdamMessage()).isEqualTo(errorMessageToVerify);
             } else {
                 assertThat(getUserProfilesResponse.getIdamStatusCode()).isEqualTo(" ");
-                assertThat(getUserProfilesResponse.getIdamMessage()).isEqualTo("19 No call made to SIDAM to get the user roles as user status is not 'ACTIVE'");
+                assertThat(getUserProfilesResponse.getIdamMessage())
+                        .isEqualTo("19 No call made to SIDAM to get the user roles as user status is not 'ACTIVE'");
             }
         });
 

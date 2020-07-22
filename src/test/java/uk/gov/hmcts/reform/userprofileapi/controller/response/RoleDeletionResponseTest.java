@@ -10,10 +10,11 @@ import org.springframework.http.ResponseEntity;
 public class RoleDeletionResponseTest {
 
     @Test
-    public void testDeleteRoleResponse() {
+    public void test_DeleteRoleResponse() {
         final String caseWorker = "caseworker";
 
-        RoleDeletionResponse roleDeletionResponse = new RoleDeletionResponse(caseWorker, ResponseEntity.status(OK).build());
+        RoleDeletionResponse roleDeletionResponse = new RoleDeletionResponse(caseWorker,
+                ResponseEntity.status(OK).build());
 
         assertThat(roleDeletionResponse.getRoleName()).isEqualTo(caseWorker);
         assertThat(roleDeletionResponse.getIdamStatusCode()).isEqualTo(String.valueOf(OK.value()));

@@ -26,7 +26,8 @@ public class ValidationServiceImpl implements ValidationService {
 
 
     @Override
-    public UserProfile validateUpdate(UpdateUserProfileData updateUserProfileData, String userId, ResponseSource source) {
+    public UserProfile validateUpdate(UpdateUserProfileData updateUserProfileData, String userId,
+                                      ResponseSource source) {
         // validate input
         validationHelperService.validateUserId(userId);
 
@@ -42,7 +43,8 @@ public class ValidationServiceImpl implements ValidationService {
     }
 
     @Override
-    public boolean isValidForUserDetailUpdate(UpdateUserProfileData updateUserProfileData, UserProfile userProfile, ResponseSource source) {
+    public boolean isValidForUserDetailUpdate(UpdateUserProfileData updateUserProfileData, UserProfile userProfile,
+                                              ResponseSource source) {
         return validationHelperService.validateUserStatusBeforeUpdate(updateUserProfileData, userProfile, source);
     }
 

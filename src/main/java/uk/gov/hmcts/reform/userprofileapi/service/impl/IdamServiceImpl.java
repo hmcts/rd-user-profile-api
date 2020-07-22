@@ -10,7 +10,6 @@ import java.util.Set;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -32,14 +31,12 @@ public class IdamServiceImpl implements IdamService {
     @Autowired
     private IdamFeignClient idamClient;
 
-    @Value("${loggingComponentName}")
-    private String loggingComponentName;
-
     @Override
     public IdamRegistrationInfo registerUser(IdamRegisterUserRequest requestData) {
         IdamRegistrationInfo result;
         try (Response response = idamClient.createUserProfile(requestData)) {
-            ResponseEntity<Object> entity = JsonFeignResponseHelper.toResponseEntity(response, getResponseMapperClass(response, null));
+            ResponseEntity<Object> entity = JsonFeignResponseHelper.toResponseEntity(response,
+                    getResponseMapperClass(response, null));
             result = new IdamRegistrationInfo(entity);
         } catch (FeignException ex) {
             result = new IdamRegistrationInfo(ResponseEntity.status(gethttpStatusFromFeignException(ex)).build());
@@ -78,7 +75,8 @@ public class IdamServiceImpl implements IdamService {
         Response response;
         try {
             response = idamClient.updateUserRoles(roleRequest, userId);
-            responseEntity = JsonFeignResponseHelper.toResponseEntity(response, getResponseMapperClass(response, null));
+            responseEntity = JsonFeignResponseHelper.toResponseEntity(response, getResponseMapperClass(response,
+                    null));
         } catch (FeignException ex) {
             responseEntity = ResponseEntity.status(gethttpStatusFromFeignException(ex)).build();
         }
@@ -93,7 +91,8 @@ public class IdamServiceImpl implements IdamService {
         Response response;
         try {
             response = idamClient.addUserRoles(roleRequest, userId);
-            responseEntity = JsonFeignResponseHelper.toResponseEntity(response, getResponseMapperClass(response, null));
+            responseEntity = JsonFeignResponseHelper.toResponseEntity(response, getResponseMapperClass(response,
+                    null));
         } catch (FeignException ex) {
             responseEntity = ResponseEntity.status(gethttpStatusFromFeignException(ex)).build();
         }
@@ -107,9 +106,10 @@ public class IdamServiceImpl implements IdamService {
         ResponseEntity<Object> responseEntity = null;
         try {
             Response response = idamClient.updateUserDetails(updateUserDetails, userId);
-            responseEntity = JsonFeignResponseHelper.toResponseEntity(response, getResponseMapperClass(response, null));
+            responseEntity = JsonFeignResponseHelper.toResponseEntity(response, getResponseMapperClass(response,
+                    null));
         } catch (FeignException ex) {
-            log.error("{}:: {} {}", loggingComponentName, "SIDAM call failed:", ex);
+            log.error("SIDAM call failed:", ex);
             responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
         return new AttributeResponse(responseEntity);
@@ -123,7 +123,8 @@ public class IdamServiceImpl implements IdamService {
 
     @SuppressWarnings("unchecked")
     private IdamRolesInfo buildIdamResponseResult(Response response) {
-        ResponseEntity<Object> entity = JsonFeignResponseHelper.toResponseEntity(response, getResponseMapperClass(response, IdamUserResponse.class));
+        ResponseEntity<Object> entity = JsonFeignResponseHelper.toResponseEntity(response,
+                getResponseMapperClass(response, IdamUserResponse.class));
         return new IdamRolesInfo(entity);
     }
 
