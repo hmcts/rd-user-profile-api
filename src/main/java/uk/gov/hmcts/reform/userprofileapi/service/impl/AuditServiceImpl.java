@@ -41,7 +41,8 @@ public class AuditServiceImpl implements AuditService {
 
     @Override
     public void persistAudit(UserProfilesDeletionResponse userProfilesDeletionResponse) {
-        Audit audit = new Audit(userProfilesDeletionResponse.getStatusCode(), userProfilesDeletionResponse.getMessage(), ResponseSource.API);
+        Audit audit = new Audit(userProfilesDeletionResponse.getStatusCode(),
+                userProfilesDeletionResponse.getMessage(), ResponseSource.API);
         auditRepository.save(audit);
     }
 

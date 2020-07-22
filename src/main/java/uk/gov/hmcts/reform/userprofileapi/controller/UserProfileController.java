@@ -454,7 +454,8 @@ public class UserProfileController {
     )
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @ResponseBody
-    public ResponseEntity<UserProfilesDeletionResponse> deleteUserProfiles(@Valid @RequestBody UserProfileDataRequest userProfilesDeletionDataReq) {
+    public ResponseEntity<UserProfilesDeletionResponse> deleteUserProfiles(@Valid @RequestBody UserProfileDataRequest
+                                                                                       userProfilesDeletionDataReq) {
 
         UserProfilesDeletionResponse resource = null;
         validateUserIds(userProfilesDeletionDataReq);

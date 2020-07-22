@@ -215,10 +215,13 @@ public class UserProfileControllerTest {
         List<String> userIds = new ArrayList<>();
         userIds.add(userProfile.getIdamId());
         UserProfileDataRequest userProfileDataRequest = new UserProfileDataRequest(userIds);
-        UserProfilesDeletionResponse userProfilesDeletionResponse = new UserProfilesDeletionResponse(204,"UserProfiles Successfully Deleted");
+        UserProfilesDeletionResponse userProfilesDeletionResponse = new UserProfilesDeletionResponse(204,
+                "UserProfiles Successfully Deleted");
 
-        when(userProfileServiceMock.delete(any(UserProfileDataRequest.class))).thenReturn(userProfilesDeletionResponse);
-        ResponseEntity<UserProfilesDeletionResponse> responseEntityActual = sut.deleteUserProfiles(userProfileDataRequest);
+        when(userProfileServiceMock.delete(any(UserProfileDataRequest.class)))
+                .thenReturn(userProfilesDeletionResponse);
+        ResponseEntity<UserProfilesDeletionResponse> responseEntityActual = sut
+                .deleteUserProfiles(userProfileDataRequest);
         assertThat(responseEntityActual).isNotNull();
 
         verify(userProfileServiceMock, times(1)).delete(any(UserProfileDataRequest.class));
