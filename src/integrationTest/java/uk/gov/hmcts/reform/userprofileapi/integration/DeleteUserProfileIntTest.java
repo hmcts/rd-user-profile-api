@@ -57,7 +57,8 @@ public class DeleteUserProfileIntTest extends AuthorizationEnabledIntegrationTes
     }
 
     @Test
-    public void should_return_404_when_unable_to_find_profile_for_one_of_user_id_in_the_delete_request_for_multiple_user_profiles() throws Exception {
+    public void should_return404_when_unableToFind_profileForOneUserId_in_the_delete_request_for_multipleUserProfiles()
+            throws Exception {
 
         UserProfileCreationResponse response1 = createUserProfile(buildCreateUserProfileData());
         //user profile two created

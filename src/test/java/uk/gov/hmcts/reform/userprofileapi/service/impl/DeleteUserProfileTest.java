@@ -33,7 +33,8 @@ public class DeleteUserProfileTest {
     @Mock
     private UserProfileRepository userProfileRepositoryMock;
 
-    private UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
+    private UserProfileCreationData userProfileCreationData =
+            CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
 
     private UserProfile userProfile = new UserProfile(userProfileCreationData, HttpStatus.OK);
 

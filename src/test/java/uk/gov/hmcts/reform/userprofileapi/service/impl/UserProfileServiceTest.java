@@ -179,7 +179,8 @@ public class UserProfileServiceTest {
     public void testDeleteUserProfiles_successfully() {
 
         UserProfileDataRequest deletionData = mock(UserProfileDataRequest.class);
-        final UserProfilesDeletionResponse userProfilesDeletionResponse = new UserProfilesDeletionResponse(204, "successfully deleted");
+        final UserProfilesDeletionResponse userProfilesDeletionResponse =
+                new UserProfilesDeletionResponse(204, "successfully deleted");
 
         when(userProfileDeleterMock.delete(deletionData)).thenReturn(userProfilesDeletionResponse);
 

@@ -290,25 +290,6 @@ public class AuthorizationEnabledIntegrationTest {
         return createdResource;
     }
 
-    public static UserProfileDataRequest buildUserProfileDataRequest(List<String> userIds) {
-        return new UserProfileDataRequest(userIds);
-    }
-
-    public UserProfileCreationResponse createUserProfile(UserProfileCreationData data) throws Exception {
-
-        UserProfileCreationResponse createdResource =
-                userProfileRequestHandlerTest.sendPost(
-                        mockMvc,
-                        APP_BASE_PATH,
-                        data,
-                        CREATED,
-                        UserProfileCreationResponse.class
-                );
-
-        verifyUserProfileCreation(createdResource, CREATED, data);
-        return createdResource;
-    }
-
     public void createAndDeleteSingleUserProfile(UserProfileCreationData data) throws Exception {
 
 

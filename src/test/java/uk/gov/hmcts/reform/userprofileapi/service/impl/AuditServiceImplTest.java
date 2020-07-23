@@ -56,7 +56,8 @@ public class AuditServiceImplTest {
 
     @Test
     public void testPersistAuditForDeleteUserProfiles() {
-        UserProfilesDeletionResponse userProfilesDeletionResponse = new  UserProfilesDeletionResponse(204,"successfully deleted");
+        UserProfilesDeletionResponse userProfilesDeletionResponse =
+                new  UserProfilesDeletionResponse(204,"successfully deleted");
         sut.persistAudit(userProfilesDeletionResponse);
         verify(auditRepositoryMock, times(1)).save(any(Audit.class));
     }
