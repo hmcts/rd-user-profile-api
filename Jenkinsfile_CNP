@@ -39,7 +39,6 @@ withPipeline(type, product, component) {
 
     overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)
-
     enableDbMigration('rd')
     disableLegacyDeployment()
     enableAksStagingDeployment()
