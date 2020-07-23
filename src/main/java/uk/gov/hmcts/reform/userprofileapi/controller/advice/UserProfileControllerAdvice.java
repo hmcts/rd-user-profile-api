@@ -40,6 +40,9 @@ public class UserProfileControllerAdvice {
     @Value("${resendInterval}")
     private String resendInterval;
 
+    @Value("${loggingComponentName}")
+    private String loggingComponentName;
+
     @ExceptionHandler(RequiredFieldMissingException.class)
     protected ResponseEntity<Object> handleRequiredFieldMissingException(
             HttpServletRequest request,
@@ -126,7 +129,7 @@ public class UserProfileControllerAdvice {
 
     private ResponseEntity<Object> errorDetailsResponseEntity(Exception ex, HttpStatus httpStatus, String errorMsg) {
 
-        log.error(LOG_STRING, ex);
+        log.error("{}:: {}", loggingComponentName, LOG_STRING, ex);
         ErrorResponse errorDetails = ErrorResponse.builder()
                 .errorMessage(errorMsg)
                 .errorDescription(getRootException(ex).getLocalizedMessage())
@@ -149,7 +152,7 @@ public class UserProfileControllerAdvice {
             errorDesc = getRootException(ex).getLocalizedMessage();
         }
 
-        log.error(LOG_STRING, ex);
+        log.error("{}:: {}", loggingComponentName, LOG_STRING, ex);
         ErrorResponse errorDetails = ErrorResponse.builder()
                 .errorMessage(errorMsg)
                 .errorDescription(errorDesc)

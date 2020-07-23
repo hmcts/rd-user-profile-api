@@ -54,6 +54,9 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
     @Value("${syncInterval}")
     String syncInterval;
 
+    @Value("${loggingComponentName}")
+    private String loggingComponentName;
+
 
     public UserProfile create(UserProfileCreationData profileData) {
 
@@ -153,7 +156,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
             //get userId from location header
             userIdUri = idamRegistrationInfo.getResponse().getHeaders().getLocation();
             userId = userIdUri != null ? userIdUri.toString().substring(sidamGetUri.length()) : null;
-            log.error("Received existing idam user");
+            log.error("{}:: Received existing idam user", loggingComponentName);
             // search with id to get roles
             idamRolesInfo = idamService.fetchUserById(userId);
             idamStatus = idamRolesInfo.getResponseStatusCode();
@@ -171,7 +174,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
                     idamStatus = idamRolesInfo.getResponseStatusCode();
                     idamStatusMessage = idamRolesInfo.getStatusMessage();
                     if (!idamRolesInfo.isSuccessFromIdam()) {
-                        log.error("failed sidam add roles POST call for the given userId");
+                        log.error("{}:: failed sidam add roles POST call for the given userId", loggingComponentName);
                         persistAuditAndThrowIdamException(idamStatusMessage, idamStatus, null);
                     }
                 }
@@ -180,11 +183,11 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
                 idamStatusMessage = IdamStatusResolver.resolveStatusAndReturnMessage(idamStatus);
                 userProfile = persistUserProfileWithAudit(profileData, userId, idamStatusMessage, idamStatus);
             } else {
-                log.error("failed sidam GET call for the given userId");
+                log.error("{}:: failed sidam GET call for the given userId", loggingComponentName);
                 persistAuditAndThrowIdamException(idamStatusMessage, idamStatus, null);
             }
         } else {
-            log.error("Did not get location header");
+            log.error("{}:: Did not get location header", loggingComponentName);
             idamStatus = HttpStatus.INTERNAL_SERVER_ERROR;
             persistAuditAndThrowIdamException(IdamStatusResolver.resolveStatusAndReturnMessage(idamStatus),
                     idamStatus, null);
