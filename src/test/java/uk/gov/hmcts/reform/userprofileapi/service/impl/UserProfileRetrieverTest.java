@@ -122,7 +122,7 @@ public class UserProfileRetrieverTest {
 
         assertThatThrownBy(() -> userProfileRetriever.retrieve(identifier, false))
                 .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessage("Could not find resource from database with given identifier: " + identifier.getValue());
+                .hasMessage("Could not find resource from database with given identifier");
         verify(querySupplier, times(1)).getRetrieveByIdQuery(identifier);
 
     }
