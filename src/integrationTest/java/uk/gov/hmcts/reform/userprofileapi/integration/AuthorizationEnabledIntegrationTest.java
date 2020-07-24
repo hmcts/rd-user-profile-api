@@ -8,12 +8,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,7 +29,6 @@ import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRequestHandlerTest;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfilesDeletionResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
@@ -265,7 +262,6 @@ public class AuthorizationEnabledIntegrationTest {
         userProfileRepository.deleteAll();
     }
 
-
     public static List<Audit> getMatchedAuditRecords(List<Audit> audits, String idamId) {
         return audits.stream().filter(audit -> audit.getUserProfile().getIdamId().equalsIgnoreCase(idamId))
                 .collect(Collectors.toList());
@@ -288,40 +284,5 @@ public class AuthorizationEnabledIntegrationTest {
 
         verifyUserProfileCreation(createdResource, CREATED, data);
         return createdResource;
-    }
-
-    public void createAndDeleteSingleUserProfile(UserProfileCreationData data) throws Exception {
-
-
-        UserProfileCreationResponse createdResource =
-                userProfileRequestHandlerTest.sendPost(
-                        mockMvc,
-                        APP_BASE_PATH,
-                        data,
-                        CREATED,
-                        UserProfileCreationResponse.class
-                );
-
-        verifyUserProfileCreation(createdResource, CREATED, data);
-        List<String> userIds = new ArrayList<String>();
-        userIds.add(createdResource.getIdamId());
-        UserProfileDataRequest deletionRequest = buildUserProfileDataRequest(userIds);
-        userProfileRequestHandlerTest.sendDelete(mockMvc,
-                APP_BASE_PATH,
-                deletionRequest,
-                NO_CONTENT,
-                UserProfilesDeletionResponse.class);
-
-    }
-
-    public void deleteUserProfiles(List<String> userIds, HttpStatus status) throws Exception {
-
-        UserProfileDataRequest deletionRequest = buildUserProfileDataRequest(userIds);
-        userProfileRequestHandlerTest.sendDelete(mockMvc,
-                APP_BASE_PATH,
-                deletionRequest,
-                status,
-                UserProfilesDeletionResponse.class);
-
     }
 }

@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamErrorResponse;
 @Component
 @Slf4j
 public class JsonFeignResponseHelper {
+
     private static final ObjectMapper json = new ObjectMapper();
 
     private static String loggingComponentName;

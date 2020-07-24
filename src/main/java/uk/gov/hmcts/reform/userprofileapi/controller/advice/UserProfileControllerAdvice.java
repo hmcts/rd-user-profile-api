@@ -37,6 +37,7 @@ import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
 public class UserProfileControllerAdvice {
 
     private static final String LOG_STRING = "handling exception: {}";
+
     @Value("${resendInterval}")
     private String resendInterval;
 

@@ -11,7 +11,6 @@ import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.ResponseEntity.status;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildUpdateUserProfileData;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -31,9 +30,7 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfilesDeletionResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.exception.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
@@ -56,7 +53,7 @@ public class UserProfileControllerTest {
     private static final String ORIGIN = "EXUI";
 
     @Test
-    public void test_CreateUserProfile() {
+    public void testCreateUserProfile() {
 
         UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
@@ -73,7 +70,7 @@ public class UserProfileControllerTest {
     }
 
     @Test
-    public void test_ReInviteUserProfile() {
+    public void testReInviteUserProfile() {
 
         UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder
                 .buildCreateUserProfileData(true);
@@ -91,7 +88,7 @@ public class UserProfileControllerTest {
     }
 
     @Test
-    public void test_CreateUserProfileThrowsException() {
+    public void testCreateUserProfileThrowsException() {
         UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
         IllegalStateException ex = new IllegalStateException("this is a test exception");
 
@@ -103,7 +100,7 @@ public class UserProfileControllerTest {
     }
 
     @Test
-    public void test_CreateUserProfileWithNullParam() {
+    public void testCreateUserProfileWithNullParam() {
         assertThatThrownBy(() -> sut.createUserProfile(null))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessageContaining("createUserProfileData");
@@ -112,7 +109,7 @@ public class UserProfileControllerTest {
     }
 
     @Test
-    public void test_GetUserProfileWithRolesById() {
+    public void testGetUserProfileWithRolesById() {
         String id = "a833c2e2-2c73-4900-96ca-74b1efb37928";
         UserProfileWithRolesResponse responseMock = Mockito.mock(UserProfileWithRolesResponse.class);
 
@@ -124,13 +121,13 @@ public class UserProfileControllerTest {
     }
 
     @Test
-    public void test_throw_exception_when_get_with_uuid_null_parameters_passed_in() {
+    public void should_throw_exception_when_get_with_uuid_null_parameters_passed_in() {
         verifyNoInteractions(userProfileServiceMock);
     }
 
 
     @Test
-    public void test_GetUserProfileWithRolesByEmail() {
+    public void testGetUserProfileWithRolesByEmail() {
         String email = "test@test.com";
         UserProfileWithRolesResponse responseMock = Mockito.mock(UserProfileWithRolesResponse.class);
 
@@ -143,7 +140,7 @@ public class UserProfileControllerTest {
     }
 
     @Test
-    public void test_UpdateUserProfile() {
+    public void testUpdateUserProfile() {
         UpdateUserProfileData updateUserProfileData = buildUpdateUserProfileData();
         AttributeResponse attributeResponse = new AttributeResponse(status(OK).build());
 
@@ -158,12 +155,12 @@ public class UserProfileControllerTest {
 
 
     @Test
-    public void test_throw_exception_when_get_with_idamId_null_parameters_passed_in() {
+    public void should_throw_exception_when_get_with_idamId_null_parameters_passed_in() {
         verifyNoInteractions(userProfileServiceMock);
     }
 
     @Test
-    public void test_UpdateUserProfileRoles() {
+    public void testUpdateUserProfileRoles() {
         UpdateUserProfileData updateUserProfileData = buildUpdateUserProfileData();
 
         Set<RoleName> roles = new HashSet<>();
@@ -180,7 +177,7 @@ public class UserProfileControllerTest {
     }
 
     @Test
-    public void test_retrieveUserProfiles() {
+    public void testretrieveUserProfiles() {
         List<String> userIds = Arrays.asList("1", "2");
         UserProfileDataRequest userProfileDataRequest = new UserProfileDataRequest(userIds);
 
@@ -193,7 +190,7 @@ public class UserProfileControllerTest {
     }
 
     @Test
-    public void test_UpdateUserProfileRolesForDelete() {
+    public void testUpdateUserProfileRolesForDelete() {
         UpdateUserProfileData updateUserProfileData = buildUpdateUserProfileData();
 
         Set<RoleName> roles = new HashSet<>();
@@ -206,38 +203,5 @@ public class UserProfileControllerTest {
 
         ResponseEntity expect = ResponseEntity.status(HttpStatus.OK).build();
         assertThat(actual).isEqualTo(expect);
-    }
-
-    @Test
-    public void testDeleteUserProfiles() {
-
-        UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
-        List<String> userIds = new ArrayList<>();
-        userIds.add(userProfile.getIdamId());
-        UserProfileDataRequest userProfileDataRequest = new UserProfileDataRequest(userIds);
-        UserProfilesDeletionResponse userProfilesDeletionResponse =
-                new UserProfilesDeletionResponse(204,"UserProfiles Successfully Deleted");
-
-        when(userProfileServiceMock.delete(any(UserProfileDataRequest.class)))
-                .thenReturn(userProfilesDeletionResponse);
-        ResponseEntity<UserProfilesDeletionResponse> responseEntityActual =
-                sut.deleteUserProfiles(userProfileDataRequest);
-        assertThat(responseEntityActual).isNotNull();
-
-        verify(userProfileServiceMock, times(1)).delete(any(UserProfileDataRequest.class));
-        assertThat(responseEntityActual.getStatusCodeValue()).isEqualTo(204);
-        assertThat(responseEntityActual.getBody().getMessage()).isEqualTo("UserProfiles Successfully Deleted");
-    }
-
-    @Test(expected = RequiredFieldMissingException.class)
-    public void testDeleteUserProfilesWithEmptyUserIdInTheRequest() {
-
-        UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
-        List<String> userIds = new ArrayList<>();
-        userIds.add("");
-        UserProfileDataRequest userProfileDataRequest = new UserProfileDataRequest(userIds);
-        sut.deleteUserProfiles(userProfileDataRequest);
-        verify(userProfileServiceMock, times(0)).delete(any(UserProfileDataRequest.class));
-
     }
 }

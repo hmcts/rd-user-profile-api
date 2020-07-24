@@ -19,25 +19,21 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfilesDeletionResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdentifierName;
 import uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder;
-import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
-import uk.gov.hmcts.reform.userprofileapi.service.DeleteResourceService;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceUpdator;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -50,16 +46,10 @@ public class UserProfileServiceTest {
     private UserProfileRetriever userProfileRetriever;
 
     @Mock
-    UserProfileRepository userProfileRepository;
-
-    @Mock
     private ResourceUpdator<UpdateUserProfileData> resourceUpdatorMock;
 
     @InjectMocks
     private UserProfileService<RequestData> userProfileService;
-
-    @Mock
-    private DeleteResourceService<UserProfileDataRequest> userProfileDeleterMock;
 
     @Test
     public void test_UpdateRoles() {
@@ -158,37 +148,5 @@ public class UserProfileServiceTest {
         assertThat(resource).isNotNull();
 
         verify(userProfileRetriever, times(1)).retrieveMultipleProfiles(any(), any(boolean.class), any(boolean.class));
-    }
-
-    @Test
-    public void test_reInviteUser() {
-        UserProfileCreationData userProfileData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
-        UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
-
-        when(userProfileCreator.reInviteUser(userProfileData)).thenReturn(userProfile);
-
-        UserProfileCreationResponse response = userProfileService.reInviteUser(userProfileData);
-
-        assertThat(response).isNotNull();
-        assertThat(response.getIdamId()).isEqualTo(userProfile.getIdamId());
-        assertThat(response.getIdamRegistrationResponse()).isEqualTo(201);
-    }
-
-
-    @Test
-    public void testDeleteUserProfiles_successfully() {
-
-        UserProfileDataRequest deletionData = mock(UserProfileDataRequest.class);
-        final UserProfilesDeletionResponse userProfilesDeletionResponse =
-                new UserProfilesDeletionResponse(204, "successfully deleted");
-
-        when(userProfileDeleterMock.delete(deletionData)).thenReturn(userProfilesDeletionResponse);
-
-        UserProfilesDeletionResponse userProfilesDelResponse = userProfileService.delete(deletionData);
-
-        assertThat(userProfilesDelResponse).isNotNull();
-        assertThat(userProfilesDelResponse.getStatusCode()).isEqualTo(204);
-        assertThat(userProfilesDelResponse.getMessage()).isEqualTo("successfully deleted");
-        verify(userProfileDeleterMock, times(1)).delete(any());
     }
 }

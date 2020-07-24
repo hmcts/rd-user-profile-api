@@ -57,7 +57,6 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
     @Value("${loggingComponentName}")
     private String loggingComponentName;
 
-
     public UserProfile create(UserProfileCreationData profileData) {
 
         // check if user already in UP then

@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.userprofileapi.client;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -125,44 +124,10 @@ public class UserProfileRequestHandlerTest {
     }
 
 
-
-    public MvcResult sendDelete(MockMvc mockMvc,
-                              String path,
-                              String jsonBody,
-                              HttpStatus expectedHttpStatus) throws Exception {
-
-        return mockMvc.perform(delete(path)
-                .headers(getMultipleAuthHeaders())
-                .content(jsonBody)
-                .contentType(APPLICATION_JSON))
-                .andExpect(status().is(expectedHttpStatus.value())).andReturn();
-    }
-
-    public MvcResult sendDelete(MockMvc mockMvc,
-                              String path,
-                              Object body,
-                              HttpStatus expectedHttpStatus) throws Exception {
-
-        return sendDelete(mockMvc, path, objectMapper.writeValueAsString(body), expectedHttpStatus);
-
-    }
-
-    public <T> T sendDelete(MockMvc mockMvc,
-                          String path,
-                          Object body,
-                          HttpStatus expectedHttpStatus,
-                          Class<T> clazz) throws Exception {
-
-        MvcResult result = sendDelete(mockMvc, path, body, expectedHttpStatus);
-        assertThat(result.getResponse().getContentAsString())
-                .as("Expected json content was empty")
-                .isNotEmpty();
-
-        return objectMapper.readValue(result.getResponse().getContentAsString(), clazz);
-    }
-
     private HttpHeaders getMultipleAuthHeaders() {
 
+        log.info("JWT TOKEN::" + JWT_TOKEN);
+        log.info("IDAM_TOKEN::" + IDAM_TOKEN);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(APPLICATION_JSON);
 
