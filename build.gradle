@@ -256,6 +256,11 @@ dependencies {
     compile group: 'io.github.openfeign', name: 'feign-okhttp', version: '10.5.1'
     compile group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.4.0'
 
+
+    compile (group: 'io.rest-assured', name: 'rest-assured', version: '3.3.0') {
+        exclude group: "com.sun.xml.bind", module: "jaxb-osgi"
+    }
+
     compile group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
 
     compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
@@ -281,7 +286,7 @@ dependencies {
 
 
     compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
-    compile group: 'org.postgresql', name: 'postgresql', version: '42.2.14'
+    compile group: 'org.postgresql', name: 'postgresql', version: '42.2.8'
 
     compile group: 'javax.el', name: 'javax.el-api', version: '3.0.1-b06'
 
@@ -318,10 +323,6 @@ dependencies {
     testCompile group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
     testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
     testCompile group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
-
-    testCompile (group: 'io.rest-assured', name: 'rest-assured', version: '3.3.0') {
-        exclude group: "com.sun.xml.bind", module: "jaxb-osgi"
-    }
 
     testCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.25') {
         force = true
