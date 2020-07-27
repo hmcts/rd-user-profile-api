@@ -10,7 +10,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class UndefinedExceptionTest {
 
     @Test
-    public void should_create_exception_correctly() {
+    public void test_create_exception_correctly() {
         String message = "this-is-a-test-message";
         UndefinedException exception = new UndefinedException(message);
 

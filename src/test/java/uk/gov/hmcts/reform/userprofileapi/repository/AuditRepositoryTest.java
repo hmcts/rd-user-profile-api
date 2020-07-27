@@ -34,7 +34,7 @@ public class AuditRepositoryTest {
     }
 
     @Test
-    public void findAllTest() {
+    public void test_findAll() {
         List<Audit> audits = auditRepository.findAll();
 
         assertThat(audits.size()).isEqualTo(1);

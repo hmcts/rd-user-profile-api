@@ -46,7 +46,8 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
     public boolean validateUserId(String userId) {
         if (!isUserIdValid(userId, false)) {
             auditService.persistAudit(NOT_FOUND, SYNC);
-            final String exceptionMsg = String.format("%s - userId provided is malformed: %s", RESOURCENOTFOUNDEXCEPTION, userId);
+            final String exceptionMsg = String.format("%s - userId provided is malformed: %s",
+                    RESOURCENOTFOUNDEXCEPTION, userId);
             exceptionService.throwCustomRuntimeException(RESOURCENOTFOUNDEXCEPTION, exceptionMsg);
         }
         return true;
@@ -60,20 +61,25 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
         }
     }
 
-    public boolean validateUpdateUserProfileRequestValid(UpdateUserProfileData updateUserProfileData, String userId, ResponseSource source) {
+    public boolean validateUpdateUserProfileRequestValid(UpdateUserProfileData updateUserProfileData, String userId,
+                                                         ResponseSource source) {
         if (!validateUserProfileStatus(updateUserProfileData)) {
             auditService.persistAudit(BAD_REQUEST, source);
-            final String exceptionMsg = String.format("RequiredFieldMissingException - Update user profile request has invalid status %s for userId: %s", updateUserProfileData.getIdamStatus(), userId);
+            final String exceptionMsg = String.format("RequiredFieldMissingException - Update user profile request has"
+                    .concat(" invalid status %s for userId: %s"), updateUserProfileData.getIdamStatus(), userId);
             exceptionService.throwCustomRuntimeException(REQUIREDFIELDMISSINGEXCEPTION, exceptionMsg);
         }
         return true;
     }
 
     @Override
-    public boolean validateUserStatusBeforeUpdate(UpdateUserProfileData updateUserProfileData, UserProfile userProfile, ResponseSource source) {
-        if (IdamStatus.PENDING == userProfile.getStatus() || IdamStatus.PENDING.name().equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
+    public boolean validateUserStatusBeforeUpdate(UpdateUserProfileData updateUserProfileData, UserProfile userProfile,
+                                                  ResponseSource source) {
+        if (IdamStatus.PENDING == userProfile.getStatus() || IdamStatus.PENDING.name()
+                .equalsIgnoreCase(updateUserProfileData.getIdamStatus())) {
             auditService.persistAudit(BAD_REQUEST, source);
-            final String exceptionMsg = String.format("User is PENDING or input status is PENDING and only be changed to ACTIVE or SUSPENDED for userId: %s", userProfile.getIdamId());
+            final String exceptionMsg = String.format("User is PENDING or input status is PENDING and only be changed"
+                    .concat(" to ACTIVE or SUSPENDED for userId: %s"), userProfile.getIdamId());
             exceptionService.throwCustomRuntimeException(REQUIREDFIELDMISSINGEXCEPTION, exceptionMsg);
         }
         return true;
@@ -82,7 +88,8 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
     @Override
     public boolean validateUserPersisted(HttpStatus status) {
         if (!status.is2xxSuccessful()) {
-            exceptionService.throwCustomRuntimeException(ERRORPERSISTINGEXCEPTION, "Error while persisting user profile");
+            exceptionService.throwCustomRuntimeException(ERRORPERSISTINGEXCEPTION,
+                    "Error while persisting user profile");
         }
         return true;
     }

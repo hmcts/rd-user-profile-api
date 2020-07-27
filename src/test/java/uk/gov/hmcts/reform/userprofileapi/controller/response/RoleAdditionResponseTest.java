@@ -19,20 +19,20 @@ public class RoleAdditionResponseTest {
     }
 
     @Test
-    public void testAddRoleResponseNoArgConstructor() {
+    public void test_AddRoleResponseNoArgConstructor() {
         sut = new RoleAdditionResponse();
         assertThat(sut.getIdamMessage()).isNull();
         assertThat(sut.getIdamStatusCode()).isNull();
     }
 
     @Test
-    public void testAddRoleResponse() {
+    public void test_AddRoleResponse() {
         assertThat(sut.getIdamMessage()).isEqualTo(resolveStatusAndReturnMessage(okStatus));
         assertThat(sut.getIdamStatusCode()).isEqualTo(String.valueOf(okStatus.value()));
     }
 
     @Test
-    public void testAddRoleResponseSetter() {
+    public void test_AddRoleResponseSetter() {
         final HttpStatus errorStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         final String expectedMessage = resolveStatusAndReturnMessage(errorStatus);
         final String expectedCode = String.valueOf(errorStatus.value());

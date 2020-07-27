@@ -111,7 +111,8 @@ public interface UserProfileValidator {
             throw new RequiredFieldMissingException("No Request Body in the request");
         } else if (StringUtils.isBlank(userId)
                 || (!CollectionUtils.isEmpty(userProfileData.getRolesAdd()) && userProfileData.getRolesAdd().isEmpty())
-                || (!CollectionUtils.isEmpty(userProfileData.getRolesDelete()) && userProfileData.getRolesDelete().isEmpty())) {
+                || (!CollectionUtils.isEmpty(userProfileData.getRolesDelete())
+                && userProfileData.getRolesDelete().isEmpty())) {
 
             throw new RequiredFieldMissingException("No userId or roles in the request");
         }

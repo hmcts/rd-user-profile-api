@@ -195,7 +195,8 @@ public class AuthorizationEnabledIntegrationTest {
 
     }
 
-    protected UserProfileDataResponse getMultipleUsers(UserProfileDataRequest request, HttpStatus expectedStatus, String showDeleted, String rolesRequired) throws Exception {
+    protected UserProfileDataResponse getMultipleUsers(UserProfileDataRequest request, HttpStatus expectedStatus,
+                                                       String showDeleted, String rolesRequired) throws Exception {
         return userProfileRequestHandlerTest.sendPost(
                 mockMvc,
                 APP_BASE_PATH + SLASH + "users?showdeleted=" + showDeleted + "&rolesRequired=" + rolesRequired,
@@ -205,7 +206,8 @@ public class AuthorizationEnabledIntegrationTest {
         );
     }
 
-    protected Object createUser(UserProfileCreationData data, HttpStatus expectedStatus, Class clazz) throws Exception {
+    protected Object createUser(UserProfileCreationData data, HttpStatus expectedStatus, Class clazz)
+            throws Exception {
         return userProfileRequestHandlerTest.sendPost(
                 mockMvc,
                 APP_BASE_PATH,
@@ -215,7 +217,8 @@ public class AuthorizationEnabledIntegrationTest {
         );
     }
 
-    protected void verifyUserProfileCreation(UserProfileCreationResponse createdResource, HttpStatus idamStatus, UserProfileCreationData data) {
+    protected void verifyUserProfileCreation(UserProfileCreationResponse createdResource, HttpStatus idamStatus,
+                                             UserProfileCreationData data) {
 
         assertThat(createdResource.getIdamId()).isNotNull();
         assertThat(createdResource.getIdamId()).isInstanceOf(String.class);
@@ -260,7 +263,8 @@ public class AuthorizationEnabledIntegrationTest {
     }
 
     public static List<Audit> getMatchedAuditRecords(List<Audit> audits, String idamId) {
-        return audits.stream().filter(audit -> audit.getUserProfile().getIdamId().equalsIgnoreCase(idamId)).collect(Collectors.toList());
+        return audits.stream().filter(audit -> audit.getUserProfile().getIdamId().equalsIgnoreCase(idamId))
+                .collect(Collectors.toList());
     }
 
     public static UserProfileDataRequest buildUserProfileDataRequest(List<String> userIds) {

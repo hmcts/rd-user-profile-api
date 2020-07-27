@@ -74,12 +74,14 @@ public class CreateNewUserProfileWithIdamErrorsIntTest  extends AuthorizationEna
                         BAD_REQUEST,
                         ErrorResponse.class
                 );
-        assertThat(errorResponse.getErrorMessage()).isEqualTo("13 Required parameters or one of request field is missing or invalid");
+        assertThat(errorResponse.getErrorMessage())
+                .isEqualTo("13 Required parameters or one of request field is missing or invalid");
         assertThat(errorResponse.getErrorDescription()).isEqualTo("Role to be assigned does not exist.");
     }
 
     @Test
-    public void should_return_400_when_create_user_profile_has_invalid_role_and_response_is_null_from_sidam() throws Exception {
+    public void should_return_400_when_create_user_profile_has_invalid_role_and_response_is_null_from_sidam()
+            throws Exception {
 
         UserProfileCreationData data = buildCreateUserProfileData();
         List<String> roles = new ArrayList<String>();
@@ -94,8 +96,10 @@ public class CreateNewUserProfileWithIdamErrorsIntTest  extends AuthorizationEna
                         BAD_REQUEST,
                         ErrorResponse.class
                 );
-        assertThat(errorResponse.getErrorMessage()).isEqualTo("13 Required parameters or one of request field is missing or invalid");
-        assertThat(errorResponse.getErrorDescription()).isEqualTo("13 Required parameters or one of request field is missing or invalid");
+        assertThat(errorResponse.getErrorMessage())
+                .isEqualTo("13 Required parameters or one of request field is missing or invalid");
+        assertThat(errorResponse.getErrorDescription())
+                .isEqualTo("13 Required parameters or one of request field is missing or invalid");
     }
 
     private void verifyUserProfileCreation(HttpStatus idamStatus, UserProfileCreationData data) {
@@ -106,7 +110,8 @@ public class CreateNewUserProfileWithIdamErrorsIntTest  extends AuthorizationEna
 
         List<Audit> audits = auditRepository.findAll();
         if (!CollectionUtils.isEmpty(audits)) {
-            audits = audits.stream().sorted((Comparator.comparing(Audit::getAuditTs)).reversed()).collect(Collectors.toList());
+            audits = audits.stream().sorted((Comparator.comparing(Audit::getAuditTs)).reversed())
+                    .collect(Collectors.toList());
             Optional<Audit> optionalAudit = auditRepository.findById(audits.get(0).getId());
             Audit audit = optionalAudit.orElse(null);
 

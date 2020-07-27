@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 public class UserProfileResponseTest {
 
     @Test
-    public void testUserProfileResponse() {
+    public void test_UserProfileResponse() {
         UserProfile userProfile = new UserProfile(buildCreateUserProfileData(), HttpStatus.CREATED);
 
         UserProfileResponse userProfileResponse = new UserProfileResponse(userProfile);
@@ -25,7 +25,7 @@ public class UserProfileResponseTest {
     }
 
     @Test
-    public void testUserProfileResponseNoArgConstructor() {
+    public void test_UserProfileResponseNoArgConstructor() {
         UserProfileResponse userProfileResponse = new UserProfileResponse();
         assertThat(userProfileResponse.getEmail()).isNull();
     }

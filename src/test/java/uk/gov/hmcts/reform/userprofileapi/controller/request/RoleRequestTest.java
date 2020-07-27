@@ -12,7 +12,7 @@ import org.junit.Test;
 public class RoleRequestTest {
 
     @Test
-    public void should_hold_values_after_creation() {
+    public void test_hold_values_after_creation() {
         RoleRequest roleReq = new RoleRequest();
         List<Map> roles = new ArrayList<>();
         Map<String, String> rolesMap = new HashMap<>();

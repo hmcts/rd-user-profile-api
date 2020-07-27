@@ -8,7 +8,8 @@ public interface ValidationService {
 
     UserProfile validateUpdate(UpdateUserProfileData updateUserProfileData, String userId, ResponseSource source);
 
-    boolean isValidForUserDetailUpdate(UpdateUserProfileData updateUserProfileData, UserProfile userProfile, ResponseSource source);
+    boolean isValidForUserDetailUpdate(UpdateUserProfileData updateUserProfileData, UserProfile userProfile,
+                                       ResponseSource source);
 
     boolean isExuiUpdateRequest(String origin);
 }

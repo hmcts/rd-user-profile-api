@@ -87,11 +87,15 @@ public class UserProfileValidatorTest {
         IdamRegistrationInfo idamInfo = new IdamRegistrationInfo(status(CREATED).build());
         UserProfile userProfile = new UserProfile(userProfileData, idamInfo.getIdamRegistrationResponse());
 
-        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("test-email-@somewhere.com", "test-first-name", "test-last-name", "PENDING", addRolesToRoleName(), addRolesToRoleName());
+        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("test-email-@somewhere.com",
+                "test-first-name", "test-last-name", "PENDING", addRolesToRoleName(),
+                addRolesToRoleName());
 
         assertThat(updateUserProfileData.isSameAsUserProfile(userProfile)).isTrue();
 
-        updateUserProfileData = new UpdateUserProfileData("test-email-@somewhere.com1", "test-first-name1", "test-last-name", "PENDING", addRolesToRoleName(), addRolesToRoleName());
+        updateUserProfileData = new UpdateUserProfileData("test-email-@somewhere.com1",
+                "test-first-name1", "test-last-name", "PENDING", addRolesToRoleName(),
+                addRolesToRoleName());
         assertThat(updateUserProfileData.isSameAsUserProfile(userProfile)).isFalse();
     }
 
@@ -114,7 +118,7 @@ public class UserProfileValidatorTest {
     }
 
     @Test
-    public void validateCreateUserProfileRequest_ThrowsRequiredFieldMissingExceptionIfGetUserTypeIsNull() {
+    public void test_validateCreateUserProfileRequest_ThrowsRequiredFieldMissingExceptionIfGetUserTypeIsNull() {
         userProfileData.setUserType("invalid");
 
         assertThatThrownBy(() -> UserProfileValidator.validateCreateUserProfileRequest(userProfileData))
@@ -122,7 +126,7 @@ public class UserProfileValidatorTest {
     }
 
     @Test
-    public void validateCreateUserProfileRequest_ThrowsRequiredFieldMissingExceptionIfGetUserCategoryIsNull() {
+    public void test_validateCreateUserProfileRequest_ThrowsRequiredFieldMissingExceptionIfGetUserCategoryIsNull() {
         UserProfileCreationData userProfileCreationDataMock = mock(UserProfileCreationData.class);
         when(userProfileCreationDataMock.getUserCategory()).thenReturn("invalid");
 
@@ -148,10 +152,14 @@ public class UserProfileValidatorTest {
 
     @Test
     public void test_validateUserProfileStatus() {
-        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("test-email-@somewhere.com", "test-first-name", "test-last-name", "PENDING", addRolesToRoleName(), addRolesToRoleName());
+        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("test-email-@somewhere.com",
+                "test-first-name", "test-last-name", "PENDING", addRolesToRoleName(),
+                addRolesToRoleName());
         assertThat(UserProfileValidator.validateUserProfileStatus(updateUserProfileData)).isTrue();
 
-        UpdateUserProfileData updateUserProfileData1 = new UpdateUserProfileData("test-email-@somewhere.com", "test-first-name", "test-last-name", "PENING", addRolesToRoleName(), addRolesToRoleName());
+        UpdateUserProfileData updateUserProfileData1 = new UpdateUserProfileData("test-email-@somewhere.com",
+                "test-first-name", "test-last-name", "PENING", addRolesToRoleName(),
+                addRolesToRoleName());
         assertThat(UserProfileValidator.validateUserProfileStatus(updateUserProfileData1)).isFalse();
 
     }
