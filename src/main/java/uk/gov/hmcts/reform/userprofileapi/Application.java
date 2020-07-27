@@ -9,14 +9,13 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.retry.annotation.EnableRetry;
 import uk.gov.hmcts.reform.authorisation.ServiceAuthorisationApi;
-import uk.gov.hmcts.reform.health.HealthAutoConfiguration;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 
 @EnableJpaAuditing
 @EnableJpaRepositories
 @EnableRetry
 @EnableCaching
-@SpringBootApplication(scanBasePackages = "uk.gov.hmcts.reform", exclude = HealthAutoConfiguration.class)
+@SpringBootApplication
 @EnableCircuitBreaker
 @EnableFeignClients(basePackages = {
         "uk.gov.hmcts.reform.userprofileapi" }, basePackageClasses = { IdamApi.class, ServiceAuthorisationApi.class })
