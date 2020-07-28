@@ -8,11 +8,4 @@
         ]]></notes>
         <cve>CVE-2018-1258</cve>
     </suppress>
-    <suppress>
-        <notes><![CDATA[
-    file name: log4j-**.jar
-    ]]></notes>
-        <filePath regex="true">.*\**</filePath>
-        <cve>CVE-2020-9488</cve>
-    </suppress>
 </suppressions>
