@@ -29,6 +29,7 @@ public class DeleteUserProfileServiceImpl implements DeleteResourceService<UserP
     @Autowired
     private AuditService auditService;
 
+
     @Override
     @Transactional
     public UserProfilesDeletionResponse delete(UserProfileDataRequest profilesData) {

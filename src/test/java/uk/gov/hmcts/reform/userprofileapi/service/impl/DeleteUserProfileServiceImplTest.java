@@ -41,6 +41,7 @@ public class DeleteUserProfileServiceImplTest {
     @Mock
     private AuditService auditServiceMock;
 
+
     @InjectMocks
     private DeleteUserProfileServiceImpl sut;
 
@@ -52,7 +53,8 @@ public class DeleteUserProfileServiceImplTest {
     }
 
     @Test
-    public void testDeleteUserProfile() {
+    public void testDeleteUserProfile() throws Exception {
+
 
         List<String> userIds = new ArrayList<String>();
         userIds.add("1234");
@@ -62,14 +64,13 @@ public class DeleteUserProfileServiceImplTest {
         deletionResponse.setStatusCode(status.value());
         when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
         UserProfileDataRequest userProfilesDeletionData = new UserProfileDataRequest(userIds);
-        UserProfilesDeletionResponse deletionUserResponse = sut.delete(userProfilesDeletionData);
-        assertThat(deletionResponse.getStatusCode()).isEqualTo(deletionResponse.getStatusCode());
-        assertThat(deletionResponse.getMessage()).isEqualTo(deletionResponse.getMessage());
+        UserProfilesDeletionResponse deletionResp = sut.delete(userProfilesDeletionData);
+        assertThat(deletionResp.getStatusCode()).isEqualTo(deletionResponse.getStatusCode());
+        assertThat(deletionResp.getMessage()).isEqualTo(deletionResponse.getMessage());
 
         verify(userProfileRepositoryMock, times(1)).findByIdamId(any(String.class));
         verify(userProfileRepositoryMock, times(1)).deleteAll(any());
         verify(auditServiceMock, times(1)).persistAudit(any());
-
     }
 
     @Test(expected = ResourceNotFoundException.class)
