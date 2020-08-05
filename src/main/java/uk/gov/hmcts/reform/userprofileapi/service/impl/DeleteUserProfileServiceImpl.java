@@ -50,12 +50,11 @@ public class DeleteUserProfileServiceImpl implements DeleteResourceService<UserP
         userProfileRepository.deleteAll(userProfiles);
         UserProfilesDeletionResponse deletionResponse = new UserProfilesDeletionResponse();
         HttpStatus status = HttpStatus.NO_CONTENT;
-        userProfiles.forEach( userProfile -> {
+        userProfiles.forEach(userProfile -> {
             UserProfilesDeletionResponse auditResponse = new UserProfilesDeletionResponse();
             auditResponse.setMessage("UserProfile Successfully Deleted::" + userProfile.getIdamId());
             auditResponse.setStatusCode(status.value());
             auditService.persistAudit(auditResponse);
-
         });
         deletionResponse.setMessage("UserProfiles Successfully Deleted");
         deletionResponse.setStatusCode(status.value());
