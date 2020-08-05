@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static java.util.Objects.nonNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,7 +27,8 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamErrorResponse;
 @Component
 @Slf4j
 public class JsonFeignResponseHelper {
-    private static final ObjectMapper json = new ObjectMapper();
+    private static final ObjectMapper json = new ObjectMapper()
+            .configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     private static String loggingComponentName;
 
