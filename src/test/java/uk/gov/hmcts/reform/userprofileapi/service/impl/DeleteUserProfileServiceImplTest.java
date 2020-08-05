@@ -68,7 +68,7 @@ public class DeleteUserProfileServiceImplTest {
 
         verify(userProfileRepositoryMock, times(1)).findByIdamId(any(String.class));
         verify(userProfileRepositoryMock, times(1)).deleteAll(any());
-        verify(auditServiceMock, times(1)).persistAudit(deletionUserResponse);
+        verify(auditServiceMock, times(1)).persistAudit(any());
 
     }
 
