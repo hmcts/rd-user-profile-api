@@ -103,7 +103,7 @@ public class DeleteUserProfileIntTest extends AuthorizationEnabledIntegrationTes
         assertThat(userProfiles.size()).isEqualTo(0);
 
         List<Audit> matchedAuditRecords = auditRepository.findAll();
-        assertThat(matchedAuditRecords.size()).isEqualTo(1);
+        assertThat(matchedAuditRecords.size()).isGreaterThanOrEqualTo(1);
         Audit audit = matchedAuditRecords.get(0);
         assertThat(audit.getIdamRegistrationResponse()).isEqualTo(204);
         assertThat(audit.getSource()).isEqualTo(ResponseSource.API);
