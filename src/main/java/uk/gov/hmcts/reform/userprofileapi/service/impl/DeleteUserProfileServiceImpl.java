@@ -8,6 +8,7 @@ import java.util.Set;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,9 @@ public class DeleteUserProfileServiceImpl implements DeleteResourceService<UserP
 
     @Autowired
     private AuditService auditService;
+
+    @Value("${loggingComponentName}")
+    private String loggingComponentName;
 
 
     @Override
@@ -56,6 +60,7 @@ public class DeleteUserProfileServiceImpl implements DeleteResourceService<UserP
             auditResponse.setMessage("UserProfile Successfully Deleted::" + userProfile.getIdamId());
             auditResponse.setStatusCode(status.value());
             auditService.persistAudit(auditResponse);
+            log.info(loggingComponentName, "Deleted UserProfile Id::" + userProfile.getIdamId());
         });
         deletionResponse.setMessage("UserProfiles Successfully Deleted");
         deletionResponse.setStatusCode(status.value());
