@@ -13,13 +13,11 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-
 @Slf4j
 public class FeignInterceptorConfiguration {
 
     @Value("${loggingComponentName}")
     private String loggingComponentName;
-
 
     @Bean
     public RequestInterceptor requestInterceptor(FeignHeaderConfig config) {
@@ -39,8 +37,10 @@ public class FeignInterceptorConfiguration {
                         }
                     }
                 } else {
+
                     log.warn("{}:: {} {}",
                             loggingComponentName, "FeignHeadConfiguration", "Failed to get request header!");
+
                 }
             }
         };

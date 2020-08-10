@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfilesDeletionResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
@@ -50,6 +51,14 @@ public class AuditServiceImplTest {
     public void test_PersistAuditTwoArgs() {
         sut.persistAudit(httpStatusMock, responseSourceMock);
 
+        verify(auditRepositoryMock, times(1)).save(any(Audit.class));
+    }
+
+    @Test
+    public void testPersistAuditForDeleteUserProfiles() {
+        UserProfilesDeletionResponse userProfilesDeletionResponse =
+            new UserProfilesDeletionResponse(204,"successfully deleted");
+        sut.persistAudit(userProfilesDeletionResponse);
         verify(auditRepositoryMock, times(1)).save(any(Audit.class));
     }
 }

@@ -38,7 +38,8 @@ public class IdamServiceImpl implements IdamService {
     @Override
     public IdamRegistrationInfo registerUser(IdamRegisterUserRequest requestData) {
         IdamRegistrationInfo result;
-        try (Response response = idamClient.createUserProfile(requestData)) {
+        try  {
+            Response response = idamClient.createUserProfile(requestData);
             ResponseEntity<Object> entity = JsonFeignResponseHelper.toResponseEntity(response,
                     getResponseMapperClass(response, null));
             result = new IdamRegistrationInfo(entity);
@@ -52,7 +53,8 @@ public class IdamServiceImpl implements IdamService {
     public IdamRolesInfo fetchUserById(String id) {
 
         IdamRolesInfo result;
-        try (Response response = idamClient.getUserById(id)) {
+        try {
+            Response response = idamClient.getUserById(id);
             result = buildIdamResponseResult(response);
         } catch (FeignException ex) {
             result = buildIdamResponseFromFeignException(ex);
@@ -64,7 +66,8 @@ public class IdamServiceImpl implements IdamService {
     public IdamRolesInfo fetchUserByEmail(String email) {
 
         IdamRolesInfo result;
-        try (Response response = idamClient.getUserByEmail(email)) {
+        try {
+            Response response = idamClient.getUserByEmail(email);
             result = buildIdamResponseResult(response);
         } catch (FeignException ex) {
             result = buildIdamResponseFromFeignException(ex);
