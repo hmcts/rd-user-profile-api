@@ -192,7 +192,6 @@ public class UserProfileUpdatorTest {
 
         verify(userProfileRepositoryMock, times(1)).findByIdamId(any(String.class));
         verify(idamFeignClientMock, times(1)).addUserRoles(any(), any(String.class));
-        verify(responseMock, times(1)).close();
     }
 
     @Test
@@ -260,7 +259,6 @@ public class UserProfileUpdatorTest {
         verify(userProfileRepositoryMock, times(1)).findByIdamId(any(String.class));
         verify(idamFeignClientMock, times(1)).deleteUserRole(any(String.class),
                 any(String.class));
-        verify(responseMock, times(1)).close();
     }
 
     @Test
