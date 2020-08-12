@@ -254,7 +254,6 @@ dependencies {
     compile group: 'io.github.openfeign.form', name: 'feign-form-spring', version: '3.8.0'
     compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '10.5.1'
     compile group: 'io.github.openfeign', name: 'feign-okhttp', version: '10.5.1'
-    compile group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.4.0'
 
     compile group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
 
@@ -318,6 +317,8 @@ dependencies {
     testCompile group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
     testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
     testCompile group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
+
+    testCompile group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.4.0'
 
     testCompile (group: 'io.rest-assured', name: 'rest-assured', version: '3.3.0') {
         exclude group: "com.sun.xml.bind", module: "jaxb-osgi"
