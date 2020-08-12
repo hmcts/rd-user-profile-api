@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.userprofileapi.util;
 
 import static java.util.Objects.nonNull;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Response;
 
@@ -25,9 +26,10 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamErrorResponse;
 
 @Component
 @Slf4j
-public class JsonFeignResponseHelper {
 
-    private static final ObjectMapper json = new ObjectMapper();
+public class JsonFeignResponseHelper {
+    private static final ObjectMapper json = new ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     private static String loggingComponentName;
 

@@ -56,6 +56,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
 
     @Value("${loggingComponentName}")
     private String loggingComponentName;
+  
 
     public UserProfile create(UserProfileCreationData profileData) {
 
