@@ -328,8 +328,6 @@ dependencies {
         force = true
     }
 
-    testCompile group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.4.0'
-
     integrationTestCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.23') {
         force = true
     }
