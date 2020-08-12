@@ -4,9 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildUpdateUserProfileData;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.restassured.RestAssured;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +21,12 @@ import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.reform.userprofileapi.client.FuncTestRequestHandler;
 import uk.gov.hmcts.reform.userprofileapi.client.IdamClient;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
+import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
@@ -67,8 +73,16 @@ public class AbstractFunctional {
         idamClient = new IdamClient(configProperties);
     }
 
+    protected UserProfileCreationResponse createActiveUserProfileWithGivenRoles(HttpStatus expectedStatus,
+                                                                                List<String> roles) throws Exception {
+        UserProfileCreationData data = createUserProfileData();
+        String email = idamClient.createUser(roles);
+        data.setEmail(email);
+        return createUserProfile(data, expectedStatus);
+    }
 
-    protected UserProfileCreationResponse createUserProfile(UserProfileCreationData userProfileCreationData, HttpStatus expectedStatus) throws Exception {
+    protected UserProfileCreationResponse createUserProfile(UserProfileCreationData userProfileCreationData,
+                                                            HttpStatus expectedStatus) throws Exception {
 
         UserProfileCreationResponse resource = testRequestHandler.sendPost(
                 userProfileCreationData,
@@ -80,7 +94,8 @@ public class AbstractFunctional {
         return resource;
     }
 
-    protected UserProfileCreationResponse createActiveUserProfile(UserProfileCreationData userProfileCreationData) throws Exception {
+    protected UserProfileCreationResponse createActiveUserProfile(UserProfileCreationData userProfileCreationData)
+            throws Exception {
         List<String> xuiuRoles = new ArrayList();
         xuiuRoles.add("pui-user-manager");
         xuiuRoles.add("pui-case-manager");
@@ -96,7 +111,8 @@ public class AbstractFunctional {
         return createUserProfile(userProfileCreationData, HttpStatus.CREATED);
     }
 
-    protected void updateUserProfile(UpdateUserProfileData updateUserProfileData, String userId, HttpStatus expectedStatus) throws Exception {
+    protected void updateUserProfile(UpdateUserProfileData updateUserProfileData, String userId,
+                                     HttpStatus expectedStatus) throws Exception {
 
         testRequestHandler.sendPut(
                 updateUserProfileData,
@@ -109,6 +125,7 @@ public class AbstractFunctional {
     }
 
     protected UserProfileCreationData createUserProfileDataWithReInvite() {
+
         return buildCreateUserProfileData(true);
     }
 
@@ -133,10 +150,45 @@ public class AbstractFunctional {
         assertThat(resource.getIdamStatus()).isNotNull();
     }
 
-    protected void verifyGetUserProfileWithRoles(UserProfileWithRolesResponse resource, UserProfileCreationData expectedResource) {
+    protected void verifyGetUserProfileWithRoles(UserProfileWithRolesResponse resource,
+                                                 UserProfileCreationData expectedResource) {
 
         verifyGetUserProfile(resource, expectedResource);
 
+    }
+
+    protected UserProfileRolesResponse addRoleRequestWithGivenRoles(Set<RoleName> roles, String idamId)
+            throws JsonProcessingException {
+        Set<RoleName> rolesToAdd = new HashSet<>();
+        rolesToAdd.addAll(roles);
+
+        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData();
+        updateUserProfileData.setRolesAdd(rolesToAdd);
+        return addDeleteRole(updateUserProfileData, idamId);
+    }
+
+    protected UserProfileRolesResponse deleteRoleRequestWithGivenRoles(Set<RoleName> roles, String idamId)
+            throws JsonProcessingException {
+        Set<RoleName> rolesToDelete = new HashSet<>();
+        rolesToDelete.addAll(roles);
+
+        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData();
+        updateUserProfileData.setRolesDelete(rolesToDelete);
+        return addDeleteRole(updateUserProfileData, idamId);
+    }
+
+    protected UserProfileRolesResponse addDeleteRole(UpdateUserProfileData updateUserProfileData, String idamId)
+            throws JsonProcessingException {
+        return testRequestHandler.sendDelete(
+                updateUserProfileData,
+                HttpStatus.OK,
+                requestUri + "/" + idamId,
+                UserProfileRolesResponse.class);
+    }
+
+
+    public  UserProfileDataRequest buildUserProfileDataRequest(List<String> userIds) {
+        return new UserProfileDataRequest(userIds);
     }
 
 }

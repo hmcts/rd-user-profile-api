@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 public class UserProfileDataResponseTest {
 
     @Test
-    public void testUserProfileDataResponse() {
+    public void test_UserProfileDataResponse() {
         UserProfile userProfile = new UserProfile(buildCreateUserProfileData(), HttpStatus.CREATED);
 
         UserProfileDataResponse sut = new UserProfileDataResponse(Arrays.asList(userProfile, userProfile), false);
@@ -22,7 +22,7 @@ public class UserProfileDataResponseTest {
     }
 
     @Test
-    public void testNoArgConstructor() {
+    public void test_NoArgConstructor() {
         UserProfileDataResponse sut = new UserProfileDataResponse();
         assertThat(sut.getUserProfiles()).isNull();
     }

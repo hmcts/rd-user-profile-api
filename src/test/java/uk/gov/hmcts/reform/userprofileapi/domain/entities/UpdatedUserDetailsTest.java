@@ -7,7 +7,7 @@ import org.junit.Test;
 public class UpdatedUserDetailsTest {
 
     @Test
-    public void testUpdate() {
+    public void test_Update() {
         final String forename = "April";
         final String surname = "O'Neil";
         final boolean active = true;

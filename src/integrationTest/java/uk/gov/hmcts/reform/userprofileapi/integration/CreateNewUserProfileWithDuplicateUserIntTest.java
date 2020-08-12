@@ -130,7 +130,8 @@ public class CreateNewUserProfileWithDuplicateUserIntTest extends AuthorizationE
     }
 
     @Test
-    public void should_return_201_and_create_user_profile_when_status_not_properly_returned_by_sidam() throws Exception {
+    public void should_return_201_and_create_user_profile_when_status_not_properly_returned_by_sidam()
+            throws Exception {
 
         mockWithGetSuccess(false);
         mockWithUpdateSuccess();
@@ -150,7 +151,8 @@ public class CreateNewUserProfileWithDuplicateUserIntTest extends AuthorizationE
     }
 
     @Test
-    public void should_return_404_and_not_create_user_profile_when_duplicate_in_sidam_and_get_failed() throws Exception {
+    public void should_return_404_and_not_create_user_profile_when_duplicate_in_sidam_and_get_failed()
+            throws Exception {
 
         mockWithGetFail();
         mockWithUpdateSuccess();
@@ -172,7 +174,8 @@ public class CreateNewUserProfileWithDuplicateUserIntTest extends AuthorizationE
     }
 
     @Test
-    public void should_return_400_and_not_create_user_profile_when_duplicate_in_sidam_and_update_failed() throws Exception {
+    public void should_return_400_and_not_create_user_profile_when_duplicate_in_sidam_and_update_failed()
+            throws Exception {
 
         mockWithGetSuccess(true);
         mockWithUpdateFail();
@@ -193,7 +196,8 @@ public class CreateNewUserProfileWithDuplicateUserIntTest extends AuthorizationE
 
     }
 
-    private void verifyUserProfileCreation(UserProfileCreationResponse createdResource, HttpStatus idamStatus, UserProfileCreationData data, IdamStatus expectedIdamStatus) {
+    private void verifyUserProfileCreation(UserProfileCreationResponse createdResource, HttpStatus idamStatus,
+                                           UserProfileCreationData data, IdamStatus expectedIdamStatus) {
 
         assertThat(createdResource.getIdamId()).isNotNull();
         assertThat(createdResource.getIdamId()).isInstanceOf(String.class);

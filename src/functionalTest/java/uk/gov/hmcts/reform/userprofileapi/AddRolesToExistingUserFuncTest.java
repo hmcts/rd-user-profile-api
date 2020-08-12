@@ -1,6 +1,10 @@
 package uk.gov.hmcts.reform.userprofileapi;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
+import static uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus.ACTIVE;
+import static uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus.SUSPENDED;
 
 import io.restassured.RestAssured;
 
@@ -15,13 +19,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.client.IdamClient;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.RoleAdditionResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
@@ -44,7 +48,7 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
     }
 
     @Test
-    public void should_update_user_profile_with_roles_successfully() throws Exception {
+    public void test_update_user_profile_with_roles_successfully() throws Exception {
 
 
         UserProfileCreationData data = createUserProfileData();
@@ -53,7 +57,7 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         String email = idamClient.createUser(roles);
 
         data.setEmail(email);
-        createUserProfile(data, HttpStatus.CREATED);
+        createUserProfile(data, CREATED);
 
         RoleName role1 = new RoleName(puiCaseManager);
         Set<RoleName> rolesName = new HashSet<>();
@@ -71,7 +75,7 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         UserProfileRolesResponse resource1 =
                 testRequestHandler.sendPut(
                         userRProfileData,
-                            HttpStatus.OK,
+                            OK,
                            requestUri + "/" + resource.getIdamId(), UserProfileRolesResponse.class);
 
         log.info("after addroles call" + resource1);
@@ -96,7 +100,7 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         String email = idamClient.createUser(roles);
 
         data.setEmail(email);
-        createUserProfile(data, HttpStatus.CREATED);
+        createUserProfile(data, CREATED);
         UserProfileResponse resource =
                 testRequestHandler.sendGet(
                         requestUri + "?email=" + email.toLowerCase(),
@@ -109,11 +113,11 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         UpdateUserProfileData userProfileData = new UpdateUserProfileData();
         userProfileData.setFirstName("firstName");
         userProfileData.setLastName("lastName");
-        userProfileData.setIdamStatus(IdamStatus.SUSPENDED.name());
+        userProfileData.setIdamStatus(SUSPENDED.name());
         UserProfileRolesResponse updatedStatusResponse =
                 testRequestHandler.sendPut(
                         userProfileData,
-                        HttpStatus.OK,
+                        OK,
                         requestUri + "/" + resource.getIdamId() + "?origin=exui", UserProfileRolesResponse.class);
 
         UserProfileWithRolesResponse actual =
@@ -129,7 +133,7 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         assertThat(actual.getIdamId()).isNotNull();
         log.info("retrieved user with updated status for idamId:" + actual.getIdamId());
 
-        assertThat(actual.getIdamStatus()).isEqualTo(IdamStatus.SUSPENDED.name());
+        assertThat(actual.getIdamStatus()).isEqualTo(SUSPENDED.name());
         log.info("user updated to:" + actual.getIdamStatus());
     }
 
@@ -141,7 +145,7 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         String email = idamClient.createUser(roles);
 
         data.setEmail(email);
-        createUserProfile(data, HttpStatus.CREATED);
+        createUserProfile(data, CREATED);
         UserProfileResponse resource =
                 testRequestHandler.sendGet(
                         requestUri + "?email=" + email.toLowerCase(),
@@ -154,11 +158,11 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         UpdateUserProfileData userProfileData = new UpdateUserProfileData();
         userProfileData.setFirstName("firstName");
         userProfileData.setLastName("lastName");
-        userProfileData.setIdamStatus(IdamStatus.SUSPENDED.name());
+        userProfileData.setIdamStatus(SUSPENDED.name());
         UserProfileRolesResponse updatedStatusResponse =
                 testRequestHandler.sendPut(
                         userProfileData,
-                        HttpStatus.OK,
+                        OK,
                         requestUri + "/" + resource.getIdamId() + "?origin=exui", UserProfileRolesResponse.class);
 
         UserProfileWithRolesResponse actual =
@@ -174,17 +178,17 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         assertThat(actual.getIdamId()).isNotNull();
         log.info("retrieved user with updated status for idamId:" + actual.getIdamId());
 
-        assertThat(actual.getIdamStatus()).isEqualTo(IdamStatus.SUSPENDED.name());
+        assertThat(actual.getIdamStatus()).isEqualTo(SUSPENDED.name());
         log.info("user updated to:" + actual.getIdamStatus());
 
         //making same user to ACTIVE from SUSPENDED
 
         UpdateUserProfileData userProfileData1 = new UpdateUserProfileData();
-        userProfileData1.setIdamStatus(IdamStatus.ACTIVE.name());
+        userProfileData1.setIdamStatus(ACTIVE.name());
         UserProfileRolesResponse updatedStatusResponse1 =
                 testRequestHandler.sendPut(
                         userProfileData1,
-                        HttpStatus.OK,
+                        OK,
                         requestUri + "/" + resource.getIdamId() + "?origin=exui", UserProfileRolesResponse.class);
 
         UserProfileWithRolesResponse actual1 =
@@ -200,8 +204,49 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         assertThat(actual1.getIdamId()).isNotNull();
         log.info("retrieved user with updated status for idamId:" + actual1.getIdamId());
 
-        assertThat(actual1.getIdamStatus()).isEqualTo(IdamStatus.ACTIVE.name());
+        assertThat(actual1.getIdamStatus()).isEqualTo(ACTIVE.name());
         log.info("user updated to:" + actual1.getIdamStatus());
+    }
+
+
+    @Test
+    public void should_throw_412_while_add_roles_with_invalid_roles_passed() throws Exception {
+
+        List<String> roles = new ArrayList<>();
+        roles.add(puiUserManager);
+        UserProfileCreationResponse userProfileCreationResponse = createActiveUserProfileWithGivenRoles(CREATED, roles);
+
+        RoleName rolesToBeAdded = new RoleName("pui-org-manager");
+        Set<RoleName> rolesToAdd = new HashSet<>();
+        rolesToAdd.add(rolesToBeAdded);
+
+        UserProfileRolesResponse addResourceResp
+                = addRoleRequestWithGivenRoles(rolesToAdd, userProfileCreationResponse.getIdamId());
+        verifyAddRoleResponse(addResourceResp, "One or more of the roles provided does not exist.",
+                "412");
+    }
+
+    @Test
+    public void should_throw_412_while_add_roles_with_already_assigned_roles_passed() throws Exception {
+        List<String> roles = new ArrayList<>();
+        roles.add(puiUserManager);
+        UserProfileCreationResponse userProfileCreationResponse = createActiveUserProfileWithGivenRoles(CREATED, roles);
+
+        Set<RoleName> rolesToAdd = new HashSet<>();
+        rolesToAdd.add(new RoleName(puiUserManager));
+
+        UserProfileRolesResponse addResourceResp
+                = addRoleRequestWithGivenRoles(rolesToAdd, userProfileCreationResponse.getIdamId());
+        verifyAddRoleResponse(addResourceResp,
+                "One or more of the roles provided is already assigned to the user.", "412");
+    }
+
+    public void verifyAddRoleResponse(UserProfileRolesResponse addResourceResp, String errorMessage,
+                                      String statusCode) {
+        assertThat(addResourceResp).isNotNull();
+        RoleAdditionResponse roleAdditionResponse = addResourceResp.getRoleAdditionResponse();
+        assertThat(roleAdditionResponse.getIdamMessage()).isEqualTo(errorMessage);
+        assertThat(roleAdditionResponse.getIdamStatusCode()).isEqualTo(statusCode);
     }
 
 }

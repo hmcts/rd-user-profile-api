@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.client.IdamClient;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.RoleDeletionResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
@@ -109,5 +111,49 @@ public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
         assertThat(resourceForDeleteCheck.getRoles().contains("caseworker,pui-user-manager"));
         assertThat(!resourceForDeleteCheck.getRoles().contains(puiOrgManager));
 
+    }
+
+    @Test
+    public void should_throw_412_while_delete_user_profile_with_invalid_roles_passed() throws Exception {
+        List<String> roles = new ArrayList<>();
+        roles.add(puiUserManager);
+        UserProfileCreationResponse userProfileCreationResponse
+                = createActiveUserProfileWithGivenRoles(HttpStatus.CREATED, roles);
+
+        RoleName roleDelete = new RoleName("pui-org-manager");
+        Set<RoleName> rolesDelete = new HashSet<>();
+        rolesDelete.add(roleDelete);
+
+        UserProfileRolesResponse deleteResourceResp = deleteRoleRequestWithGivenRoles(rolesDelete,
+                userProfileCreationResponse.getIdamId());
+        verifyDeleteRoleResponse(deleteResourceResp, "One or more of the roles provided does not exist.",
+                "pui-org-manager","412");
+    }
+
+    @Test
+    public void should_throw_412_while_delete_user_profile_with_unassigned_roles_passed() throws Exception {
+        List<String> roles = new ArrayList<>();
+        roles.add(puiUserManager);
+        UserProfileCreationResponse userProfileCreationResponse
+                = createActiveUserProfileWithGivenRoles(HttpStatus.CREATED, roles);
+
+        RoleName roleDelete = new RoleName(puiCaseManager);
+        Set<RoleName> rolesDelete = new HashSet<>();
+        rolesDelete.add(roleDelete);
+
+        UserProfileRolesResponse deleteResourceResp = deleteRoleRequestWithGivenRoles(rolesDelete,
+                userProfileCreationResponse.getIdamId());
+        verifyDeleteRoleResponse(deleteResourceResp, "The role provided is not assigned to the user.",
+                puiCaseManager,"412");
+    }
+
+    public void verifyDeleteRoleResponse(UserProfileRolesResponse deleteResourceResp, String errorMessage,
+                                         String role, String statusCode) {
+        assertThat(deleteResourceResp).isNotNull();
+        assertThat(deleteResourceResp.getRoleDeletionResponse()).isNotEmpty();
+        RoleDeletionResponse roleDeletionResponse = deleteResourceResp.getRoleDeletionResponse().get(0);
+        assertThat(roleDeletionResponse.getRoleName()).isEqualTo(role);
+        assertThat(roleDeletionResponse.getIdamMessage()).isEqualTo(errorMessage);
+        assertThat(roleDeletionResponse.getIdamStatusCode()).isEqualTo(statusCode);
     }
 }

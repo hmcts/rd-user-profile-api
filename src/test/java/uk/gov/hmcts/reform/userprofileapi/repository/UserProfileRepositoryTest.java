@@ -30,7 +30,7 @@ public class UserProfileRepositoryTest {
     }
 
     @Test
-    public void findAllTest() {
+    public void test_findAll() {
         Iterable<UserProfile> userProfiles = userProfileRepository.findAll();
 
         assertThat(userProfiles).hasSize(1);
@@ -38,7 +38,7 @@ public class UserProfileRepositoryTest {
     }
 
     @Test
-    public void findByEmailTest() {
+    public void test_findByEmail() {
         Optional<UserProfile> user = userProfileRepository.findByEmail(userProfile.getEmail());
 
         assertTrue(user.isPresent());
@@ -46,7 +46,7 @@ public class UserProfileRepositoryTest {
     }
 
     @Test
-    public void findByIdamIdTest() {
+    public void test_findByIdamId() {
         Optional<UserProfile> user = userProfileRepository.findByIdamId(userProfile.getIdamId());
 
         assertTrue(user.isPresent());

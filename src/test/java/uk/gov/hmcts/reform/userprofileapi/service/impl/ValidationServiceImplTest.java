@@ -6,6 +6,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.ACCEPTED;
+import static org.springframework.http.ResponseEntity.status;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -17,7 +19,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
@@ -42,11 +43,15 @@ public class ValidationServiceImplTest {
     @Mock
     private ValidationHelperService validationHelperServiceMock;
 
-    private UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
-    private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.ACCEPTED);
-    private UserProfile userProfile = new UserProfile(userProfileCreationData, idamRegistrationInfo.getIdamRegistrationResponse());
+    private UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder
+            .buildCreateUserProfileData();
+    private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(status(ACCEPTED).build());
+    private UserProfile userProfile = new UserProfile(userProfileCreationData, idamRegistrationInfo
+            .getIdamRegistrationResponse());
 
-    private UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("email@net.com", "firstName", "lastName", "ACTIVE", new HashSet<RoleName>(), new HashSet<RoleName>());
+    private UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("email@net.com",
+            "firstName", "lastName", "ACTIVE", new HashSet<RoleName>(),
+            new HashSet<RoleName>());
 
 
     @InjectMocks
@@ -58,33 +63,40 @@ public class ValidationServiceImplTest {
     }
 
     @Test
-    public void testValidateUpdateWithoutId() {
+    public void test_ValidateUpdateWithoutId() {
         userProfile.setStatus(IdamStatus.SUSPENDED);
 
         when(validationHelperServiceMock.validateUserId(eq(userId))).thenReturn(true);
-        when(validationHelperServiceMock.validateUpdateUserProfileRequestValid(updateUserProfileData, userId, ResponseSource.API)).thenReturn(true);
+        when(validationHelperServiceMock.validateUpdateUserProfileRequestValid(updateUserProfileData, userId,
+                ResponseSource.API)).thenReturn(true);
 
         UserProfile actual = sut.validateUpdate(updateUserProfileData, userId, ResponseSource.API);
 
         assertThat(actual.getStatus()).isEqualTo(IdamStatus.SUSPENDED);
 
         verify(userProfileRepositoryMock, times(1)).findByIdamId(any(String.class));
+        verify(validationHelperServiceMock, times(1)).validateUserIsPresent(any());
     }
 
     @Test
-    public void testIsValidForUserDetailUpdateHappyPath() {
+    public void test_IsValidForUserDetailUpdateHappyPath() {
+        when(validationHelperServiceMock.validateUserStatusBeforeUpdate(updateUserProfileData, userProfile,
+                ResponseSource.API)).thenReturn(true);
+        assertThat(sut.isValidForUserDetailUpdate(updateUserProfileData, userProfile, ResponseSource.API)).isTrue();
+    }
+
+    @Test
+    public void test_IsValidForUserDetailUpdateSadPath() {
         assertThat(sut.isValidForUserDetailUpdate(updateUserProfileData, userProfile, ResponseSource.API)).isFalse();
+        verify(validationHelperServiceMock, times(1))
+                .validateUserStatusBeforeUpdate(any(UpdateUserProfileData.class), any(UserProfile.class),
+                        any(ResponseSource.class));
     }
 
     @Test
-    public void testIsValidForUserDetailUpdateSadPath() {
-        assertThat(sut.isValidForUserDetailUpdate(updateUserProfileData, userProfile, ResponseSource.API)).isFalse();
-        verify(validationHelperServiceMock, times(1)).validateUserStatusBeforeUpdate(any(UpdateUserProfileData.class), any(UserProfile.class), any(ResponseSource.class));
-    }
-
-    @Test
-    public void testIsExuiUpdateRequest() {
+    public void test_IsExuiUpdateRequest() {
         assertThat(sut.isExuiUpdateRequest(ResponseSource.EXUI.name())).isTrue();
+        assertThat(sut.isExuiUpdateRequest("INVALID")).isFalse();
     }
 
 }

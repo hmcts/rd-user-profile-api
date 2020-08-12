@@ -28,7 +28,7 @@ spring:
           registration:
             oidc:
               client-id: microservicekey-rd-user-profile-api
-              client-secret: ${S2S_SECRET:OLMEJQA7UHU6EZKG}
+              client-secret: ${S2S_SECRET:AAAAAAAAAAAAAAAA}
 
 ### database configuration
   datasource:
@@ -78,7 +78,7 @@ security:
 ### dependency configuration
 idam:
   s2s-auth:
-    totp_secret: ${S2S_SECRET:OLMEJQA7UHU6EZKG}
+    totp_secret: ${S2S_SECRET:AAAAAAAAAAAAAAAA}
     microservice: rd_user_profile_api
     url: ${S2S_URL:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
     pbaFromUserAccountMap: false
@@ -100,3 +100,5 @@ resendInterval: 60
 
 # sync time interval in minutes
 syncInterval: 60
+
+loggingComponentName: RD_User_Profile_API

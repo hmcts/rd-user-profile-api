@@ -1,10 +1,5 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
@@ -21,8 +16,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
@@ -39,17 +36,10 @@ public class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabl
     @Before
     public void setUpWireMock() {
 
-        idamService.stubFor(post(urlEqualTo("/api/v1/users/registration"))
-                .willReturn(aResponse()
-                        .withHeader("Content-Type", "application/json")
-                        .withStatus(201)
-                ));
+        setSidamRegistrationMockWithStatus(HttpStatus.CREATED.value(), true);
+        mockWithGetFail(NOT_FOUND, false);
 
-        idamService.stubFor(get(urlMatching("/api/v1/users/.*"))
-                .willReturn(aResponse()
-                        .withHeader("Content-Type", "application/json")
-                        .withStatus(404)
-                        ));
+
 
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
 
@@ -115,6 +105,46 @@ public class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabl
         assertThat(audit.getUserProfile().getIdamId()).isNotNull();
         assertThat(audit.getAuditTs()).isNotNull();
 
+    }
+
+    @Test
+    public void should_see_idam_error_message_when_idam_returns_404_response_with_roles_by_id() throws Exception {
+
+        mockWithGetFail(NOT_FOUND, true);
+        UserProfile userProfile = userProfileMap.get("user");
+
+        ErrorResponse errorResponse =
+                userProfileRequestHandlerTest.sendGet(
+                        mockMvc,
+                        APP_BASE_PATH + SLASH + userProfile.getIdamId() + "/roles",
+                        NOT_FOUND,
+                        ErrorResponse.class
+                );
+
+        assertThat(errorResponse).isNotNull();
+        assertThat(errorResponse.getErrorMessage()).isEqualTo("16 Resource not found");
+        assertThat(errorResponse.getErrorDescription())
+                .isEqualTo("The user could not be found: c5d631f-af11-4816-abbe-ac6fd9b99ee9");
+    }
+
+    @Test
+    public void should_see_idam_error_message_when_idam_returns_404_and_does_not_send_response_with_roles_by_id()
+            throws Exception {
+
+        mockWithGetFail(NOT_FOUND, false);
+        UserProfile userProfile = userProfileMap.get("user");
+
+        ErrorResponse errorResponse =
+                userProfileRequestHandlerTest.sendGet(
+                        mockMvc,
+                        APP_BASE_PATH + SLASH + userProfile.getIdamId() + "/roles",
+                        NOT_FOUND,
+                        ErrorResponse.class
+                );
+
+        assertThat(errorResponse).isNotNull();
+        assertThat(errorResponse.getErrorMessage()).isEqualTo("16 Resource not found");
+        assertThat(errorResponse.getErrorDescription()).isEqualTo("16 Resource not found");
     }
 
 }

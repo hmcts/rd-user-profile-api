@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.userprofileapi.exception.IdamServiceException;
 public class IdamServiceExceptionTest {
 
     @Test
-    public void should_create_exception_correctly() {
+    public void test_create_exception_correctly() {
         String message = "this-is-a-test-message";
         IdamServiceException exception = new IdamServiceException(message, HttpStatus.NOT_FOUND);
 

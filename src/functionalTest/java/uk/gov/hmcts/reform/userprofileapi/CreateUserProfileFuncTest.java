@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
+import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
@@ -38,7 +39,8 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
     }
 
     @Test
-    public void should_create_user_profile_for_duplicate_idam_user_and_verify_successfully_for_prd_roles() throws Exception {
+    public void should_create_user_profile_for_duplicate_idam_user_and_verify_successfully_for_prd_roles()
+            throws Exception {
 
         UserProfileCreationData data = createUserProfileData();
         UserProfileCreationResponse duplicateUserResource = createActiveUserProfile(data);
@@ -58,7 +60,8 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
     }
 
     @Test
-    public void should_create_user_profile_for_duplicate_idam_user_and_verify_roles_updated_successfully_for_user_having_citizen_role() throws Exception {
+    public void should_create_up_for_duplicate_idam_user_and_verify_roles_updated_successfully_for_user_citizen_role()
+            throws Exception {
 
         //create user with citizen role in SIDAM
         List<String> roles = new ArrayList<>();
@@ -119,6 +122,28 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
                 testRequestHandler.asJsonString(data),
                 HttpStatus.CONFLICT,
                 requestUri);
+    }
+
+    @Test
+    public void should_return_404_when_invalid_roles_are_passed_while_user_registration() throws Exception {
+
+        UserProfileCreationData data = createUserProfileData();
+
+        List<String> roles = new ArrayList<>();
+        roles.add("puicase-manager");
+        data.setRoles(roles);
+
+        ErrorResponse errorResponse =
+                testRequestHandler.sendPost(
+                        data,
+                        HttpStatus.NOT_FOUND,
+                        requestUri,
+                        ErrorResponse.class
+                );
+
+        assertThat(errorResponse).isNotNull();
+        assertThat(errorResponse.getErrorMessage()).isEqualTo("16 Resource not found");
+        assertThat(errorResponse.getErrorDescription()).isEqualTo("The role to be assigned does not exist.");
     }
 
 }

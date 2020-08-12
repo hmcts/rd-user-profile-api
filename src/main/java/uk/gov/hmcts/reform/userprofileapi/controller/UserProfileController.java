@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,6 +39,7 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataRes
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfilesDeletionResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdentifierName;
 import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
@@ -113,7 +115,8 @@ public class UserProfileController {
     )
     @ResponseStatus(value = HttpStatus.CREATED)
     @ResponseBody
-    public ResponseEntity<UserProfileCreationResponse> createUserProfile(@Valid @RequestBody UserProfileCreationData userProfileCreationData) {
+    public ResponseEntity<UserProfileCreationResponse> createUserProfile(
+            @Valid @RequestBody UserProfileCreationData userProfileCreationData) {
 
         UserProfileCreationResponse resource = null;
         validateCreateUserProfileRequest(userProfileCreationData);
@@ -169,7 +172,8 @@ public class UserProfileController {
     public ResponseEntity<UserProfileWithRolesResponse> getUserProfileWithRolesById(@PathVariable String id) {
         //Getting user profile by id
         isUserIdValid(id, true);
-        UserProfileWithRolesResponse response = userProfileService.retrieveWithRoles(new UserProfileIdentifier(IdentifierName.UUID, id));
+        UserProfileWithRolesResponse response = userProfileService
+                .retrieveWithRoles(new UserProfileIdentifier(IdentifierName.UUID, id));
         return ResponseEntity.ok(response);
     }
 
@@ -217,11 +221,12 @@ public class UserProfileController {
         //Getting user profile by email
 
         requireNonNull(email, "email cannot be null");
-        UserProfileWithRolesResponse response = userProfileService.retrieveWithRoles(new UserProfileIdentifier(IdentifierName.EMAIL, email.toLowerCase()));
+        UserProfileWithRolesResponse response = userProfileService
+                .retrieveWithRoles(new UserProfileIdentifier(IdentifierName.EMAIL, email.toLowerCase()));
         return ResponseEntity.ok(response);
     }
 
-    @ApiOperation(value = "Retrieves a User Profile by Email or ID. If both are present then Email is used to retrieve.",
+    @ApiOperation(value = "Retrieve a User Profile by Email or ID. If both are present then Email is used to retrieve.",
             authorizations = {
                     @Authorization(value = "ServiceAuthorization"),
                     @Authorization(value = "Authorization")
@@ -258,8 +263,12 @@ public class UserProfileController {
             produces = APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    public ResponseEntity<UserProfileResponse> getUserProfileByEmail(@ApiParam(name = "email", required = false) @RequestParam(value = "email", required = false) String email,
-                                                                     @ApiParam(name = "userId", required = false) @RequestParam(value = "userId", required = false) String userId) {
+    public ResponseEntity<UserProfileResponse> getUserProfileByEmail(@ApiParam(name = "email", required = false)
+                                                                         @RequestParam(value = "email",
+                                                                                 required = false) String email,
+                                                                     @ApiParam(name = "userId", required = false)
+                                                                     @RequestParam(value = "userId", required = false)
+                                                                             String userId) {
         UserProfileResponse response;
         if (email == null && userId == null) {
             return ResponseEntity.badRequest().build();
@@ -325,7 +334,8 @@ public class UserProfileController {
     @ResponseBody
     public ResponseEntity updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData,
                                             @PathVariable String userId,
-                                            @ApiParam(name = "origin", required = false) @RequestParam(value = "origin", required = false) String origin) {
+                                            @ApiParam(name = "origin", required = false) @RequestParam(value = "origin",
+                                                    required = false) String origin) {
         UserProfileRolesResponse userProfileResponse = null;
         if (CollectionUtils.isEmpty(updateUserProfileData.getRolesAdd())
                 && CollectionUtils.isEmpty(updateUserProfileData.getRolesDelete())) {
@@ -388,17 +398,70 @@ public class UserProfileController {
             produces = APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    public ResponseEntity<UserProfileDataResponse> retrieveUserProfiles(@ApiParam(name = "showdeleted", required = true) @RequestParam(value = "showdeleted", required = true) String showDeleted,
-                                                                        @ApiParam(name = "rolesRequired", required = true) @RequestParam(value = "rolesRequired", required = true) String rolesRequired,
-                                                                        @RequestBody UserProfileDataRequest userProfileDataRequest) {
+    public ResponseEntity<UserProfileDataResponse> retrieveUserProfiles(@ApiParam(name = "showdeleted", required = true)
+                                                                            @RequestParam(value = "showdeleted",
+                                                                                    required = true) String showDeleted,
+                                                                        @ApiParam(name = "rolesRequired",
+                                                                                required = true)
+                                                                        @RequestParam(value = "rolesRequired",
+                                                                                required = true) String rolesRequired,
+                                                                        @RequestBody UserProfileDataRequest
+                                                                                    userProfileDataRequest) {
         //Retrieving multiple user profiles
 
         boolean showDeletedBoolean = UserProfileValidator.validateAndReturnBooleanForParam(showDeleted);
         boolean rolesRequiredBoolean = UserProfileValidator.validateAndReturnBooleanForParam(rolesRequired);
         validateUserIds(userProfileDataRequest);
         UserProfileDataResponse userProfileDataResponse =
-                userProfileService.retrieveWithRoles(new UserProfileIdentifier(IdentifierName.UUID_LIST, userProfileDataRequest.getUserIds()), showDeletedBoolean, rolesRequiredBoolean);
+                userProfileService.retrieveWithRoles(new UserProfileIdentifier(IdentifierName.UUID_LIST,
+                        userProfileDataRequest.getUserIds()), showDeletedBoolean, rolesRequiredBoolean);
         return ResponseEntity.status(HttpStatus.OK).body(userProfileDataResponse);
 
     }
+
+    @ApiOperation(value = "Delete an User Profiles",
+            authorizations = {
+                    @Authorization(value = "ServiceAuthorization"),
+                    @Authorization(value = "Authorization")
+            })
+    @ApiResponses({
+            @ApiResponse(
+                    code = 204,
+                    message = "User Profiles deleted successfully",
+                    response = UserProfilesDeletionResponse.class
+            ),
+            @ApiResponse(
+                    code = 400,
+                    message = "An invalid request has been provided"
+            ),
+            @ApiResponse(
+                    code = 401,
+                    message = "Unauthorized Error : The requested resource is restricted and requires authentication"
+            ),
+            @ApiResponse(
+                    code = 403,
+                    message = "Forbidden Error: Access denied"
+            ),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error"
+            )
+    })
+
+    @DeleteMapping(
+            consumes = APPLICATION_JSON_VALUE,
+            produces = APPLICATION_JSON_VALUE
+    )
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @ResponseBody
+    public ResponseEntity<UserProfilesDeletionResponse> deleteUserProfiles(@Valid @RequestBody UserProfileDataRequest
+                                                                                       userProfilesDeletionDataReq) {
+
+        UserProfilesDeletionResponse resource = null;
+        validateUserIds(userProfilesDeletionDataReq);
+        resource = userProfileService.delete(userProfilesDeletionDataReq);
+        return ResponseEntity.status(resource.getStatusCode()).body(resource);
+
+    }
+
 }

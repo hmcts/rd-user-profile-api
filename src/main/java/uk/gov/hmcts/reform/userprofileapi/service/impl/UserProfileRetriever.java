@@ -43,8 +43,7 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
                 .get()
                 .orElseThrow(() ->
                     new ResourceNotFoundException(
-                        "Could not find resource from database with given identifier: "
-                        + identifier.getValue()));
+                        "Could not find resource from database with given identifier"));
         if (fetchRoles) {
             userProfile = getRolesFromIdam(userProfile, false);
         }
@@ -64,7 +63,8 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
                 persistAudit(idamRolesInfo, userProfile);
                 // for multiple users get request , do not throw exception and continue flow
                 if (!isMultiUserGet) {
-                    throw new IdamServiceException(idamRolesInfo.getStatusMessage(), idamRolesInfo.getResponseStatusCode());
+                    throw new IdamServiceException(idamRolesInfo.getStatusMessage(),
+                            idamRolesInfo.getResponseStatusCode());
                 } else {
                     // if SIDAM fails then send errorMessage and status code in response
                     userProfile.setErrorMessage(idamRolesInfo.getStatusMessage());
@@ -78,22 +78,26 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
         return userProfile;
     }
 
-    public List<UserProfile> retrieveMultipleProfiles(UserProfileIdentifier identifier, boolean showDeleted, boolean rolesRequired) {
+    public List<UserProfile> retrieveMultipleProfiles(UserProfileIdentifier identifier, boolean showDeleted,
+                                                      boolean rolesRequired) {
         //get all users from UP DB
-        List<UserProfile> userProfiles = querySupplier.getProfilesByIds(identifier, showDeleted).orElse(new ArrayList<UserProfile>());
+        List<UserProfile> userProfiles = querySupplier.getProfilesByIds(identifier, showDeleted)
+                .orElse(new ArrayList<UserProfile>());
         if (CollectionUtils.isEmpty(userProfiles)) {
             throw new ResourceNotFoundException("Could not find resource");
         }
         //get roles from sidam for each user
         if (rolesRequired) {
-            return userProfiles.stream().map(profile -> getRolesFromIdam(profile, true)).collect(Collectors.toList());
+            return userProfiles.stream().map(profile -> getRolesFromIdam(profile, true))
+                    .collect(Collectors.toList());
         } else {
             return userProfiles;
         }
     }
 
     private void persistAudit(IdamRolesInfo idamRolesInfo, UserProfile userProfile) {
-        Audit audit = new Audit(idamRolesInfo.getResponseStatusCode().value(), idamRolesInfo.getStatusMessage(), ResponseSource.API, userProfile);
+        Audit audit = new Audit(idamRolesInfo.getResponseStatusCode().value(), idamRolesInfo.getStatusMessage(),
+                ResponseSource.API, userProfile);
         auditRepository.save(audit);
     }
 

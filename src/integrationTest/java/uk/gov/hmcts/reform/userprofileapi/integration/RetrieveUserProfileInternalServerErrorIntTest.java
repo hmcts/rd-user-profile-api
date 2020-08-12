@@ -20,6 +20,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
@@ -80,7 +81,7 @@ public class RetrieveUserProfileInternalServerErrorIntTest extends Authorization
     public void should_return_500_when_repository_throws_an_unknown_exception() throws Exception {
 
         IdamRegisterUserRequest request = Mockito.mock(IdamRegisterUserRequest.class);
-        IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(CREATED);
+        IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(ResponseEntity.status(CREATED).build());
         when(idamService.registerUser(request))
                 .thenReturn(idamRegistrationInfo);
         when(userProfileRepository.findByIdamId(any(String.class)))
@@ -99,18 +100,22 @@ public class RetrieveUserProfileInternalServerErrorIntTest extends Authorization
 
     @Test
     public void should_return_500_when_query_by_email_and_repository_throws_an_unknown_exception() throws Exception {
-        when(userProfileRepository.findByEmail(anyString())).thenThrow(new RuntimeException("This is a test exception"));
+        when(userProfileRepository.findByEmail(anyString()))
+                .thenThrow(new RuntimeException("This is a test exception"));
 
-        MvcResult result = userProfileRequestHandlerTest.sendGet(mockMvc, APP_BASE_PATH + "?email=" + "randomemail@somewhere.com", INTERNAL_SERVER_ERROR);
+        MvcResult result = userProfileRequestHandlerTest.sendGet(mockMvc, APP_BASE_PATH + "?email="
+                .concat("randomemail@somewhere.com"), INTERNAL_SERVER_ERROR);
 
         assertThat(result.getResponse().getContentAsString()).isNotEmpty();
     }
 
     @Test
     public void should_return_500_when_query_by_userId_and_repository_throws_an_unknown_exception() throws Exception {
-        when(userProfileRepository.findByIdamId(any(String.class))).thenThrow(new RuntimeException("This is a test exception"));
+        when(userProfileRepository.findByIdamId(any(String.class)))
+                .thenThrow(new RuntimeException("This is a test exception"));
 
-        MvcResult result = userProfileRequestHandlerTest.sendGet(mockMvc, APP_BASE_PATH + "?userId=" + UUID.randomUUID().toString(), INTERNAL_SERVER_ERROR);
+        MvcResult result = userProfileRequestHandlerTest.sendGet(mockMvc, APP_BASE_PATH + "?userId="
+                + UUID.randomUUID().toString(), INTERNAL_SERVER_ERROR);
 
         assertThat(result.getResponse().getContentAsString()).isNotEmpty();
     }

@@ -9,6 +9,7 @@ import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstant
 import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.INVALID_REQUEST;
 import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.RESOURCE_NOT_FOUND;
 import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.UNKNOWN_EXCEPTION;
+import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.resolveStatusAndReturnMessage;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -36,8 +37,12 @@ import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
 public class UserProfileControllerAdvice {
 
     private static final String LOG_STRING = "handling exception: {}";
+
     @Value("${resendInterval}")
     private String resendInterval;
+
+    @Value("${loggingComponentName}")
+    private String loggingComponentName;
 
     @ExceptionHandler(RequiredFieldMissingException.class)
     protected ResponseEntity<Object> handleRequiredFieldMissingException(
@@ -91,7 +96,8 @@ public class UserProfileControllerAdvice {
             HttpServletRequest request,
             HttpClientErrorException e
     ) {
-        return errorDetailsResponseEntity(e, HttpStatus.TOO_MANY_REQUESTS, String.format(ErrorConstants.TOO_MANY_REQUESTS.getErrorMessage(), resendInterval));
+        return errorDetailsResponseEntity(e, HttpStatus.TOO_MANY_REQUESTS,
+                String.format(ErrorConstants.TOO_MANY_REQUESTS.getErrorMessage(), resendInterval));
     }
 
     @ExceptionHandler(IdamServiceException.class)
@@ -99,7 +105,7 @@ public class UserProfileControllerAdvice {
             HttpServletRequest request,
             IdamServiceException e
     ) {
-        return errorDetailsResponseEntity(e, e.getHttpStatus(), e.getMessage());
+        return errorDetailsResponseEntity(e, e.getHttpStatus(), resolveStatusAndReturnMessage(e.getHttpStatus()));
     }
 
     @ExceptionHandler(Exception.class)
@@ -124,7 +130,7 @@ public class UserProfileControllerAdvice {
 
     private ResponseEntity<Object> errorDetailsResponseEntity(Exception ex, HttpStatus httpStatus, String errorMsg) {
 
-        log.error(LOG_STRING, ex);
+        log.error("{}:: {}", loggingComponentName, LOG_STRING, ex);
         ErrorResponse errorDetails = ErrorResponse.builder()
                 .errorMessage(errorMsg)
                 .errorDescription(getRootException(ex).getLocalizedMessage())
@@ -135,17 +141,19 @@ public class UserProfileControllerAdvice {
                 errorDetails, httpStatus);
     }
 
-    private ResponseEntity<Object> patternErrorDetailsResponseEntity(Exception ex, HttpStatus httpStatus, String errorMsg) {
+    private ResponseEntity<Object> patternErrorDetailsResponseEntity(Exception ex, HttpStatus httpStatus,
+                                                                     String errorMsg) {
         String errorDesc;
 
         try {
             errorDesc = ex.getMessage().substring(ex.getMessage().lastIndexOf("default message"));
-            errorDesc = errorDesc.replace("default message [", "").replace("]]", "");
+            errorDesc = errorDesc.replace("default message [", "").replace("]]",
+                    "");
         } catch (IndexOutOfBoundsException e) {
             errorDesc = getRootException(ex).getLocalizedMessage();
         }
 
-        log.error(LOG_STRING, ex);
+        log.error("{}:: {}", loggingComponentName, LOG_STRING, ex);
         ErrorResponse errorDetails = ErrorResponse.builder()
                 .errorMessage(errorMsg)
                 .errorDescription(errorDesc)

@@ -99,7 +99,9 @@ public interface UserProfileValidator {
     }
 
     static void validateUserIds(UserProfileDataRequest userProfileDataRequest) {
-        if (userProfileDataRequest.getUserIds().isEmpty()) {
+        if (CollectionUtils.isEmpty(userProfileDataRequest.getUserIds())
+             || userProfileDataRequest.getUserIds().contains(" ")
+             || userProfileDataRequest.getUserIds().stream().anyMatch(userId -> StringUtils.isBlank(userId))) {
             throw new RequiredFieldMissingException("no user id in request");
         }
     }
@@ -111,7 +113,8 @@ public interface UserProfileValidator {
             throw new RequiredFieldMissingException("No Request Body in the request");
         } else if (StringUtils.isBlank(userId)
                 || (!CollectionUtils.isEmpty(userProfileData.getRolesAdd()) && userProfileData.getRolesAdd().isEmpty())
-                || (!CollectionUtils.isEmpty(userProfileData.getRolesDelete()) && userProfileData.getRolesDelete().isEmpty())) {
+                || (!CollectionUtils.isEmpty(userProfileData.getRolesDelete())
+                && userProfileData.getRolesDelete().isEmpty())) {
 
             throw new RequiredFieldMissingException("No userId or roles in the request");
         }
