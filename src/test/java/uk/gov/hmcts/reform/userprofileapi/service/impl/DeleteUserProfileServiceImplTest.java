@@ -28,17 +28,19 @@ import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
 
 
 @RunWith(MockitoJUnitRunner.class)
-public class DeleteUserProfileTest {
+public class DeleteUserProfileServiceImplTest {
 
     @Mock
     private UserProfileRepository userProfileRepositoryMock;
 
-    private UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
+    private UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder
+            .buildCreateUserProfileData();
 
     private UserProfile userProfile = new UserProfile(userProfileCreationData, HttpStatus.OK);
 
     @Mock
     private AuditService auditServiceMock;
+
 
     @InjectMocks
     private DeleteUserProfileServiceImpl sut;
@@ -51,7 +53,8 @@ public class DeleteUserProfileTest {
     }
 
     @Test
-    public void testDeleteUserProfile() {
+    public void testDeleteUserProfile() throws Exception {
+
 
         List<String> userIds = new ArrayList<String>();
         userIds.add("1234");
@@ -61,14 +64,13 @@ public class DeleteUserProfileTest {
         deletionResponse.setStatusCode(status.value());
         when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
         UserProfileDataRequest userProfilesDeletionData = new UserProfileDataRequest(userIds);
-        UserProfilesDeletionResponse deletionUserResponse = sut.delete(userProfilesDeletionData);
-        assertThat(deletionResponse.getStatusCode()).isEqualTo(deletionResponse.getStatusCode());
-        assertThat(deletionResponse.getMessage()).isEqualTo(deletionResponse.getMessage());
+        UserProfilesDeletionResponse deletionResp = sut.delete(userProfilesDeletionData);
+        assertThat(deletionResp.getStatusCode()).isEqualTo(deletionResponse.getStatusCode());
+        assertThat(deletionResp.getMessage()).isEqualTo(deletionResponse.getMessage());
 
         verify(userProfileRepositoryMock, times(1)).findByIdamId(any(String.class));
         verify(userProfileRepositoryMock, times(1)).deleteAll(any());
-        verify(auditServiceMock, times(1)).persistAudit(deletionUserResponse);
-
+        verify(auditServiceMock, times(1)).persistAudit(any());
     }
 
     @Test(expected = ResourceNotFoundException.class)

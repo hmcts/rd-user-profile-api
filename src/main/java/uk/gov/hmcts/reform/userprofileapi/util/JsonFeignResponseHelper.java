@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
+import static java.util.Objects.nonNull;
+
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Response;
 
@@ -13,17 +16,25 @@ import java.util.Optional;
 import java.util.zip.GZIPInputStream;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamErrorResponse;
 
-
+@Component
 @Slf4j
-public class JsonFeignResponseHelper {
-    private static final ObjectMapper json = new ObjectMapper();
 
-    private JsonFeignResponseHelper() { }
+public class JsonFeignResponseHelper {
+    private static final ObjectMapper json = new ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+    private static String loggingComponentName;
+
+    private JsonFeignResponseHelper() {
+    }
 
     public static <U> ResponseEntity<U> toResponseEntity(Response response, Optional<Class<U>> classOpt) {
         Optional<U> payload = decode(response, classOpt);
@@ -43,21 +54,31 @@ public class JsonFeignResponseHelper {
 
     public static <T> Optional<T> decode(Response response, Optional<Class<T>> clazz) {
         Optional<T> result = Optional.empty();
-        if (isStatusCodeSuccessful(response.status()) && clazz.isPresent()) {
+        if (clazz.isPresent()) {
             try {
-                Optional<Collection<String>> encodings = Optional.ofNullable(response.headers().get("content-encoding"));
+                Optional<Collection<String>> encodings = Optional.ofNullable(response.headers()
+                        .get("content-encoding"));
                 result = Optional.of((encodings.isPresent() && encodings.get().contains("gzip"))
-                        ? json.readValue(new GZIPInputStream(new BufferedInputStream(response.body().asInputStream())), clazz.get())
+                        ? json.readValue(new GZIPInputStream(new BufferedInputStream(response.body().asInputStream())),
+                        clazz.get())
                         : json.readValue(response.body().asReader(Charset.defaultCharset()), clazz.get()));
             } catch (IOException e) {
-                log.warn("Error could not decode!");
+                log.warn("{}:: Error could not decoded : {}", loggingComponentName, e.getLocalizedMessage());
             }
         }
         return result;
     }
 
-    public static boolean isStatusCodeSuccessful(int statusCode) {
-        return statusCode >= 200 && statusCode < 300;
+    public static Optional getResponseMapperClass(Response response, Class expectedClass) {
+        if (response.status() >= 200 && response.status() < 300) {
+            return nonNull(expectedClass) ? Optional.of(expectedClass) : Optional.empty();
+        } else {
+            return Optional.of(IdamErrorResponse.class);
+        }
     }
 
+    @Value("${loggingComponentName}")
+    public void setLoggingComponentName(String loggingComponentName) {
+        JsonFeignResponseHelper.loggingComponentName = loggingComponentName;
+    }
 }

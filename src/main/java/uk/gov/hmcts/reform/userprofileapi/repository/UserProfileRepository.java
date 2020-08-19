@@ -23,5 +23,4 @@ public interface UserProfileRepository extends CrudRepository<UserProfile, Long>
 
     @Transactional(readOnly = true)
     Optional<List<UserProfile>> findByIdamIdIn(List<String> userIds);
-
 }

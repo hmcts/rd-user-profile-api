@@ -14,9 +14,11 @@ public interface ValidationHelperService {
 
     void validateUserIsPresent(Optional<UserProfile> userProfile);
 
-    boolean validateUpdateUserProfileRequestValid(UpdateUserProfileData updateUserProfileData, String userId, ResponseSource source);
+    boolean validateUpdateUserProfileRequestValid(UpdateUserProfileData updateUserProfileData, String userId,
+                                                  ResponseSource source);
 
-    boolean validateUserStatusBeforeUpdate(UpdateUserProfileData updateUserProfileData, UserProfile userProfile, ResponseSource source);
+    boolean validateUserStatusBeforeUpdate(UpdateUserProfileData updateUserProfileData, UserProfile userProfile,
+                                           ResponseSource source);
 
     boolean validateUserPersisted(HttpStatus status);
 

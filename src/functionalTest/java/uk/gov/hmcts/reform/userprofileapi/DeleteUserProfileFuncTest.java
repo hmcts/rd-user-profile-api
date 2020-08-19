@@ -104,7 +104,8 @@ public class DeleteUserProfileFuncTest extends AbstractFunctional {
 
     }
 
-    private void verifyDeleteUserProfile(List<String> userIds, HttpStatus deleteStatus, HttpStatus getStatus) throws Exception {
+    private void verifyDeleteUserProfile(List<String> userIds, HttpStatus deleteStatus, HttpStatus getStatus)
+            throws Exception {
 
         UserProfileDataRequest deletionRequest = buildUserProfileDataRequest(userIds);
         //delete user profile

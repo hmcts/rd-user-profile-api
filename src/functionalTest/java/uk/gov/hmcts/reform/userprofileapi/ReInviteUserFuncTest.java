@@ -41,7 +41,8 @@ public class ReInviteUserFuncTest extends AbstractFunctional {
                 testRequestHandler.asJsonString(data),
                 HttpStatus.BAD_REQUEST,
                 requestUri).as(ErrorResponse.class);
-        assertThat(errorResponse.getErrorMessage()).isEqualTo("3 : There is a problem with your request. Please check and try again");
+        assertThat(errorResponse.getErrorMessage())
+                .isEqualTo("3 : There is a problem with your request. Please check and try again");
         assertThat(errorResponse.getErrorDescription()).isEqualTo("User is not in PENDING state");
     }
 
@@ -60,6 +61,8 @@ public class ReInviteUserFuncTest extends AbstractFunctional {
                 HttpStatus.TOO_MANY_REQUESTS,
                 requestUri).as(ErrorResponse.class);
 
-        assertThat(errorResponse.getErrorMessage()).isEqualTo(String.format(String.format("10 : The request was last made less than %s minutes ago. Please try after some time", resendInterval)));
+        assertThat(errorResponse.getErrorMessage()).isEqualTo(String.format(
+                String.format("10 : The request was last made less than %s minutes ago. Please try after some time",
+                        resendInterval)));
     }
 }

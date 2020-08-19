@@ -8,6 +8,7 @@ import java.util.Set;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,10 @@ public class DeleteUserProfileServiceImpl implements DeleteResourceService<UserP
     @Autowired
     private AuditService auditService;
 
+    @Value("${loggingComponentName}")
+    private String loggingComponentName;
+
+
     @Override
     @Transactional
     public UserProfilesDeletionResponse delete(UserProfileDataRequest profilesData) {
@@ -41,26 +46,32 @@ public class DeleteUserProfileServiceImpl implements DeleteResourceService<UserP
     }
 
     /**
-     * Either delete all the audit and userProfiles data from the data base or none.
+     * Either delete all the audit and userProfiles data from the data base or none
+     * and adding deleted user profiles data to the response table.
      *
      */
-    private UserProfilesDeletionResponse deleteUserProfiles(List<UserProfile> userProfiles) {
+    public UserProfilesDeletionResponse deleteUserProfiles(List<UserProfile> userProfiles) {
 
         userProfileRepository.deleteAll(userProfiles);
         UserProfilesDeletionResponse deletionResponse = new UserProfilesDeletionResponse();
         HttpStatus status = HttpStatus.NO_CONTENT;
+        userProfiles.forEach(userProfile -> {
+            UserProfilesDeletionResponse auditResponse = new UserProfilesDeletionResponse();
+            auditResponse.setMessage("UserProfile Successfully Deleted::" + userProfile.getIdamId());
+            auditResponse.setStatusCode(status.value());
+            auditService.persistAudit(auditResponse);
+            log.info(loggingComponentName, "Deleted UserProfile Id::" + userProfile.getIdamId());
+        });
         deletionResponse.setMessage("UserProfiles Successfully Deleted");
         deletionResponse.setStatusCode(status.value());
-        auditService.persistAudit(deletionResponse);
         return deletionResponse;
-
     }
 
     /**
      * This method is used to find the user profile exist or not with the give userId.
      *
      */
-    private UserProfile validateUserStatus(String userId) {
+    public  UserProfile validateUserStatus(String userId) {
         Optional<UserProfile> userProfileOptional = userProfileRepository.findByIdamId(userId.trim());
         if (!userProfileOptional.isPresent()) {
             throw new ResourceNotFoundException("could not find user profile for userId:" + userId);

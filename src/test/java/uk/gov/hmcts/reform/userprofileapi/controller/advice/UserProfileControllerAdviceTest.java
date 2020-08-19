@@ -25,7 +25,7 @@ public class UserProfileControllerAdviceTest {
     private UserProfileControllerAdvice advice = new UserProfileControllerAdvice();
 
     @Test
-    public void should_handle_required_field_missing_exception() {
+    public void test_handle_required_field_missing_exception() {
         String message = "test-ex-message";
         RequiredFieldMissingException exception = new RequiredFieldMissingException(message);
         HttpServletRequest request = mock(HttpServletRequest.class);
@@ -35,7 +35,7 @@ public class UserProfileControllerAdviceTest {
     }
 
     @Test
-    public void should_handle_invalid_request_exception() {
+    public void test_handle_invalid_request_exception() {
         String message = "test-ex-message";
         InvalidRequest exception = new InvalidRequest(message);
 
@@ -44,7 +44,7 @@ public class UserProfileControllerAdviceTest {
     }
 
     @Test
-    public void should_return_404_when_resource_not_found_exception() {
+    public void test_return_404_when_resource_not_found_exception() {
         String message = "test-ex-message";
         ResourceNotFoundException exception = new ResourceNotFoundException(message);
         HttpServletRequest request = mock(HttpServletRequest.class);
@@ -54,7 +54,7 @@ public class UserProfileControllerAdviceTest {
     }
 
     @Test
-    public void should_return_400_when_invalid_method_argument() {
+    public void test_return_400_when_invalid_method_argument() {
         String message = "test-ex-message";
         MethodArgumentNotValidException exception = mock(MethodArgumentNotValidException.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
@@ -66,7 +66,7 @@ public class UserProfileControllerAdviceTest {
     }
 
     @Test
-    public void should_return_400_when_duplicate_email() {
+    public void test_return_400_when_duplicate_email() {
         String message = "test-ex-message";
         DataIntegrityViolationException exception = new DataIntegrityViolationException(message);
         HttpServletRequest request = mock(HttpServletRequest.class);
@@ -76,7 +76,7 @@ public class UserProfileControllerAdviceTest {
     }
 
     @Test
-    public void should_handle() {
+    public void test_handle() {
         String message = "test-ex-message";
         IdamServiceException exception = new IdamServiceException(message, HttpStatus.BAD_REQUEST);
         HttpServletRequest request = mock(HttpServletRequest.class);
@@ -86,7 +86,7 @@ public class UserProfileControllerAdviceTest {
     }
 
     @Test
-    public void should_return_500_when_unhandled_exception() {
+    public void test_return_500_when_unhandled_exception() {
         String message = "test-ex-message";
         Exception ex = mock(Exception.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
@@ -98,7 +98,7 @@ public class UserProfileControllerAdviceTest {
     }
 
     @Test
-    public void should_return_400_when_httpMessageConversionException() {
+    public void test_return_400_when_httpMessageConversionException() {
         String message = "test-ex-message";
         HttpMessageConversionException ex = new HttpMessageConversionException(message);
         HttpServletRequest request = mock(HttpServletRequest.class);
@@ -108,7 +108,7 @@ public class UserProfileControllerAdviceTest {
     }
 
     @Test
-    public void should_return_throwable_when_getRootCause() {
+    public void test_return_throwable_when_getRootCause() {
 
         Throwable throwableMock = mock(Throwable.class);
         when(throwableMock.getCause()).thenReturn(new Throwable());
@@ -118,7 +118,7 @@ public class UserProfileControllerAdviceTest {
     }
 
     @Test
-    public void should_return_404_when_too_many_request_exception() {
+    public void test_return_404_when_too_many_request_exception() {
         String message = "test-ex-message";
         HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.TOO_MANY_REQUESTS);
         HttpServletRequest request = mock(HttpServletRequest.class);

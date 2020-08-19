@@ -27,7 +27,8 @@ public class UserProfileRequestHandlerTest {
     @Autowired
     private static final String IDAM_TOKEN = "authorization-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9";
 
-    private static final String JWT_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
+    private static final String JWT_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZS"
+            .concat("I6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c");
 
 
     public MvcResult sendPost(MockMvc mockMvc,
@@ -89,6 +90,28 @@ public class UserProfileRequestHandlerTest {
         return objectMapper.readValue(result.getResponse().getContentAsString(), clazz);
     }
 
+    public <T> T sendPut(MockMvc mockMvc,
+                         String path,
+                         Object body,
+                         HttpStatus expectedHttpStatus,
+                         Class<T> clazz) throws Exception {
+
+        MvcResult result = sendPut(mockMvc, path, body, expectedHttpStatus);
+        assertThat(result.getResponse().getContentAsString())
+                .as("Expected json content was empty")
+                .isNotEmpty();
+
+        return objectMapper.readValue(result.getResponse().getContentAsString(), clazz);
+    }
+
+    public MvcResult sendPut(MockMvc mockMvc,
+                        String path,
+                        Object body,
+                        HttpStatus expectedHttpStatus) throws Exception {
+
+        return sendPut(mockMvc, path, objectMapper.writeValueAsString(body), expectedHttpStatus);
+    }
+
     public MvcResult sendPut(MockMvc mockMvc,
                               String path,
                               String jsonBody,
@@ -101,18 +124,11 @@ public class UserProfileRequestHandlerTest {
                 .andExpect(status().is(expectedHttpStatus.value())).andReturn();
     }
 
-    public void sendPut(MockMvc mockMvc,
-                              String path,
-                              Object body,
-                              HttpStatus expectedHttpStatus) throws Exception {
-
-        sendPut(mockMvc, path, objectMapper.writeValueAsString(body), expectedHttpStatus);
-    }
 
     public MvcResult sendDelete(MockMvc mockMvc,
-                              String path,
-                              String jsonBody,
-                              HttpStatus expectedHttpStatus) throws Exception {
+                                String path,
+                                String jsonBody,
+                                HttpStatus expectedHttpStatus) throws Exception {
 
         return mockMvc.perform(delete(path)
                 .headers(getMultipleAuthHeaders())
@@ -122,19 +138,19 @@ public class UserProfileRequestHandlerTest {
     }
 
     public MvcResult sendDelete(MockMvc mockMvc,
-                              String path,
-                              Object body,
-                              HttpStatus expectedHttpStatus) throws Exception {
+                                String path,
+                                Object body,
+                                HttpStatus expectedHttpStatus) throws Exception {
 
         return sendDelete(mockMvc, path, objectMapper.writeValueAsString(body), expectedHttpStatus);
 
     }
 
     public <T> T sendDelete(MockMvc mockMvc,
-                          String path,
-                          Object body,
-                          HttpStatus expectedHttpStatus,
-                          Class<T> clazz) throws Exception {
+                            String path,
+                            Object body,
+                            HttpStatus expectedHttpStatus,
+                            Class<T> clazz) throws Exception {
 
         MvcResult result = sendDelete(mockMvc, path, body, expectedHttpStatus);
         assertThat(result.getResponse().getContentAsString())

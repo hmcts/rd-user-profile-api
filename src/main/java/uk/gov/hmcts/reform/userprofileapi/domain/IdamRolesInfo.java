@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.domain;
 
+import static java.util.Objects.nonNull;
+import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.getStatusCodeValueFromResponseEntity;
 import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.resolveStatusAndReturnMessage;
 
 import java.util.List;
@@ -21,26 +23,23 @@ public class IdamRolesInfo {
     private HttpStatus responseStatusCode;
     private String statusMessage;
 
-    public IdamRolesInfo(ResponseEntity<IdamUserResponse> entity, HttpStatus idamGetResponseStatusCode) {
-        if (entity != null && entity.getBody() != null) {
-            this.id = entity.getBody().getId();
-            this.roles = entity.getBody().getRoles();
-            this.email = entity.getBody().getEmail();
-            this.forename = entity.getBody().getForename();
-            this.surname = entity.getBody().getSurname();
-            this.active = entity.getBody().getActive();
-            this.pending = entity.getBody().getPending();
+    public IdamRolesInfo(ResponseEntity<Object> entity) {
+        if (nonNull(entity)  && nonNull(entity.getBody()) && entity.getBody() instanceof IdamUserResponse) {
+            IdamUserResponse idamUserResponse = (IdamUserResponse) entity.getBody();
+            this.id = idamUserResponse.getId();
+            this.roles = idamUserResponse.getRoles();
+            this.email = idamUserResponse.getEmail();
+            this.forename = idamUserResponse.getForename();
+            this.surname = idamUserResponse.getSurname();
+            this.active = idamUserResponse.getActive();
+            this.pending = idamUserResponse.getPending();
         }
-        loadStatusCodes(idamGetResponseStatusCode);
+        loadStatusCodes(entity);
     }
 
-    public IdamRolesInfo(HttpStatus idamGetResponseStatusCode) {
-        loadStatusCodes(idamGetResponseStatusCode);
-    }
-
-    private void loadStatusCodes(HttpStatus idamGetResponseStatusCode) {
-        this.responseStatusCode = idamGetResponseStatusCode;
-        this.statusMessage = resolveStatusAndReturnMessage(idamGetResponseStatusCode);
+    private void loadStatusCodes(ResponseEntity<Object> responseEntity) {
+        this.responseStatusCode = HttpStatus.valueOf(getStatusCodeValueFromResponseEntity(responseEntity));
+        this.statusMessage = resolveStatusAndReturnMessage(responseEntity);
     }
 
     public boolean isSuccessFromIdam() {

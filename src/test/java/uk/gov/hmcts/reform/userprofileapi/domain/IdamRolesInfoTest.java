@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,7 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamUserResponse;
 public class IdamRolesInfoTest {
 
     @Test
-    public void should_populate_all_fields() {
+    public void test_populate_all_fields() {
         Boolean active = true;
         String email = "some@hmcts.net";
         String foreName = "firstName";
@@ -24,10 +25,11 @@ public class IdamRolesInfoTest {
         String surName = "lastName";
         Boolean pending = false;
 
-        IdamUserResponse idamUserResponse = new IdamUserResponse(active, email, foreName, userId, pending, roles, surName);
-        ResponseEntity<IdamUserResponse> entity = new ResponseEntity<>(idamUserResponse, HttpStatus.CREATED);
+        IdamUserResponse idamUserResponse = new IdamUserResponse(active, email, foreName, userId, pending, roles,
+                surName);
+        ResponseEntity<Object> entity = new ResponseEntity<>(idamUserResponse, HttpStatus.CREATED);
 
-        IdamRolesInfo idamRolesInfo = new IdamRolesInfo(entity, HttpStatus.CREATED);
+        IdamRolesInfo idamRolesInfo = new IdamRolesInfo(entity);
 
         assertThat(idamRolesInfo.getEmail()).isEqualTo(email);
         assertThat(idamRolesInfo.getForename()).isEqualTo(foreName);
@@ -36,6 +38,19 @@ public class IdamRolesInfoTest {
         assertThat(idamRolesInfo.getRoles()).isNotEmpty();
         assertThat(idamRolesInfo.getResponseStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(idamRolesInfo.getStatusMessage()).isNotEmpty();
-        assertThat(idamRolesInfo.isSuccessFromIdam()).isEqualTo(true);
+        assertThat(idamRolesInfo.isSuccessFromIdam()).isTrue();
+    }
+
+    @Test
+    public void test_isSuccessFromIdam_ReturnsFalseWhenStatusIs400() {
+        IdamUserResponse idamUserResponse = mock(IdamUserResponse.class);
+        ResponseEntity<Object> entity = new ResponseEntity<>(idamUserResponse, HttpStatus.BAD_REQUEST);
+
+        IdamRolesInfo idamRolesInfo = new IdamRolesInfo(entity);
+
+        assertThat(idamRolesInfo.getResponseStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(idamRolesInfo.getStatusMessage()).isNotEmpty();
+
+        assertThat(idamRolesInfo.isSuccessFromIdam()).isFalse();
     }
 }

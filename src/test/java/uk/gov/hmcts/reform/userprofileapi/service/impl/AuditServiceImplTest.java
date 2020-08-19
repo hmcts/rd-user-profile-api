@@ -39,7 +39,7 @@ public class AuditServiceImplTest {
     }
 
     @Test
-    public void testPersistAudit() {
+    public void test_PersistAudit() {
         UserProfile userProfileMock = Mockito.mock(UserProfile.class);
 
         sut.persistAudit(httpStatusMock, userProfileMock, responseSourceMock);
@@ -48,7 +48,7 @@ public class AuditServiceImplTest {
     }
 
     @Test
-    public void testPersistAuditTwoArgs() {
+    public void test_PersistAuditTwoArgs() {
         sut.persistAudit(httpStatusMock, responseSourceMock);
 
         verify(auditRepositoryMock, times(1)).save(any(Audit.class));
@@ -56,7 +56,8 @@ public class AuditServiceImplTest {
 
     @Test
     public void testPersistAuditForDeleteUserProfiles() {
-        UserProfilesDeletionResponse userProfilesDeletionResponse = new  UserProfilesDeletionResponse(204,"successfully deleted");
+        UserProfilesDeletionResponse userProfilesDeletionResponse =
+            new UserProfilesDeletionResponse(204,"successfully deleted");
         sut.persistAudit(userProfilesDeletionResponse);
         verify(auditRepositoryMock, times(1)).save(any(Audit.class));
     }

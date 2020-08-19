@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.userprofileapi.domain.entities;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.ResponseEntity.status;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 
 import org.junit.Test;
@@ -13,11 +15,11 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 public class UserProfileTest {
 
-    private final IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(HttpStatus.CREATED);
+    private final IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(status(CREATED).build());
 
 
     @Test
-    public void should_create_and_get_successfully() {
+    public void test_create_and_get_successfully() {
         UserProfileCreationData data = buildCreateUserProfileData();
         UserProfile userProfile = new UserProfile(data, HttpStatus.CREATED);
 
@@ -29,8 +31,8 @@ public class UserProfileTest {
         assertThat(userProfile.getEmailCommsConsentTs()).isNull();
         assertThat(userProfile.getPostalCommsConsentTs()).isNull();
 
-        assertThat(userProfile.getUserCategory().toString()).isEqualTo(data.getUserCategory());
-        assertThat(userProfile.getUserType().toString()).isEqualTo(data.getUserType());
+        assertThat(userProfile.getUserCategory()).hasToString(data.getUserCategory());
+        assertThat(userProfile.getUserType()).hasToString(data.getUserType());
 
         assertThat(userProfile.getStatus()).isEqualTo(IdamStatus.PENDING);
         assertThat(userProfile.getIdamRegistrationResponse())
@@ -55,7 +57,7 @@ public class UserProfileTest {
     }
 
     @Test
-    public void should_set_defaults_when_optional_field_is_not_provided() {
+    public void test_set_defaults_when_optional_field_is_not_provided() {
         UserProfile userProfile = new UserProfile(buildCreateUserProfileData(), HttpStatus.CREATED);
 
         assertThat(userProfile.getLanguagePreference()).isEqualTo(LanguagePreference.EN);
@@ -66,7 +68,7 @@ public class UserProfileTest {
     }
 
     @Test
-    public void should_set_defaults_when_language_pref_field_is_not_provided() {
+    public void test_set_defaults_when_language_pref_field_is_not_provided() {
         UserProfileCreationData data = buildCreateUserProfileData();
 
         data.setLanguagePreference(null);
