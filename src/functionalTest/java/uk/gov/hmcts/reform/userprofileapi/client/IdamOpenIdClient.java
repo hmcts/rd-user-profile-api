@@ -4,6 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static uk.gov.hmcts.reform.userprofileapi.AbstractFunctional.EMAIL;
+import static uk.gov.hmcts.reform.userprofileapi.AbstractFunctional.PASSWORD;
+import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.generateRandomEmail;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
@@ -29,20 +32,18 @@ public class IdamOpenIdClient {
 
     private final TestConfigProperties testConfig;
 
-    private final String password = "Hmcts123";
-
     private Gson gson = new Gson();
 
     public IdamOpenIdClient(TestConfigProperties testConfig) {
         this.testConfig = testConfig;
     }
 
-    public String createUser(List<String> roles) {
+    public Map<String, String> createUser(List<String> roles) {
         //Generating a random user
-        String userEmail = nextUserEmail();
+        String userEmail = generateRandomEmail();
         String firstName = "First";
         String lastName = "Last";
-        String password = "Hmcts123";
+        String password = generateSidamPassword();
 
         String id = UUID.randomUUID().toString();
 
@@ -64,18 +65,21 @@ public class IdamOpenIdClient {
 
         assertThat(createdUserResponse.getStatusCode()).isEqualTo(201);
 
-        return userEmail;
+        Map<String, String> userCreds = new HashMap<>();
+        userCreds.put(EMAIL, userEmail);
+        userCreds.put(PASSWORD, password);
+        return userCreds;
     }
 
     public String getBearerToken() {
 
         List<String> roles = new ArrayList<>();
         roles.add("prd-admin");
-        String userEmail = createUser(roles);
+        Map<String, String>  userCreds = createUser(roles);
         Map<String, String> tokenParams = new HashMap<>();
         tokenParams.put("grant_type", "password");
-        tokenParams.put("username", userEmail);
-        tokenParams.put("password", password);
+        tokenParams.put("username", userCreds.get(EMAIL));
+        tokenParams.put("password", userCreds.get(PASSWORD));
         tokenParams.put("client_id", testConfig.getClientId());
         tokenParams.put("client_secret", testConfig.getClientSecret());
         tokenParams.put("redirect_uri", testConfig.getOauthRedirectUrl());
@@ -98,10 +102,13 @@ public class IdamOpenIdClient {
 
     }
 
-
-    private String nextUserEmail() {
-        return String.format(testConfig.getGeneratedUserEmailPattern(),
-                RandomStringUtils.randomAlphanumeric(10));
+    public static String generateSidamPassword() {
+        String regex = "^(?=.{10,})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).*$";
+        String password = RandomStringUtils.randomAlphanumeric(10);
+        if (!password.matches(regex)) {
+            password = generateSidamPassword();
+        }
+        return password;
     }
 
     @AllArgsConstructor

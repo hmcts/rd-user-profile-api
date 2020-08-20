@@ -11,6 +11,7 @@ import io.restassured.RestAssured;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import uk.gov.hmcts.reform.userprofileapi.client.IdamClient;
+import uk.gov.hmcts.reform.userprofileapi.client.IdamOpenIdClient;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.RoleAdditionResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
@@ -38,13 +39,13 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
     @Autowired
     protected TestConfigProperties configProperties;
 
-    private IdamClient idamClient;
+    private IdamOpenIdClient idamOpenIdClient;
 
     @Before
     public void setUp() {
         RestAssured.baseURI = targetInstance;
         RestAssured.useRelaxedHTTPSValidation();
-        idamClient = new IdamClient(configProperties);
+        idamOpenIdClient = new IdamOpenIdClient(configProperties);
     }
 
     @Test
@@ -54,9 +55,9 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         UserProfileCreationData data = createUserProfileData();
         List<String> roles = new ArrayList<>();
         roles.add(puiUserManager);
-        String email = idamClient.createUser(roles);
+        Map<String, String> userCreds = idamOpenIdClient.createUser(roles);
 
-        data.setEmail(email);
+        data.setEmail(userCreds.get(EMAIL));
         createUserProfile(data, CREATED);
 
         RoleName role1 = new RoleName(puiCaseManager);
@@ -67,7 +68,7 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
 
         UserProfileResponse resource =
                 testRequestHandler.sendGet(
-                        requestUri + "?email=" + email.toLowerCase(),
+                        requestUri + "?email=" + userCreds.get(EMAIL).toLowerCase(),
                         UserProfileResponse.class
                 );
 
@@ -97,13 +98,13 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         UserProfileCreationData data = createUserProfileData();
         List<String> roles = new ArrayList<>();
         roles.add(puiUserManager);
-        String email = idamClient.createUser(roles);
+        Map<String, String> userCreds = idamOpenIdClient.createUser(roles);
 
-        data.setEmail(email);
+        data.setEmail(userCreds.get(EMAIL));
         createUserProfile(data, CREATED);
         UserProfileResponse resource =
                 testRequestHandler.sendGet(
-                        requestUri + "?email=" + email.toLowerCase(),
+                        requestUri + "?email=" + userCreds.get(EMAIL).toLowerCase(),
                         UserProfileResponse.class
                 );
 
@@ -142,13 +143,13 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
         UserProfileCreationData data = createUserProfileData();
         List<String> roles = new ArrayList<>();
         roles.add(puiUserManager);
-        String email = idamClient.createUser(roles);
+        Map<String,String>  userCreds = idamOpenIdClient.createUser(roles);
 
-        data.setEmail(email);
+        data.setEmail(userCreds.get(EMAIL));
         createUserProfile(data, CREATED);
         UserProfileResponse resource =
                 testRequestHandler.sendGet(
-                        requestUri + "?email=" + email.toLowerCase(),
+                        requestUri + "?email=" + userCreds.get(EMAIL).toLowerCase(),
                         UserProfileResponse.class
                 );
 

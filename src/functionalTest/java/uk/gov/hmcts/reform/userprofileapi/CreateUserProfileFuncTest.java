@@ -5,15 +5,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
@@ -23,10 +22,6 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 public class CreateUserProfileFuncTest extends AbstractFunctional {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateUserProfileFuncTest.class);
-
-    @Autowired
-    protected TestConfigProperties configProperties;
-
 
     @Test
     public void should_create_user_profile_and_verify_successfully() throws Exception {
@@ -67,11 +62,11 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
         List<String> roles = new ArrayList<>();
         roles.add("citizen");
         roles.add("pui-case-manager");
-        String email = idamClient.createUser(roles);
+        Map<String, String> userCreds = idamOpenIdClient.createUser(roles);
 
         //create user profile in UP with PRD-ADMIN token for above user with same email with "pui-user-manager" roles
         UserProfileCreationData data = createUserProfileData();
-        data.setEmail(email);
+        data.setEmail(userCreds.get(EMAIL));
         List<String> xuiRoles = new ArrayList();
         xuiRoles.add("pui-user-manager");
         xuiRoles.add("pui-case-manager");

@@ -11,10 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.reform.userprofileapi.client.IdamClient;
-import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
@@ -25,17 +22,12 @@ public class DeleteUserProfileFuncTest extends AbstractFunctional {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeleteUserProfileFuncTest.class);
 
-    @Autowired
-    protected TestConfigProperties configProperties;
-
-    private IdamClient idamClient;
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Before
     public void setUp() {
         RestAssured.baseURI = targetInstance;
         RestAssured.useRelaxedHTTPSValidation();
-        idamClient = new IdamClient(configProperties);
     }
 
     @Test
