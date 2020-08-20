@@ -5,6 +5,7 @@ import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.resolve
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfilesDeletionResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
@@ -20,7 +21,8 @@ public class AuditServiceImpl implements AuditService {
 
     @Override
     public void persistAudit(HttpStatus idamStatus, UserProfile userProfile, ResponseSource responseSource) {
-        Audit audit = new Audit(idamStatus.value(), resolveStatusAndReturnMessage(idamStatus), responseSource, userProfile);
+        Audit audit = new Audit(idamStatus.value(), resolveStatusAndReturnMessage(idamStatus), responseSource,
+                userProfile);
         auditRepository.save(audit);
     }
 
@@ -32,7 +34,15 @@ public class AuditServiceImpl implements AuditService {
 
     @Override
     public void persistAudit(IdamRolesInfo idamRolesInfo, UserProfile userProfile) {
-        Audit audit = new Audit(idamRolesInfo.getResponseStatusCode().value(), idamRolesInfo.getStatusMessage(), ResponseSource.API, userProfile);
+        Audit audit = new Audit(idamRolesInfo.getResponseStatusCode().value(), idamRolesInfo.getStatusMessage(),
+                ResponseSource.API, userProfile);
+        auditRepository.save(audit);
+    }
+
+    @Override
+    public void persistAudit(UserProfilesDeletionResponse userProfilesDeletionResponse) {
+        Audit audit = new Audit(userProfilesDeletionResponse.getStatusCode(),
+                userProfilesDeletionResponse.getMessage(), ResponseSource.API);
         auditRepository.save(audit);
     }
 

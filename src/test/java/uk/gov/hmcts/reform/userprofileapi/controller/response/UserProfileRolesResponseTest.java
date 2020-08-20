@@ -1,39 +1,40 @@
 package uk.gov.hmcts.reform.userprofileapi.controller.response;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpStatus.OK;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.junit.Test;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 public class UserProfileRolesResponseTest {
 
     @Test
-    public void testAddAndDeleteRoleResponse() {
-        RoleAdditionResponse roleAdditionResponse = new RoleAdditionResponse();
-        roleAdditionResponse.setIdamStatusCode(HttpStatus.OK.toString());
+    public void test_AddAndDeleteRoleResponse() {
+        RoleAdditionResponse roleAdditionResponse = new RoleAdditionResponse(ResponseEntity.status(OK).build());
         roleAdditionResponse.setIdamMessage("Success");
+
         RoleDeletionResponse deletionResponse = new RoleDeletionResponse();
-        deletionResponse.setIdamStatusCode(HttpStatus.OK.toString());
+        deletionResponse.setIdamStatusCode(OK.toString());
         deletionResponse.setIdamMessage("success");
-        List<RoleDeletionResponse> roleDeletionResponseData = new ArrayList<>();
-        roleDeletionResponseData.add(deletionResponse);
+        List<RoleDeletionResponse> roleDeletionResponseData = Arrays.asList(deletionResponse);
 
         UserProfileResponse userProfileResponse = new UserProfileResponse();
         userProfileResponse.setRoleDeletionResponse(roleDeletionResponseData);
         userProfileResponse.setRoleAdditionResponse(roleAdditionResponse);
 
-        assertThat(userProfileResponse.getRoleAdditionResponse().getIdamStatusCode()).isEqualTo("200 OK");
+        assertThat(userProfileResponse.getRoleAdditionResponse().getIdamStatusCode()).isEqualTo("200");
         assertThat(userProfileResponse.getRoleAdditionResponse().getIdamMessage()).isEqualTo("Success");
     }
 
     @Test
-    public void testAddRolesViaConstructor() {
+    public void test_AddRolesViaConstructor() {
+        RoleAdditionResponse roleAdditionResponse = new RoleAdditionResponse(ResponseEntity.status(OK).build());
 
-        RoleAdditionResponse roleAdditionResponse = new RoleAdditionResponse(HttpStatus.OK);
-
-        RoleDeletionResponse deletionResponse = new RoleDeletionResponse("pui-case-manager",HttpStatus.OK);
+        RoleDeletionResponse deletionResponse = new RoleDeletionResponse("pui-case-manager",
+                ResponseEntity.status(OK).build());
         List<RoleDeletionResponse> roleDeletionResponseData = new ArrayList<>();
         roleDeletionResponseData.add(deletionResponse);
 

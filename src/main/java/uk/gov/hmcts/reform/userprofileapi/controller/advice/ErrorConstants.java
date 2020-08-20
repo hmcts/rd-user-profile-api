@@ -12,11 +12,19 @@ public enum ErrorConstants {
 
     METHOD_ARG_NOT_VALID("5 : validation on an argument failed"),
 
-    DATA_INTEGRITY_VIOLATION("6 : attempt to insert or update data resulted in violation of an integrity constraint"),
+    DATA_INTEGRITY_VIOLATION("6 : attempt to insert or update data resulted in violation of an integrity"
+            .concat(" constraint")),
 
-    ILLEGAL_ARGUMENT("7 : method has been passed an illegal or inappropriate argument"),
+    USER_ALREADY_ACTIVE(
+            "7 : Resend invite failed as user is already active. Wait for some time for the system to "
+                    .concat("refresh.")),
 
-    UNKNOWN_EXCEPTION("8 : error was caused by an unknown exception");
+    UNKNOWN_EXCEPTION("8 : error was caused by an unknown exception"),
+
+    TOO_MANY_REQUESTS(
+            "10 : The request was last made less than %s minutes ago. Please try after some time");
+
+
 
     private final String errorMessage;
 

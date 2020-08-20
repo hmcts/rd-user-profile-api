@@ -4,7 +4,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.*;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
@@ -26,15 +26,16 @@ public class ValidationServiceImpl implements ValidationService {
 
 
     @Override
-    public UserProfile validateUpdate(UpdateUserProfileData updateUserProfileData, String userId, ResponseSource source) {
+    public UserProfile validateUpdate(UpdateUserProfileData updateUserProfileData, String userId,
+                                      ResponseSource source) {
         // validate input
-        validationHelperService.validateUserIdWithException(userId);
+        validationHelperService.validateUserId(userId);
 
         // retrieve user by id
         Optional<UserProfile> result = userProfileRepository.findByIdamId(userId);
 
         // validate with exception that user is well-formed
-        validationHelperService.validateUserIsPresentWithException(result, userId);
+        validationHelperService.validateUserIsPresent(result);
 
         validationHelperService.validateUpdateUserProfileRequestValid(updateUserProfileData, userId, source);
 
@@ -42,11 +43,11 @@ public class ValidationServiceImpl implements ValidationService {
     }
 
     @Override
-    public boolean isValidForUserDetailUpdate(UpdateUserProfileData updateUserProfileData, UserProfile userProfile, ResponseSource source) {
+    public boolean isValidForUserDetailUpdate(UpdateUserProfileData updateUserProfileData, UserProfile userProfile,
+                                              ResponseSource source) {
         return validationHelperService.validateUserStatusBeforeUpdate(updateUserProfileData, userProfile, source);
     }
 
-    //TODO determine why this fails for !UserProfileField.SYNC.name().equalsIgnoreCase(origin)????
     public boolean isExuiUpdateRequest(String origin) {
         return ResponseSource.EXUI.name().equalsIgnoreCase(origin);
 

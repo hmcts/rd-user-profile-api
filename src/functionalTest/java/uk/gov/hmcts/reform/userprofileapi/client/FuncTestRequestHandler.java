@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.client;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,7 +39,8 @@ public class FuncTestRequestHandler {
     public static final String BEARER = "Bearer ";
 
 
-    public <T> T sendPost(Object data, HttpStatus expectedStatus, String path, Class<T> clazz) throws JsonProcessingException {
+    public <T> T sendPost(Object data, HttpStatus expectedStatus, String path, Class<T> clazz)
+            throws JsonProcessingException {
         return
             sendPost(objectMapper.writeValueAsString(data),
                 expectedStatus,
@@ -64,7 +65,8 @@ public class FuncTestRequestHandler {
                 .statusCode(expectedStatus.value()).extract().response();
     }
 
-    public <T> T sendPut(Object data, HttpStatus expectedStatus, String path, Class<T> clazz) throws JsonProcessingException {
+    public <T> T sendPut(Object data, HttpStatus expectedStatus, String path, Class<T> clazz)
+            throws JsonProcessingException {
 
         return sendPut(objectMapper.writeValueAsString(data),
                expectedStatus,
@@ -88,7 +90,8 @@ public class FuncTestRequestHandler {
                 .statusCode(expectedStatus.value()).extract().response();
     }
 
-    public <T> T sendDelete(Object data, HttpStatus expectedStatus, String path, Class<T> clazz) throws JsonProcessingException {
+    public <T> T sendDelete(Object data, HttpStatus expectedStatus, String path, Class<T> clazz)
+            throws JsonProcessingException {
 
         return sendPut(objectMapper.writeValueAsString(data),
                 expectedStatus,
@@ -125,7 +128,7 @@ public class FuncTestRequestHandler {
         return SerenityRest
             .given()
             //.headers(authorizationHeadersProvider.getServiceAuthorization())
-            .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
             .baseUri(baseUrl)
             .header("ServiceAuthorization", BEARER + s2sToken)
             .header("Authorization", BEARER + bearerToken)
@@ -153,8 +156,8 @@ public class FuncTestRequestHandler {
                 .baseUri(baseUrl)
                 .header("ServiceAuthorization", BEARER + s2sToken)
                 .header("Authorization", BEARER + bearerToken)
-                .header("Content-Type", APPLICATION_JSON_UTF8_VALUE)
-                .header("Accepts", APPLICATION_JSON_UTF8_VALUE);
+                .header("Content-Type", APPLICATION_JSON_VALUE)
+                .header("Accepts", APPLICATION_JSON_VALUE);
     }
 
     private String getBearerToken() {
@@ -163,7 +166,6 @@ public class FuncTestRequestHandler {
     }
 
     private String getS2sToken() {
-        log.info("S2s Base url : {}, Microservice : {}, Secret : {}", s2sBaseUrl, s2sMicroservice, s2sSecret);
         S2sClient client = new S2sClient(s2sBaseUrl, s2sMicroservice, s2sSecret);
         return client.getS2sToken();
     }

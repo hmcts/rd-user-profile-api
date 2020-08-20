@@ -3,20 +3,18 @@ package uk.gov.hmcts.reform.userprofileapi;
 import static org.apache.commons.lang.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.restassured.RestAssured;
 import java.util.ArrayList;
 import java.util.List;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.json.JSONObject;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.reform.userprofileapi.client.*;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
+import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
@@ -29,14 +27,6 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
     @Autowired
     protected TestConfigProperties configProperties;
 
-    private IdamClient idamClient;
-
-    @Before
-    public void setUp() {
-        RestAssured.baseURI = targetInstance;
-        RestAssured.useRelaxedHTTPSValidation();
-        idamClient = new IdamClient(configProperties);
-    }
 
     @Test
     public void should_create_user_profile_and_verify_successfully() throws Exception {
@@ -49,22 +39,11 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
     }
 
     @Test
-    public void should_create_user_profile_for_duplicate_idam_user_and_verify_successfully_for_prd_roles() throws Exception {
+    public void should_create_user_profile_for_duplicate_idam_user_and_verify_successfully_for_prd_roles()
+            throws Exception {
 
-        List<String> xuiuRoles = new ArrayList();
-        xuiuRoles.add("pui-user-manager");
-        xuiuRoles.add("pui-case-manager");
-
-        //create user with "pui-user-manager" role in SIDAM
-        List<String> sidamRoles = new ArrayList<>();
-        sidamRoles.add("pui-user-manager");
-        String email = idamClient.createUser(sidamRoles);
-
-        //create User profile with same email to get 409 scenario
         UserProfileCreationData data = createUserProfileData();
-        data.setRoles(xuiuRoles);
-        data.setEmail(email);
-        UserProfileCreationResponse duplicateUserResource = createUserProfile(data, HttpStatus.CREATED);
+        UserProfileCreationResponse duplicateUserResource = createActiveUserProfile(data);
         verifyCreateUserProfile(duplicateUserResource);
 
         //get user by getUserById to check new roles got added in SIDAM
@@ -81,7 +60,8 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
     }
 
     @Test
-    public void should_create_user_profile_for_duplicate_idam_user_and_verify_roles_updated_successfully_for_user_having_citizen_role() throws Exception {
+    public void should_create_up_for_duplicate_idam_user_and_verify_roles_updated_successfully_for_user_citizen_role()
+            throws Exception {
 
         //create user with citizen role in SIDAM
         List<String> roles = new ArrayList<>();
@@ -129,19 +109,41 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
         UserProfileCreationData data = createUserProfileData();
 
         UserProfileCreationResponse createdResource =
-            testRequestHandler.sendPost(
-                data,
-                HttpStatus.CREATED,
-                requestUri,
-                    UserProfileCreationResponse.class
-            );
+                testRequestHandler.sendPost(
+                        data,
+                        HttpStatus.CREATED,
+                        requestUri,
+                        UserProfileCreationResponse.class
+                );
 
         assertThat(createdResource).isNotNull();
 
         testRequestHandler.sendPost(
-            testRequestHandler.asJsonString(data),
-            HttpStatus.CONFLICT,
-            requestUri);
+                testRequestHandler.asJsonString(data),
+                HttpStatus.CONFLICT,
+                requestUri);
+    }
+
+    @Test
+    public void should_return_404_when_invalid_roles_are_passed_while_user_registration() throws Exception {
+
+        UserProfileCreationData data = createUserProfileData();
+
+        List<String> roles = new ArrayList<>();
+        roles.add("puicase-manager");
+        data.setRoles(roles);
+
+        ErrorResponse errorResponse =
+                testRequestHandler.sendPost(
+                        data,
+                        HttpStatus.NOT_FOUND,
+                        requestUri,
+                        ErrorResponse.class
+                );
+
+        assertThat(errorResponse).isNotNull();
+        assertThat(errorResponse.getErrorMessage()).isEqualTo("16 Resource not found");
+        assertThat(errorResponse.getErrorDescription()).isEqualTo("The role to be assigned does not exist.");
     }
 
 }

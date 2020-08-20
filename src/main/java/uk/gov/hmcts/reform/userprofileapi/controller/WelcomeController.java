@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Api(
     value = "/",
-    produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    produces = MediaType.APPLICATION_JSON_VALUE
 )
 
 @Slf4j
@@ -24,6 +25,9 @@ public class WelcomeController {
 
     private static final String INSTANCE_ID = UUID.randomUUID().toString();
     private static final String MESSAGE = "Welcome to the User Profile API";
+
+    @Value("${loggingComponentName}")
+    private String loggingComponentName;
 
     /**
      * Root GET endpoint.
@@ -44,12 +48,12 @@ public class WelcomeController {
     })
     @GetMapping(
         path = "/",
-        produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+        produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
     public ResponseEntity<String> welcome() {
 
-        log.info("Welcome message '{}' from running instance: {}", MESSAGE, INSTANCE_ID);
+        log.info("{}:: Welcome message '{}' from running instance: {}", loggingComponentName, MESSAGE, INSTANCE_ID);
 
         return ResponseEntity
             .ok()

@@ -10,7 +10,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 public class ErrorPersistingExceptionTest {
 
     @Test
-    public void should_create_exception_correctly() {
+    public void test_create_exception_correctly() {
         String message = "this-is-a-test-message";
         ErrorPersistingException exception = new ErrorPersistingException(message);
 

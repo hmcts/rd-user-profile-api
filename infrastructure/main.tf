@@ -16,8 +16,9 @@ locals {
   s2s_url = "http://rpe-service-auth-provider-${local.local_env}.service.core-compute-${local.local_env}.internal"
   s2s_vault_name = "s2s-${local.local_env}"
   s2s_vault_uri = "https://s2s-${local.local_env}.vault.azure.net/"
-  idam_url = "${var.env == "prod" ? "https://idam-api.platform.hmcts.net" : "http://idam-api.${local.local_env}.service.core-compute-ithc.internal" }"
-
+  idam_url = "${var.env == "prod" ? "https://idam-api.platform.hmcts.net" : "https://idam-api.${local.local_env}.platform.hmcts.net" }"
+  OIDC_ISSUER_URL = "https://forgerock-am.service.core-compute-idam-{{ .Values.global.environment }}.internal:8443/openam/oauth2/hmcts"
+  OPEN_ID_API_BASE_URI = "https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net/o"
 }
 
 resource "azurerm_resource_group" "rg" {
@@ -52,6 +53,16 @@ data "azurerm_key_vault_secret" "s2s_url" {
 
 data "azurerm_key_vault_secret" "idam_url" {
   name = "idam-url"
+  key_vault_id = "${data.azurerm_key_vault.rd_key_vault.id}"
+}
+
+data "azurerm_key_vault_secret" "OIDC_ISSUER_URL" {
+  name = "OIDC-ISSUER-URL"
+  key_vault_id = "${data.azurerm_key_vault.rd_key_vault.id}"
+}
+
+data "azurerm_key_vault_secret" "OPEN_ID_API_BASE_URI" {
+  name = "OPEN-ID-API-BASE-URI"
   key_vault_id = "${data.azurerm_key_vault.rd_key_vault.id}"
 }
 
@@ -99,42 +110,4 @@ module "db-user-profile" {
   postgresql_user = "dbuserprofile"
   database_name = "dbuserprofile"
   common_tags = "${var.common_tags}"
-}
-
-module "rd-user-profile-api" {
-  source = "git@github.com:hmcts/cnp-module-webapp?ref=master"
-  product = "${var.product}-${var.component}"
-  location = "${var.location}"
-  env = "${var.env}"
-  ilbIp = "${var.ilbIp}"
-  resource_group_name = "${azurerm_resource_group.rg.name}"
-  subscription = "${var.subscription}"
-  capacity = "${var.capacity}"
-  instance_size = "${var.instance_size}"
-  common_tags = "${merge(var.common_tags, map("lastUpdated", "${timestamp()}"))}"
-  appinsights_instrumentation_key = "${var.appinsights_instrumentation_key}"
-  asp_name = "${local.app_service_plan}"
-  asp_rg = "${local.app_service_plan}"
-  enable_ase = "${var.enable_ase}"
-
-  app_settings = {
-    LOGBACK_REQUIRE_ALERT_LEVEL = false
-    LOGBACK_REQUIRE_ERROR_CODE = false
-
-    POSTGRES_HOST = "${module.db-user-profile.host_name}"
-    POSTGRES_PORT = "${module.db-user-profile.postgresql_listen_port}"
-    POSTGRES_DATABASE = "${module.db-user-profile.postgresql_database}"
-    POSTGRES_USER = "${module.db-user-profile.user_name}"
-    POSTGRES_USERNAME = "${module.db-user-profile.user_name}"
-    POSTGRES_PASSWORD = "${module.db-user-profile.postgresql_password}"
-    POSTGRES_CONNECTION_OPTIONS = "?"
-
-    IDAM_URL = "${data.azurerm_key_vault_secret.idam_url.value}"
-    S2S_URL = "${local.s2s_url}"
-
-    ROOT_LOGGING_LEVEL = "${var.root_logging_level}"
-    LOG_LEVEL_SPRING_WEB = "${var.log_level_spring_web}"
-    LOG_LEVEL_RD = "${var.log_level_rd}"
-    EXCEPTION_LENGTH = 100
-  }
 }

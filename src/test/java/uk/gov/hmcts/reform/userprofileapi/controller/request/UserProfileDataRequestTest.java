@@ -19,7 +19,7 @@ public class UserProfileDataRequestTest {
     }
 
     @Test
-    public void testUserProfileRequest() {
+    public void test_UserProfileRequest() {
         userIds.add(UUID.randomUUID().toString());
         UserProfileDataRequest getUserProfileRequest = new UserProfileDataRequest(userIds);
 
@@ -27,15 +27,19 @@ public class UserProfileDataRequestTest {
     }
 
     @Test
-    public void testUserProfileRequestWithNullIds() {
+    public void test_UserProfileRequestWithNullIds() {
         userIds.add(UUID.randomUUID().toString());
         UserProfileDataRequest getUserProfileRequest = new UserProfileDataRequest(null);
+
         assertThat(getUserProfileRequest.getUserIds()).isNull();
+
         getUserProfileRequest.setUserIds(userIds);
+
         assertThat(getUserProfileRequest.getUserIds()).isNotNull();
         assertThat(getUserProfileRequest.getUserIds().size()).isEqualTo(1);
 
         getUserProfileRequest.setUserIds(null);
+        
         assertThat(getUserProfileRequest.getUserIds()).isNull();
     }
 }

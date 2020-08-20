@@ -32,6 +32,7 @@ public class UpdateUserProfileFuncTest extends AbstractFunctional {
         updateUserProfile(updateUserProfileData(), createdResource.getIdamId(), HttpStatus.OK);
     }
 
+
     @Test
     public void should_throw_404_while_update_profile_with_userId_not_in_db() throws Exception {
         updateUserProfile(updateUserProfileData(), UUID.randomUUID().toString(), HttpStatus.NOT_FOUND);

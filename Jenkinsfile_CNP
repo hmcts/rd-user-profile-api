@@ -1,7 +1,6 @@
 #!groovy
 
 @Library("Infrastructure")
-import uk.gov.hmcts.contino.AppPipelineDsl
 
 def type = "java"
 def product = "rd"
@@ -30,19 +29,27 @@ def vaultOverrides = [
 
 withPipeline(type, product, component) {
 
+    /*after('smoketest:aat') {
+        sh "rm -rf infrastructure/"
+    }*/
+
     env.S2S_URL_TO_TEST = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-    env.IDAM_URL_TO_TEST = "http://idam-api-ithc.service.core-compute-ithc.internal"
+    env.IDAM_URL_TO_TEST = "https://idam-api.aat.platform.hmcts.net"
     env.TEST_URL = "http://rd-user-profile-api-aat.service.core-compute-aat.internal"
 
     overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)
-
     enableDbMigration('rd')
-    installCharts()
-    // **enable below for AAT deployment**
-
-    enableAksStagingDeployment()
     disableLegacyDeployment()
+    enableAksStagingDeployment()
+
+    after('integrationTest:preview') {
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+    }
+
+    after('integrationTest:aat') {
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+    }
 
     after('functionalTest:preview') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
@@ -51,9 +58,5 @@ withPipeline(type, product, component) {
     after('functionalTest:aat') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
     }
-
-    enablePactAs([
-            AppPipelineDsl.PactRoles.CONSUMER
-    ])
 
 }

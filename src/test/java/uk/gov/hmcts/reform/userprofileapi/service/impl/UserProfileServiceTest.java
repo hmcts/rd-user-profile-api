@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,8 +25,11 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataRes
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
-import uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdentifierName;
+import uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder;
+import uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder;
+import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
@@ -43,22 +47,21 @@ public class UserProfileServiceTest {
     private UserProfileRetriever userProfileRetriever;
 
     @Mock
+    UserProfileRepository userProfileRepository;
+
+    @Mock
     private ResourceUpdator<UpdateUserProfileData> resourceUpdatorMock;
 
     @InjectMocks
     private UserProfileService<RequestData> userProfileService;
 
     @Test
-    public void testUpdateRoles() {
-
+    public void test_UpdateRoles() {
         UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData();
 
-        RoleName roleName1 = new RoleName("pui-case-manager");
-        RoleName roleName2 = new RoleName("pui-case-organisation");
         Set<RoleName> roles = new HashSet<>();
-        roles.add(roleName1);
-        roles.add(roleName2);
-
+        roles.add(new RoleName("pui-case-manager"));
+        roles.add(new RoleName("pui-case-organisation"));
         updateUserProfileData.setRolesAdd(roles);
 
         userProfileService.update(updateUserProfileData, "1234", "EXUI");
@@ -69,23 +72,23 @@ public class UserProfileServiceTest {
         userProfileResponse = userProfileService.updateRoles(updateUserProfileData, "1234");
 
         assertThat(userProfileResponse).isNotNull();
+        verify(resourceUpdatorMock, times(1)).updateRoles(any(), any(String.class));
     }
 
     @Test
-    public void testUpdate() {
+    public void test_Update() {
         AttributeResponse attributeResponseMock = Mockito.mock(AttributeResponse.class);
         when(resourceUpdatorMock.update(any(), any(), any())).thenReturn(attributeResponseMock);
 
-        assertThat(userProfileService.update(null,null,null)).isInstanceOf(AttributeResponse.class);
+        assertThat(userProfileService.update(null, null, null))
+                .isInstanceOf(AttributeResponse.class);
 
         verify(resourceUpdatorMock, times(1)).update(any(), any(), any());
     }
 
     @Test
-    public void should_call_creator_create_method_successfully() {
-
-        UserProfileCreationData userProfileData = mock(UserProfileCreationData.class);
-
+    public void test_call_creator_create_method_successfully() {
+        UserProfileCreationData userProfileData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         UserProfileCreationResponse expected = new UserProfileCreationResponse(userProfile);
 
@@ -99,8 +102,8 @@ public class UserProfileServiceTest {
     }
 
     @Test
-    public void should_call_retriever_retrieve_method_successfully() {
-        UserProfileIdentifier identifier = mock(UserProfileIdentifier.class);
+    public void test_call_retriever_retrieve_method_successfully() {
+        UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID, UUID.randomUUID().toString());
 
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         UserProfileResponse expected = new UserProfileResponse(userProfile);
@@ -111,10 +114,12 @@ public class UserProfileServiceTest {
 
         assertThat(resource).isEqualToComparingFieldByField(expected);
 
+        verify(userProfileRetriever, times(1)).retrieve(any(), any(boolean.class));
+
     }
 
     @Test
-        public void should_call_retriever_retrieve_with_roles_method_successfully() {
+    public void test_call_retriever_retrieve_with_roles_method_successfully() {
         UserProfileIdentifier identifier = mock(UserProfileIdentifier.class);
 
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
@@ -126,22 +131,40 @@ public class UserProfileServiceTest {
 
         assertThat(resource).isEqualToComparingFieldByField(expected);
 
+        verify(userProfileRetriever, times(1)).retrieve(any(), any(boolean.class));
+
     }
 
     @Test
-    public void should_call_retriever_retrieve_multiple_users_with_roles_method_successfully() {
+    public void test_call_retriever_retrieve_multiple_users_with_roles_method_successfully() {
         UserProfileIdentifier identifier = mock(UserProfileIdentifier.class);
 
         List<UserProfile> profileList = new ArrayList<>();
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         profileList.add(userProfile);
-        UserProfileWithRolesResponse expected = new UserProfileWithRolesResponse(userProfile, true);
 
-        when(userProfileRetriever.retrieveMultipleProfiles(identifier, true, true)).thenReturn(profileList);
+        when(userProfileRetriever.retrieveMultipleProfiles(identifier, true, true))
+                .thenReturn(profileList);
 
-        UserProfileDataResponse resource = userProfileService.retrieveWithRoles(identifier, true, true);
+        UserProfileDataResponse resource = userProfileService.retrieveWithRoles(identifier, true,
+                true);
 
         assertThat(resource).isNotNull();
 
+        verify(userProfileRetriever, times(1)).retrieveMultipleProfiles(any(), any(boolean.class), any(boolean.class));
+    }
+
+    @Test
+    public void test_reInviteUser() {
+        UserProfileCreationData userProfileData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
+        UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
+
+        when(userProfileCreator.reInviteUser(userProfileData)).thenReturn(userProfile);
+
+        UserProfileCreationResponse response = userProfileService.reInviteUser(userProfileData);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getIdamId()).isEqualTo(userProfile.getIdamId());
+        assertThat(response.getIdamRegistrationResponse()).isEqualTo(201);
     }
 }

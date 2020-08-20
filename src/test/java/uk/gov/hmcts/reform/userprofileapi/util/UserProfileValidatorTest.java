@@ -2,17 +2,21 @@ package uk.gov.hmcts.reform.userprofileapi.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.getIdamRolesJson;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.ResponseEntity.status;
+import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.getIdamRolesJson;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
-import uk.gov.hmcts.reform.userprofileapi.domain.*;
+import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserCategory;
@@ -36,7 +40,7 @@ public class UserProfileValidatorTest {
                     false,
                     UserCategory.CITIZEN.toString(),
                     UserType.EXTERNAL.toString(),
-                    getIdamRolesJson());
+                    getIdamRolesJson(), false);
 
     @Test
     public void test_isUserIdValid() {
@@ -71,27 +75,32 @@ public class UserProfileValidatorTest {
 
         boolean response5 = UserProfileValidator.isBlankOrSizeInvalid("lname", 8);
         assertThat(response5).isFalse();
-    }
 
+        boolean response6 = UserProfileValidator.isBlankOrSizeInvalid("nam", 3);
+        assertThat(response6).isFalse();
+    }
 
 
     @Test
     public void test_isSameAsExistingUserProfile() {
 
-        IdamRegistrationInfo idamInfo = new IdamRegistrationInfo(HttpStatus.CREATED);
+        IdamRegistrationInfo idamInfo = new IdamRegistrationInfo(status(CREATED).build());
         UserProfile userProfile = new UserProfile(userProfileData, idamInfo.getIdamRegistrationResponse());
 
-        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("test-email-@somewhere.com", "test-first-name", "test-last-name", "PENDING",addRolesToRoleName(), addRolesToRoleName());
+        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("test-email-@somewhere.com",
+                "test-first-name", "test-last-name", "PENDING", addRolesToRoleName(),
+                addRolesToRoleName());
 
         assertThat(updateUserProfileData.isSameAsUserProfile(userProfile)).isTrue();
 
-        updateUserProfileData = new UpdateUserProfileData("test-email-@somewhere.com1", "test-first-name1", "test-last-name", "PENDING",addRolesToRoleName(), addRolesToRoleName());
+        updateUserProfileData = new UpdateUserProfileData("test-email-@somewhere.com1",
+                "test-first-name1", "test-last-name", "PENDING", addRolesToRoleName(),
+                addRolesToRoleName());
         assertThat(updateUserProfileData.isSameAsUserProfile(userProfile)).isFalse();
     }
 
     @Test
     public void test_validateCreateUserProfileRequest() {
-
         assertThatThrownBy(() -> UserProfileValidator.validateCreateUserProfileRequest(null))
                 .isInstanceOf(NullPointerException.class);
     }
@@ -106,6 +115,23 @@ public class UserProfileValidatorTest {
         userProfileData.setUserCategory(null);
         userProfileData.setUserType(null);
         UserProfileValidator.validateCreateUserProfileRequest(userProfileData);
+    }
+
+    @Test
+    public void test_validateCreateUserProfileRequest_ThrowsRequiredFieldMissingExceptionIfGetUserTypeIsNull() {
+        userProfileData.setUserType("invalid");
+
+        assertThatThrownBy(() -> UserProfileValidator.validateCreateUserProfileRequest(userProfileData))
+                .isInstanceOf(RequiredFieldMissingException.class);
+    }
+
+    @Test
+    public void test_validateCreateUserProfileRequest_ThrowsRequiredFieldMissingExceptionIfGetUserCategoryIsNull() {
+        UserProfileCreationData userProfileCreationDataMock = mock(UserProfileCreationData.class);
+        when(userProfileCreationDataMock.getUserCategory()).thenReturn("invalid");
+
+        assertThatThrownBy(() -> UserProfileValidator.validateCreateUserProfileRequest(userProfileCreationDataMock))
+                .isInstanceOf(RequiredFieldMissingException.class);
     }
 
     @Test
@@ -126,10 +152,14 @@ public class UserProfileValidatorTest {
 
     @Test
     public void test_validateUserProfileStatus() {
-        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("test-email-@somewhere.com", "test-first-name", "test-last-name", "PENDING",addRolesToRoleName(), addRolesToRoleName());
+        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("test-email-@somewhere.com",
+                "test-first-name", "test-last-name", "PENDING", addRolesToRoleName(),
+                addRolesToRoleName());
         assertThat(UserProfileValidator.validateUserProfileStatus(updateUserProfileData)).isTrue();
 
-        UpdateUserProfileData updateUserProfileData1 = new UpdateUserProfileData("test-email-@somewhere.com", "test-first-name", "test-last-name", "PENING",addRolesToRoleName(), addRolesToRoleName());
+        UpdateUserProfileData updateUserProfileData1 = new UpdateUserProfileData("test-email-@somewhere.com",
+                "test-first-name", "test-last-name", "PENING", addRolesToRoleName(),
+                addRolesToRoleName());
         assertThat(UserProfileValidator.validateUserProfileStatus(updateUserProfileData1)).isFalse();
 
     }
@@ -160,11 +190,9 @@ public class UserProfileValidatorTest {
         assertThatThrownBy(() -> UserProfileValidator.validateUserIds(userProfileDataRequest))
                 .isInstanceOf(RequiredFieldMissingException.class);
     }
-    
+
     @Test
     public void test_validateUserProfileDataAndUser() {
-
-        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData();
 
         if (null == userProfileData) {
             throw new RequiredFieldMissingException("No Request Body in the request");

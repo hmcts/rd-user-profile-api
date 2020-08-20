@@ -1,34 +1,27 @@
 package uk.gov.hmcts.reform.userprofileapi.controller.response;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 
-import java.util.UUID;
 import org.junit.Test;
-import org.mockito.Mockito;
+import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 
 
 public class UserProfileCreationResponseTest {
 
     @Test
-    public void should_hold_values_after_creation() {
-        UserProfile userProfileMock = Mockito.mock(UserProfile.class);
+    public void test_hold_values_after_creation() {
+        UserProfile userProfile = new UserProfile(buildCreateUserProfileData(), HttpStatus.CREATED);
 
-        final String idamId = UUID.randomUUID().toString();
-        final int dummyIdamRegistrationResponse = 201;
+        UserProfileCreationResponse sut = new UserProfileCreationResponse(userProfile);
 
-        when(userProfileMock.getIdamId()).thenReturn(idamId);
-        when(userProfileMock.getIdamRegistrationResponse()).thenReturn(dummyIdamRegistrationResponse);
-
-        UserProfileCreationResponse sut = new UserProfileCreationResponse(userProfileMock);
-
-        assertThat(sut.getIdamId()).isEqualTo(idamId);
+        assertThat(sut.getIdamId()).isEqualTo(userProfile.getIdamId());
         assertThat(sut.getIdamRegistrationResponse()).isEqualTo(201);
     }
 
     @Test
-    public void testUserProfileCreationResponseNoArg() {
+    public void test_UserProfileCreationResponseNoArg() {
         UserProfileCreationResponse sut = new UserProfileCreationResponse();
         assertThat(sut).isNotNull();
     }

@@ -18,7 +18,7 @@ def component = "user-profile-api"
 
 def secrets = [
         's2s-${env}': [
-                secret('microservicekey-rd-professional-api', 'S2S_SECRET')
+                secret('microservicekey-rd-user-profile-api', 'S2S_SECRET')
         ]
 ]
 

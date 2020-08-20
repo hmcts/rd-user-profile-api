@@ -11,25 +11,18 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
-import static uk.gov.hmcts.reform.userprofileapi.data.CreateUserProfileDataTestBuilder.buildCreateUserProfileData;
-
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 
 import java.util.List;
 import java.util.Optional;
 
+import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
-import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRequestHandlerTest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
@@ -38,36 +31,14 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserType;
-import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
-import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 
-@RunWith(SpringRunner.class)
+@RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
 @Transactional
-public class CreateNewUserProfileWithDuplicateUserIntTest {
-
-    private MockMvc mockMvc;
-
-    private static final String APP_BASE_PATH = "/v1/userprofile";
-
-    @Autowired
-    protected UserProfileRequestHandlerTest userProfileRequestHandlerTest;
-
-    @Autowired
-    protected UserProfileRepository userProfileRepository;
-
-    @Autowired
-    protected AuditRepository auditRepository;
-
-    @Autowired
-    protected WebApplicationContext webApplicationContext;
-
-
-    @Rule
-    public WireMockRule idamService = new WireMockRule(5000);
+public class CreateNewUserProfileWithDuplicateUserIntTest extends AuthorizationEnabledIntegrationTest {
 
 
     @Before
@@ -159,7 +130,8 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
     }
 
     @Test
-    public void should_return_201_and_create_user_profile_when_status_not_properly_returned_by_sidam() throws Exception {
+    public void should_return_201_and_create_user_profile_when_status_not_properly_returned_by_sidam()
+            throws Exception {
 
         mockWithGetSuccess(false);
         mockWithUpdateSuccess();
@@ -179,7 +151,8 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
     }
 
     @Test
-    public void should_return_404_and_not_create_user_profile_when_duplicate_in_sidam_and_get_failed() throws Exception {
+    public void should_return_404_and_not_create_user_profile_when_duplicate_in_sidam_and_get_failed()
+            throws Exception {
 
         mockWithGetFail();
         mockWithUpdateSuccess();
@@ -201,7 +174,8 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
     }
 
     @Test
-    public void should_return_400_and_not_create_user_profile_when_duplicate_in_sidam_and_update_failed() throws Exception {
+    public void should_return_400_and_not_create_user_profile_when_duplicate_in_sidam_and_update_failed()
+            throws Exception {
 
         mockWithGetSuccess(true);
         mockWithUpdateFail();
@@ -222,7 +196,8 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
 
     }
 
-    private void verifyUserProfileCreation(UserProfileCreationResponse createdResource, HttpStatus idamStatus, UserProfileCreationData data, IdamStatus expectedIdamStatus) {
+    private void verifyUserProfileCreation(UserProfileCreationResponse createdResource, HttpStatus idamStatus,
+                                           UserProfileCreationData data, IdamStatus expectedIdamStatus) {
 
         assertThat(createdResource.getIdamId()).isNotNull();
         assertThat(createdResource.getIdamId()).isInstanceOf(String.class);
@@ -243,9 +218,9 @@ public class CreateNewUserProfileWithDuplicateUserIntTest {
         assertThat(userProfile.getCreated()).isNotNull();
         assertThat(userProfile.getLastUpdated()).isNotNull();
 
-        Optional<Audit> optional = auditRepository.findByUserProfile(userProfile);
-        Audit audit = optional.orElse(null);
-
+        List<Audit> matchedAudit = getMatchedAuditRecords(auditRepository.findAll(), userProfile.getIdamId());
+        assertThat(matchedAudit.size()).isEqualTo(1);
+        Audit audit = matchedAudit.get(0);
         assertThat(audit).isNotNull();
         assertThat(audit.getIdamRegistrationResponse()).isEqualTo(201);
         assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.ACCEPTED);

@@ -7,22 +7,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
-import static uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder.buildUserProfile;
-import static uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder.buildUserProfileWithDeletedStatus;
-import static uk.gov.hmcts.reform.userprofileapi.data.UserProfileTestDataBuilder.buildUserProfileWithSuspendedStatus;
+import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfile;
+import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfileWithDeletedStatus;
+import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfileWithSuspendedStatus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
@@ -32,7 +33,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
-@RunWith(SpringRunner.class)
+@RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
 @Transactional
 public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledIntegrationTest {
@@ -62,41 +63,32 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
 
     }
 
-    public void mockWithGetFail() {
-        idamService.stubFor(get(urlMatching("/api/v1/users/.*"))
-                .willReturn(aResponse()
-                        .withHeader("Content-Type", "application/json")
-                        .withStatus(404)
-                ));
-
-    }
-
     @Before
     public void setUp() {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
 
-        testUserProfileRepository.deleteAll();
+        userProfileRepository.deleteAll();
         auditRepository.deleteAll();
 
-        Iterable<UserProfile> userProfiles = testUserProfileRepository.findAll();
+        Iterable<UserProfile> userProfiles = userProfileRepository.findAll();
         assertThat(userProfiles).isEmpty();
 
         //adding 2 userprofiles with PENDING and 2 with DELETED status
         UserProfile user1 = buildUserProfile();
         user1.setStatus(IdamStatus.ACTIVE);
-        user1 = testUserProfileRepository.save(user1);
+        user1 = userProfileRepository.save(user1);
 
         UserProfile user2 = buildUserProfile();
         user2.setStatus(IdamStatus.ACTIVE);
-        user2 = testUserProfileRepository.save(user2);
+        user2 = userProfileRepository.save(user2);
 
         userProfileMap = new HashMap<>();
         userProfileMap.put("user1", user1);
         userProfileMap.put("user2", user2);
 
-        UserProfile user3 = testUserProfileRepository.save(buildUserProfileWithDeletedStatus());
-        UserProfile user4 = testUserProfileRepository.save(buildUserProfileWithDeletedStatus());
-        UserProfile user5 = testUserProfileRepository.save(buildUserProfileWithSuspendedStatus());
+        UserProfile user3 = userProfileRepository.save(buildUserProfileWithDeletedStatus());
+        UserProfile user4 = userProfileRepository.save(buildUserProfileWithDeletedStatus());
+        UserProfile user5 = userProfileRepository.save(buildUserProfileWithSuspendedStatus());
         
         userProfileMap.put("user3", user3);
         userProfileMap.put("user4", user4);
@@ -144,19 +136,23 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
             }
         });
 
-        Audit audit1 = auditRepository.findByUserProfile(userProfileMap.get("user1")).orElse(null);
-        assertThat(audit1).isNotNull();
-        assertThat(audit1.getIdamRegistrationResponse()).isEqualTo(200);
+        List<Audit> audits = auditRepository.findAll();
 
-        Audit audit2 = auditRepository.findByUserProfile(userProfileMap.get("user2")).orElse(null);
-        assertThat(audit2).isNotNull();
-        assertThat(audit2.getIdamRegistrationResponse()).isEqualTo(200);
+        List<Audit> matchedAudit = getMatchedAuditRecords(audits, userProfileMap.get("user1").getIdamId());
+        assertThat(matchedAudit.size()).isEqualTo(1);
+        Audit actualAudit = matchedAudit.get(0);
+        assertThat(actualAudit.getIdamRegistrationResponse()).isEqualTo(200);
 
-        Audit audit3 = auditRepository.findByUserProfile(userProfileMap.get("user3")).orElse(null);
-        assertThat(audit3).isNull();
+        matchedAudit = getMatchedAuditRecords(audits, userProfileMap.get("user2").getIdamId());
+        assertThat(matchedAudit.size()).isEqualTo(1);
+        Audit actualAudit1 = matchedAudit.get(0);
+        assertThat(actualAudit1.getIdamRegistrationResponse()).isEqualTo(200);
 
-        Audit audit4 = auditRepository.findByUserProfile(userProfileMap.get("user4")).orElse(null);
-        assertThat(audit4).isNull();
+        matchedAudit = getMatchedAuditRecords(audits, userProfileMap.get("user3").getIdamId());
+        assertThat(matchedAudit.size()).isEqualTo(0);
+
+        matchedAudit = getMatchedAuditRecords(audits, userProfileMap.get("user4").getIdamId());
+        assertThat(matchedAudit.size()).isEqualTo(0);
     }
 
     @Test
@@ -184,44 +180,13 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
     @Test
     public void should_retrieve_multiple_user_profiles_with_idam_failure() throws Exception {
 
-        mockWithGetFail();
+        mockWithGetFail(HttpStatus.NOT_FOUND, false);
         UserProfileDataRequest request = new UserProfileDataRequest(userIds);
         request.getUserIds().add(UUID.randomUUID().toString());
 
         UserProfileDataResponse response = getMultipleUsers(request, OK, "true", "true");
+        verifyMultipleUserResponse(response, "16 Resource not found");
 
-        assertThat(response).isNotNull();
-        assertThat(response.getUserProfiles().size()).isEqualTo(5);
-
-        response.getUserProfiles().forEach(getUserProfilesResponse -> {
-            UserProfile up =  userProfileMapWithUuid.get(getUserProfilesResponse.getIdamId());
-            assertThat(getUserProfilesResponse.getEmail()).isEqualTo(up.getEmail());
-            assertThat(getUserProfilesResponse.getFirstName()).isEqualTo(up.getFirstName());
-            assertThat(getUserProfilesResponse.getLastName()).isEqualTo(up.getLastName());
-            assertThat(getUserProfilesResponse.getIdamStatus()).isEqualTo(up.getStatus().name());
-            assertThat(getUserProfilesResponse.getRoles()).isNull();
-            assertThat(getUserProfilesResponse.getIdamMessage()).isNotEmpty();
-            //todo clarify this requirement
-            if (IdamStatus.ACTIVE == up.getStatus()) {
-                assertThat(getUserProfilesResponse.getIdamStatusCode()).isEqualTo("404");
-            } else {
-                assertThat(getUserProfilesResponse.getIdamStatusCode()).isEqualTo(" ");
-            }
-        });
-
-        Audit audit1 = auditRepository.findByUserProfile(userProfileMap.get("user1")).orElse(null);
-        assertThat(audit1).isNotNull();
-        assertThat(audit1.getIdamRegistrationResponse()).isEqualTo(404);
-
-        Audit audit2 = auditRepository.findByUserProfile(userProfileMap.get("user2")).orElse(null);
-        assertThat(audit2).isNotNull();
-        assertThat(audit2.getIdamRegistrationResponse()).isEqualTo(404);
-
-        Audit audit3 = auditRepository.findByUserProfile(userProfileMap.get("user3")).orElse(null);
-        assertThat(audit3).isNull();
-
-        Audit audit4 = auditRepository.findByUserProfile(userProfileMap.get("user4")).orElse(null);
-        assertThat(audit4).isNull();
     }
 
     @Test
@@ -271,6 +236,69 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
             assertThat(getUserProfilesResponse.getIdamStatusCode()).isEqualTo(" ");
             assertThat(getUserProfilesResponse.getIdamMessage()).isEqualTo(IdamStatusResolver.NO_IDAM_CALL);
         });
+    }
+
+    @Test
+    public void should_see_idam_error_message_with_no_body_while_retrieve_multiple_user_profiles_with_idam_failure()
+            throws Exception {
+
+        mockWithGetFail(HttpStatus.NOT_FOUND, false);
+        UserProfileDataRequest request = new UserProfileDataRequest(userIds);
+        request.getUserIds().add(UUID.randomUUID().toString());
+
+        UserProfileDataResponse response = getMultipleUsers(request, OK, "true", "true");
+        verifyMultipleUserResponse(response, "16 Resource not found");
+    }
+
+    @Test
+    public void should_see_idam_error_message_with_body_while_retrieve_multiple_user_profiles_with_idam_failure()
+            throws Exception {
+
+        mockWithGetFail(HttpStatus.NOT_FOUND, true);
+        UserProfileDataRequest request = new UserProfileDataRequest(userIds);
+        request.getUserIds().add(UUID.randomUUID().toString());
+
+        UserProfileDataResponse response = getMultipleUsers(request, OK, "true", "true");
+
+        assertThat(response.getUserProfiles().size()).isEqualTo(5);
+        verifyMultipleUserResponse(response,
+                "The user could not be found: c5d631f-af11-4816-abbe-ac6fd9b99ee9");
+
+    }
+
+    public void verifyMultipleUserResponse(UserProfileDataResponse response, String errorMessageToVerify) {
+        response.getUserProfiles().forEach(getUserProfilesResponse -> {
+            UserProfile up =  userProfileMapWithUuid.get(getUserProfilesResponse.getIdamId());
+            assertThat(getUserProfilesResponse.getEmail()).isEqualTo(up.getEmail());
+            assertThat(getUserProfilesResponse.getFirstName()).isEqualTo(up.getFirstName());
+            assertThat(getUserProfilesResponse.getLastName()).isEqualTo(up.getLastName());
+            assertThat(getUserProfilesResponse.getIdamStatus()).isEqualTo(up.getStatus().name());
+            assertThat(getUserProfilesResponse.getRoles()).isNull();
+            if (IdamStatus.ACTIVE == up.getStatus()) {
+                assertThat(getUserProfilesResponse.getIdamStatusCode()).isEqualTo("404");
+                assertThat(getUserProfilesResponse.getIdamMessage()).isEqualTo(errorMessageToVerify);
+            } else {
+                assertThat(getUserProfilesResponse.getIdamStatusCode()).isEqualTo(" ");
+                assertThat(getUserProfilesResponse.getIdamMessage())
+                        .isEqualTo("19 No call made to SIDAM to get the user roles as user status is not 'ACTIVE'");
+            }
+        });
+
+        List<Audit> audits = auditRepository.findAll();
+
+        List<Audit> actualMatchedAudits = getMatchedAuditRecords(audits, userProfileMap.get("user1").getIdamId());
+        assertThat(actualMatchedAudits).isNotEmpty().hasSize(1);
+        assertThat(actualMatchedAudits.get(0).getIdamRegistrationResponse()).isEqualTo(404);
+
+        actualMatchedAudits = getMatchedAuditRecords(audits, userProfileMap.get("user2").getIdamId());
+        assertThat(actualMatchedAudits).isNotEmpty().hasSize(1);
+        assertThat(actualMatchedAudits.get(0).getIdamRegistrationResponse()).isEqualTo(404);
+
+        actualMatchedAudits = getMatchedAuditRecords(audits, userProfileMap.get("user3").getIdamId());
+        assertThat(actualMatchedAudits).isEmpty();
+
+        actualMatchedAudits = getMatchedAuditRecords(audits, userProfileMap.get("user4").getIdamId());
+        assertThat(actualMatchedAudits).isEmpty();
     }
 
 }

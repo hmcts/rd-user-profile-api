@@ -48,7 +48,8 @@ public class UpdateUserProfileData implements RequestData {
                 && (null != this.getEmail() && userProfile.getEmail().trim().equals(this.getEmail().trim()))
                 && (null != this.getFirstName() && userProfile.getFirstName().trim().equals(this.getFirstName().trim()))
                 && (null != this.getLastName() && userProfile.getLastName().trim().equals(this.getLastName().trim()))
-                && (null != this.getIdamStatus() && userProfile.getStatus().toString().equals(this.getIdamStatus().trim()));
+                && (null != this.getIdamStatus() && userProfile.getStatus().toString()
+                .equals(this.getIdamStatus().trim()));
     }
 
 }
