@@ -92,7 +92,7 @@ public final class IdamStatusResolver {
         sb.append(null == idamRolesInfo.getPending() || !idamRolesInfo.getPending());
         sb.append(null == idamRolesInfo.getActive() || !idamRolesInfo.getActive());
 
-        switch (sb.toString().toLowerCase()) {
+        switch (sb.toString()) {
             case "falsetrue":
                 return IdamStatus.PENDING;
 

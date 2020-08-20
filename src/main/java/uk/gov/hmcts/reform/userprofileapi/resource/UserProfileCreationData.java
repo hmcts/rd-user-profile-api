@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.userprofileapi.resource;
+    package uk.gov.hmcts.reform.userprofileapi.resource;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
