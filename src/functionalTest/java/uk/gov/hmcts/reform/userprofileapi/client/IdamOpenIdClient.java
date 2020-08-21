@@ -5,7 +5,7 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.userprofileapi.AbstractFunctional.EMAIL;
-import static uk.gov.hmcts.reform.userprofileapi.AbstractFunctional.PASSWORD;
+import static uk.gov.hmcts.reform.userprofileapi.AbstractFunctional.CREDS;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.generateRandomEmail;
 
 import com.google.gson.Gson;
@@ -67,7 +67,7 @@ public class IdamOpenIdClient {
 
         Map<String, String> userCreds = new HashMap<>();
         userCreds.put(EMAIL, userEmail);
-        userCreds.put(PASSWORD, password);
+        userCreds.put(CREDS, password);
         return userCreds;
     }
 
@@ -79,7 +79,7 @@ public class IdamOpenIdClient {
         Map<String, String> tokenParams = new HashMap<>();
         tokenParams.put("grant_type", "password");
         tokenParams.put("username", userCreds.get(EMAIL));
-        tokenParams.put("password", userCreds.get(PASSWORD));
+        tokenParams.put("password", userCreds.get(CREDS));
         tokenParams.put("client_id", testConfig.getClientId());
         tokenParams.put("client_secret", testConfig.getClientSecret());
         tokenParams.put("redirect_uri", testConfig.getOauthRedirectUrl());

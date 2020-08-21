@@ -61,9 +61,9 @@ public class AbstractFunctional {
     @Value("${syncInterval}")
     String syncInterval;
     protected IdamOpenIdClient idamOpenIdClient;
-    public static final String EMAIL = "email";
+    public static final String EMAIL = "EMAIL";
 
-    public static final String PASSWORD = "password";
+    public static final String CREDS = "CREDS";
 
     @Before
     public void setupProxy() {
