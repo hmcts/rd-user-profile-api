@@ -48,13 +48,23 @@ public class IdamConsumerTest {
     private static final String IDAM_POST_USER_REGISTRATION_URL = "/api/v1/users/registration";
     private static final String IDAM_USER_BY_ID_URL = "/api/v1/users/" + ID;
     private static final String IDAM_USER_ROLES_BY_ID_URL = "/api/v1/users/" + ID + "/roles";
-    private static final String ACCESS_TOKEN = "Bearer eyJ0eXAiOiJKV1QiLCJ6aXAiOiJOT05FIiwia2lkIjoiMWVyMFdSd2dJT1RBRm9qR"
+    private static final String ACCESS_TOKEN = "Bearer eyJ0eXAiOiJKV1QiLCJ6aXAiOiJOT05FIiwia2lkIjoiMWVyMFdSd2dJT1RBRm9q"
             + "TRyQy9mYmVLdTNJPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJzb3VyYXYuYmhhdHRhY2hhcnlhQGhtY3RzLm5ldCIsImN0cyI6Ik9BV"
-            + "VRIMl9TVEFURUxFU1NfR1JBTlQiLCJhdXRoX2xldmVsIjowLCJhdWRpdFRyYWNraW5nSWQiOiJhYjhlM2VlNi02ZjE1LTQ1MjItOTQzNC0yYzY0ZGJmZDcwYzAtMTI5MDg2NzIiLCJpc3MiOiJodHRwczovL2Zvcmdlcm9jay1hbS5zZXJ2aWNlLmNvcmUtY29tcHV0ZS1pZGFtLWFhdDIuaW50ZXJuYWw6ODQ0My9vcGVuYW0vb2F1dGgyL2htY3RzIiwidG9rZW5OYW1lIjoiYWNjZXNzX3Rva2VuIiwidG9rZW5fdHlwZSI6IkJlYXJlciIsImF1dGhHcmFudElkIjoidXBXUk5tVkI3dEd2blJhNkUtZ1RnaFNGUDNzIiwiYXVkIjoicmQtcHJvZmVzc2lvbmFsLWFwaSIsIm5iZiI6MTU5MzAxODI3MywiZ3JhbnRfdHlwZSI6InBhc3N3b3JkIiwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsInJvbGVzIiwiY3JlYXRlLXVzZXIiLCJtYW5hZ2UtdXNlciIsInNlYXJjaC11c2VyIl0sImF1dGhfdGltZSI6MTU5MzAxODI3MywicmVhbG0iOiIvaG1jdHMiLCJleHAiOjE1OTMwNDcwNzMsImlhdCI6MTU5MzAxODI3MywiZXhwaXJlc19pbiI6Mjg4MDAsImp0aSI6IlBrdXZPS1VaQ1pDNmNHb19fcHRBV18tSE1CMCJ9.SOPRnE4GgQuoHA3jfnmhaClGzImQbJKPzlXuoT0TgaPa9RGk0oxFmBlPbniE1WquUPfiD1MJq-8TYbyW8mp0f7rMV11d3JuBezHbWvl1CWTY8CFB3UP-SWQdVcTioxci7jlib8klFo2fwnq3B1F73VybRxZ5h4EZe6ENvSFXKyW_EheJOLDmpmuS-0-DLy8O7rgVfWBiuSx9pn6kXkZgC3yRqakgN6d22oP8iIe1YnarDrmb2XTuPNogNCzlTeTfpQ1aY66VQkcr_cS4FKOMP1EtFh9b9SaZd3FcYbbCZk4IB0AkDkPdFE-1bCa2COIYbAI0bPNssx9fRqT4E2aUQg";
+            + "RVRIMl9TVEFURUxFU1NfR1JBTlQiLCJhdXRoX2xldmVsIjowLCJhdWRpdFRyYWNraW5nSWQiOiJhYjhlM2VlNi02ZjE1LTQ1MjItOTQz"
+            + "NC0yYzY0ZGJmZDcwYzAtMTI5MDg2NzIiLCJpc3MiOiJodHRwczovL2Zvcmdlcm9jay1hbS5zZXJ2aWNlLmNvcmUtY29tcHV0ZS1pZGFt"
+            + "LWFhdDIuaW50ZXJuYWw6ODQ0My9vcGVuYW0vb2F1dGgyL2htY3RzIiwidG9rZW5OYW1lIjoiYWNjZXNzX3Rva2VuIiwidG9rZW5fdHlw"
+            + "ZSI6IkJlYXJlciIsImF1dGhHcmFudElkIjoidXBXUk5tVkI3dEd2blJhNkUtZ1RnaFNGUDNzIiwiYXVkIjoicmQtcHJvZmVzc2lvbmFs"
+            + "LWFwaSIsIm5iZiI6MTU5MzAxODI3MywiZ3JhbnRfdHlwZSI6InBhc3N3b3JkIiwic2NvcGUiOlsib3BlbmlkIiwicHJvZmlsZSIsInJv"
+            + "bGVzIiwiY3JlYXRlLXVzZXIiLCJtYW5hZ2UtdXNlciIsInNlYXJjaC11c2VyIl0sImF1dGhfdGltZSI6MTU5MzAxODI3MywicmVhbG0i"
+            + "OiIvaG1jdHMiLCJleHAiOjE1OTMwNDcwNzMsImlhdCI6MTU5MzAxODI3MywiZXhwaXJlc19pbiI6Mjg4MDAsImp0aSI6IlBrdXZPS1Va"
+            + "Q1pDNmNHb19fcHRBV18tSE1CMCJ9.SOPRnE4GgQuoHA3jfnmhaClGzImQbJKPzlXuoT0TgaPa9RGk0oxFmBlPbniE1WquUPfiD1MJq-8"
+            + "TYbyW8mp0f7rMV11d3JuBezHbWvl1CWTY8CFB3UP-SWQdVcTioxci7jlib8klFo2fwnq3B1F73VybRxZ5h4EZe6ENvSFXKyW_EheJOLD"
+            + "mpmuS-0-DLy8O7rgVfWBiuSx9pn6kXkZgC3yRqakgN6d22oP8iIe1YnarDrmb2XTuPNogNCzlTeTfpQ1aY66VQkcr_cS4FKOMP1EtFh9"
+            + "b9SaZd3FcYbbCZk4IB0AkDkPdFE-1bCa2COIYbAI0bPNssx9fRqT4E2aUQg";
 
 
     @Pact(provider = "Idam_api", consumer = "rd_user_profile_api__Idam_api")
-    public RequestResponsePact executePostRegistrationAndGet201(PactDslWithProvider builder) {
+    public RequestResponsePact executePostRegistrationAndGet200(PactDslWithProvider builder) {
 
         Map<String, String> headers = Maps.newHashMap();
         headers.put(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN);
@@ -84,31 +94,26 @@ public class IdamConsumerTest {
                         + " \"id\": \"e65e5439-a8f7-4ae6-b378-cc1015b72dbb\","
                         + " \"lastName\": \"rd\","
                         + " \"roles\": ["
-                        + "  \"pui-organisation-manager\","
+                        + "  \"pui-case-manager\","
                         + "  \"pui-user-manager\""
                         + "]"
                         + "}")
                 .willRespondWith()
-                .headers(responseHeaders)
-                .status(HttpStatus.CREATED.value())
+                .status(HttpStatus.OK.value())
                 .toPact();
     }
 
     @Test
-    @PactTestFor(pactMethod = "executePostRegistrationAndGet201")
-    public void should_post_for_registration_and_return_201(MockServer mockServer) throws JSONException {
+    @PactTestFor(pactMethod = "executePostRegistrationAndGet200")
+    public void should_post_for_registration_and_return_200(MockServer mockServer) throws JSONException {
 
         Map<String, String> headers = Maps.newHashMap();
         headers.put(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN);
         headers.put("Content-Type", "application/json");
 
-        Map<String, String> responseHeaders = Maps.newHashMap();
-        responseHeaders.put("Content-Type", "application/json");
-
         Response actualResponseBody =
                 SerenityRest
                         .given()
-                        // .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .when()
                         .headers(headers)
                         .body("{"
@@ -117,19 +122,18 @@ public class IdamConsumerTest {
                                   + " \"id\": \"e65e5439-a8f7-4ae6-b378-cc1015b72dbb\","
                                   + " \"lastName\": \"rd\","
                                   + " \"roles\": ["
-                                  + "  \"pui-organisation-manager\","
+                                  + "  \"pui-case-manager\","
                                   + "  \"pui-user-manager\""
                                   + "]"
                                 + "}")
                         .post(mockServer.getUrl() + IDAM_POST_USER_REGISTRATION_URL)
                         .then()
-                        .statusCode(201)
-                        .headers(responseHeaders)
+                        .statusCode(200)
                         .and()
                         .extract()
                         .response();
 
-        assertThat(actualResponseBody.getStatusCode()).isEqualTo(201);
+        assertThat(actualResponseBody.getStatusCode()).isEqualTo(200);
     }
 
 
