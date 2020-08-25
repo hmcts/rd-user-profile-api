@@ -191,7 +191,6 @@ task contract(type: Test) {
 
 task runAndPublishConsumerPactTests(type: Test, description: 'Publish pact test to broker.', group: 'Verification') {
     // Nothing to do here
-    println 'pact tests have been moved to pactPublish'
     testClassesDirs = sourceSets.contractTest.output.classesDirs
     classpath = sourceSets.contractTest.runtimeClasspath
 }
