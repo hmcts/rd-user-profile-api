@@ -204,7 +204,7 @@ pact {
         //pactBrokerUrl = 'http://localhost:9292'
         pactBrokerUrl = 'https://pact-broker.platform.hmcts.net'
         tags = ['Dev']
-        version = "1.0"
+        version = "2.0"
     }
 }
 
