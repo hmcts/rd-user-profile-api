@@ -183,7 +183,7 @@ public class UserProfileController {
                     @Authorization(value = "Authorization")
             }
     )
-    @ApiParam(name = "email", required = true)
+
     @ApiResponses({
             @ApiResponse(
                     code = 200,
@@ -217,7 +217,8 @@ public class UserProfileController {
             produces = APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    public ResponseEntity<UserProfileWithRolesResponse> getUserProfileWithRolesByEmail(@RequestParam String email) {
+    public ResponseEntity<UserProfileWithRolesResponse> getUserProfileWithRolesByEmail(@RequestParam(value = "email",
+            required = true) String email) {
         //Getting user profile by email
 
         requireNonNull(email, "email cannot be null");
@@ -263,8 +264,7 @@ public class UserProfileController {
             produces = APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    public ResponseEntity<UserProfileResponse> getUserProfileByEmail(@ApiParam(name = "email", required = false)
-                                                                         @RequestParam(value = "email",
+    public ResponseEntity<UserProfileResponse> getUserProfileByEmail(@RequestParam(value = "email",
                                                                                  required = false) String email,
                                                                      @ApiParam(name = "userId", required = false)
                                                                      @RequestParam(value = "userId", required = false)
