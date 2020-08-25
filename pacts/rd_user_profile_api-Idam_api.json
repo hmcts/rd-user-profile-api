@@ -1,0 +1,138 @@
+{
+    "provider": {
+        "name": "Idam_api"
+    },
+    "consumer": {
+        "name": "rd_user_profile_api"
+    },
+    "interactions": [
+        {
+            "description": "Provider returns user info to RD - USER PROFILE API",
+            "request": {
+                "method": "GET",
+                "path": "/o/userinfo",
+                "headers": {
+                    "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJraWQiOiJiL082T3ZWdeRre"
+                }
+            },
+            "response": {
+                "status": 200,
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "body": {
+                    "uid": "1111-2222-3333-4567",
+                    "roles": [
+                        "prd-admin",
+                        "IDAM_ADMIN_USER"
+                    ],
+                    "given_name": "puiCaseManager",
+                    "family_name": "Jar"
+                },
+                "matchingRules": {
+                    "body": {
+                        "$.uid": {
+                            "matchers": [
+                                {
+                                    "match": "type"
+                                }
+                            ],
+                            "combine": "AND"
+                        },
+                        "$.given_name": {
+                            "matchers": [
+                                {
+                                    "match": "type"
+                                }
+                            ],
+                            "combine": "AND"
+                        },
+                        "$.family_name": {
+                            "matchers": [
+                                {
+                                    "match": "type"
+                                }
+                            ],
+                            "combine": "AND"
+                        },
+                        "$.roles[0]": {
+                            "matchers": [
+                                {
+                                    "match": "type"
+                                }
+                            ],
+                            "combine": "AND"
+                        },
+                        "$.roles[1]": {
+                            "matchers": [
+                                {
+                                    "match": "type"
+                                }
+                            ],
+                            "combine": "AND"
+                        }
+                    }
+                }
+            },
+            "providerStates": [
+                {
+                    "name": "I have obtained an access_token as a user",
+                    "params": {
+                        "client_id": "pact",
+                        "client_secret": "pactsecret",
+                        "password": "Password123",
+                        "redirect_uri": "http://www.dummy-pact-service.com/callback",
+                        "scope": "openid profile roles",
+                        "username": "prdadmin@email.net"
+                    }
+                }
+            ]
+        },
+        {
+            "description": "a POST /registration request from an RD - USER PROFILE API",
+            "request": {
+                "method": "POST",
+                "path": "/api/v1/users/registration",
+                "headers": {
+                    "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJraWQiOiJiL082T3ZWdeRre",
+                    "Content-Type": "application/json"
+                },
+                "body": {
+                    "email": "pact@test.com",
+                    "firstName": "up",
+                    "id": "e65e5439-a8f7-4ae6-b378-cc1015b72dbb",
+                    "lastName": "rd",
+                    "roles": [
+                        "pui-case-manager",
+                        "pui-user-manager"
+                    ]
+                }
+            },
+            "response": {
+                "status": 200
+            },
+            "providerStates": [
+                {
+                    "name": "I have obtained an access_token as a user",
+                    "params": {
+                        "client_id": "pact",
+                        "client_secret": "pactsecret",
+                        "grant_type": "password",
+                        "password": "Password123",
+                        "redirect_uri": "http://www.dummy-pact-service.com/callback",
+                        "scope": "openid profile roles manage-user create-user search-user",
+                        "username": "prdadmin@email.net"
+                    }
+                }
+            ]
+        }
+    ],
+    "metadata": {
+        "pactSpecification": {
+            "version": "3.0.0"
+        },
+        "pact-jvm": {
+            "version": "3.5.24"
+        }
+    }
+}
