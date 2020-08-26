@@ -13,12 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
-import net.thucydides.core.annotations.WithTag;
-import net.thucydides.core.annotations.WithTags;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MvcResult;
@@ -33,8 +29,6 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 @SpringBootTest(webEnvironment = MOCK)
-@RunWith(SpringIntegrationSerenityRunner.class)
-@WithTags({@WithTag("testType:Integration")})
 @Transactional
 public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
 

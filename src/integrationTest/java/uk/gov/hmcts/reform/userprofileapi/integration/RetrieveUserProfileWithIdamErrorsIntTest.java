@@ -10,13 +10,8 @@ import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuild
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
-import net.thucydides.core.annotations.WithTag;
-import net.thucydides.core.annotations.WithTags;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MvcResult;
@@ -29,8 +24,6 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 @SpringBootTest(webEnvironment = MOCK)
-@RunWith(SpringIntegrationSerenityRunner.class)
-@WithTags({@WithTag("testType:Integration")})
 @Transactional
 public class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabledIntegrationTest {
 

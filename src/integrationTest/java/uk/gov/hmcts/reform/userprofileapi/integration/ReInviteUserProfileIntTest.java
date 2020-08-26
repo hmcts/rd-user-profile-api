@@ -15,12 +15,9 @@ import java.sql.Statement;
 import java.util.Optional;
 import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
-import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
-import net.thucydides.core.annotations.WithTag;
-import net.thucydides.core.annotations.WithTags;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,8 +29,6 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 @SpringBootTest(webEnvironment = MOCK)
-@RunWith(SpringIntegrationSerenityRunner.class)
-@WithTags({@WithTag("testType:Integration")})
 @Slf4j
 public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
 

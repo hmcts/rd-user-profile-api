@@ -21,12 +21,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
-import net.thucydides.core.annotations.WithTag;
-import net.thucydides.core.annotations.WithTags;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,8 +35,6 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 @SpringBootTest(webEnvironment = MOCK)
-@RunWith(SpringIntegrationSerenityRunner.class)
-@WithTags({@WithTag("testType:Integration")})
 @Transactional
 public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest {
 
