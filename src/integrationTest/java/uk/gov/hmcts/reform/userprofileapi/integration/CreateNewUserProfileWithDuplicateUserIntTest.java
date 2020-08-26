@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Optional;
 
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
+import net.thucydides.core.annotations.WithTag;
+import net.thucydides.core.annotations.WithTags;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,9 +36,9 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserType;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
-
-@RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
+@RunWith(SpringIntegrationSerenityRunner.class)
+@WithTags({@WithTag("testType:Integration")})
 @Transactional
 public class CreateNewUserProfileWithDuplicateUserIntTest extends AuthorizationEnabledIntegrationTest {
 
