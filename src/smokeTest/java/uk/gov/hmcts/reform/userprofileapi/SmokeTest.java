@@ -7,6 +7,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
+import net.serenitybdd.rest.SerenityRest;
+import net.thucydides.core.annotations.WithTag;
+import net.thucydides.core.annotations.WithTags;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -14,6 +17,7 @@ import org.junit.runner.RunWith;
 
 
 @RunWith(SpringIntegrationSerenityRunner.class)
+@WithTags({@WithTag("testType:Smoke")})
 public class SmokeTest {
 
     // to test locally please use the line in private final string targetInstance
@@ -33,7 +37,7 @@ public class SmokeTest {
         RestAssured.useRelaxedHTTPSValidation();
 
 
-        Response response = RestAssured
+        Response response = SerenityRest
                 .given()
                 .relaxedHTTPSValidation()
                 .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)

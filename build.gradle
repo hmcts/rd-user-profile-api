@@ -101,7 +101,7 @@ sourceSets {
         resources.srcDir file('src/smokeTest/resources')
     }
 
-    testContract {
+    contractTest {
         java {
             compileClasspath += main.output
             runtimeClasspath += main.output
@@ -109,7 +109,7 @@ sourceSets {
         }
         resources.srcDir file('src/contractTest/resources')
     }
-    testPact {
+    pactTest {
         java {
             compileClasspath += main.output
             runtimeClasspath += main.output
@@ -136,6 +136,10 @@ configurations {
     integrationTestRuntime.extendsFrom testRuntime
     functionalTestCompile.extendsFrom testCompile
     functionalTestRuntime.extendsFrom testRuntime
+    contractTestCompile.extendsFrom testCompile
+    contractTestRuntime.extendsFrom testRuntime
+    pactTestCompile.extendsFrom testCompile
+    pactTestRuntime.extendsFrom testRuntime
 }
 
 
@@ -153,6 +157,7 @@ pmd {
 task integration(type: Test, description: 'Runs the integration tests.', group: 'Verification') {
     testClassesDirs = sourceSets.integrationTest.output.classesDirs
     classpath = sourceSets.integrationTest.runtimeClasspath
+    finalizedBy aggregate
 }
 
 task functional(type: Test, description: 'Runs the functional tests.', group: 'Verification') {
@@ -167,6 +172,7 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
 task smoke(type: Test, description: 'Runs the smoke tests.', group: 'Verification') {
     testClassesDirs = sourceSets.smokeTest.output.classesDirs
     classpath = sourceSets.smokeTest.runtimeClasspath
+    finalizedBy aggregate
 }
 
 task migratePostgresDatabase(type: org.flywaydb.gradle.task.FlywayMigrateTask) {
@@ -175,9 +181,32 @@ task migratePostgresDatabase(type: org.flywaydb.gradle.task.FlywayMigrateTask) {
         url = "jdbc:postgresql://${dburl}"
     }
 }
+//PACT CONFIGURATION
+task contract(type: Test) {
+    description = 'Runs the consumer Pact tests'
+    useJUnitPlatform()
+    testClassesDirs = sourceSets.contractTest.output.classesDirs
+    classpath = sourceSets.contractTest.runtimeClasspath
+    include "uk/gov/hmcts/reform/userprofileapi/**"
+    systemProperty 'pact.rootDir', "pacts"
+}
 
 task runAndPublishConsumerPactTests(type: Test, description: 'Publish pact test to broker.', group: 'Verification') {
     // Nothing to do here
+    testClassesDirs = sourceSets.contractTest.output.classesDirs
+    classpath = sourceSets.contractTest.runtimeClasspath
+}
+
+runAndPublishConsumerPactTests.finalizedBy pactPublish
+
+pact {
+    publish {
+        pactDirectory = 'pacts'
+        //pactBrokerUrl = 'http://localhost:9292'
+        pactBrokerUrl = 'https://pact-broker.platform.hmcts.net'
+        tags = ['Dev']
+        version = "2.0"
+    }
 }
 
 jacoco {
@@ -335,9 +364,13 @@ dependencies {
         force = true
     }
 
-    testContractCompile(group: 'au.com.dius', name:'pact-jvm-consumer-junit5_2.12', version: versions.pact_version) {
+    contractTestCompile(group: 'au.com.dius', name:'pact-jvm-consumer-junit5_2.12', version: versions.pact_version) {
         force = true
     }
+
+    contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.3.2")
+    contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.3.2")
+    contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.3.2')
 
     integrationTestCompile sourceSets.main.runtimeClasspath
     integrationTestCompile sourceSets.test.runtimeClasspath
@@ -348,13 +381,11 @@ dependencies {
     smokeTestCompile sourceSets.main.runtimeClasspath
     smokeTestCompile sourceSets.test.runtimeClasspath
 
-    testContractCompile sourceSets.main.runtimeClasspath
-    testContractCompile sourceSets.test.runtimeClasspath
+    contractTestCompile sourceSets.main.runtimeClasspath
+    contractTestCompile sourceSets.test.runtimeClasspath
 
-    testPactCompile sourceSets.main.runtimeClasspath
-    testPactCompile sourceSets.test.runtimeClasspath
-
-
+    pactTestCompile sourceSets.main.runtimeClasspath
+    pactTestCompile sourceSets.test.runtimeClasspath
 }
 
 
@@ -383,16 +414,6 @@ bootJar {
     archiveName = jarName
     manifest {
         attributes('Implementation-Version': project.version.toString())
-    }
-}
-
-pact {
-    publish {
-        pactDirectory = 'target/pacts'
-        //pactBrokerUrl = 'http://localhost:9292'
-        pactBrokerUrl = 'https://pact-broker.platform.hmcts.net'
-        tags = ['Dev']
-        //version = project.pactVersion
     }
 }
 
