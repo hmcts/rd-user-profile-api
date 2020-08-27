@@ -10,7 +10,7 @@ Provides user profile data to clients, implemented as a Java/SpringBoot applicat
 
 To run the project you will need to have the following installed:
 
-* Java 8
+* Java 11
 * Docker
 
 For information about the software versions used to build this API and a complete list of it's dependencies see build.gradle

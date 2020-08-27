@@ -10,11 +10,8 @@ import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDat
 
 import java.util.ArrayList;
 import java.util.List;
-
-import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
@@ -22,7 +19,6 @@ import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 
-@RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
 @Transactional
 public class DeleteUserProfileIntTest extends AuthorizationEnabledIntegrationTest {

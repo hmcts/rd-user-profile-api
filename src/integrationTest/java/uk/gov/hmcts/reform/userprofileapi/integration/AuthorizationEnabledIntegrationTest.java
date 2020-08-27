@@ -17,9 +17,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
+import net.thucydides.core.annotations.WithTag;
+import net.thucydides.core.annotations.WithTags;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -45,9 +49,11 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 @Configuration
+@RunWith(SpringIntegrationSerenityRunner.class)
+@WithTags({@WithTag("testType:Integration")})
 @TestPropertySource(properties = {"S2S_URL=http://127.0.0.1:8990","IDAM_URL:http://127.0.0.1:5000"})
 @DirtiesContext
-public class AuthorizationEnabledIntegrationTest {
+public abstract class AuthorizationEnabledIntegrationTest {
 
     protected static final String APP_BASE_PATH = "/v1/userprofile";
     protected static final String SLASH = "/";
