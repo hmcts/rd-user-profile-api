@@ -6,6 +6,6 @@
 #   value = "${local.app_service_plan}"
 # }
 
-output "vaultUri" {
-  value = "${local.s2s_vault_uri}"
-}
+# output "vaultUri" {
+#   value = "${local.s2s_vault_uri}"
+# }
