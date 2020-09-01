@@ -38,7 +38,7 @@ public class DeleteUserProfileIntTest extends AuthorizationEnabledIntegrationTes
 
         //user profile create and  delete
         createAndDeleteSingleUserProfile(buildCreateUserProfileData());
-        verifyUserProfileDeletion(1);
+        verifyUserProfileDeletion(1,2);
 
     }
 
@@ -54,7 +54,7 @@ public class DeleteUserProfileIntTest extends AuthorizationEnabledIntegrationTes
         userIds.add(response2.getIdamId());
         //user profile to delete
         deleteUserProfiles(userIds, NO_CONTENT);
-        verifyUserProfileDeletion(4);
+        verifyUserProfileDeletion(2,4);
     }
 
     @Test
@@ -98,24 +98,23 @@ public class DeleteUserProfileIntTest extends AuthorizationEnabledIntegrationTes
         deleteUserProfiles(userIds, BAD_REQUEST);
     }
 
-    private void verifyUserProfileDeletion(int expectedAuditRecords) {
+    private void verifyUserProfileDeletion(int expectedAuditRecords, int expectedTotalAuditRecords) {
 
         List<UserProfile> userProfiles = (List<UserProfile>) userProfileRepository.findAll();
         assertThat(userProfiles.size()).isEqualTo(0);
 
         List<Audit> auditRecords = auditRepository.findAll();
-        assertThat(auditRecords.size()).isEqualTo(expectedAuditRecords);
+        assertThat(auditRecords.size()).isEqualTo(expectedTotalAuditRecords);
 
-        List<Audit> userRegistartionRecords = auditRecords.stream().filter(audit ->
-                audit.getIdamRegistrationResponse() == 201).collect(Collectors.toList());
+        assertThat(auditRecords.stream().filter(audit ->
+                audit.getIdamRegistrationResponse() == 201).collect(Collectors.toList())).hasSize(expectedAuditRecords);
 
-        List<Audit> deleteRecords = auditRecords.stream().filter(audit ->
-                audit.getIdamRegistrationResponse() == 204).collect(Collectors.toList());
+        assertThat(auditRecords.stream().filter(audit ->
+                audit.getIdamRegistrationResponse() == 204).collect(Collectors.toList())).hasSize(expectedAuditRecords);
 
-        //
-        Audit audit = auditRecords.get(0);
-        assertThat(audit.getIdamRegistrationResponse()).isEqualTo(204);
-        assertThat(audit.getSource()).isEqualTo(ResponseSource.API);
-        assertThat(audit.getAuditTs()).isNotNull();
+        auditRecords.forEach(audit -> {
+            assertThat(audit.getSource()).isEqualTo(ResponseSource.API);
+            assertThat(audit.getAuditTs()).isNotNull();
+        });
     }
 }
