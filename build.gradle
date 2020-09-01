@@ -388,7 +388,6 @@ dependencies {
     pactTestCompile sourceSets.test.runtimeClasspath
 }
 
-
 // https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/configuration.html
 dependencyCheck {
 
