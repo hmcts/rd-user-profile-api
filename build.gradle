@@ -324,15 +324,15 @@ dependencies {
         exclude group: "com.sun.xml.bind", module: "jaxb-osgi"
     }
 
-    testCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.25') {
+    testCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.26') {
         force = true
     }
 
-    integrationTestCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.23') {
+    integrationTestCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.26') {
         force = true
     }
 
-    functionalTestCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.23') {
+    functionalTestCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.26') {
         force = true
     }
 
