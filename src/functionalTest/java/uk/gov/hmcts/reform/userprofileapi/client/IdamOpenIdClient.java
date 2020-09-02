@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.client;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
@@ -10,6 +11,7 @@ import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDat
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
+import com.mifmif.common.regex.Generex;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 
@@ -23,14 +25,14 @@ import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-
-import org.apache.commons.lang3.RandomStringUtils;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
 
 @Slf4j
 public class IdamOpenIdClient {
 
     private final TestConfigProperties testConfig;
+
+    public static String password;
 
     private Gson gson = new Gson();
 
@@ -103,10 +105,8 @@ public class IdamOpenIdClient {
     }
 
     public static String generateSidamPassword() {
-        String regex = "^(?=.{10,})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).*$";
-        String password = RandomStringUtils.randomAlphanumeric(10);
-        if (!password.matches(regex)) {
-            password = generateSidamPassword();
+        if (isBlank(password)) {
+            password = new Generex("([A-Z])([a-z]{4})([0-9]{4})").random();
         }
         return password;
     }
