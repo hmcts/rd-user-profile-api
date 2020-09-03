@@ -78,7 +78,7 @@ public class JsonFeignResponseHelper {
     }
 
     @Value("${loggingComponentName}")
-    public void setLoggingComponentName(String loggingComponentName) {
+    public static void setLoggingComponentName(String loggingComponentName) {
         JsonFeignResponseHelper.loggingComponentName = loggingComponentName;
     }
 }
