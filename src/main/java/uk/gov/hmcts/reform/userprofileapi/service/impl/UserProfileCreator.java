@@ -150,7 +150,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
         String userId;
         UserProfile userProfile = null;
         IdamRolesInfo idamRolesInfo;
-        ResponseEntity responseEntity = idamRegistrationInfo.getResponse();
+        ResponseEntity<Object> responseEntity = idamRegistrationInfo.getResponse();
 
         if (responseEntity != null) {
             //get userId from location header
