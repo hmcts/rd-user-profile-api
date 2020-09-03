@@ -298,7 +298,7 @@ dependencies {
     compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: versions.reformS2sClient
     compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: versions.reformHealthStarter
 
-    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.9.10'
+    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.11.2'
     compile group: 'io.jsonwebtoken', name: 'jjwt', version:'0.9.1'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.10.2'
     compile group: 'javax.inject', name: 'javax.inject', version: '1'
@@ -314,6 +314,8 @@ dependencies {
     compile group: 'javax.el', name: 'javax.el-api', version: '3.0.1-b06'
 
     compile group: 'com.google.guava', name: 'guava', version: '28.2-jre'
+
+    compile group:"org.yaml", name: "snakeyaml", version:"1.26"
 
     compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
@@ -353,17 +355,6 @@ dependencies {
         exclude group: "com.sun.xml.bind", module: "jaxb-osgi"
     }
 
-    testCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.25') {
-        force = true
-    }
-
-    integrationTestCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.23') {
-        force = true
-    }
-
-    functionalTestCompile(group: 'org.yaml', name: 'snakeyaml', version: '1.23') {
-        force = true
-    }
 
     contractTestCompile(group: 'au.com.dius', name:'pact-jvm-consumer-junit5_2.12', version: versions.pact_version) {
         force = true
