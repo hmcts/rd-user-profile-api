@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.userprofileapi.controller.advice;
 import static java.time.LocalTime.now;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ErrorResponseTest {
 

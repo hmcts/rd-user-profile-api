@@ -338,7 +338,12 @@ dependencies {
     testCompile group: 'org.mockito', name: 'mockito-core', version: '3.2.4'
     testCompile group: 'org.mockito', name: 'mockito-inline', version: '3.1.0'
     testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.4'
-    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
+    testCompile (group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot) {
+        exclude group: 'junit', module: 'junit'
+    }
+
+    testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.5.9'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: '5.6.2'
 
     testCompile group: 'org.pitest', name: 'pitest', version: versions.pitest
     testCompile 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.0'
@@ -414,3 +419,11 @@ bootJar {
 // this setting only applies when running via gradle bootRun -- see web.config for the
 // java flag that configures the deployed appllications
 applicationDefaultJvmArgs = ["-Dfile.encoding=UTF-8"]
+
+test {
+    useJUnitPlatform()
+}
+
+integration {
+    useJUnitPlatform()
+}
