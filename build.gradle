@@ -248,7 +248,7 @@ sonarqube {
                 "src/main/java/uk/gov/hmcts/reform/userprofileapi/SystemDateProvider.java," +
                 "src/main/java/uk/gov/hmcts/reform/userprofileapi/Application.java," +
                 "src/main/java/uk/gov/hmcts/reform/userprofileapi/util/JsonFeignResponseHelper.java," +
-                "uk.gov.hmcts.reform.userprofileapi.domain/**"
+                "src/main/java/uk/gov/hmcts/reform/userprofileap/domain/**"
     }
 }
 

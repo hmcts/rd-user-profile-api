@@ -26,15 +26,13 @@ public class IdamRolesInfo {
     public IdamRolesInfo(ResponseEntity<Object> entity) {
         if (nonNull(entity)  && nonNull(entity.getBody()) && entity.getBody() instanceof IdamUserResponse) {
             IdamUserResponse idamUserResponse = (IdamUserResponse) entity.getBody();
-            if (null != idamUserResponse) {
-                this.id = idamUserResponse.getId();
-                this.roles = idamUserResponse.getRoles();
-                this.email = idamUserResponse.getEmail();
-                this.forename = idamUserResponse.getForename();
-                this.surname = idamUserResponse.getSurname();
-                this.active = idamUserResponse.getActive();
-                this.pending = idamUserResponse.getPending();
-            }
+            this.id = idamUserResponse.getId();
+            this.roles = idamUserResponse.getRoles();
+            this.email = idamUserResponse.getEmail();
+            this.forename = idamUserResponse.getForename();
+            this.surname = idamUserResponse.getSurname();
+            this.active = idamUserResponse.getActive();
+            this.pending = idamUserResponse.getPending();
 
         }
         loadStatusCodes(entity);
