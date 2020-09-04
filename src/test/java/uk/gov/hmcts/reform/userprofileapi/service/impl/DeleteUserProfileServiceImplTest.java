@@ -10,11 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfilesDeletionResponse;
@@ -27,7 +28,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
 
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DeleteUserProfileServiceImplTest {
 
     @Mock
@@ -73,7 +74,7 @@ public class DeleteUserProfileServiceImplTest {
         verify(auditServiceMock, times(1)).persistAudit(any());
     }
 
-    @Test(expected = ResourceNotFoundException.class)
+    @Test
     public void testShouldThrowExceptionWhenEmptyUserProfileToDelete() {
 
         List<String> userIds = new ArrayList<String>();
@@ -81,7 +82,9 @@ public class DeleteUserProfileServiceImplTest {
         UserProfileDataRequest userProfilesDeletionData = new UserProfileDataRequest(userIds);
         when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(any()));
 
-        sut.delete(userProfilesDeletionData);
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> {
+            sut.delete(userProfilesDeletionData);
+        });
         verify(userProfileRepositoryMock, times(1)).findByIdamId(any(String.class));
         verify(userProfileRepositoryMock, times(0)).deleteAll(any());
 

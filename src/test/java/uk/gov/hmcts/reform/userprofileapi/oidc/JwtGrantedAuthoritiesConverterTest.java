@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -12,9 +11,11 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 
@@ -22,20 +23,17 @@ import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.reform.userprofileapi.constants.TestConstants;
 import uk.gov.hmcts.reform.userprofileapi.repository.IdamRepository;
 
+@ExtendWith(MockitoExtension.class)
 public class JwtGrantedAuthoritiesConverterTest {
 
-    JwtGrantedAuthoritiesConverter converter;
+    @Mock
     IdamRepository idamRepositoryMock;
+    @Mock
     UserInfo userInfoMock;
+    @Mock
     Jwt jwtMock;
-
-    @Before
-    public void setUp() {
-        idamRepositoryMock = mock(IdamRepository.class);
-        userInfoMock = mock(UserInfo.class);
-        jwtMock = mock(Jwt.class);
-        converter = new JwtGrantedAuthoritiesConverter(idamRepositoryMock);
-    }
+    @InjectMocks
+    JwtGrantedAuthoritiesConverter converter;
 
     @Test
     public void test_shouldReturnEmptyAuthorities() {

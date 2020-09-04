@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.userprofileapi.service.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.inOrder;
@@ -24,13 +25,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +51,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationHelperService;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class UserProfileCreatorTest {
 
     @InjectMocks
@@ -121,16 +122,16 @@ public class UserProfileCreatorTest {
 
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void test_throw_runtime_when_create_user_profile_fails_to_save() {
 
         when(idamService.registerUser(any())).thenReturn(idamRegistrationInfo);
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(null));
         when(userProfileRepository.save(any(UserProfile.class))).thenThrow(new RuntimeException());
 
-        UserProfile response = userProfileCreator.create(userProfileCreationData);
-
-        assertThat(response).isEqualToComparingFieldByField(userProfile);
+        assertThrows(RuntimeException.class, () -> {
+            userProfileCreator.create(userProfileCreationData);
+        });
 
         InOrder inOrder = inOrder(idamService, userProfileRepository);
         inOrder.verify(idamService, times(1)).registerUser(any(IdamRegisterUserRequest.class));

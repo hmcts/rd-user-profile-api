@@ -18,13 +18,13 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamUserResponse;
@@ -41,7 +41,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileQueryProvider;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class UserProfileRetrieverTest {
 
     @Spy
@@ -51,7 +51,8 @@ public class UserProfileRetrieverTest {
     @Mock
     IdamServiceImpl idamServiceMock;
 
-    UserProfileQueryProvider querySupplier = mock(UserProfileQueryProvider.class);
+    @Mock
+    UserProfileQueryProvider querySupplier;
 
     @Mock
     private Supplier<Optional<UserProfile>> supplier;

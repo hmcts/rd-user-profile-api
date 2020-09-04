@@ -24,11 +24,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.IdamRegisterUserRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UpdateUserDetails;
@@ -36,20 +37,20 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class IdamServiceImplTest {
 
     private final String userId = "test796-d05e-480d-bf3d-7cbfacb3ca29";
     private final String email = "test.user@test.com";
     private final Map<String, Collection<String>> headerData = new HashMap<>();
 
-    private IdamFeignClient idamFeignClientMock = Mockito.mock(IdamFeignClient.class);
+    @Mock
+    private IdamFeignClient idamFeignClientMock;
 
     @InjectMocks
-    private IdamService sut = new IdamServiceImpl();
+    private IdamServiceImpl sut;
 
     Map<String, Collection<String>> header = new HashMap<>();
     Request request = mock(Request.class);

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.verify;
@@ -15,11 +16,12 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
@@ -30,12 +32,11 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileQueryProvider;
 
-@RunWith(MockitoJUnitRunner.class)
 public class UserProfileQueryProviderTest {
 
     @Mock
     private UserProfileRepository userProfileRepositoryMock;
-
+    @InjectMocks
     private UserProfileQueryProvider userProfileQueryProvider;
 
     private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(status(ACCEPTED).build());
@@ -46,8 +47,6 @@ public class UserProfileQueryProviderTest {
 
     @Before
     public void setUp() {
-        userProfileQueryProvider = new UserProfileQueryProvider(userProfileRepositoryMock);
-
         userProfile.setStatus(IdamStatus.ACTIVE);
         userProfile.setIdamId("1234");
         userProfile.setId((long) 1234);
@@ -92,11 +91,14 @@ public class UserProfileQueryProviderTest {
     }
 
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void test_getRetrieveByIdQuery_ThrowsIllegalStateException() {
         UserProfileIdentifier userProfileIdentifierWithOneValue = new UserProfileIdentifier(null,
                 userProfile.getEmail());
-        userProfileQueryProvider.getRetrieveByIdQuery(userProfileIdentifierWithOneValue);
+
+        assertThrows(IllegalStateException.class, () -> {
+            userProfileQueryProvider.getRetrieveByIdQuery(userProfileIdentifierWithOneValue);
+        });
     }
 
     @Test

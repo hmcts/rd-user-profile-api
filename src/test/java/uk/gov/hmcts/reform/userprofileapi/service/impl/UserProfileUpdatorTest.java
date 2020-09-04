@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -29,12 +30,12 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
@@ -60,7 +61,7 @@ import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationHelperService;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class UserProfileUpdatorTest {
 
     @Mock
@@ -183,14 +184,14 @@ public class UserProfileUpdatorTest {
         when(responseMock.status()).thenReturn(500);
         when(responseMock.body()).thenReturn(response.body());
 
-        when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+        when(userProfileRepositoryMock.findByIdamId(any())).thenReturn(Optional.ofNullable(userProfile));
         when(idamFeignClientMock.addUserRoles(updateUserProfileData.getRolesAdd(), "1234"))
                 .thenReturn(responseMock);
 
         UserProfileRolesResponse updateRolesResponse = sut.updateRoles(updateUserProfileData, userProfile.getIdamId());
         assertThat(updateRolesResponse.getRoleAdditionResponse().getIdamStatusCode()).isEqualTo("500");
 
-        verify(userProfileRepositoryMock, times(1)).findByIdamId(any(String.class));
+        verify(userProfileRepositoryMock, times(1)).findByIdamId(null);
         verify(idamFeignClientMock, times(1)).addUserRoles(any(), any(String.class));
     }
 
@@ -291,7 +292,7 @@ public class UserProfileUpdatorTest {
                 any(UserProfile.class), any(ResponseSource.class));
     }
 
-    @Test(expected = InvalidRequest.class)
+    @Test
     public void test_updateRoles_addRoles_InvalidRequest() {
         RoleName roleName1 = new RoleName("pui-case-manager");
         RoleName roleName2 = new RoleName("pui-case-organisation");
@@ -308,7 +309,9 @@ public class UserProfileUpdatorTest {
 
         when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
 
-        sut.updateRoles(updateUserProfileData, userProfile.getIdamId());
+        assertThrows(InvalidRequest.class, () -> {
+            sut.updateRoles(updateUserProfileData, userProfile.getIdamId());
+        });
 
         verify(userProfileRepositoryMock, times(1)).findByIdamId(any(String.class));
     }
@@ -369,30 +372,32 @@ public class UserProfileUpdatorTest {
 
     }
 
-    @Test(expected = ResourceNotFoundException.class)
+    @Test
     public void test_update_should_throw_ResourceNotFound_when_userId_not_valid() {
 
         when(validationServiceMock.validateUpdate(any(), any(), any())).thenThrow(ResourceNotFoundException.class);
-
-        sut.update(updateUserProfileData, "invalid", EXUI);
+        assertThrows(ResourceNotFoundException.class, () -> {
+            sut.update(updateUserProfileData, "invalid", EXUI);
+        });
 
         verify(validationServiceMock, times(1)).validateUpdate(any(), any(), any());
 
     }
 
-    @Test(expected = ResourceNotFoundException.class)
+    @Test
     public void test_update_should_throw_IdamServiceException_when_user_user_profile_not_found_in_db() {
 
         String userId = UUID.randomUUID().toString();
 
         when(validationServiceMock.validateUpdate(any(), any(), any())).thenThrow(ResourceNotFoundException.class);
-
-        sut.update(updateUserProfileData, userId, EXUI);
+        assertThrows(ResourceNotFoundException.class, () -> {
+            sut.update(updateUserProfileData, userId, EXUI);
+        });
 
         verify(validationServiceMock, times(1)).validateUpdate(any(), any(), any());
     }
 
-    @Test(expected = RequiredFieldMissingException.class)
+    @Test
     public void test_update_should_throw_IdamServiceException_when_request_invalid() {
 
         String userId = UUID.randomUUID().toString();
@@ -400,12 +405,14 @@ public class UserProfileUpdatorTest {
         when(validationServiceMock.validateUpdate(any(), eq(userId), any()))
                 .thenThrow(RequiredFieldMissingException.class);
 
-        sut.update(updateUserProfileData, userId, EXUI);
+        assertThrows(RequiredFieldMissingException.class, () -> {
+            sut.update(updateUserProfileData, userId, EXUI);
+        });
 
         verify(validationServiceMock, times(1)).validateUpdate(any(), any(), any());
     }
 
-    @Test(expected = ResourceNotFoundException.class)
+    @Test
     public void test_userProfileRolesResponse_addRoles_nullProfile() throws Exception {
         RoleName roleName1 = new RoleName("pui-case-manager");
         RoleName roleName2 = new RoleName("pui-case-organisation");
@@ -421,15 +428,19 @@ public class UserProfileUpdatorTest {
         roleAdditionResponse.setIdamMessage("Success");
         userProfileRolesResponse.setRoleAdditionResponse(roleAdditionResponse);
 
-        sut.updateRoles(updateUserProfileData, "1567");
+        assertThrows(ResourceNotFoundException.class, () -> {
+            sut.updateRoles(updateUserProfileData, "1567");
+        });
     }
 
-    @Test(expected = ResourceNotFoundException.class)
+    @Test
     public void test_userProfileRolesResponse_update_invalid_user() {
 
         when(validationServiceMock.validateUpdate(any(), any(), any())).thenThrow(ResourceNotFoundException.class);
 
-        sut.update(updateUserProfileData, "", EXUI);
+        assertThrows(ResourceNotFoundException.class, () -> {
+            sut.update(updateUserProfileData, "", EXUI);
+        });
 
         verify(validationServiceMock, times(1)).validateUpdate(any(), any(), any());
     }

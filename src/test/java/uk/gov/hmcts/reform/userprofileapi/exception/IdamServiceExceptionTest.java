@@ -2,14 +2,9 @@ package uk.gov.hmcts.reform.userprofileapi.exception;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.reform.userprofileapi.exception.IdamServiceException;
 
-
-@RunWith(MockitoJUnitRunner.class)
 public class IdamServiceExceptionTest {
 
     @Test
