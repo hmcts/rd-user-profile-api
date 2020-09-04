@@ -53,4 +53,16 @@ public class IdamRolesInfoTest {
 
         assertThat(idamRolesInfo.isSuccessFromIdam()).isFalse();
     }
+
+    @Test
+    public void idamResponseNullWhenStatusIs400() {
+        IdamUserResponse idamUserResponse = null;
+        ResponseEntity<Object> entity = new ResponseEntity<>(idamUserResponse, HttpStatus.BAD_REQUEST);
+
+        IdamRolesInfo idamRolesInfo = new IdamRolesInfo(entity);
+        assertThat(idamUserResponse).isNull();
+        assertThat(idamRolesInfo.getStatusMessage())
+                .isEqualTo("13 Required parameters or one of request field is missing or invalid");
+        assertThat(idamRolesInfo.isSuccessFromIdam()).isFalse();
+    }
 }
