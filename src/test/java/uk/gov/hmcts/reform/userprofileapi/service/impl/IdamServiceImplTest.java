@@ -201,7 +201,10 @@ public class IdamServiceImplTest {
 
     @Test
     public void testAddUserRoles() {
-        Set<String> roleRequest = new HashSet<>();
+        Set<Map<String, String>> roleRequest = new HashSet<>();
+        Map<String, String> rolesMap = new HashMap<String, String>();
+        rolesMap.put("name", "pui-caa");
+        roleRequest.add(rolesMap);
 
         when(idamFeignClientMock.addUserRoles(roleRequest, userId)).thenReturn(responseMock);
         IdamRolesInfo result = sut.addUserRoles(roleRequest, userId);
@@ -250,7 +253,10 @@ public class IdamServiceImplTest {
 
     @Test
     public void test_AddUserRolesWhenFeignException() {
-        Set<String> roleRequest = new HashSet<>();
+        Set<Map<String, String>> roleRequest = new HashSet<>();
+        Map<String, String> rolesMap = new HashMap<String, String>();
+        rolesMap.put("name", "pui-caa");
+        roleRequest.add(rolesMap);
 
         FeignException feignExceptionMock = Mockito.mock(FeignException.class);
 
