@@ -332,7 +332,8 @@ public class UserProfileController {
     )
 
     @ResponseBody
-    public ResponseEntity updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData,
+    public ResponseEntity<UserProfileRolesResponse> updateUserProfile(@Valid @RequestBody UpdateUserProfileData
+                                                                                  updateUserProfileData,
                                             @PathVariable String userId,
                                             @ApiParam(name = "origin", required = false) @RequestParam(value = "origin",
                                                     required = false) String origin) {

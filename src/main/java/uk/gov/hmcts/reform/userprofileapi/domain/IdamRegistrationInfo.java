@@ -12,7 +12,7 @@ public class IdamRegistrationInfo {
 
     private HttpStatus idamRegistrationResponse;
     private String statusMessage;
-    private ResponseEntity response;
+    private ResponseEntity<Object> response;
 
     public IdamRegistrationInfo(ResponseEntity<Object> response) {
         this.response = response;
