@@ -246,8 +246,9 @@ sonarqube {
         property "sonar.pitest.reportsDirectory", "build/reports/pitest"
         property "sonar.exclusions", "src/main/java/uk/gov/hmcts/reform/userprofileapi/config/**," +
                 "src/main/java/uk/gov/hmcts/reform/userprofileapi/SystemDateProvider.java," +
-                "src/main/java/uk/gov/hmcts/reform/userprofileapi/Application.java" +
-                "uk.gov.hmcts.reform.userprofileapi.domain/**"
+                "src/main/java/uk/gov/hmcts/reform/userprofileapi/Application.java," +
+                "src/main/java/uk/gov/hmcts/reform/userprofileapi/util/JsonFeignResponseHelper.java," +
+                "src/main/java/uk/gov/hmcts/reform/userprofileapi/domain/**"
     }
 }
 
@@ -314,6 +315,8 @@ dependencies {
     compile group: 'javax.el', name: 'javax.el-api', version: '3.0.1-b06'
 
     compile group: 'com.google.guava', name: 'guava', version: '28.2-jre'
+
+    compile group:"org.yaml", name: "snakeyaml", version:"1.26"
 
     compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
