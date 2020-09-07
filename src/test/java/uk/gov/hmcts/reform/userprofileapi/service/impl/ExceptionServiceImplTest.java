@@ -23,7 +23,8 @@ public class ExceptionServiceImplTest {
     @Test
     public void test_ThrowRuntimeException() {
         assertThrows(ResourceNotFoundException.class, () -> {
-            sut.throwCustomRuntimeException(ExceptionType.RESOURCENOTFOUNDEXCEPTION, "ResourceNotFoundException Message");
+            sut.throwCustomRuntimeException(
+                ExceptionType.RESOURCENOTFOUNDEXCEPTION, "ResourceNotFoundException Message");
         });
     }
 
@@ -53,16 +54,16 @@ public class ExceptionServiceImplTest {
     @Test
     public void test_OverloadedException() {
         assertThrows(ResourceNotFoundException.class, () -> {
-            sut.throwCustomRuntimeException(ExceptionType.RESOURCENOTFOUNDEXCEPTION, "ResourceNotFoundException Message",
-                    HttpStatus.ACCEPTED);
+            sut.throwCustomRuntimeException(
+                ExceptionType.RESOURCENOTFOUNDEXCEPTION, "ResourceNotFoundException Message", HttpStatus.ACCEPTED);
         });
     }
 
     @Test
     public void test_ErrorPersistingException() {
         assertThrows(ErrorPersistingException.class, () -> {
-            sut.throwCustomRuntimeException(ExceptionType.ERRORPERSISTINGEXCEPTION, "Error while persisting user profile",
-                    HttpStatus.ACCEPTED);
+            sut.throwCustomRuntimeException(
+                ExceptionType.ERRORPERSISTINGEXCEPTION, "Error while persisting user profile", HttpStatus.ACCEPTED);
         });
     }
 

@@ -28,8 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -108,7 +107,7 @@ public class UserProfileUpdatorTest {
 
     private String userId;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         userProfile.setStatus(IdamStatus.ACTIVE);
         userProfile.setIdamId("1234");
@@ -191,7 +190,7 @@ public class UserProfileUpdatorTest {
         UserProfileRolesResponse updateRolesResponse = sut.updateRoles(updateUserProfileData, userProfile.getIdamId());
         assertThat(updateRolesResponse.getRoleAdditionResponse().getIdamStatusCode()).isEqualTo("500");
 
-        verify(userProfileRepositoryMock, times(1)).findByIdamId(null);
+        verify(userProfileRepositoryMock, times(1)).findByIdamId(any());
         verify(idamFeignClientMock, times(1)).addUserRoles(any(), any(String.class));
     }
 

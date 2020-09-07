@@ -16,8 +16,7 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -64,7 +63,7 @@ public class UserProfileRetrieverTest {
     AuditRepository auditRepository = mock(AuditRepository.class);
     Audit audit = mock(Audit.class);
 
-    @Before
+    @BeforeEach
     public void setUp() {
         Boolean active = true;
         String email = "some@hmcts.net";
@@ -272,7 +271,7 @@ public class UserProfileRetrieverTest {
         when(upMock.getLastName()).thenReturn(up.getLastName());
         when(upMock.getStatus()).thenReturn(up.getStatus());
 
-        when(idamServiceMock.fetchUserById(any(String.class))).thenReturn(idamRolesInfo);
+        when(idamServiceMock.fetchUserById(any())).thenReturn(idamRolesInfo);
         when(auditRepository.save(any())).thenReturn(audit);
 
         UserProfile profile = userProfileRetriever.getRolesFromIdam(upMock, true);

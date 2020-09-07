@@ -23,7 +23,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
@@ -31,6 +33,7 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamErrorResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 
 @SuppressWarnings("unchecked")
+@ExtendWith(MockitoExtension.class)
 public class JsonFeignResponseHelperTest {
 
     @Test
@@ -114,7 +117,6 @@ public class JsonFeignResponseHelperTest {
         Response response = Response.builder().status(200).reason("OK").headers(header).body(bodyMock)
                 .request(request).build();
         try {
-            when(bodyMock.asInputStream()).thenThrow(new IOException());
             when(bodyMock.asReader(Charset.defaultCharset())).thenThrow(new IOException());
         } catch (IOException e) {
             e.printStackTrace();
@@ -138,7 +140,6 @@ public class JsonFeignResponseHelperTest {
                 .request(request).build();
         try {
             when(bodyMock.asInputStream()).thenThrow(new IOException());
-            when(bodyMock.asReader(Charset.defaultCharset())).thenThrow(new IOException());
         } catch (IOException e) {
             e.printStackTrace();
         }

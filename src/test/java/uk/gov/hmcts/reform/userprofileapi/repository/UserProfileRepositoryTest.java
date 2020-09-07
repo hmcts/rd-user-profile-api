@@ -5,8 +5,7 @@ import static org.junit.Assert.assertTrue;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 
 import java.util.Optional;
-
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,7 @@ public class UserProfileRepositoryTest {
 
     UserProfile userProfile = new UserProfile(buildCreateUserProfileData(), HttpStatus.CREATED);
 
-    @Before
+    @BeforeEach
     public void setUp() {
         userProfileRepository.save(userProfile);
     }

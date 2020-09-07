@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileQueryProvider;
 
+@ExtendWith(MockitoExtension.class)
 public class UserProfileQueryProviderTest {
 
     @Mock

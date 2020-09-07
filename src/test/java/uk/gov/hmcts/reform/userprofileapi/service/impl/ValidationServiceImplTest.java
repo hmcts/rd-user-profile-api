@@ -13,12 +13,12 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
@@ -29,10 +29,9 @@ import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationHelperService;
-import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
 
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ValidationServiceImplTest {
 
     private final String userId = UUID.randomUUID().toString();
@@ -55,17 +54,18 @@ public class ValidationServiceImplTest {
 
 
     @InjectMocks
-    private ValidationService sut = new ValidationServiceImpl();
+    private ValidationServiceImpl sut;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        when(userProfileRepositoryMock.findByIdamId(eq(userId))).thenReturn(Optional.of(userProfile));
+
     }
 
     @Test
     public void test_ValidateUpdateWithoutId() {
-        userProfile.setStatus(IdamStatus.SUSPENDED);
 
+        userProfile.setStatus(IdamStatus.SUSPENDED);
+        when(userProfileRepositoryMock.findByIdamId(any())).thenReturn(Optional.of(userProfile));
         when(validationHelperServiceMock.validateUserId(eq(userId))).thenReturn(true);
         when(validationHelperServiceMock.validateUpdateUserProfileRequestValid(updateUserProfileData, userId,
                 ResponseSource.API)).thenReturn(true);

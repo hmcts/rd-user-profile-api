@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doNothing;
@@ -18,14 +19,14 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Optional;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.HttpClientErrorException;
@@ -45,7 +46,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationHelperService;
 
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ValidationHelperServiceTest {
 
     @Mock
@@ -73,9 +74,12 @@ public class ValidationHelperServiceTest {
         assertThat(actual).isTrue();
     }
 
-    @Test(expected = ResourceNotFoundException.class)
+    @Test
     public void test_ValidateUserIdException() {
-        sut.validateUserId("");
+
+        assertThrows(ResourceNotFoundException.class, () -> {
+            sut.validateUserId("");
+        });
     }
 
     @Test
@@ -91,9 +95,11 @@ public class ValidationHelperServiceTest {
         sut.validateUserIsPresent(Optional.of(userProfile));
     }
 
-    @Test(expected = ResourceNotFoundException.class)
+    @Test
     public void test_ValidateUserIsPresentWithException() {
-        sut.validateUserIsPresent(Optional.empty());
+        assertThrows(ResourceNotFoundException.class, () -> {
+            sut.validateUserIsPresent(Optional.empty());
+        });
     }
 
     @Test
@@ -115,12 +121,13 @@ public class ValidationHelperServiceTest {
         assertThat(actual).isTrue();
     }
 
-    @Test(expected = RequiredFieldMissingException.class)
+    @Test
     public void test_ValidateUpdateUserProfileRequestValidException() {
         updateUserProfileData.setIdamStatus(null);
-
-        sut.validateUpdateUserProfileRequestValid(updateUserProfileData,
-                "f56e5539-a8f7-4ae6-b378-cc1015b72dcc", API);
+        assertThrows(RequiredFieldMissingException.class, () -> {
+            sut.validateUpdateUserProfileRequestValid(updateUserProfileData,
+                    "f56e5539-a8f7-4ae6-b378-cc1015b72dcc", API);
+        });
     }
 
     @Test
@@ -200,19 +207,18 @@ public class ValidationHelperServiceTest {
         assertThat(sut.validateUserPersisted(HttpStatus.OK)).isTrue();
     }
 
-    @Test(expected = ErrorPersistingException.class)
+    @Test
     public void test_validateUserPersistedWithException_scenario2() {
-        assertThat(sut.validateUserPersisted(HttpStatus.BAD_REQUEST)).isTrue();
+        assertThrows(ErrorPersistingException.class, () -> {
+            sut.validateUserPersisted(HttpStatus.BAD_REQUEST);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void test_validateUserPersistedWithException_withInvalidHttpStatus() {
-        assertThat(sut.validateUserPersisted(HttpStatus.valueOf("test"))).isTrue();
-    }
-
-    @Test(expected = ErrorPersistingException.class)
+    @Test
     public void test_validateUserPersistedWithException_withInvalidHttpStatusCode() {
-        assertThat(sut.validateUserPersisted(HttpStatus.I_AM_A_TEAPOT)).isTrue();
+        assertThrows(ErrorPersistingException.class, () -> {
+            sut.validateUserPersisted(HttpStatus.I_AM_A_TEAPOT);
+        });
     }
 
 

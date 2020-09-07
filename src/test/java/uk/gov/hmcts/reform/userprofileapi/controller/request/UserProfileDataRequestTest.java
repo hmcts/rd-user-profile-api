@@ -6,14 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class UserProfileDataRequestTest {
 
     private List<String> userIds;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         userIds = new ArrayList<>();
     }

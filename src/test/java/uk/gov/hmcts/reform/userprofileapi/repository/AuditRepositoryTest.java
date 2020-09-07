@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 
 import java.util.List;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ public class AuditRepositoryTest {
 
     UserProfile userProfile = new UserProfile(buildCreateUserProfileData(), HttpStatus.CREATED);
 
-    @Before
+    @BeforeEach
     public void setUp() {
         userProfileRepository.save(userProfile);
         auditRepository.save(new Audit(1, "test", ResponseSource.API, userProfile));
