@@ -19,8 +19,6 @@ public interface IdamService {
 
     IdamRolesInfo fetchUserById(String id);
 
-    IdamRolesInfo fetchUserByEmail(String email);
-
     IdamRolesInfo updateUserRoles(List<String> roleRequest, String userId);
 
     IdamRolesInfo addUserRoles(Set<Map<String, String>>  roleRequest, String userId);
