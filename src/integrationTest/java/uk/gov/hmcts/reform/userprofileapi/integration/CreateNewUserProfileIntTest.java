@@ -15,8 +15,8 @@ import org.assertj.core.api.Assertions;
 import org.assertj.core.util.Lists;
 
 import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MvcResult;
@@ -28,7 +28,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 @Transactional
 public class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
     }

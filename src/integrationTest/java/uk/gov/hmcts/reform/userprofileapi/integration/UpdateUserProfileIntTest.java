@@ -22,8 +22,8 @@ import java.util.UUID;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.util.Lists;
 import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
@@ -40,7 +40,7 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
 
     private Map<String, UserProfile> userProfileMap;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
 

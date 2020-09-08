@@ -15,8 +15,8 @@ import java.sql.Statement;
 import java.util.Optional;
 import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -58,7 +58,7 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
         }
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
 
         this.mockMvc = webAppContextSetup(webApplicationContext).build();

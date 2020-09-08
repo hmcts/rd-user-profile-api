@@ -21,8 +21,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +42,7 @@ public class AddRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest
     RoleName role1 = new RoleName("pui-case-manager");
     RoleName role2 = new RoleName("prd-Admin");
 
-    @Before
+    @BeforeEach
     public void setUpWireMock() {
 
         this.mockMvc = webAppContextSetup(webApplicationContext).build();

@@ -11,8 +11,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-
+import com.github.tomakehurst.wiremock.WireMockServer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -20,9 +19,8 @@ import java.util.stream.Collectors;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import net.thucydides.core.annotations.WithTag;
 import net.thucydides.core.annotations.WithTags;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -75,14 +73,15 @@ public abstract class AuthorizationEnabledIntegrationTest {
     @Autowired
     protected ObjectMapper objectMapper;
 
-    @ClassRule
-    public  static WireMockRule s2sService = new WireMockRule(8990);
+    protected static WireMockServer s2sService = new WireMockServer(8990);
 
-    @ClassRule
-    public  static WireMockRule idamService = new WireMockRule(5000);
+    protected static WireMockServer idamService = new WireMockServer(5000);
 
-    @Before
-    public void setUpWireMock() {
+    @BeforeAll
+    public static void initialiseWireMock() {
+
+        s2sService.start();
+        idamService.start();
 
         s2sService.stubFor(get(urlEqualTo("/details"))
                 .willReturn(aResponse()
@@ -159,7 +158,7 @@ public abstract class AuthorizationEnabledIntegrationTest {
     }
 
 
-    protected void setSidamRegistrationMockWithStatus(int status, boolean setBodyEmpty) {
+    protected static void setSidamRegistrationMockWithStatus(int status, boolean setBodyEmpty) {
         String body = null;
         if (status == 400 && !setBodyEmpty) {
             body = "{"
@@ -265,7 +264,7 @@ public abstract class AuthorizationEnabledIntegrationTest {
         assertThat(audit.getAuditTs()).isNotNull();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         auditRepository.deleteAll();
         userProfileRepository.deleteAll();

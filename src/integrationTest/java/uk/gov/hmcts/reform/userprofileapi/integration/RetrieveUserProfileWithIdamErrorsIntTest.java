@@ -10,8 +10,8 @@ import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuild
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MvcResult;
@@ -29,12 +29,10 @@ public class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabl
 
     private Map<String, UserProfile> userProfileMap;
 
-    @Before
+    @BeforeEach
     public void setUpWireMock() {
-
         setSidamRegistrationMockWithStatus(HttpStatus.CREATED.value(), true);
         mockWithGetFail(NOT_FOUND, false);
-
 
 
         this.mockMvc = webAppContextSetup(webApplicationContext).build();

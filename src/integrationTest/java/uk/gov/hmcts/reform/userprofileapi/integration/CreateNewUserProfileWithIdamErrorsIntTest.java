@@ -11,8 +11,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MvcResult;
@@ -29,7 +29,7 @@ import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 @Transactional
 public class CreateNewUserProfileWithIdamErrorsIntTest  extends AuthorizationEnabledIntegrationTest {
 
-    @Before
+    @BeforeEach
     public void setUpWireMock() {
 
         setSidamRegistrationMockWithStatus(BAD_REQUEST.value(), true);
