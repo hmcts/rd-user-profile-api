@@ -16,10 +16,10 @@ plugins {
     id "info.solidsoft.pitest" version '1.5.1'
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
     id 'org.owasp.dependencycheck' version '5.3.0'
-    id 'org.sonarqube' version '2.8'
+    id 'org.sonarqube' version '3.0'
     id 'org.springframework.boot' version '2.2.9.RELEASE'
     id "org.flywaydb.flyway" version "6.1.0"
-    id 'au.com.dius.pact' version '4.0.5'
+    id 'au.com.dius.pact' version '4.1.7'
 }
 
 apply plugin: 'java'
@@ -295,7 +295,7 @@ dependencies {
 
     compile group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
     compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
-    compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.0.4'
+    compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.1.0'
     compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: versions.reformS2sClient
     compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: versions.reformHealthStarter
 
@@ -328,6 +328,7 @@ dependencies {
     functionalTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     smokeTestCompileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     smokeTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+    compile group:"org.yaml", name: "snakeyaml", version:"1.26"
 
     testCompile("org.hamcrest:hamcrest-junit:2.0.0.0") {
         exclude group: "org.hamcrest", module: "hamcrest-core"
@@ -336,8 +337,8 @@ dependencies {
 
     testCompile group: 'com.h2database', name: 'h2'
     testCompile "com.github.tomakehurst:wiremock:2.19.0"
-    testCompile group: 'org.mockito', name: 'mockito-core', version: '3.2.4'
-    testCompile group: 'org.mockito', name: 'mockito-inline', version: '3.1.0'
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '3.5.10'
+    testCompile group: 'org.mockito', name: 'mockito-inline', version: '3.5.10'
     testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.4'
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
 
@@ -355,6 +356,8 @@ dependencies {
     testCompile (group: 'io.rest-assured', name: 'rest-assured', version: '3.3.0') {
         exclude group: "com.sun.xml.bind", module: "jaxb-osgi"
     }
+
+    testCompile group: 'com.github.mifmif', name: 'generex', version: '1.0.2'
 
     contractTestCompile(group: 'au.com.dius', name:'pact-jvm-consumer-junit5_2.12', version: versions.pact_version) {
         force = true

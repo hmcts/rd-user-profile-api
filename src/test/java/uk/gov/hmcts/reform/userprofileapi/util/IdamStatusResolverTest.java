@@ -80,6 +80,29 @@ public class IdamStatusResolverTest {
                 .isEqualTo(IdamStatus.ACTIVE);
         assertThat(IdamStatusResolver.resolveIdamStatus(createIdamRoleInfo(false,false)))
                 .isEqualTo(IdamStatus.SUSPENDED);
+
+        assertThat(IdamStatusResolver.resolveIdamStatus(createIdamRoleInfo(null,null)))
+                .isEqualTo(IdamStatus.SUSPENDED);
+        assertThat(IdamStatusResolver.resolveIdamStatus(createIdamRoleInfo(null,false)))
+                .isEqualTo(IdamStatus.SUSPENDED);
+
+        assertThat(IdamStatusResolver.resolveIdamStatus(createIdamRoleInfo(null,false)))
+                .isEqualTo(IdamStatus.SUSPENDED);
+        assertThat(IdamStatusResolver.resolveIdamStatus(createIdamRoleInfo(null,true)))
+                .isEqualTo(IdamStatus.PENDING);
+
+        assertThat(IdamStatusResolver.resolveIdamStatus(createIdamRoleInfo(true,null)))
+                .isEqualTo(IdamStatus.ACTIVE);
+
+        assertThat(IdamStatusResolver.resolveIdamStatus(createIdamRoleInfo(Boolean.TRUE,null)))
+                .isEqualTo(IdamStatus.ACTIVE);
+
+        assertThat(IdamStatusResolver.resolveIdamStatus(createIdamRoleInfo(null,Boolean.FALSE)))
+                .isEqualTo(IdamStatus.SUSPENDED);
+
+        assertThat(IdamStatusResolver.resolveIdamStatus(createIdamRoleInfo(null,Boolean.TRUE)))
+                .isEqualTo(IdamStatus.PENDING);
+
     }
 
 

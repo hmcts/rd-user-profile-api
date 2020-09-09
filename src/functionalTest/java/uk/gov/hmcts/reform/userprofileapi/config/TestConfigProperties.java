@@ -13,12 +13,6 @@ public class TestConfigProperties {
     @Value("${idam.auth.clientSecret}")
     public String clientSecret;
 
-    @Value("${generated.user.email.pattern}")
-    public String generatedUserEmailPattern;
-
-    @Value("${test.user.password}")
-    public String testUserPassword;
-
     @Value("${idam.api.url}")
     public String idamApiUrl;
 
