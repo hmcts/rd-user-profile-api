@@ -63,19 +63,6 @@ public class IdamServiceImpl implements IdamService {
     }
 
     @Override
-    public IdamRolesInfo fetchUserByEmail(String email) {
-
-        IdamRolesInfo result;
-        try {
-            Response response = idamClient.getUserByEmail(email);
-            result = buildIdamResponseResult(response);
-        } catch (FeignException ex) {
-            result = buildIdamResponseFromFeignException(ex);
-        }
-        return result;
-    }
-
-    @Override
     public IdamRolesInfo updateUserRoles(List roleRequest, String userId) {
 
         ResponseEntity<Object> responseEntity;
