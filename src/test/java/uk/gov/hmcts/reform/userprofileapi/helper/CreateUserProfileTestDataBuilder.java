@@ -1,12 +1,12 @@
 package uk.gov.hmcts.reform.userprofileapi.helper;
 
+import static org.apache.commons.lang.RandomStringUtils.randomAlphanumeric;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Setter;
-import org.apache.commons.lang.RandomStringUtils;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserCategory;
@@ -16,6 +16,8 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 @Setter
 public class CreateUserProfileTestDataBuilder {
+
+    public static final String EMAIL_TEMPLATE = "freg-test-user-%s@prdfunctestuser.com";
 
     private CreateUserProfileTestDataBuilder() {
         //not meant to be instantiated.
@@ -27,7 +29,7 @@ public class CreateUserProfileTestDataBuilder {
 
     public static UserProfileCreationData buildCreateUserProfileData(boolean isReinviteUser) {
         return new UserProfileCreationData(
-            buildRandomEmail(),
+                generateRandomEmail(),
             randomAlphabetic(20),
             randomAlphabetic(20),
             LanguagePreference.EN.toString(),
@@ -41,7 +43,7 @@ public class CreateUserProfileTestDataBuilder {
 
     public static UpdateUserProfileData buildUpdateUserProfileData() {
         return new UpdateUserProfileData(
-                buildRandomEmail(),
+                generateRandomEmail(),
                 randomAlphabetic(10) + " " + randomAlphabetic(10),
                 randomAlphabetic(10) + " " + randomAlphabetic(10),
                 IdamStatus.ACTIVE.toString(),
@@ -49,8 +51,8 @@ public class CreateUserProfileTestDataBuilder {
                 );
     }
 
-    private static String buildRandomEmail() {
-        return RandomStringUtils.randomAlphanumeric(20) + "@somewhere.com";
+    public static String generateRandomEmail() {
+        return String.format(EMAIL_TEMPLATE, randomAlphanumeric(10));
     }
 
     public static List<String> getIdamRolesJson() {
