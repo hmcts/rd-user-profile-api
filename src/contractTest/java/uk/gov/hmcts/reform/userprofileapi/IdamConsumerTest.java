@@ -11,8 +11,8 @@ import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.model.RequestResponsePact;
 import com.google.common.collect.Maps;
+
 import groovy.util.logging.Slf4j;
-import io.restassured.response.Response;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -34,19 +34,17 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 public class IdamConsumerTest {
 
     private static final String EMAIL = "seymore@skinner.com";
-    private static final String ID = "a833c2e2-2c73-4900-96ca-74b1efb37928";
+    private static final String USERID = "a833c2e2-2c73-4900-96ca-74b1efb37928";
     private static final String FIRST_NAME = "firstName";
     private static final String LAST_NAME = "lastName";
     private static final String ROLES = "roles";
 
-    private static final String IDAM_POST_USER_REGISTRATION_URL = "/api/v1/users/registration";
-    private static final String IDAM_USER_BY_EMAIL = "/api/v1/users";
     private static final String IDAM_USERINFO_URL = "/o/userinfo";
 
     private static final String ACCESS_TOKEN = "Bearer eyJ0eXAiOiJKV1QiLCJraWQiOiJiL082T3ZWdeRre";
 
 
-    @Pact(provider = "Idam_api", consumer = "rd_user_profile_api")
+    @Pact(provider = "Idam_api", consumer = "rd_user_profile_api_service")
     public RequestResponsePact executeGetUserInfoDetailsAndGet200(PactDslWithProvider builder) {
 
         Map<String, String> requestHeaders = Maps.newHashMap();
@@ -122,80 +120,6 @@ public class IdamConsumerTest {
                 .stringType("IDAM_ADMIN_USER")
                 .closeArray();
 
-    }
-
-
-    @Pact(provider = "Idam_api", consumer = "rd_user_profile_api")
-    public RequestResponsePact executePostRegistrationAndGet200(PactDslWithProvider builder) {
-
-        Map<String, String> headers = Maps.newHashMap();
-        headers.put(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN);
-        headers.put("Content-Type", "application/json");
-
-        Map<String, String> responseHeaders = Maps.newHashMap();
-        responseHeaders.put("Content-Type", "application/json");
-
-        Map<String, Object> formParam = new TreeMap<>();
-        formParam.put("redirect_uri", "http://www.dummy-pact-service.com/callback");
-        formParam.put("client_id", "pact");
-        formParam.put("grant_type", "password");
-        formParam.put("username", "prdadmin@email.net");
-        formParam.put("password", "Password123");
-        formParam.put("client_secret", "pactsecret");
-        formParam.put("scope", "openid profile roles manage-user create-user search-user");
-
-        return builder
-                .given("I have obtained an access_token as a user", formParam)
-                .uponReceiving("a POST /registration request from an RD - USER PROFILE API")
-                .path(IDAM_POST_USER_REGISTRATION_URL)
-                .method(HttpMethod.POST.toString())
-                .headers(headers)
-                .body("{"
-                        + " \"email\": \"pact@test.com\","
-                        + " \"firstName\": \"up\","
-                        + " \"id\": \"e65e5439-a8f7-4ae6-b378-cc1015b72dbb\","
-                        + " \"lastName\": \"rd\","
-                        + " \"roles\": ["
-                        + "  \"pui-case-manager\","
-                        + "  \"pui-user-manager\""
-                        + "]"
-                        + "}")
-                .willRespondWith()
-                .status(HttpStatus.OK.value())
-                .toPact();
-    }
-
-    @Test
-    @PactTestFor(pactMethod = "executePostRegistrationAndGet200")
-    public void should_post_for_registration_and_return_200(MockServer mockServer) throws JSONException {
-
-        Map<String, String> headers = Maps.newHashMap();
-        headers.put(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN);
-        headers.put("Content-Type", "application/json");
-
-        Response actualResponseBody =
-                SerenityRest
-                        .given()
-                        .when()
-                        .headers(headers)
-                        .body("{"
-                                  + " \"email\": \"pact@test.com\","
-                                  + " \"firstName\": \"up\","
-                                  + " \"id\": \"e65e5439-a8f7-4ae6-b378-cc1015b72dbb\","
-                                  + " \"lastName\": \"rd\","
-                                  + " \"roles\": ["
-                                  + "  \"pui-case-manager\","
-                                  + "  \"pui-user-manager\""
-                                  + "]"
-                                + "}")
-                        .post(mockServer.getUrl() + IDAM_POST_USER_REGISTRATION_URL)
-                        .then()
-                        .statusCode(200)
-                        .and()
-                        .extract()
-                        .response();
-
-        assertThat(actualResponseBody.getStatusCode()).isEqualTo(200);
     }
 
 }
