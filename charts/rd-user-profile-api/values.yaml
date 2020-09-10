@@ -1,6 +1,13 @@
 java:
   applicationPort: 8091
   readinessPath: '/health/readiness'
+  readinessDelay: 30
+  readinessTimeout: 3
+  readinessPeriod: 15
+  livenessPath: '/health/liveness'
+  livenessDelay: 30
+  livenessTimeout: 3
+  livenessPeriod: 15
   ingressHost: rd-user-profile-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
   aadIdentityName: rd
   image: 'hmctspublic.azurecr.io/rd/user-profile-api:latest'
