@@ -147,8 +147,6 @@ public class FuncTestRequestHandler {
         String s2sToken = getS2sToken();
         String bearerToken = getBearerToken();
 
-        log.info("S2S Token : {}, Bearer Token : {}", s2sToken, bearerToken);
-
         log.info("Base Url : {}", baseUrl);
 
         return SerenityRest.given()
@@ -161,8 +159,8 @@ public class FuncTestRequestHandler {
     }
 
     private String getBearerToken() {
-        IdamOpenIdClient idamClient = new IdamOpenIdClient(testConfig);
-        return idamClient.getBearerToken();
+        IdamOpenIdClient idamOpenIdClient = new IdamOpenIdClient(testConfig);
+        return idamOpenIdClient.getBearerToken();
     }
 
     private String getS2sToken() {

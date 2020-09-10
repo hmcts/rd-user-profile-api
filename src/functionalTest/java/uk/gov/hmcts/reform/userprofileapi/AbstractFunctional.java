@@ -9,6 +9,7 @@ import io.restassured.RestAssured;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Before;
@@ -19,7 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.reform.userprofileapi.client.FuncTestRequestHandler;
-import uk.gov.hmcts.reform.userprofileapi.client.IdamClient;
+import uk.gov.hmcts.reform.userprofileapi.client.IdamOpenIdClient;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
@@ -59,8 +60,10 @@ public class AbstractFunctional {
     protected String resendInterval;
     @Value("${syncInterval}")
     String syncInterval;
-    protected IdamClient idamClient;
+    protected IdamOpenIdClient idamOpenIdClient;
+    public static final String EMAIL = "EMAIL";
 
+    public static final String CREDS = "CREDS";
 
     @Before
     public void setupProxy() {
@@ -70,14 +73,14 @@ public class AbstractFunctional {
 
         RestAssured.baseURI = targetInstance;
         RestAssured.useRelaxedHTTPSValidation();
-        idamClient = new IdamClient(configProperties);
+        idamOpenIdClient = new IdamOpenIdClient(configProperties);
     }
 
     protected UserProfileCreationResponse createActiveUserProfileWithGivenRoles(HttpStatus expectedStatus,
                                                                                 List<String> roles) throws Exception {
         UserProfileCreationData data = createUserProfileData();
-        String email = idamClient.createUser(roles);
-        data.setEmail(email);
+        Map<String, String> userCreds = idamOpenIdClient.createUser(roles);
+        data.setEmail(userCreds.get(EMAIL));
         return createUserProfile(data, expectedStatus);
     }
 
@@ -103,11 +106,11 @@ public class AbstractFunctional {
         //create user with "pui-user-manager" role in SIDAM
         List<String> sidamRoles = new ArrayList<>();
         sidamRoles.add("pui-user-manager");
-        String email = idamClient.createUser(sidamRoles);
+        Map<String, String> userCreds = idamOpenIdClient.createUser(sidamRoles);
 
         //create User profile with same email to get 409 scenario
         userProfileCreationData.setRoles(xuiuRoles);
-        userProfileCreationData.setEmail(email);
+        userProfileCreationData.setEmail(userCreds.get(EMAIL));
         return createUserProfile(userProfileCreationData, HttpStatus.CREATED);
     }
 
