@@ -97,7 +97,7 @@ public class RetrieveUserProfileFuncTest extends AbstractFunctional {
 
         UserProfileResponse resource =
                 testRequestHandler.getEmailFromHeader(
-                        requestUri + "?email=" + userProfileCreationData.getEmail().toLowerCase(),
+                        requestUri + "?email=" + " ",
                         UserProfileResponse.class,
                         userProfileCreationData.getEmail().toLowerCase()
                 );
