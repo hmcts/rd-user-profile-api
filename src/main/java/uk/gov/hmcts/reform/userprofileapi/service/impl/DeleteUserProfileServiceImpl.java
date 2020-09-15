@@ -46,9 +46,7 @@ public class DeleteUserProfileServiceImpl implements DeleteResourceService<UserP
     }
 
     /**
-     * Either delete all the audit and userProfiles data from the data base or none
-     * and adding deleted user profiles data to the response table.
-     *
+     * Only User profile will be deleted from userprofile table but audit table will remain as is.
      */
     public UserProfilesDeletionResponse deleteUserProfiles(List<UserProfile> userProfiles) {
 
