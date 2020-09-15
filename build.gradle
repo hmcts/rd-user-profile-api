@@ -356,6 +356,7 @@ dependencies {
 
     testCompile group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.8.1'
 
+    testCompile group: 'io.rest-assured', name: 'rest-assured-common', version: '4.3.1'
     testCompile (group: 'io.rest-assured', name: 'rest-assured', version: '4.3.1') {
         exclude group: "com.sun.xml.bind", module: "jaxb-osgi"
     }
@@ -384,6 +385,8 @@ dependencies {
 
     pactTestCompile sourceSets.main.runtimeClasspath
     pactTestCompile sourceSets.test.runtimeClasspath
+
+
 }
 
 
