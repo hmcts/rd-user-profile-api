@@ -2,7 +2,9 @@ package uk.gov.hmcts.reform.userprofileapi.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -18,6 +20,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -26,6 +30,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
@@ -44,6 +50,8 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
 import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileService;
 
 
+
+
 @RunWith(MockitoJUnitRunner.class)
 public class UserProfileControllerTest {
 
@@ -52,6 +60,8 @@ public class UserProfileControllerTest {
 
     @InjectMocks
     private UserProfileController sut;
+
+    HttpServletRequest httpRequest = mock(HttpServletRequest.class);
 
     private static final String ORIGIN = "EXUI";
 
@@ -131,15 +141,31 @@ public class UserProfileControllerTest {
 
     @Test
     public void test_GetUserProfileWithRolesByEmail() {
-        String email = "test@test.com";
+
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(httpRequest));
+        when(httpRequest.getHeader(anyString())).thenReturn(" ");
         UserProfileWithRolesResponse responseMock = Mockito.mock(UserProfileWithRolesResponse.class);
-
         when(userProfileServiceMock.retrieveWithRoles(any(UserProfileIdentifier.class))).thenReturn(responseMock);
-
+        String email = "test@test.com";
         assertThat(sut.getUserProfileWithRolesByEmail(email)).isEqualTo(ResponseEntity.ok(responseMock));
         verify(userProfileServiceMock, times(1))
                 .retrieveWithRoles(any(UserProfileIdentifier.class));
+        verify(httpRequest, times(2)).getHeader(anyString());
+    }
 
+    @Test
+    public void test_GetUserProfileWithRolesByEmailByHeader() {
+
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(httpRequest));
+        UserProfileWithRolesResponse responseMock = Mockito.mock(UserProfileWithRolesResponse.class);
+        when(httpRequest.getHeader(anyString())).thenReturn("test@test.com");
+        //when(jsonFeignResponseHelperMock.getUserEmail(any())).thenReturn("test@test.com");
+        when(userProfileServiceMock.retrieveWithRoles(any(UserProfileIdentifier.class))).thenReturn(responseMock);
+        String email = " ";
+        assertThat(sut.getUserProfileWithRolesByEmail(email)).isEqualTo(ResponseEntity.ok(responseMock));
+        verify(userProfileServiceMock, times(1))
+                .retrieveWithRoles(any(UserProfileIdentifier.class));
+        verify(httpRequest, times(2)).getHeader(anyString());
     }
 
     @Test

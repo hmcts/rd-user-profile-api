@@ -127,7 +127,6 @@ public class FuncTestRequestHandler {
 
         return SerenityRest
                 .given()
-                //.headers(authorizationHeadersProvider.getServiceAuthorization())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .baseUri(baseUrl)
                 .header("ServiceAuthorization", BEARER + s2sToken)
@@ -152,12 +151,11 @@ public class FuncTestRequestHandler {
 
         return SerenityRest
             .given()
-            //.headers(authorizationHeadersProvider.getServiceAuthorization())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .baseUri(baseUrl)
             .header("ServiceAuthorization", BEARER + s2sToken)
             .header("Authorization", BEARER + bearerToken)
-            .header("USER-EMAIL",  email)
+            .header("User-Email",  email)
             .when()
             .get(urlPath)
             .then()

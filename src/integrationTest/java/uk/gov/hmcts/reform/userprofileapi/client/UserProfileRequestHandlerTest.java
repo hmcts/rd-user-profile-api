@@ -90,6 +90,31 @@ public class UserProfileRequestHandlerTest {
         return objectMapper.readValue(result.getResponse().getContentAsString(), clazz);
     }
 
+    public <T> T sendGetFromHeader(MockMvc mockMvc,
+                         String path,
+                         HttpStatus expectedHttpStatus,
+                         Class<T> clazz, String email) throws Exception {
+
+        MvcResult result = sendGetFromHeader(mockMvc, path, expectedHttpStatus, email);
+        assertThat(result.getResponse().getContentAsString())
+                .as("Expected json content was empty")
+                .isNotEmpty();
+
+        return objectMapper.readValue(result.getResponse().getContentAsString(), clazz);
+    }
+
+    public MvcResult sendGetFromHeader(MockMvc mockMvc,
+                                       String path,
+                                       HttpStatus expectedHttpStatus, String email) throws Exception {
+        HttpHeaders httpHeaders = getMultipleAuthHeaders();
+        httpHeaders.add("User-Email", email);
+        return mockMvc.perform(get(path)
+                .headers(httpHeaders)
+                .contentType(APPLICATION_JSON))
+                .andExpect(status().is(expectedHttpStatus.value()))
+                .andReturn();
+    }
+
     public <T> T sendPut(MockMvc mockMvc,
                          String path,
                          Object body,
