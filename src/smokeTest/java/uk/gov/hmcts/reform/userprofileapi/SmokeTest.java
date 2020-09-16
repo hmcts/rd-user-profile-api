@@ -25,13 +25,13 @@ public class SmokeTest {
     private final String targetInstance =
             StringUtils.defaultIfBlank(
                     System.getenv("TEST_URL"),
-                    "http://rd-user-profile-api-aat.service.core-compute-aat.internal");
+                    "http://localhost:8090");
 
     @Test
     public void should_prove_app_is_running_and_healthy() {
         // local test
-        SerenityRest.proxy("proxyout.reform.hmcts.net", 8080);
-        RestAssured.proxy("proxyout.reform.hmcts.net", 8080);
+        /*SerenityRest.proxy("proxyout.reform.hmcts.net", 8080);
+        RestAssured.proxy("proxyout.reform.hmcts.net", 8080);*/
 
         RestAssured.baseURI = targetInstance;
         RestAssured.useRelaxedHTTPSValidation();
