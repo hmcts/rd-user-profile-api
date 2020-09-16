@@ -66,6 +66,7 @@ security:
     - "/"
     - "/csrf"
     - "/health"
+    - "/health/liveness"
     - "/health/readiness"
     - "/loggers/**"
     - "/swagger-ui.html"
