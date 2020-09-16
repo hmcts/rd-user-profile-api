@@ -476,7 +476,7 @@ public class UserProfileController {
                 ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes());
         if (nonNull(servletRequestAttributes)) {
             HttpServletRequest request = servletRequestAttributes.getRequest();
-            userEmail = request.getHeader("UserEmaill") != null ? request.getHeader("UserEmail") : email;
+            userEmail = request.getHeader("UserEmail") != null ? request.getHeader("UserEmail") : email;
         }
         return userEmail;
     }
