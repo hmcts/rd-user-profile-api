@@ -185,7 +185,7 @@ public class UserProfileController {
             authorizations = {
                     @Authorization(value = "ServiceAuthorization"),
                     @Authorization(value = "Authorization"),
-                    @Authorization(value = "User-Email")
+                    @Authorization(value = "UserEmail")
             }
     )
 
@@ -236,7 +236,7 @@ public class UserProfileController {
             authorizations = {
                     @Authorization(value = "ServiceAuthorization"),
                     @Authorization(value = "Authorization"),
-                    @Authorization(value = "User-Email")
+                    @Authorization(value = "UserEmail")
             })
     @ApiResponses({
             @ApiResponse(
@@ -476,7 +476,7 @@ public class UserProfileController {
                 ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes());
         if (nonNull(servletRequestAttributes)) {
             HttpServletRequest request = servletRequestAttributes.getRequest();
-            userEmail = request.getHeader("User-Email") != null ? request.getHeader("User-Email") : email;
+            userEmail = request.getHeader("UserEmaill") != null ? request.getHeader("UserEmail") : email;
         }
         return userEmail;
     }

@@ -107,7 +107,7 @@ public class UserProfileRequestHandlerTest {
                                        String path,
                                        HttpStatus expectedHttpStatus, String email) throws Exception {
         HttpHeaders httpHeaders = getMultipleAuthHeaders();
-        httpHeaders.add("User-Email", email);
+        httpHeaders.add("UserEmail", email);
         return mockMvc.perform(get(path)
                 .headers(httpHeaders)
                 .contentType(APPLICATION_JSON))

@@ -155,7 +155,7 @@ public class FuncTestRequestHandler {
             .baseUri(baseUrl)
             .header("ServiceAuthorization", BEARER + s2sToken)
             .header("Authorization", BEARER + bearerToken)
-            .header("User-Email",  email)
+            .header("UserEmail",  email)
             .when()
             .get(urlPath)
             .then()

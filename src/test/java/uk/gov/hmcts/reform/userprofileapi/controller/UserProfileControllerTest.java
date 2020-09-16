@@ -159,7 +159,6 @@ public class UserProfileControllerTest {
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(httpRequest));
         UserProfileWithRolesResponse responseMock = Mockito.mock(UserProfileWithRolesResponse.class);
         when(httpRequest.getHeader(anyString())).thenReturn("test@test.com");
-        //when(jsonFeignResponseHelperMock.getUserEmail(any())).thenReturn("test@test.com");
         when(userProfileServiceMock.retrieveWithRoles(any(UserProfileIdentifier.class))).thenReturn(responseMock);
         String email = " ";
         assertThat(sut.getUserProfileWithRolesByEmail(email)).isEqualTo(ResponseEntity.ok(responseMock));
