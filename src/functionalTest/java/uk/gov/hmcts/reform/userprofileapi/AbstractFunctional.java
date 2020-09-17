@@ -1,26 +1,37 @@
 package uk.gov.hmcts.reform.userprofileapi;
 
+import static java.lang.System.getenv;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildUpdateUserProfileData;
 
+import javax.sql.DataSource;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.restassured.RestAssured;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Before;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.support.EncodedResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestContext;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.support.AbstractTestExecutionListener;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import uk.gov.hmcts.reform.userprofileapi.client.FuncTestRequestHandler;
 import uk.gov.hmcts.reform.userprofileapi.client.IdamOpenIdClient;
+import uk.gov.hmcts.reform.userprofileapi.config.DbConfig;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
@@ -31,10 +42,14 @@ import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
-@ContextConfiguration(classes = {TestConfigProperties.class, FuncTestRequestHandler.class})
+@ContextConfiguration(classes = {TestConfigProperties.class, FuncTestRequestHandler.class, DbConfig.class})
 @ComponentScan("uk.gov.hmcts.reform.userprofileapi")
 @TestPropertySource("classpath:application-functional.yaml")
-public class AbstractFunctional {
+@TestExecutionListeners(listeners = {
+        AbstractFunctional.class,
+        DependencyInjectionTestExecutionListener.class})
+@Slf4j
+public class AbstractFunctional extends AbstractTestExecutionListener {
 
     @Value("${targetInstance}") protected String targetInstance;
 
@@ -43,6 +58,9 @@ public class AbstractFunctional {
 
     @Autowired
     protected TestConfigProperties configProperties;
+
+    @Autowired
+    private DataSource dataSource;
 
     protected String requestUri = "/v1/userprofile";
 
@@ -65,8 +83,11 @@ public class AbstractFunctional {
 
     public static final String CREDS = "CREDS";
 
-    @Before
-    public void setupProxy() {
+    @Override
+    public void beforeTestClass(TestContext testContext) {
+        testContext.getApplicationContext()
+                .getAutowireCapableBeanFactory()
+                .autowireBean(this);
         //TO enable for local testing
         /* RestAssured.proxy("proxyout.reform.hmcts.net",8080);
         SerenityRest.proxy("proxyout.reform.hmcts.net", 8080);*/
@@ -192,6 +213,34 @@ public class AbstractFunctional {
 
     public  UserProfileDataRequest buildUserProfileDataRequest(List<String> userIds) {
         return new UserProfileDataRequest(userIds);
+    }
+
+    @Override
+    public void afterTestClass(TestContext testContext) {
+
+        deleteTestCaseData();
+    }
+
+    private void deleteTestCaseData() {
+        if ("aat".equalsIgnoreCase(getenv("execution_environment"))) {
+            log.info("Delete test data script execution started");
+            try {
+                Connection connection = dataSource.getConnection();
+                connection.setAutoCommit(false);
+                ScriptUtils.executeSqlScript(connection,
+                        new EncodedResource(new ClassPathResource("delete-functional-test-data.sql")),
+                        false, true,
+                        ScriptUtils.DEFAULT_COMMENT_PREFIX,
+                        ScriptUtils.DEFAULT_STATEMENT_SEPARATOR,
+                        ScriptUtils.DEFAULT_BLOCK_COMMENT_START_DELIMITER,
+                        ScriptUtils.DEFAULT_BLOCK_COMMENT_END_DELIMITER);
+                log.info("Delete test data script execution completed");
+            } catch (Exception exe) {
+                log.error("Delete test data script execution failed: {}", exe.getMessage());
+            }
+        } else {
+            log.info("Not executing delete test data script");
+        }
     }
 
 }
