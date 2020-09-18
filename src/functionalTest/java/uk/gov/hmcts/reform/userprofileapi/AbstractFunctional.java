@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 
 import lombok.extern.slf4j.Slf4j;
+import net.serenitybdd.rest.SerenityRest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
@@ -76,9 +77,7 @@ public class AbstractFunctional extends AbstractTestExecutionListener {
     protected String puiCaseManager;
     @Value("${resendInterval}")
     protected String resendInterval;
-    @Value("${syncInterval}")
-    String syncInterval;
-    protected IdamOpenIdClient idamOpenIdClient;
+    protected static IdamOpenIdClient idamOpenIdClient;
     public static final String EMAIL = "EMAIL";
 
     public static final String CREDS = "CREDS";
@@ -89,8 +88,8 @@ public class AbstractFunctional extends AbstractTestExecutionListener {
                 .getAutowireCapableBeanFactory()
                 .autowireBean(this);
         //TO enable for local testing
-        /* RestAssured.proxy("proxyout.reform.hmcts.net",8080);
-        SerenityRest.proxy("proxyout.reform.hmcts.net", 8080);*/
+        RestAssured.proxy("proxyout.reform.hmcts.net",8080);
+        SerenityRest.proxy("proxyout.reform.hmcts.net", 8080);
 
         RestAssured.baseURI = targetInstance;
         RestAssured.useRelaxedHTTPSValidation();
