@@ -317,7 +317,7 @@ dependencies {
 
     compile group: 'com.google.guava', name: 'guava', version: '28.2-jre'
 
-    compile group:"org.yaml", name: "snakeyaml", version:"1.26"
+    compile group:"org.yaml", name: "snakeyaml", version:"1.27"
 
     compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
@@ -329,7 +329,7 @@ dependencies {
     functionalTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     smokeTestCompileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     smokeTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
-    compile group:"org.yaml", name: "snakeyaml", version:"1.26"
+    compile group:"org.yaml", name: "snakeyaml", version:"1.27"
 
     testCompile("org.hamcrest:hamcrest-junit:2.0.0.0") {
         exclude group: "org.hamcrest", module: "hamcrest-core"
