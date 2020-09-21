@@ -318,7 +318,10 @@ dependencies {
     compile group: 'com.google.guava', name: 'guava', version: '28.2-jre'
 
     compile group:"org.yaml", name: "snakeyaml", version:"1.27"
-
+    compile (group: 'io.rest-assured', name: 'rest-assured', version: '3.3.0') {
+        exclude group: "com.sun.xml.bind", module: "jaxb-osgi"
+        exclude group: "org.apache.sling"
+    }
     compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     testCompileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
@@ -366,7 +369,7 @@ dependencies {
 
     contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.7.0")
     contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.7.0")
-    contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.7.0')
+    contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.3.2.')
 
     integrationTestCompile sourceSets.main.runtimeClasspath
     integrationTestCompile sourceSets.test.runtimeClasspath
