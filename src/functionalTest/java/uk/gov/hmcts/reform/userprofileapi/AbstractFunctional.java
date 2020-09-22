@@ -221,7 +221,11 @@ public class AbstractFunctional extends AbstractTestExecutionListener {
     }
 
     private void deleteTestCaseData() {
-        if ("aat".equalsIgnoreCase(getenv("execution_environment"))) {
+        String isNightlyBuild = getenv("isNightlyBuild");
+        String testUrl = getenv("TEST_URL");
+        log.info("isNightlyBuild: {}", isNightlyBuild);
+        log.info("testUrl: {}", testUrl);
+        if ("true".equalsIgnoreCase(isNightlyBuild) && testUrl.contains("aat")) {
             log.info("Delete test data script execution started");
             try {
                 Connection connection = dataSource.getConnection();
