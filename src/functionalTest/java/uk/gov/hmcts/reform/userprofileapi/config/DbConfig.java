@@ -79,6 +79,9 @@ public class DbConfig {
                         ScriptUtils.DEFAULT_BLOCK_COMMENT_START_DELIMITER,
                         ScriptUtils.DEFAULT_BLOCK_COMMENT_END_DELIMITER);
                 log.info("Delete test data script execution completed");
+                if (!connection.isClosed()) {
+                    connection.close();
+                }
             } catch (Exception exe) {
                 log.error("Delete test data script execution failed: {}", exe.getMessage());
             }
