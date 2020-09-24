@@ -90,6 +90,23 @@ public class RetrieveUserProfileFuncTest extends AbstractFunctional {
     }
 
     @Test
+    public void should_get_user_profile_by_email_from_header() throws Exception {
+
+        UserProfileCreationData userProfileCreationData = createUserProfileData();
+        UserProfileCreationResponse createdResource = createUserProfile(userProfileCreationData, HttpStatus.CREATED);
+
+        UserProfileResponse resource =
+                testRequestHandler.getEmailFromHeader(
+                        requestUri + "?email=" + "up@prdfunctestuser.com",
+                        UserProfileResponse.class,
+                        userProfileCreationData.getEmail().toLowerCase()
+                );
+
+        verifyGetUserProfile(resource, userProfileCreationData);
+        assertThat(createdResource.getIdamId()).isNotNull();
+    }
+
+    @Test
     public void should_return_400_when_required_email_field_is_missing() {
         String json = "{\"firstName\":\"iWvKhGLXCiOMMbZtngbR\",\"lastName\":\"mXlpNLcbodhABAWKCKbj\"}";
         testRequestHandler.sendPost(json, HttpStatus.BAD_REQUEST, requestUri);
