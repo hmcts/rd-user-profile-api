@@ -1,28 +1,16 @@
 package uk.gov.hmcts.reform.userprofileapi;
 
-import static java.lang.System.getenv;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildUpdateUserProfileData;
 
-import javax.sql.DataSource;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.restassured.RestAssured;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.support.EncodedResource;
 import org.springframework.http.HttpStatus;
-import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListeners;
@@ -41,6 +29,11 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRol
 import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @ContextConfiguration(classes = {TestConfigProperties.class, FuncTestRequestHandler.class, DbConfig.class})
 @ComponentScan("uk.gov.hmcts.reform.userprofileapi")
@@ -58,9 +51,6 @@ public class AbstractFunctional extends AbstractTestExecutionListener {
 
     @Autowired
     protected TestConfigProperties configProperties;
-
-    @Autowired
-    private DataSource dataSource;
 
     protected String requestUri = "/v1/userprofile";
 
@@ -212,37 +202,4 @@ public class AbstractFunctional extends AbstractTestExecutionListener {
     public  UserProfileDataRequest buildUserProfileDataRequest(List<String> userIds) {
         return new UserProfileDataRequest(userIds);
     }
-
-    @Override
-    public void afterTestClass(TestContext testContext) {
-
-        deleteTestCaseData();
-    }
-
-    private void deleteTestCaseData() {
-        String isNightlyBuild = getenv("isNightlyBuild");
-        String testUrl = getenv("TEST_URL");
-        log.info("isNightlyBuild: {}", isNightlyBuild);
-        log.info("testUrl: {}", testUrl);
-        if ("true".equalsIgnoreCase(isNightlyBuild) && testUrl.contains("aat")) {
-            log.info("Delete test data script execution started");
-            try {
-                Connection connection = dataSource.getConnection();
-                connection.setAutoCommit(false);
-                ScriptUtils.executeSqlScript(connection,
-                        new EncodedResource(new ClassPathResource("delete-functional-test-data.sql")),
-                        false, true,
-                        ScriptUtils.DEFAULT_COMMENT_PREFIX,
-                        ScriptUtils.DEFAULT_STATEMENT_SEPARATOR,
-                        ScriptUtils.DEFAULT_BLOCK_COMMENT_START_DELIMITER,
-                        ScriptUtils.DEFAULT_BLOCK_COMMENT_END_DELIMITER);
-                log.info("Delete test data script execution completed");
-            } catch (Exception exe) {
-                log.error("Delete test data script execution failed: {}", exe.getMessage());
-            }
-        } else {
-            log.info("Not executing delete test data script");
-        }
-    }
-
 }
