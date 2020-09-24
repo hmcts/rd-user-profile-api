@@ -6,21 +6,20 @@ import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDat
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.restassured.RestAssured;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.junit.Before;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestContext;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.support.AbstractTestExecutionListener;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import uk.gov.hmcts.reform.userprofileapi.client.FuncTestRequestHandler;
 import uk.gov.hmcts.reform.userprofileapi.client.IdamOpenIdClient;
+import uk.gov.hmcts.reform.userprofileapi.config.DbConfig;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
@@ -30,11 +29,20 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRol
 import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-@ContextConfiguration(classes = {TestConfigProperties.class, FuncTestRequestHandler.class})
+@ContextConfiguration(classes = {TestConfigProperties.class, FuncTestRequestHandler.class, DbConfig.class})
 @ComponentScan("uk.gov.hmcts.reform.userprofileapi")
 @TestPropertySource("classpath:application-functional.yaml")
-public class AbstractFunctional {
+@TestExecutionListeners(listeners = {
+        AbstractFunctional.class,
+        DependencyInjectionTestExecutionListener.class})
+@Slf4j
+public class AbstractFunctional extends AbstractTestExecutionListener {
 
     @Value("${targetInstance}") protected String targetInstance;
 
@@ -58,15 +66,16 @@ public class AbstractFunctional {
     protected String puiCaseManager;
     @Value("${resendInterval}")
     protected String resendInterval;
-    @Value("${syncInterval}")
-    String syncInterval;
-    protected IdamOpenIdClient idamOpenIdClient;
+    protected static IdamOpenIdClient idamOpenIdClient;
     public static final String EMAIL = "EMAIL";
 
     public static final String CREDS = "CREDS";
 
-    @Before
-    public void setupProxy() {
+    @Override
+    public void beforeTestClass(TestContext testContext) {
+        testContext.getApplicationContext()
+                .getAutowireCapableBeanFactory()
+                .autowireBean(this);
         //TO enable for local testing
         /* RestAssured.proxy("proxyout.reform.hmcts.net",8080);
         SerenityRest.proxy("proxyout.reform.hmcts.net", 8080);*/
@@ -193,5 +202,4 @@ public class AbstractFunctional {
     public  UserProfileDataRequest buildUserProfileDataRequest(List<String> userIds) {
         return new UserProfileDataRequest(userIds);
     }
-
 }

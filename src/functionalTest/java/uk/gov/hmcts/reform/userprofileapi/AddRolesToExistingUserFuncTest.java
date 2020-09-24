@@ -22,7 +22,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import uk.gov.hmcts.reform.userprofileapi.client.IdamOpenIdClient;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.RoleAdditionResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
@@ -42,13 +41,10 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
     @Autowired
     protected TestConfigProperties configProperties;
 
-    private IdamOpenIdClient idamOpenIdClient;
-
     @Before
     public void setUp() {
         RestAssured.baseURI = targetInstance;
         RestAssured.useRelaxedHTTPSValidation();
-        idamOpenIdClient = new IdamOpenIdClient(configProperties);
     }
 
     @Test
