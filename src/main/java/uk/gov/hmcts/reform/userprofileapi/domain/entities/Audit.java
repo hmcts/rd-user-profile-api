@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 
 @Getter
 @Entity
-@Table(name = "response")
+@Table(name = "user_profile_audit")
 @SequenceGenerator(name = "response_id_seq", sequenceName = "response_id_seq", allocationSize = 1)
 @NoArgsConstructor
 public class Audit {

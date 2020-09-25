@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import uk.gov.hmcts.reform.userprofileapi.config.FeignInterceptorConfiguration;
 
 @FeignClient(name = "IdamFeignClient", url = "${idam.api.url}", configuration = FeignInterceptorConfiguration.class)
@@ -22,11 +21,6 @@ public interface IdamFeignClient {
     @RequestLine("POST /api/v1/users/registration")
     @Headers("Content-Type: application/json")
     public Response createUserProfile(@Valid @RequestBody Object createUserProfileData);
-
-    @GetMapping(value = "/api/v1/users", params = "email")
-    @RequestLine("GET /api/v1/users")
-    @Headers("Content-Type: application/json")
-    public Response getUserByEmail(@RequestParam("email") String email);
 
     @GetMapping(value = "/api/v1/users/{userId}")
     @RequestLine("GET /api/v1/users/{userId}")
