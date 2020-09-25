@@ -4,24 +4,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import au.com.dius.pact.consumer.MockServer;
 import au.com.dius.pact.consumer.Pact;
-import au.com.dius.pact.consumer.dsl.PactDslJsonArray;
+import au.com.dius.pact.consumer.dsl.DslPart;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.model.RequestResponsePact;
 import com.google.common.collect.Maps;
+
 import groovy.util.logging.Slf4j;
-import io.restassured.RestAssured;
-import io.restassured.config.EncoderConfig;
-import io.restassured.parsing.Parser;
-import io.restassured.response.Response;
 import java.util.Map;
+import java.util.TreeMap;
+
 import net.serenitybdd.rest.SerenityRest;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.http.HttpHeaders;
@@ -36,97 +34,60 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 public class IdamConsumerTest {
 
     private static final String EMAIL = "seymore@skinner.com";
-    private static final String ID = "a833c2e2-2c73-4900-96ca-74b1efb37928";
+    private static final String USERID = "a833c2e2-2c73-4900-96ca-74b1efb37928";
+    private static final String FIRST_NAME = "firstName";
+    private static final String LAST_NAME = "lastName";
+    private static final String ROLES = "roles";
 
-    private static final String IDAM_POST_USER_REGISTRATION_URL = "/api/v1/users/registration";
-    private static final String IDAM_USER_BY_ID_URL = "/api/v1/users/" + ID;
-    private static final String IDAM_USER_ROLES_BY_ID_URL = "/api/v1/users/" + ID + "/roles";
-    private static final String ACCESS_TOKEN = "eyJ0eXAiOiJKV1QiLCJ6aXAiOiJOT05FIiwia2lkIjoiRm8rQXAybThDT3ROb290ZjF";
+    private static final String IDAM_USERINFO_URL = "/o/userinfo";
 
-    @BeforeEach
-    public void setUp() {
-        RestAssured.defaultParser = Parser.JSON;
-        RestAssured.config().encoderConfig(new EncoderConfig("UTF-8",
-                "UTF-8"));
-    }
+    private static final String ACCESS_TOKEN = "Bearer eyJ0eXAiOiJKV1QiLCJraWQiOiJiL082T3ZWdeRre";
 
-    @Test
-    @Pact(provider = "Idam_api", consumer = "rd_user_profile_api__Idam_api")
-    public RequestResponsePact executePostRegistrationAndGet201(PactDslWithProvider builder) {
 
-        Map<String, String> headers = Maps.newHashMap();
-        headers.put(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN);
+    @Pact(provider = "Idam_api", consumer = "rd_user_profile_api_service")
+    public RequestResponsePact executeGetUserInfoDetailsAndGet200(PactDslWithProvider builder) {
 
-        return builder
-                .given("Idam successfully returns 201 Created status")
-                .uponReceiving("a POST /registration request from an RD - "
-                .concat("USER PROFILE API"))
-                .path(IDAM_POST_USER_REGISTRATION_URL)
-                .method(HttpMethod.POST.toString())
-                .headers(headers)
-                .willRespondWith()
-                .status(HttpStatus.CREATED.value())
-                .toPact();
-    }
+        Map<String, String> requestHeaders = Maps.newHashMap();
+        requestHeaders.put(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        Map<String, Object> params = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
-    @Test
-    @PactTestFor(pactMethod = "executePostRegistrationAndGet201")
-    public void should_post_for_registration_and_return_201(MockServer mockServer) throws JSONException {
+        params.put("redirect_uri", "http://www.dummy-pact-service.com/callback");
+        params.put("client_id", "pact");
+        params.put("client_secret", "pactsecret");
+        params.put("scope", "openid profile roles");
+        params.put("username", "prdadmin@email.net");
+        params.put("password", "Password123");
 
-        Map<String, String> headers = Maps.newHashMap();
-        headers.put(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN);
-
-        Response actualResponseBody =
-                SerenityRest
-                        .given()
-                        .headers(headers)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when()
-                        .post(mockServer.getUrl() + IDAM_POST_USER_REGISTRATION_URL)
-                        .then()
-                        .statusCode(201)
-                        .and()
-                        .extract()
-                        .response();
-
-        assertThat(actualResponseBody.getStatusCode()).isEqualTo(201);
-    }
-
-    @Test
-    @Pact(provider = "Idam_api", consumer = "rd_user_profile_api__Idam_api")
-    public RequestResponsePact executeGetUserByIdAndGet200(PactDslWithProvider builder) {
-
-        Map<String, String> headers = Maps.newHashMap();
-        headers.put(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN);
+        Map<String, String> responseheaders = Maps.newHashMap();
+        responseheaders.put("Content-Type", "application/json");
 
         return builder
-                .given("Idam successfully returns user")
-                .uponReceiving("a GET /api/v1/users/{userId} request from an RD - "
-                        .concat("USER PROFILE API"))
-                .path(IDAM_USER_BY_ID_URL)
+                .given("I have obtained an access_token as a user",params)
+                .uponReceiving("Provider returns user info to RD - USER PROFILE API")
+                .path(IDAM_USERINFO_URL)
+                .headers("Authorization",ACCESS_TOKEN)
                 .method(HttpMethod.GET.toString())
-                .headers(headers)
                 .willRespondWith()
                 .status(HttpStatus.OK.value())
-                .body(createUserResponse())
+                .headers(responseheaders)
+                .body(createUserInfoResponse())
                 .toPact();
     }
 
     @Test
-    @PactTestFor(pactMethod = "executeGetUserByIdAndGet200")
-    public void should_get_user_from_elastic_search_using_id_and_get_200_Response(MockServer mockServer)
-            throws JSONException {
+    @PactTestFor(pactMethod = "executeGetUserInfoDetailsAndGet200")
+    public void should_get_user_info_details_with_access_token(MockServer mockServer) throws JSONException {
 
         Map<String, String> headers = Maps.newHashMap();
         headers.put(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN);
+        headers.put(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 
-        String actualResponseBody =
+        String detailsResponseBody =
                 SerenityRest
                         .given()
                         .headers(headers)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .when()
-                        .get(mockServer.getUrl() + IDAM_USER_BY_ID_URL)
+                        .get(mockServer.getUrl() + IDAM_USERINFO_URL)
                         .then()
                         .statusCode(200)
                         .and()
@@ -134,268 +95,31 @@ public class IdamConsumerTest {
                         .body()
                         .asString();
 
-        JSONObject response = new JSONObject(actualResponseBody);
+        JSONObject response = new JSONObject(detailsResponseBody);
 
-        assertThat(actualResponseBody).isNotNull();
+        assertThat(detailsResponseBody).isNotNull();
         assertThat(response).hasNoNullFieldsOrProperties();
-        assertThat(response.getString("forename")).isNotBlank();
-        assertThat(response.getString("surname")).isNotBlank();
-
-        JSONArray rolesArr = new JSONArray(response.getString("roles"));
-
+        assertThat(response.getString("uid")).isNotBlank();
+        assertThat(response.getString("given_name")).isNotBlank();
+        assertThat(response.getString("family_name")).isNotBlank();
+        JSONArray rolesArr = response.getJSONArray("roles");
         assertThat(rolesArr).isNotNull();
         assertThat(rolesArr.length()).isNotZero();
         assertThat(rolesArr.get(0).toString()).isNotBlank();
 
     }
 
-    @Test
-    @Pact(provider = "Idam_api", consumer = "rd_user_profile_api__Idam_api")
-    public RequestResponsePact executePutUserRolesAndGet200(PactDslWithProvider builder) {
-        Map<String, String> headers = Maps.newHashMap();
-        headers.put(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN);
-
-        return builder
-                .given("Idam successfully returns user with updated roles")
-                .uponReceiving("a PUT /api/v1/users/{userId}/roles request from an RD - "
-                        .concat("USER PROFILE API"))
-                .path(IDAM_USER_ROLES_BY_ID_URL)
-                .method(HttpMethod.PUT.toString())
-                .headers(headers)
-                .willRespondWith()
-                .status(HttpStatus.OK.value())
-                .body(createUserResponse())
-                .toPact();
-    }
-
-    @Test
-    @PactTestFor(pactMethod = "executePutUserRolesAndGet200")
-    public void should_put_user_roles_and_get_200_Response(MockServer mockServer) throws JSONException {
-        Map<String, String> headers = Maps.newHashMap();
-        headers.put(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN);
-
-        String actualResponseBody =
-                SerenityRest
-                        .given()
-                        .headers(headers)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when()
-                        .put(mockServer.getUrl() + IDAM_USER_ROLES_BY_ID_URL)
-                        .then()
-                        .statusCode(200)
-                        .and()
-                        .extract()
-                        .body()
-                        .asString();
-
-        JSONObject response = new JSONObject(actualResponseBody);
-
-        assertThat(actualResponseBody).isNotNull();
-        assertThat(response).hasNoNullFieldsOrProperties();
-        assertThat(response.getString("forename")).isNotBlank();
-        assertThat(response.getString("surname")).isNotBlank();
-        assertThat(response.getString("statusMessage")).isEqualTo("11 OK");
-
-        JSONArray rolesArr = new JSONArray(response.getString("roles"));
-
-        assertThat(rolesArr).isNotNull();
-        assertThat(rolesArr.length()).isNotZero();
-        assertThat(rolesArr.get(0).toString()).isNotBlank();
-    }
-
-    @Test
-    @Pact(provider = "Idam_api", consumer = "rd_user_profile_api__Idam_api")
-    public RequestResponsePact executePostUserRolesAndGet200(PactDslWithProvider builder) {
-        Map<String, String> headers = Maps.newHashMap();
-        headers.put(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN);
-
-        return builder
-                .given("Idam successfully returns user with updated roles")
-                .uponReceiving("a POST /api/v1/users/{userId}/roles request from an RD "
-                        .concat("USER PROFILE API"))
-                .path(IDAM_USER_ROLES_BY_ID_URL)
-                .method(HttpMethod.POST.toString())
-                .headers(headers)
-                .willRespondWith()
-                .status(HttpStatus.OK.value())
-                .body(createUserResponse())
-                .toPact();
-    }
-
-    @Test
-    @PactTestFor(pactMethod = "executePostUserRolesAndGet200")
-    public void should_post_user_roles_and_get_200_Response(MockServer mockServer) throws JSONException {
-        Map<String, String> headers = Maps.newHashMap();
-        headers.put(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN);
-
-        String actualResponseBody =
-                SerenityRest
-                        .given()
-                        .headers(headers)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when()
-                        .post(mockServer.getUrl() + IDAM_USER_ROLES_BY_ID_URL)
-                        .then()
-                        .statusCode(200)
-                        .and()
-                        .extract()
-                        .body()
-                        .asString();
-
-        JSONObject response = new JSONObject(actualResponseBody);
-
-        assertThat(actualResponseBody).isNotNull();
-        assertThat(response).hasNoNullFieldsOrProperties();
-        assertThat(response.getString("forename")).isNotBlank();
-        assertThat(response.getString("surname")).isNotBlank();
-        assertThat(response.getString("statusMessage")).isEqualTo("11 OK");
-
-        JSONArray rolesArr = new JSONArray(response.getString("roles"));
-
-        assertThat(rolesArr).isNotNull();
-        assertThat(rolesArr.length()).isNotZero();
-        assertThat(rolesArr.get(0).toString()).isNotBlank();
-    }
-
-    @Test
-    @Pact(provider = "Idam_api", consumer = "rd_user_profile_api__Idam_api")
-    public RequestResponsePact executeDeleteUserRoleAndGet200(PactDslWithProvider builder) {
-        Map<String, String> headers = Maps.newHashMap();
-        headers.put(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN);
-
-        return builder
-                .given("Idam successfully returns user with updated roles")
-                .uponReceiving("a DELETE /api/v1/users/{userId}/roles/{role} request from an RD - "
-                        .concat("USER PROFILE API"))
-                .path(IDAM_USER_ROLES_BY_ID_URL + "/pui-case-manager")
-                .method(HttpMethod.DELETE.toString())
-                .headers(headers)
-                .willRespondWith()
-                .status(HttpStatus.OK.value())
-                .body(createUserResponseRoleDeleted())
-                .toPact();
-    }
-
-    @Test
-    @PactTestFor(pactMethod = "executeDeleteUserRoleAndGet200")
-    public void should_delete_user_roles_and_get_200_Response(MockServer mockServer) throws JSONException {
-        Map<String, String> headers = Maps.newHashMap();
-        headers.put(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN);
-
-        String actualResponseBody =
-                SerenityRest
-                        .given()
-                        .headers(headers)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when()
-                        .delete(mockServer.getUrl() + IDAM_USER_ROLES_BY_ID_URL + "/pui-case-manager")
-                        .then()
-                        .statusCode(200)
-                        .and()
-                        .extract()
-                        .body()
-                        .asString();
-
-        JSONObject response = new JSONObject(actualResponseBody);
-
-        assertThat(actualResponseBody).isNotNull();
-        assertThat(response).hasNoNullFieldsOrProperties();
-        assertThat(response.getString("forename")).isNotBlank();
-        assertThat(response.getString("surname")).isNotBlank();
-        assertThat(response.getString("statusMessage")).isEqualTo("11 OK");
-
-        JSONArray rolesArr = new JSONArray(response.getString("roles"));
-
-        assertThat(rolesArr).isNotNull();
-        assertThat(rolesArr.length()).isNotZero();
-        assertThat(rolesArr.get(0).toString()).isEqualTo("pui-organisation-manager");
-    }
-
-    @Test
-    @Pact(provider = "Idam_api", consumer = "rd_user_profile_api__Idam_api")
-    public RequestResponsePact executePatchUserDetailsAndGet200(PactDslWithProvider builder) {
-        Map<String, String> headers = Maps.newHashMap();
-        headers.put(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN);
-
-        return builder
-                .given("Idam successfully returns user with updated details")
-                .uponReceiving("a PATCH /api/v1/users/{userId} request from an RD - USER PROFILE API")
-                .path(IDAM_USER_BY_ID_URL)
-                .method(HttpMethod.PATCH.toString())
-                .headers(headers)
-                .willRespondWith()
-                .status(HttpStatus.OK.value())
-                .body(createUserResponse())
-                .toPact();
-    }
-
-    @Test
-    @PactTestFor(pactMethod = "executePatchUserDetailsAndGet200")
-    public void should_patch_user_details_and_get_200_Response(MockServer mockServer) throws JSONException {
-        Map<String, String> headers = Maps.newHashMap();
-        headers.put(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN);
-
-        String actualResponseBody =
-                SerenityRest
-                        .given()
-                        .headers(headers)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when()
-                        .patch(mockServer.getUrl() + IDAM_USER_BY_ID_URL)
-                        .then()
-                        .statusCode(200)
-                        .and()
-                        .extract()
-                        .body()
-                        .asString();
-
-        JSONObject response = new JSONObject(actualResponseBody);
-
-        assertThat(actualResponseBody).isNotNull();
-        assertThat(response).hasNoNullFieldsOrProperties();
-        assertThat(response.getString("forename")).isNotBlank();
-        assertThat(response.getString("surname")).isNotBlank();
-        assertThat(response.getString("statusMessage")).isEqualTo("11 OK");
-
-        JSONArray rolesArr = new JSONArray(response.getString("roles"));
-
-        assertThat(rolesArr).isNotNull();
-        assertThat(rolesArr.length()).isNotZero();
-        assertThat(rolesArr.get(0).toString()).isEqualTo("pui-organisation-manager");
-    }
-
-    private PactDslJsonBody createUserResponse() {
-        PactDslJsonArray array = new PactDslJsonArray()
-                .string("pui-organisation-manager")
-                .string("pui-case-manager");
+    private DslPart createUserInfoResponse() {
 
         return new PactDslJsonBody()
-                .stringType("id", ID)
-                .stringType("email", EMAIL)
-                .stringType("forename", "Seymore")
-                .stringType("surname", "Skinner")
-                .object("roles", array)
-                .booleanType("active", true)
-                .booleanType("pending", false)
-                .stringType("repsonseStatusCode", HttpStatus.OK.toString())
-                .stringType("statusMessage", "11 OK");
+                .stringType("uid", "1111-2222-3333-4567")
+                .stringType("given_name", "puiCaseManager")
+                .stringType("family_name", "Jar")
+                .array("roles")
+                .stringType("prd-admin")
+                .stringType("IDAM_ADMIN_USER")
+                .closeArray();
 
     }
 
-    private PactDslJsonBody createUserResponseRoleDeleted() {
-        PactDslJsonArray array = new PactDslJsonArray()
-                .string("pui-organisation-manager");
-
-        return new PactDslJsonBody()
-                .stringType("id", ID)
-                .stringType("email", EMAIL)
-                .stringType("forename", "Seymore")
-                .stringType("surname", "Skinner")
-                .object("roles", array)
-                .booleanType("active", true)
-                .booleanType("pending", false)
-                .stringType("repsonseStatusCode", HttpStatus.OK.toString())
-                .stringType("statusMessage", "11 OK");
-
-    }
 }

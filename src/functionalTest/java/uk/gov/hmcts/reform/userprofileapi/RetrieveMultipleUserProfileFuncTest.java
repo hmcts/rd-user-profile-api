@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
+import net.thucydides.core.annotations.WithTag;
+import net.thucydides.core.annotations.WithTags;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,6 +22,7 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataRes
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 @RunWith(SpringIntegrationSerenityRunner.class)
+@WithTags({@WithTag("testType:Functional")})
 @SpringBootTest
 public class RetrieveMultipleUserProfileFuncTest extends AbstractFunctional {
 
