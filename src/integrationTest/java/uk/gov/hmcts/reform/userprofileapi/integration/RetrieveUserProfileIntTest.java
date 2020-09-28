@@ -13,11 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-
-import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MvcResult;
@@ -31,7 +28,6 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
-@RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
 @Transactional
 public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
@@ -159,6 +155,40 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
     }
 
     @Test
+    public void should_retrieve_user_profile_resource_with_roles_by_email_fromHeader() throws Exception {
+        UserProfile userProfile = userProfileMap.get("user");
+
+        UserProfileWithRolesResponse retrievedResource =
+                userProfileRequestHandlerTest.sendGetFromHeader(
+                        mockMvc,
+                        APP_BASE_PATH + SLASH + "roles" + "?" + "email=" + "up@prdfunctestuser.com",
+                        OK,
+                        UserProfileWithRolesResponse.class,
+                        userProfile.getEmail()
+                );
+
+        assertThat(retrievedResource).isNotNull();
+        assertThat(retrievedResource.getRoles().size()).isGreaterThan(0);
+
+        Optional<UserProfile> optionalUserProfile = userProfileRepository.findByIdamId(retrievedResource.getIdamId());
+        UserProfile persistedUserProfile = optionalUserProfile.get();
+
+        List<Audit> matchedAuditRecords = getMatchedAuditRecords(auditRepository.findAll(),
+                persistedUserProfile.getIdamId());
+        assertThat(matchedAuditRecords.size()).isEqualTo(1);
+        Audit audit = matchedAuditRecords.get(0);
+
+        assertThat(audit).isNotNull();
+        assertThat(audit.getIdamRegistrationResponse()).isEqualTo(200);
+        assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.OK);
+        assertThat(audit.getSource()).isEqualTo(ResponseSource.API);
+        assertThat(audit.getUserProfile().getIdamId()).isEqualTo(retrievedResource.getIdamId());
+        assertThat(audit.getAuditTs()).isNotNull();
+
+    }
+
+
+    @Test
     public void should_retrieve_user_profile_resource_with_email() throws Exception {
         UserProfile userProfile = userProfileMap.get("user");
 
@@ -168,6 +198,40 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
                         APP_BASE_PATH + "?" + "email=" + userProfile.getEmail(),
                         OK,
                         UserProfileResponse.class
+                );
+
+        assertThat(retrievedResource).isNotNull();
+
+    }
+
+    @Test
+    public void should_retrieve_user_profile_resource_with_email_from_header() throws Exception {
+        UserProfile userProfile = userProfileMap.get("user");
+
+        UserProfileResponse retrievedResource =
+                userProfileRequestHandlerTest.sendGetFromHeader(
+                        mockMvc,
+                        APP_BASE_PATH + "?" + "email=" + userProfile.getEmail(),
+                        OK,
+                        UserProfileResponse.class,
+                        userProfile.getEmail()
+                );
+
+        assertThat(retrievedResource).isNotNull();
+
+    }
+
+    @Test
+    public void should_not_retrieve_user_profile_resource_with_unknown_email_from_header() throws Exception {
+        UserProfile userProfile = userProfileMap.get("user");
+
+        UserProfileResponse retrievedResource =
+                userProfileRequestHandlerTest.sendGetFromHeader(
+                        mockMvc,
+                        APP_BASE_PATH + "?" + "email=" + userProfile.getEmail(),
+                        NOT_FOUND,
+                        UserProfileResponse.class,
+                        "up@prdfunctestuser.com"
                 );
 
         assertThat(retrievedResource).isNotNull();
@@ -255,6 +319,20 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
 
     }
 
+    @Test
+    public void should_return_404_when_query_by_email_is_empty_and_header_isEmpty() throws Exception {
+        MvcResult result =
+                userProfileRequestHandlerTest.sendGetFromHeader(
+                        mockMvc,
+                        APP_BASE_PATH + "?email=",
+                        NOT_FOUND,
+                        ""
+                );
+
+        assertThat(result.getResponse()).isNotNull();
+        assertThat(result.getResponse().getContentAsString()).isNotEmpty();
+
+    }
 
     @Test
     public void should_return_404_when_query_by_userId_is_empty() throws Exception {

@@ -10,11 +10,10 @@ import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDat
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
@@ -22,7 +21,6 @@ import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 
-@RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
 @Transactional
 public class DeleteUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
@@ -37,7 +35,7 @@ public class DeleteUserProfileIntTest extends AuthorizationEnabledIntegrationTes
 
         //user profile create and  delete
         createAndDeleteSingleUserProfile(buildCreateUserProfileData());
-        verifyUserProfileDeletion();
+        verifyUserProfileDeletion(1,2);
 
     }
 
@@ -53,7 +51,7 @@ public class DeleteUserProfileIntTest extends AuthorizationEnabledIntegrationTes
         userIds.add(response2.getIdamId());
         //user profile to delete
         deleteUserProfiles(userIds, NO_CONTENT);
-        verifyUserProfileDeletion();
+        verifyUserProfileDeletion(2,4);
     }
 
     @Test
@@ -97,16 +95,23 @@ public class DeleteUserProfileIntTest extends AuthorizationEnabledIntegrationTes
         deleteUserProfiles(userIds, BAD_REQUEST);
     }
 
-    private void verifyUserProfileDeletion() {
+    private void verifyUserProfileDeletion(int expectedAuditRecords, int expectedTotalAuditRecords) {
 
         List<UserProfile> userProfiles = (List<UserProfile>) userProfileRepository.findAll();
         assertThat(userProfiles.size()).isEqualTo(0);
 
-        List<Audit> matchedAuditRecords = auditRepository.findAll();
-        assertThat(matchedAuditRecords.size()).isGreaterThanOrEqualTo(1);
-        Audit audit = matchedAuditRecords.get(0);
-        assertThat(audit.getIdamRegistrationResponse()).isEqualTo(204);
-        assertThat(audit.getSource()).isEqualTo(ResponseSource.API);
-        assertThat(audit.getAuditTs()).isNotNull();
+        List<Audit> auditRecords = auditRepository.findAll();
+        assertThat(auditRecords.size()).isEqualTo(expectedTotalAuditRecords);
+
+        assertThat(auditRecords.stream().filter(audit ->
+                audit.getIdamRegistrationResponse() == 201).collect(Collectors.toList())).hasSize(expectedAuditRecords);
+
+        assertThat(auditRecords.stream().filter(audit ->
+                audit.getIdamRegistrationResponse() == 204).collect(Collectors.toList())).hasSize(expectedAuditRecords);
+
+        auditRecords.forEach(audit -> {
+            assertThat(audit.getSource()).isEqualTo(ResponseSource.API);
+            assertThat(audit.getAuditTs()).isNotNull();
+        });
     }
 }

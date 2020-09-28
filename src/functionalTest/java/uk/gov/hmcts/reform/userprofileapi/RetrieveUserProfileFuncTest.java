@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
+import net.thucydides.core.annotations.WithTag;
+import net.thucydides.core.annotations.WithTags;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +21,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 
 @RunWith(SpringIntegrationSerenityRunner.class)
+@WithTags({@WithTag("testType:Functional")})
 @SpringBootTest
 public class RetrieveUserProfileFuncTest extends AbstractFunctional {
 
@@ -83,6 +86,23 @@ public class RetrieveUserProfileFuncTest extends AbstractFunctional {
                 );
 
         verifyGetUserProfileWithRoles(resource, userProfileCreationData);
+        assertThat(createdResource.getIdamId()).isNotNull();
+    }
+
+    @Test
+    public void should_get_user_profile_by_email_from_header() throws Exception {
+
+        UserProfileCreationData userProfileCreationData = createUserProfileData();
+        UserProfileCreationResponse createdResource = createUserProfile(userProfileCreationData, HttpStatus.CREATED);
+
+        UserProfileResponse resource =
+                testRequestHandler.getEmailFromHeader(
+                        requestUri + "?email=" + "up@prdfunctestuser.com",
+                        UserProfileResponse.class,
+                        userProfileCreationData.getEmail().toLowerCase()
+                );
+
+        verifyGetUserProfile(resource, userProfileCreationData);
         assertThat(createdResource.getIdamId()).isNotNull();
     }
 

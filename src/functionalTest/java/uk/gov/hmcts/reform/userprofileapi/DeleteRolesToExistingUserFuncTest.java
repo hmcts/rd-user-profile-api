@@ -7,9 +7,12 @@ import io.restassured.RestAssured;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
+import net.thucydides.core.annotations.WithTag;
+import net.thucydides.core.annotations.WithTags;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.reform.userprofileapi.client.IdamClient;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.RoleDeletionResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
@@ -29,6 +31,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 @RunWith(SpringIntegrationSerenityRunner.class)
+@WithTags({@WithTag("testType:Functional")})
 public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeleteRolesToExistingUserFuncTest.class);
@@ -36,13 +39,10 @@ public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
     @Autowired
     protected TestConfigProperties configProperties;
 
-    private IdamClient idamClient;
-
     @Before
     public void setUp() {
         RestAssured.baseURI = targetInstance;
         RestAssured.useRelaxedHTTPSValidation();
-        idamClient = new IdamClient(configProperties);
     }
 
     @Test
@@ -50,9 +50,9 @@ public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
         UserProfileCreationData data = createUserProfileData();
         List<String> roles = new ArrayList<>();
         roles.add(puiUserManager);
-        String email = idamClient.createUser(roles);
+        Map<String, String> userCreds = idamOpenIdClient.createUser(roles);
 
-        data.setEmail(email);
+        data.setEmail(userCreds.get(EMAIL));
         createUserProfile(data, HttpStatus.CREATED);
 
         RoleName role1 = new RoleName(puiOrgManager);
@@ -63,7 +63,7 @@ public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
 
         UserProfileResponse resource =
                 testRequestHandler.sendGet(
-                        requestUri + "?email=" + email.toLowerCase(),
+                        requestUri + "?email=" + userCreds.get(EMAIL).toLowerCase(),
                         UserProfileResponse.class
                 );
 

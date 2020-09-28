@@ -126,12 +126,36 @@ public class FuncTestRequestHandler {
         log.info("S2S Token : {}, Bearer Token : {}", s2sToken, bearerToken);
 
         return SerenityRest
+                .given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .baseUri(baseUrl)
+                .header("ServiceAuthorization", BEARER + s2sToken)
+                .header("Authorization", BEARER + bearerToken)
+                .when()
+                .get(urlPath)
+                .then()
+                .log().all(true)
+                .statusCode(httpStatus.value()).extract().response();
+    }
+
+    public <T> T getEmailFromHeader(String urlPath, Class<T> clazz, String email) {
+        return getEmailFromHeader(HttpStatus.OK, urlPath, email).as(clazz);
+    }
+
+
+    public Response getEmailFromHeader(HttpStatus httpStatus, String urlPath, String email) {
+        String s2sToken = getS2sToken();
+        String bearerToken = getBearerToken();
+
+        log.info("S2S Token : {}, Bearer Token : {}", s2sToken, bearerToken);
+
+        return SerenityRest
             .given()
-            //.headers(authorizationHeadersProvider.getServiceAuthorization())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .baseUri(baseUrl)
             .header("ServiceAuthorization", BEARER + s2sToken)
             .header("Authorization", BEARER + bearerToken)
+            .header("UserEmail",  email)
             .when()
             .get(urlPath)
             .then()
@@ -147,8 +171,6 @@ public class FuncTestRequestHandler {
         String s2sToken = getS2sToken();
         String bearerToken = getBearerToken();
 
-        log.info("S2S Token : {}, Bearer Token : {}", s2sToken, bearerToken);
-
         log.info("Base Url : {}", baseUrl);
 
         return SerenityRest.given()
@@ -161,8 +183,8 @@ public class FuncTestRequestHandler {
     }
 
     private String getBearerToken() {
-        IdamOpenIdClient idamClient = new IdamOpenIdClient(testConfig);
-        return idamClient.getBearerToken();
+        IdamOpenIdClient idamOpenIdClient = new IdamOpenIdClient(testConfig);
+        return idamOpenIdClient.getBearerToken();
     }
 
     private String getS2sToken() {

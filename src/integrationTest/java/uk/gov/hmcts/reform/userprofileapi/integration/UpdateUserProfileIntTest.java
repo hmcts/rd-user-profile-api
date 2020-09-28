@@ -19,14 +19,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-
-import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.util.Lists;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
@@ -37,7 +34,6 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
-@RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
 @Transactional
 public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTest {

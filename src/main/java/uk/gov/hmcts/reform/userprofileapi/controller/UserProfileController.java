@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.controller;
 
+import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
@@ -13,6 +14,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +34,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
@@ -180,10 +184,11 @@ public class UserProfileController {
     @ApiOperation(value = "Retrieves a User Profile and their Roles with the given Email Address",
             authorizations = {
                     @Authorization(value = "ServiceAuthorization"),
-                    @Authorization(value = "Authorization")
+                    @Authorization(value = "Authorization"),
+                    @Authorization(value = "UserEmail")
             }
     )
-    @ApiParam(name = "email", required = true)
+
     @ApiResponses({
             @ApiResponse(
                     code = 200,
@@ -217,19 +222,21 @@ public class UserProfileController {
             produces = APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    public ResponseEntity<UserProfileWithRolesResponse> getUserProfileWithRolesByEmail(@RequestParam String email) {
-        //Getting user profile by email
-
-        requireNonNull(email, "email cannot be null");
+    public ResponseEntity<UserProfileWithRolesResponse> getUserProfileWithRolesByEmail(@RequestParam(value = "email",
+            required = false) String email) {
+        //Getting user profile by email from header or request param
+        String userEmail = getUserEmail(email);
+        requireNonNull(userEmail, "email cannot be null");
         UserProfileWithRolesResponse response = userProfileService
-                .retrieveWithRoles(new UserProfileIdentifier(IdentifierName.EMAIL, email.toLowerCase()));
+                .retrieveWithRoles(new UserProfileIdentifier(IdentifierName.EMAIL, userEmail.toLowerCase()));
         return ResponseEntity.ok(response);
     }
 
     @ApiOperation(value = "Retrieve a User Profile by Email or ID. If both are present then Email is used to retrieve.",
             authorizations = {
                     @Authorization(value = "ServiceAuthorization"),
-                    @Authorization(value = "Authorization")
+                    @Authorization(value = "Authorization"),
+                    @Authorization(value = "UserEmail")
             })
     @ApiResponses({
             @ApiResponse(
@@ -263,22 +270,21 @@ public class UserProfileController {
             produces = APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    public ResponseEntity<UserProfileResponse> getUserProfileByEmail(@ApiParam(name = "email", required = false)
-                                                                         @RequestParam(value = "email",
+    public ResponseEntity<UserProfileResponse> getUserProfileByEmail(@RequestParam(value = "email",
                                                                                  required = false) String email,
-                                                                     @ApiParam(name = "userId", required = false)
                                                                      @RequestParam(value = "userId", required = false)
                                                                              String userId) {
         UserProfileResponse response;
-        if (email == null && userId == null) {
+        String userEmail = getUserEmail(email);
+        if (userEmail == null && userId == null) {
             return ResponseEntity.badRequest().build();
-        } else if (email != null) {
+        } else if (userEmail != null) {
 
             //Getting user profile by email
 
             response =
                     userProfileService.retrieve(
-                            new UserProfileIdentifier(IdentifierName.EMAIL, email.toLowerCase().trim())
+                            new UserProfileIdentifier(IdentifierName.EMAIL, userEmail.toLowerCase().trim())
                     );
         } else {
             isUserIdValid(userId, true);
@@ -332,7 +338,8 @@ public class UserProfileController {
     )
 
     @ResponseBody
-    public ResponseEntity updateUserProfile(@Valid @RequestBody UpdateUserProfileData updateUserProfileData,
+    public ResponseEntity<UserProfileRolesResponse> updateUserProfile(@Valid @RequestBody UpdateUserProfileData
+                                                                                  updateUserProfileData,
                                             @PathVariable String userId,
                                             @ApiParam(name = "origin", required = false) @RequestParam(value = "origin",
                                                     required = false) String origin) {
@@ -456,12 +463,22 @@ public class UserProfileController {
     @ResponseBody
     public ResponseEntity<UserProfilesDeletionResponse> deleteUserProfiles(@Valid @RequestBody UserProfileDataRequest
                                                                                        userProfilesDeletionDataReq) {
-
         UserProfilesDeletionResponse resource = null;
         validateUserIds(userProfilesDeletionDataReq);
         resource = userProfileService.delete(userProfilesDeletionDataReq);
         return ResponseEntity.status(resource.getStatusCode()).body(resource);
 
+    }
+
+    private  String getUserEmail(String email) {
+        String userEmail = null;
+        ServletRequestAttributes servletRequestAttributes =
+                ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes());
+        if (nonNull(servletRequestAttributes)) {
+            HttpServletRequest request = servletRequestAttributes.getRequest();
+            userEmail = request.getHeader("UserEmail") != null ? request.getHeader("UserEmail") : email;
+        }
+        return userEmail;
     }
 
 }

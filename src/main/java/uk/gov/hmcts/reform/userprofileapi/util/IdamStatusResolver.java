@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
 import static java.util.Objects.nonNull;
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.ResponseEntity.status;
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -60,7 +62,7 @@ public final class IdamStatusResolver {
     }
 
     public static String resolveStatusAndReturnMessage(ResponseEntity<Object> responseEntity) {
-        String errorMessage = null;
+        String errorMessage = EMPTY;// requires this initialisation for Fortify
         if (nonNull(responseEntity)) {
             Object responseBody = responseEntity.getBody();
             if (nonNull(responseBody) && responseBody instanceof IdamErrorResponse) {
@@ -69,7 +71,8 @@ public final class IdamStatusResolver {
         } else {
             responseEntity = status(INTERNAL_SERVER_ERROR).build();
         }
-        return nonNull(errorMessage) ? errorMessage : resolveStatusAndReturnMessage(responseEntity.getStatusCode());
+        return isNotBlank(errorMessage) ? errorMessage :
+                resolveStatusAndReturnMessage(responseEntity.getStatusCode());
     }
 
     public static String getErrorMessageFromSidamResponse(Object responseBody) {
@@ -92,7 +95,7 @@ public final class IdamStatusResolver {
         sb.append(null == idamRolesInfo.getPending() || !idamRolesInfo.getPending());
         sb.append(null == idamRolesInfo.getActive() || !idamRolesInfo.getActive());
 
-        switch (sb.toString().toLowerCase()) {
+        switch (sb.toString()) {
             case "falsetrue":
                 return IdamStatus.PENDING;
 

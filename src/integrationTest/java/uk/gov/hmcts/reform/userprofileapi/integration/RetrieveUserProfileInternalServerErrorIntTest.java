@@ -11,11 +11,8 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 
 import java.util.UUID;
-
-import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,7 +29,6 @@ import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 
-@RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest(webEnvironment = MOCK)
 @Transactional
 public class RetrieveUserProfileInternalServerErrorIntTest extends AuthorizationEnabledIntegrationTest {
@@ -105,6 +101,17 @@ public class RetrieveUserProfileInternalServerErrorIntTest extends Authorization
 
         MvcResult result = userProfileRequestHandlerTest.sendGet(mockMvc, APP_BASE_PATH + "?email="
                 .concat("randomemail@somewhere.com"), INTERNAL_SERVER_ERROR);
+
+        assertThat(result.getResponse().getContentAsString()).isNotEmpty();
+    }
+
+    @Test
+    public void should_return_500_when_email_from_header_and_repository_throws_an_unknown_exception() throws Exception {
+        when(userProfileRepository.findByEmail(anyString()))
+                .thenThrow(new RuntimeException("This is a test exception"));
+
+        MvcResult result = userProfileRequestHandlerTest.sendGetFromHeader(mockMvc, APP_BASE_PATH + "?email="
+                .concat("randomemail@somewhere.com"), INTERNAL_SERVER_ERROR,"randomemail@somewhere.com");
 
         assertThat(result.getResponse().getContentAsString()).isNotEmpty();
     }
