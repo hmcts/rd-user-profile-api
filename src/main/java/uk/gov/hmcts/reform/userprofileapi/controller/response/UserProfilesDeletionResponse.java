@@ -17,5 +17,4 @@ public class UserProfilesDeletionResponse {
         this.message = message;
 
     }
-
 }
