@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -184,8 +185,7 @@ public class UserProfileController {
     @ApiOperation(value = "Retrieves a User Profile and their Roles with the given Email Address",
             authorizations = {
                     @Authorization(value = "ServiceAuthorization"),
-                    @Authorization(value = "Authorization"),
-                    @Authorization(value = "UserEmail")
+                    @Authorization(value = "Authorization")
             }
     )
 
@@ -223,20 +223,19 @@ public class UserProfileController {
     )
     @ResponseBody
     public ResponseEntity<UserProfileWithRolesResponse> getUserProfileWithRolesByEmail(@RequestParam(value = "email",
-            required = false) String email) {
+            required = false) String email,@RequestHeader(value = "UserEmail",required = false) String userEmail) {
         //Getting user profile by email from header or request param
-        String userEmail = getUserEmail(email);
-        requireNonNull(userEmail, "email cannot be null");
+        String userEmailVal = getUserEmail(email);
+        requireNonNull(userEmailVal, "email cannot be null");
         UserProfileWithRolesResponse response = userProfileService
-                .retrieveWithRoles(new UserProfileIdentifier(IdentifierName.EMAIL, userEmail.toLowerCase()));
+                .retrieveWithRoles(new UserProfileIdentifier(IdentifierName.EMAIL, userEmailVal.toLowerCase()));
         return ResponseEntity.ok(response);
     }
 
     @ApiOperation(value = "Retrieve a User Profile by Email or ID. If both are present then Email is used to retrieve.",
             authorizations = {
                     @Authorization(value = "ServiceAuthorization"),
-                    @Authorization(value = "Authorization"),
-                    @Authorization(value = "UserEmail")
+                    @Authorization(value = "Authorization")
             })
     @ApiResponses({
             @ApiResponse(
@@ -272,19 +271,19 @@ public class UserProfileController {
     @ResponseBody
     public ResponseEntity<UserProfileResponse> getUserProfileByEmail(@RequestParam(value = "email",
                                                                                  required = false) String email,
-                                                                     @RequestParam(value = "userId", required = false)
-                                                                             String userId) {
+                                       @RequestParam(value = "userId", required = false) String userId,
+                                       @RequestHeader(value = "UserEmail",required = false) String userEmail) {
         UserProfileResponse response;
-        String userEmail = getUserEmail(email);
-        if (userEmail == null && userId == null) {
+        String userEmailVal = getUserEmail(email);
+        if (userEmailVal == null && userId == null) {
             return ResponseEntity.badRequest().build();
-        } else if (userEmail != null) {
+        } else if (userEmailVal != null) {
 
             //Getting user profile by email
 
             response =
                     userProfileService.retrieve(
-                            new UserProfileIdentifier(IdentifierName.EMAIL, userEmail.toLowerCase().trim())
+                            new UserProfileIdentifier(IdentifierName.EMAIL, userEmailVal.toLowerCase().trim())
                     );
         } else {
             isUserIdValid(userId, true);
@@ -477,7 +476,7 @@ public class UserProfileController {
         if (nonNull(servletRequestAttributes)) {
             HttpServletRequest request = servletRequestAttributes.getRequest();
             userEmail = request.getHeader("UserEmail") != null ? request.getHeader("UserEmail") : email;
-            log.info("{}:: Inside getUserEmail::", userEmail);
+            log.info("{}:: Inside getUserEmail::");
         }
         return userEmail;
     }
