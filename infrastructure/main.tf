@@ -8,9 +8,9 @@ resource "azurerm_resource_group" "rg" {
   name      = join("-", [var.raw_product, var.component, var.env])
   location  = var.location
   tags      = {
-      "Deployment Environment" = var.env
-      "Team Name" = var.team_name
-      "lastUpdated" = timestamp()
+      "Deployment Environment"  = var.env
+      "Team Name"               = var.team_name
+      "lastUpdated"             = timestamp()
     }
 }
 
@@ -34,7 +34,7 @@ resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
 resource "azurerm_key_vault_secret" "POSTGRES_HOST" {
   name          = join("-", [var.component, "POSTGRES-HOST"])
   value         = module.db-user-profile.host_name
-  key_vault_id  = {data.azurerm_key_vault.rd_key_vault.id
+  key_vault_id  = data.azurerm_key_vault.rd_key_vault.id
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_PORT" {
