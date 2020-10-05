@@ -211,7 +211,6 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
         getMultipleUsers(request, HttpStatus.BAD_REQUEST, "true", "true");
     }
 
-    @Ignore
     @Test
     public void should_retrieve_multiple_user_profiles_without_roles() throws Exception {
 
