@@ -107,20 +107,8 @@ public class RetrieveUserProfileFuncTest extends AbstractFunctional {
     }
 
     @Test
-    public void should_return_400_when_required_email_field_is_missing() {
-        String json = "{\"firstName\":\"iWvKhGLXCiOMMbZtngbR\",\"lastName\":\"mXlpNLcbodhABAWKCKbj\"}";
-        testRequestHandler.sendPost(json, HttpStatus.BAD_REQUEST, requestUri);
-    }
-
-    @Test
     public void should_return_404_when_retrieving_user_profile_when_email_param_is_empty() {
         String emailUrl = requestUri + "?email=";
         testRequestHandler.sendGet(HttpStatus.NOT_FOUND, emailUrl);
     }
-
-    @Test
-    public void should_return_400_and_not_allow_get_request_on_base_url_with_no_params() {
-        testRequestHandler.sendGet(HttpStatus.BAD_REQUEST, requestUri);
-    }
-
 }

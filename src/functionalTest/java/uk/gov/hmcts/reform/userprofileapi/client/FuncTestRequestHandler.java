@@ -38,6 +38,9 @@ public class FuncTestRequestHandler {
 
     public static final String BEARER = "Bearer ";
 
+    private static S2sClient client = null;
+    private static IdamOpenIdClient idamOpenIdClient = null;
+
 
     public <T> T sendPost(Object data, HttpStatus expectedStatus, String path, Class<T> clazz)
             throws JsonProcessingException {
@@ -183,12 +186,18 @@ public class FuncTestRequestHandler {
     }
 
     private String getBearerToken() {
-        IdamOpenIdClient idamOpenIdClient = new IdamOpenIdClient(testConfig);
+        if (null == idamOpenIdClient) {
+            idamOpenIdClient = new IdamOpenIdClient(testConfig);
+            log.info("IdamOpenIdClient client:::" + idamOpenIdClient.getBearerToken());
+        }
         return idamOpenIdClient.getBearerToken();
     }
 
     private String getS2sToken() {
-        S2sClient client = new S2sClient(s2sBaseUrl, s2sMicroservice, s2sSecret);
+        if (null == client) {
+            client = new S2sClient(s2sBaseUrl, s2sMicroservice, s2sSecret);
+            log.info("S2S client:::" + client.getS2sToken());
+        }
         return client.getS2sToken();
     }
 

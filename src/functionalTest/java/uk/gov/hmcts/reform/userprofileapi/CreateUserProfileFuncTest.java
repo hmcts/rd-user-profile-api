@@ -102,27 +102,6 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
     }
 
     @Test
-    public void should_return_400_when_attempting_to_add_duplicate_emails() throws Exception {
-
-        UserProfileCreationData data = createUserProfileData();
-
-        UserProfileCreationResponse createdResource =
-                testRequestHandler.sendPost(
-                        data,
-                        HttpStatus.CREATED,
-                        requestUri,
-                        UserProfileCreationResponse.class
-                );
-
-        assertThat(createdResource).isNotNull();
-
-        testRequestHandler.sendPost(
-                testRequestHandler.asJsonString(data),
-                HttpStatus.CONFLICT,
-                requestUri);
-    }
-
-    @Test
     public void should_return_404_when_invalid_roles_are_passed_while_user_registration() throws Exception {
 
         UserProfileCreationData data = createUserProfileData();
