@@ -43,6 +43,12 @@ def vaultOverrides = [
         'spreview': 'saat'
 ]
 
+import uk.gov.hmcts.contino.AppPipelineConfig
+
+def subscription = "nonprod"
+def config = new AppPipelineConfig()
+config.vaultSecrets = secrets
+
 withNightlyPipeline(type, product, component) {
 
     env.TEST_URL = params.URL_TO_TEST

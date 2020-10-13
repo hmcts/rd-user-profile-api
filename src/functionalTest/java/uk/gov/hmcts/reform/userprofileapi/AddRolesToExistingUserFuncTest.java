@@ -19,6 +19,7 @@ import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import net.thucydides.core.annotations.WithTag;
 import net.thucydides.core.annotations.WithTags;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 
 @Slf4j
+@Ignore
 @RunWith(SpringIntegrationSerenityRunner.class)
 @WithTags({@WithTag("testType:Functional")})
 public class AddRolesToExistingUserFuncTest extends AbstractFunctional {

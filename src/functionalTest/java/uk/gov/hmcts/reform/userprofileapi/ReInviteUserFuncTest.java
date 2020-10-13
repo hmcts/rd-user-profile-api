@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import net.thucydides.core.annotations.WithTag;
 import net.thucydides.core.annotations.WithTags;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 @RunWith(SpringIntegrationSerenityRunner.class)
 @WithTags({@WithTag("testType:Functional")})
+@Ignore
 public class ReInviteUserFuncTest extends AbstractFunctional {
 
     //AC3: resend invite to a given user who does not exist
