@@ -3,6 +3,7 @@
 properties([
         pipelineTriggers([cron('21 01 * * *')]), // scheduling to trigger jenkins job
         parameters([
+                string(name: 'ENVIRONMENT', defaultValue: 'aat', description: 'Environment to test'),
                 string(name: 'URL_TO_TEST', defaultValue: 'http://rd-user-profile-api-aat.service.core-compute-aat.internal', description: 'The URL you want to run these tests against'),
                 string(name: 'SecurityRules',
                         defaultValue: 'http://raw.githubusercontent.com/hmcts/security-test-rules/master/conf/security-rules.conf',
@@ -66,14 +67,14 @@ withNightlyPipeline(type, product, component) {
         print "calling delete script for nightly"
         withSubscription(subscription) {
             withTeamSecrets(config, params.ENVIRONMENT) {
-                loadOrDeletePerformanceDbData()
+                deleteFunctionalDbData()
             }
         }
         print "done delete script for nightly"
     }
 }
 
-def loadOrDeletePerformanceDbData() {
+def deleteFunctionalDbData() {
     withDocker('jbergknoff/postgresql-client', "--entrypoint='' -e PGPASSWORD=${FUNC_DATABASE_PASS} -v ${WORKSPACE}/deletescript/:/deletescript") {
         sh "chmod +x /deletescript/delete-functional-data.sh"
         sh "/deletescript/delete-functional-data.sh \
