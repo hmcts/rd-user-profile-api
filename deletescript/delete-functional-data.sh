@@ -1,10 +1,5 @@
 #!/bin/sh
 
-echo "DATABASE_USER: $1"
-echo "DATABASE_NAME: $2"
-echo "DATABASE_HOST: $3"
-echo "DATABASE_PORT: $4"
-
 DATABASE_USER=$1;
 DATABASE_NAME=$2;
 DATABASE_HOST=$3;
