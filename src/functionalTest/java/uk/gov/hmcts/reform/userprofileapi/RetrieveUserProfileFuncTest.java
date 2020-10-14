@@ -117,4 +117,10 @@ public class RetrieveUserProfileFuncTest extends AbstractFunctional {
         String emailUrl = requestUri + "?email=";
         testRequestHandler.sendGet(HttpStatus.NOT_FOUND, emailUrl);
     }
+
+    @Test
+    public void should_return_400_and_not_allow_get_request_on_base_url_with_no_params() {
+        testRequestHandler.sendGet(HttpStatus.BAD_REQUEST, requestUri);
+    }
+
 }
