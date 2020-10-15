@@ -308,6 +308,7 @@ dependencies {
     compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '8.20'
     implementation "io.github.openfeign:feign-httpclient:11.0"
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.owasp:dependency-check-gradle:6.0.2'
 
     compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
     compile group: 'org.postgresql', name: 'postgresql', version: '42.2.14'
