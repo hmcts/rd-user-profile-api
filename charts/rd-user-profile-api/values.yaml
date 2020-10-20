@@ -18,6 +18,5 @@ java:
   keyVaults:
     rd:
       secrets:
-        - s2s-secret
         - user-profile-api-POSTGRES-PASS
         - AppInsightsInstrumentationKey
