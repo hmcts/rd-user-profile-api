@@ -12,4 +12,8 @@ java:
     postgresqlUsername: dbuserprofile
     postgresqlPassword: dbuserprofile
     postgresqlDatabase: dbuserprofile
+  keyVaults:
+    rd:
+      secrets:
+
 
