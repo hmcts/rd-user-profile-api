@@ -19,7 +19,6 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import uk.gov.hmcts.reform.userprofileapi.client.FuncTestRequestHandler;
 import uk.gov.hmcts.reform.userprofileapi.client.IdamOpenIdClient;
-import uk.gov.hmcts.reform.userprofileapi.config.DbConfig;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
@@ -36,8 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@ContextConfiguration(classes = {TestConfigProperties.class, FuncTestRequestHandler.class,
-        DbConfig.class, DataBaseUtil.class})
+@ContextConfiguration(classes = {TestConfigProperties.class, FuncTestRequestHandler.class})
 @ComponentScan("uk.gov.hmcts.reform.userprofileapi")
 @TestPropertySource("classpath:application-functional.yaml")
 @TestExecutionListeners(listeners = {
