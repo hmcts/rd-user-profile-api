@@ -14,6 +14,7 @@ terraform {
 }
 
 provider "azurerm" {
+  alias = "azure-1"
   version = "=2.20.0"
   features {}
 }
