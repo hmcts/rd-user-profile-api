@@ -28,7 +28,6 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRol
 import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
-import uk.gov.hmcts.reform.userprofileapi.util.DataBaseUtil;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
