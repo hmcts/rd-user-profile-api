@@ -167,9 +167,10 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
                 updateInputRequestWithLatestSidamUserInfo(profileData, idamRolesInfo);
 
                 //consolidate XUI + SIDAM roles having unique roles
+
                 Set<String> rolesToUpdate = consolidateRolesFromXuiAndIdam(profileData, idamRolesInfo);
                 //if roles are same what SIDAM has and XUI sent then skip SIDAM add roles call
-                if (! CollectionUtils.isEmpty(rolesToUpdate)) {
+                if (!CollectionUtils.isEmpty(rolesToUpdate)) {
                     idamRolesInfo = addIdamRoles(rolesToUpdate, userId);
                     idamStatus = idamRolesInfo.getResponseStatusCode();
                     idamStatusMessage = idamRolesInfo.getStatusMessage();
@@ -224,6 +225,10 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
         Optional<List<String>> roles = Optional.ofNullable(idamRolesInfo.getRoles());
         List<String> idamRoles = roles.isPresent() ? roles.get() : new ArrayList<>();
         List<String> xuiRoles = profileData.getRoles();
+        //if both list are same roles then return empty HashSet
+        if (new HashSet<String>(idamRoles).equals(new HashSet<String>(xuiRoles))) {
+            return new HashSet<>();
+        }
         xuiRoles.removeAll(idamRoles);
         return new HashSet<>(xuiRoles);
     }
