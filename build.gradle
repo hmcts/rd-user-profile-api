@@ -306,8 +306,6 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-oauth2-client"
     compile "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
     compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '8.20'
-    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
-    compile group: 'org.hibernate', name: 'hibernate-core', version: '5.4.24.Final'
     implementation "io.github.openfeign:feign-httpclient:11.0"
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
@@ -322,6 +320,17 @@ dependencies {
     compile (group: 'io.rest-assured', name: 'rest-assured', version: '3.3.0') {
         exclude group: "com.sun.xml.bind", module: "jaxb-osgi"
         exclude group: "org.apache.sling"
+    }
+    implementation('org.apache.httpcomponents:httpclient:4.5.13') {
+        because 'Apache HttpClient versions prior to version 4.5.13 can misinterpret malformed authority component in ' +
+                'request URIs passed to the library as java.net.URI object and pick the wrong target host for request execution.'
+    }
+    implementation('org.hibernate:hibernate-core:5.4.24.Final') {
+        because 'A flaw was found in hibernate-core in versions prior to and including 5.4.23.Final. ' +
+                'A SQL injection in the implementation of the JPA Criteria API can permit unsanitized literals when a ' +
+                'literal is used in the SQL comments of the query. This flaw could allow an attacker to access unauthorized ' +
+                'information or possibly conduct further attacks. The highest threat from this vulnerability is to data ' +
+                'confidentiality and integrity.'
     }
     compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
