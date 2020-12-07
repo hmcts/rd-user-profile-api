@@ -306,6 +306,8 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-oauth2-client"
     compile "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
     compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '8.20'
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
+    compile group: 'org.hibernate', name: 'hibernate-core', version: '5.4.24.Final'
     implementation "io.github.openfeign:feign-httpclient:11.0"
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
