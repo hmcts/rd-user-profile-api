@@ -315,7 +315,17 @@ dependencies {
     compile group: 'javax.el', name: 'javax.el-api', version: '3.0.1-b06'
 
     compile group: 'com.google.guava', name: 'guava', version: '28.2-jre'
-
+    implementation('org.apache.httpcomponents:httpclient:4.5.13') {
+        because 'Apache HttpClient versions prior to version 4.5.13 can misinterpret malformed authority component in ' +
+                'request URIs passed to the library as java.net.URI object and pick the wrong target host for request execution.'
+    }
+    implementation('org.hibernate:hibernate-core:5.4.24.Final') {
+        because 'A flaw was found in hibernate-core in versions prior to and including 5.4.23.Final. ' +
+                'A SQL injection in the implementation of the JPA Criteria API can permit unsanitized literals when a ' +
+                'literal is used in the SQL comments of the query. This flaw could allow an attacker to access unauthorized ' +
+                'information or possibly conduct further attacks. The highest threat from this vulnerability is to data ' +
+                'confidentiality and integrity.'
+    }
     compile group:"org.yaml", name: "snakeyaml", version:"1.27"
     compile (group: 'io.rest-assured', name: 'rest-assured', version: '3.3.0') {
         exclude group: "com.sun.xml.bind", module: "jaxb-osgi"
