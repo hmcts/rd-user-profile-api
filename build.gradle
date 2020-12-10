@@ -344,6 +344,21 @@ dependencies {
                 'with the subsequent stream. While this would most likely lead to an error and the closure of the HTTP/2 connection, ' +
                 'it is possible that information could leak between requests'
     }
+    implementation('org.codehaus.groovy:groovy:2.5.14') {
+        because 'Apache Groovy provides extension methods to aid with creating temporary directories. ' +
+                'Prior to this fix, Groovy\'s implementation of those extension methods was using a now superseded ' +
+                'Java JDK method call that is potentially not secure on some operating systems in some contexts'
+    }
+    implementation('org.codehaus.groovy:groovy-json:2.5.14') {
+        because 'Apache Groovy provides extension methods to aid with creating temporary directories. ' +
+                'Prior to this fix, Groovy\'s implementation of those extension methods was using a now superseded ' +
+                'Java JDK method call that is potentially not secure on some operating systems in some contexts.'
+    }
+    implementation('org.codehaus.groovy:groovy-xml:2.5.14') {
+        because 'Apache Groovy provides extension methods to aid with creating temporary directories. ' +
+                'Prior to this fix, Groovy\'s implementation of those extension methods was using a now superseded ' +
+                'Java JDK method call that is potentially not secure on some operating systems in some contexts.'
+    }
     compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     testCompileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
@@ -384,6 +399,9 @@ dependencies {
     }
 
     testCompile group: 'com.github.mifmif', name: 'generex', version: '1.0.2'
+    testCompile group: 'org.codehaus.groovy', name: 'groovy', version: '2.5.14'
+    testCompile group: 'org.codehaus.groovy', name: 'groovy-xml', version: '2.5.14'
+    testCompile group: 'org.codehaus.groovy', name: 'groovy-json', version: '2.5.14'
 
     contractTestCompile(group: 'au.com.dius', name:'pact-jvm-consumer-junit5_2.12', version: versions.pact_version) {
         force = true
