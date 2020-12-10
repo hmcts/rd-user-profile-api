@@ -321,6 +321,44 @@ dependencies {
         exclude group: "com.sun.xml.bind", module: "jaxb-osgi"
         exclude group: "org.apache.sling"
     }
+    implementation('org.apache.httpcomponents:httpclient:4.5.13') {
+        because 'Apache HttpClient versions prior to version 4.5.13 can misinterpret malformed authority component in ' +
+                'request URIs passed to the library as java.net.URI object and pick the wrong target host for request execution.'
+    }
+    implementation('org.hibernate:hibernate-core:5.4.24.Final') {
+        because 'A flaw was found in hibernate-core in versions prior to and including 5.4.23.Final. ' +
+                'A SQL injection in the implementation of the JPA Criteria API can permit unsanitized literals when a ' +
+                'literal is used in the SQL comments of the query. This flaw could allow an attacker to access unauthorized ' +
+                'information or possibly conduct further attacks. The highest threat from this vulnerability is to data ' +
+                'confidentiality and integrity.'
+    }
+    implementation('org.apache.tomcat.embed:tomcat-embed-core:9.0.40') {
+        because 'Apache Tomcat 10.0.0-M1 to 10.0.0-M9, 9.0.0-M1 to 9.0.39 and 8.5.0 to 8.5.59 could re-use an HTTP ' +
+                'request header value from the previous stream received on an HTTP/2 connection for the request associated ' +
+                'with the subsequent stream. While this would most likely lead to an error and the closure of the HTTP/2 connection, ' +
+                'it is possible that information could leak between requests'
+    }
+    implementation('org.apache.tomcat.embed:tomcat-embed-websocket:9.0.40') {
+        because 'Apache Tomcat 10.0.0-M1 to 10.0.0-M9, 9.0.0-M1 to 9.0.39 and 8.5.0 to 8.5.59 could re-use an HTTP ' +
+                'request header value from the previous stream received on an HTTP/2 connection for the request associated ' +
+                'with the subsequent stream. While this would most likely lead to an error and the closure of the HTTP/2 connection, ' +
+                'it is possible that information could leak between requests'
+    }
+    implementation('org.codehaus.groovy:groovy:2.5.14') {
+        because 'Apache Groovy provides extension methods to aid with creating temporary directories. ' +
+                'Prior to this fix, Groovy\'s implementation of those extension methods was using a now superseded ' +
+                'Java JDK method call that is potentially not secure on some operating systems in some contexts'
+    }
+    implementation('org.codehaus.groovy:groovy-json:2.5.14') {
+        because 'Apache Groovy provides extension methods to aid with creating temporary directories. ' +
+                'Prior to this fix, Groovy\'s implementation of those extension methods was using a now superseded ' +
+                'Java JDK method call that is potentially not secure on some operating systems in some contexts.'
+    }
+    implementation('org.codehaus.groovy:groovy-xml:2.5.14') {
+        because 'Apache Groovy provides extension methods to aid with creating temporary directories. ' +
+                'Prior to this fix, Groovy\'s implementation of those extension methods was using a now superseded ' +
+                'Java JDK method call that is potentially not secure on some operating systems in some contexts.'
+    }
     compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     testCompileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
@@ -361,6 +399,9 @@ dependencies {
     }
 
     testCompile group: 'com.github.mifmif', name: 'generex', version: '1.0.2'
+    testCompile group: 'org.codehaus.groovy', name: 'groovy', version: '2.5.14'
+    testCompile group: 'org.codehaus.groovy', name: 'groovy-xml', version: '2.5.14'
+    testCompile group: 'org.codehaus.groovy', name: 'groovy-json', version: '2.5.14'
 
     contractTestCompile(group: 'au.com.dius', name:'pact-jvm-consumer-junit5_2.12', version: versions.pact_version) {
         force = true
