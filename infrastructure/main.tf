@@ -51,7 +51,9 @@ resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
 
 module "db-user-profile" {
   source            = "git@github.com:hmcts/cnp-module-postgres?ref=master"
-  product           = join("-", [var.product, var.component, "postgres-db"])
+  product           = var.product
+  component         = var.component
+  name              = join("-", [var.product, var.component, "postgres-db"])
   location          = var.location
   subscription      = var.subscription
   env               = var.env
