@@ -314,7 +314,7 @@ dependencies {
 
     compile group: 'javax.el', name: 'javax.el-api', version: '3.0.1-b06'
 
-    compile group: 'com.google.guava', name: 'guava', version: '28.2-jre'
+    compile group: 'com.google.guava', name: 'guava', version: '30.1-jre'
 
     compile group:"org.yaml", name: "snakeyaml", version:"1.27"
     compile (group: 'io.rest-assured', name: 'rest-assured', version: '3.3.0') {
