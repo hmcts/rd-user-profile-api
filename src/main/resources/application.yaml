@@ -27,7 +27,7 @@ spring:
               issuer-uri: ${OPEN_ID_API_BASE_URI:https://idam-web-public.aat.platform.hmcts.net/o}
           registration:
             oidc:
-              client-id: ${UP_IDAM_CLIENT_ID:microservicekey-rd-user-profile-api}
+              client-id: ${IDAM_CLIENT_ID:microservicekey-rd-user-profile-api}
               client-secret: ${S2S_SECRET:AAAAAAAAAAAAAAAA}
 
 ### database configuration
