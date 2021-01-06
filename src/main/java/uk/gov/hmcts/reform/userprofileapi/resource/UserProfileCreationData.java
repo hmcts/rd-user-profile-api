@@ -11,11 +11,13 @@ import javax.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 
 @Setter
 @Getter
 @NoArgsConstructor
+@ToString
 public class UserProfileCreationData implements RequestData {
 
     @Email(regexp = "^.*[@].*[.].*$")

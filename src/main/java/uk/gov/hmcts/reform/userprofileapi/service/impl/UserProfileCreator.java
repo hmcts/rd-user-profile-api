@@ -4,7 +4,6 @@ import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstant
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileMapper.mapUpdatableFieldsForReInvite;
 
 import java.net.URI;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,6 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -73,9 +73,15 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
             return userProfile;
         }
 
-        String  userId = UUID.randomUUID().toString();
+        log.info("Profile Data is : " + profileData.toString());
+        for (String role : profileData.getRoles()) {
+            log.info("the IDAM role is : " + role);
+        }
+
+        String userId = UUID.randomUUID().toString();
         final IdamRegistrationInfo idamRegistrationInfo
-                = idamService.registerUser(createIdamRegistrationRequest(profileData, userId));
+            = idamService.registerUser(createIdamRegistrationRequest(profileData, userId));
+
         HttpStatus idamStatus = idamRegistrationInfo.getIdamRegistrationResponse();
         if (idamRegistrationInfo.isSuccessFromIdam()) {
             return persistUserProfileWithAudit(profileData, userId, idamRegistrationInfo.getStatusMessage(),
