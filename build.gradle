@@ -344,7 +344,6 @@ dependencies {
                 'with the subsequent stream. While this would most likely lead to an error and the closure of the HTTP/2 connection, ' +
                 'it is possible that information could leak between requests'
     }
-
     implementation('org.codehaus.groovy:groovy:2.5.14') {
         because 'Apache Groovy provides extension methods to aid with creating temporary directories. ' +
                 'Prior to this fix, Groovy\'s implementation of those extension methods was using a now superseded ' +
@@ -360,7 +359,6 @@ dependencies {
                 'Prior to this fix, Groovy\'s implementation of those extension methods was using a now superseded ' +
                 'Java JDK method call that is potentially not secure on some operating systems in some contexts.'
     }
-
     compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     testCompileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
