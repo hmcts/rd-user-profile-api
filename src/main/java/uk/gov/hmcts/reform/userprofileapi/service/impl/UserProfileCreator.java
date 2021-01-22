@@ -66,8 +66,11 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
         UserProfile userProfile = optionalExistingUserProfile.orElse(null);
         if (null != userProfile) {
             //User already exist in UP for given user email
-            persistAuditAndThrowIdamException(IdamStatusResolver.resolveStatusAndReturnMessage(HttpStatus.CONFLICT),
+            persistAudit(IdamStatusResolver.resolveStatusAndReturnMessage(HttpStatus.CONFLICT),
                     HttpStatus.CONFLICT, userProfile);
+            log.error("{}:: User already exist in UP for given user email", loggingComponentName);
+            userProfile.setIdamRegistrationResponse(HttpStatus.CONFLICT.value());
+            return userProfile;
         }
 
         String  userId = UUID.randomUUID().toString();
@@ -127,6 +130,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
                 userProfile.setStatus(profileData);
             }
             saveUserProfile(userProfile);
+            userProfile.setIdamRegistrationResponse(201);
         }
         persistAudit(statusMessage, idamStatus, userProfile);
         return userProfile;
@@ -203,7 +207,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
 
     private void persistAuditAndThrowIdamException(String message, HttpStatus idamStatus, UserProfile userProfile) {
         persistAudit(message, idamStatus, userProfile);
-        throw new IdamServiceException(message, idamStatus);
+        throw new  IdamServiceException(message,idamStatus);
     }
 
     public void updateInputRequestWithLatestSidamUserInfo(UserProfileCreationData profileData,

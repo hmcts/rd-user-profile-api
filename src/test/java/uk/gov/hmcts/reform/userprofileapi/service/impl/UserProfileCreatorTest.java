@@ -10,9 +10,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpStatus.ACCEPTED;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.ResponseEntity.status;
 
 import java.util.ArrayList;
@@ -68,7 +68,7 @@ public class UserProfileCreatorTest {
     @Mock
     private ValidationHelperService validationHelperService;
 
-    private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(status(ACCEPTED).build());
+    private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(status(CREATED).build());
 
     private UserProfileCreationData userProfileCreationData
             = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
@@ -142,11 +142,12 @@ public class UserProfileCreatorTest {
     }
 
     @Test
-    public void test_throw_IdamServiceException_when_user_already_exist() {
+    public void test_throw_409_status_code_when_user_already_exist() {
 
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
-        assertThatThrownBy(() -> userProfileCreator.create(userProfileCreationData))
-                .isExactlyInstanceOf(IdamServiceException.class);
+        UserProfile userProfile = userProfileCreator.create(userProfileCreationData);
+        assertThat(userProfile).isNotNull();
+        assertThat(userProfile.getIdamRegistrationResponse()).isEqualTo(409);
         verify(userProfileRepository, times(0)).save(any(UserProfile.class));
         verify(auditRepository, times(1)).save(any(Audit.class));
     }
@@ -394,7 +395,7 @@ public class UserProfileCreatorTest {
     }
 
     @Test
-    public void test_reinvite_user_successfully() {
+    public void test_reInvite_user_successfully() {
         when(idamService.registerUser(any())).thenReturn(idamRegistrationInfo);
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
         when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);
@@ -403,7 +404,7 @@ public class UserProfileCreatorTest {
         UserProfile response = userProfileCreator.reInviteUser(userProfileCreationData);
 
         assertThat(response).isEqualToIgnoringGivenFields(userProfile, "idamId");
-        assertThat(response.getIdamRegistrationResponse()).isEqualTo(HttpStatus.ACCEPTED.value());
+        assertThat(response.getIdamRegistrationResponse()).isEqualTo(CREATED.value());
 
         InOrder inOrder = inOrder(idamService, userProfileRepository);
         inOrder.verify(idamService, times(1)).registerUser(any(IdamRegisterUserRequest.class));
