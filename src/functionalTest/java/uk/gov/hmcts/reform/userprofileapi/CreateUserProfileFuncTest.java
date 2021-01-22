@@ -10,6 +10,7 @@ import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import net.thucydides.core.annotations.WithTag;
 import net.thucydides.core.annotations.WithTags;
 import org.json.JSONObject;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 @RunWith(SpringIntegrationSerenityRunner.class)
 @WithTags({@WithTag("testType:Functional")})
+@Ignore
 public class CreateUserProfileFuncTest extends AbstractFunctional {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateUserProfileFuncTest.class);
@@ -58,6 +60,7 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
     }
 
     @Test
+    @Ignore("Remove - not required")
     public void should_create_up_for_duplicate_idam_user_and_verify_roles_updated_successfully_for_user_citizen_role()
             throws Exception {
 
@@ -90,6 +93,7 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
     }
 
     @Test
+    @Ignore("Remove - not required")
     public void should_return_201_when_sending_extra_fields() throws Exception {
 
         JSONObject json = new JSONObject(testRequestHandler.asJsonString(createUserProfileData()));
@@ -102,7 +106,8 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
     }
 
     @Test
-    public void should_return_400_when_attempting_to_add_duplicate_emails() throws Exception {
+    @Ignore("convert to integration test once RDCC-2050 is completed")
+    public void should_return_409_when_attempting_to_add_duplicate_emails() throws Exception {
 
         UserProfileCreationData data = createUserProfileData();
 
@@ -123,6 +128,7 @@ public class CreateUserProfileFuncTest extends AbstractFunctional {
     }
 
     @Test
+    @Ignore("convert to integration test once RDCC-2050 is completed")
     public void should_return_404_when_invalid_roles_are_passed_while_user_registration() throws Exception {
 
         UserProfileCreationData data = createUserProfileData();
