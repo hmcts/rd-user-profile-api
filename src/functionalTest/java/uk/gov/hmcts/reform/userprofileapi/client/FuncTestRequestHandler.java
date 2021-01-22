@@ -8,47 +8,32 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.rest.SerenityRest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
 
 @Slf4j
-@Service
 public class FuncTestRequestHandler {
-
-    @Autowired
-    private TestConfigProperties testConfig;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    @Value("${targetInstance}")
     protected String baseUrl;
-
-    @Value("${s2s.auth.secret}")
-    protected String s2sSecret;
-
-    @Value("${s2s.auth.url}")
-    protected String s2sBaseUrl;
-
-    @Value("${s2s.auth.microservice:rd_user_profile_api}")
-    protected String s2sMicroservice;
-
+    protected String s2sToken;
     public static final String BEARER = "Bearer ";
-
-    public static  S2sClient client;
-
     public static IdamOpenIdClient idamOpenIdClient;
+
+    public FuncTestRequestHandler(String baseUrl, String s2sToken, IdamOpenIdClient idamOpenIdClient) {
+        this.baseUrl = baseUrl;
+        this.s2sToken = s2sToken;
+        this.idamOpenIdClient = idamOpenIdClient;
+    }
 
     public <T> T sendPost(Object data, HttpStatus expectedStatus, String path, Class<T> clazz)
             throws JsonProcessingException {
         return
-            sendPost(objectMapper.writeValueAsString(data),
-                expectedStatus,
-                path)
-                .as(clazz);
+                sendPost(objectMapper.writeValueAsString(data),
+                        expectedStatus,
+                        path)
+                        .as(clazz);
     }
 
     public void sendPost(Object data, HttpStatus expectedStatus, String path) throws JsonProcessingException {
@@ -60,21 +45,25 @@ public class FuncTestRequestHandler {
 
     public Response sendPost(String jsonBody, HttpStatus expectedStatus, String path) {
         log.info("User object to be created : {}", jsonBody);
-        return withAuthenticatedRequest()
+        Response response = withAuthenticatedRequest()
                 .body(jsonBody)
                 .post(path)
-                .then()
-                .log().all(true)
-                .statusCode(expectedStatus.value()).extract().response();
+                .andReturn();
+
+        response.then()
+                .assertThat()
+                .statusCode(expectedStatus.value());
+
+        return response;
     }
 
     public <T> T sendPut(Object data, HttpStatus expectedStatus, String path, Class<T> clazz)
             throws JsonProcessingException {
 
         return sendPut(objectMapper.writeValueAsString(data),
-               expectedStatus,
-               path)
-               .as(clazz);
+                expectedStatus,
+                path)
+                .as(clazz);
     }
 
     public void sendPut(Object data, HttpStatus expectedStatus, String path) throws JsonProcessingException {
@@ -123,7 +112,6 @@ public class FuncTestRequestHandler {
     }
 
     public Response sendGet(HttpStatus httpStatus, String urlPath) {
-        String s2sToken = getS2sToken();
         String bearerToken = getBearerToken();
 
         log.info("S2S Token : {}, Bearer Token : {}", s2sToken, bearerToken);
@@ -147,23 +135,22 @@ public class FuncTestRequestHandler {
 
 
     public Response getEmailFromHeader(HttpStatus httpStatus, String urlPath, String email) {
-        String s2sToken = getS2sToken();
         String bearerToken = getBearerToken();
 
         log.info("S2S Token : {}, Bearer Token : {}", s2sToken, bearerToken);
 
         return SerenityRest
-            .given()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .baseUri(baseUrl)
-            .header("ServiceAuthorization", BEARER + s2sToken)
-            .header("Authorization", BEARER + bearerToken)
-            .header("UserEmail",  email)
-            .when()
-            .get(urlPath)
-            .then()
-            .log().all(true)
-            .statusCode(httpStatus.value()).extract().response();
+                .given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .baseUri(baseUrl)
+                .header("ServiceAuthorization", BEARER + s2sToken)
+                .header("Authorization", BEARER + bearerToken)
+                .header("UserEmail", email)
+                .when()
+                .get(urlPath)
+                .then()
+                .log().all(true)
+                .statusCode(httpStatus.value()).extract().response();
     }
 
     public String asJsonString(Object source) throws JsonProcessingException {
@@ -171,7 +158,6 @@ public class FuncTestRequestHandler {
     }
 
     private RequestSpecification withAuthenticatedRequest() {
-        String s2sToken = getS2sToken();
         String bearerToken = getBearerToken();
 
         log.info("Base Url : {}", baseUrl);
@@ -186,19 +172,6 @@ public class FuncTestRequestHandler {
     }
 
     private String getBearerToken() {
-        if (null == idamOpenIdClient) {
-            idamOpenIdClient = new IdamOpenIdClient(testConfig);
-            log.info("IdamOpenIdClient client:::" + idamOpenIdClient.getBearerToken());
-        }
         return idamOpenIdClient.getBearerToken();
     }
-
-    private String getS2sToken() {
-        if (null == client) {
-            client = new S2sClient(s2sBaseUrl, s2sMicroservice, s2sSecret);
-            log.info("S2S client:::" + client.getS2sToken());
-        }
-        return client.getS2sToken();
-    }
-
 }

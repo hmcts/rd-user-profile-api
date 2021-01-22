@@ -19,6 +19,7 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import uk.gov.hmcts.reform.userprofileapi.client.FuncTestRequestHandler;
 import uk.gov.hmcts.reform.userprofileapi.client.IdamOpenIdClient;
+import uk.gov.hmcts.reform.userprofileapi.client.S2sClient;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
@@ -28,13 +29,14 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRol
 import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@ContextConfiguration(classes = {TestConfigProperties.class, FuncTestRequestHandler.class})
+@ContextConfiguration(classes = {TestConfigProperties.class})
 @ComponentScan("uk.gov.hmcts.reform.userprofileapi")
 @TestPropertySource("classpath:application-functional.yaml")
 @TestExecutionListeners(listeners = {
@@ -43,16 +45,18 @@ import java.util.Set;
 @Slf4j
 public class AbstractFunctional extends AbstractTestExecutionListener {
 
-    @Value("${targetInstance}") protected String targetInstance;
-
-    @Autowired
-    protected FuncTestRequestHandler testRequestHandler;
-
     @Autowired
     protected TestConfigProperties configProperties;
 
     protected String requestUri = "/v1/userprofile";
-
+    @Value("${targetInstance}")
+    protected String targetInstance;
+    @Value("${s2s.auth.secret}")
+    protected String s2sSecret;
+    @Value("${s2s.auth.url}")
+    protected String s2sBaseUrl;
+    @Value("${s2s.auth.microservice:rd_user_profile_api}")
+    protected String s2sMicroservice;
     @Value("${exui.role.hmcts-admin}")
     protected String hmctsAdmin;
     @Value("${exui.role.pui-user-manager}")
@@ -65,23 +69,32 @@ public class AbstractFunctional extends AbstractTestExecutionListener {
     protected String puiCaseManager;
     @Value("${resendInterval}")
     protected String resendInterval;
-    protected static IdamOpenIdClient idamOpenIdClient;
-    public static final String EMAIL = "EMAIL";
 
+    public static final String EMAIL = "EMAIL";
     public static final String CREDS = "CREDS";
+    protected static FuncTestRequestHandler testRequestHandler;
+    protected static IdamOpenIdClient idamOpenIdClient;
+    protected static String s2sToken;
+
 
     @Override
     public void beforeTestClass(TestContext testContext) {
         testContext.getApplicationContext()
                 .getAutowireCapableBeanFactory()
                 .autowireBean(this);
-        //TO enable for local testing
-        /* RestAssured.proxy("proxyout.reform.hmcts.net",8080);
-        SerenityRest.proxy("proxyout.reform.hmcts.net", 8080);*/
 
-        RestAssured.baseURI = targetInstance;
         RestAssured.useRelaxedHTTPSValidation();
-        idamOpenIdClient = new IdamOpenIdClient(configProperties);
+
+        if (null == s2sToken) {
+            log.info(":::: Generating S2S Token");
+            s2sToken = new S2sClient(s2sBaseUrl, s2sMicroservice, s2sSecret).getS2sToken();
+        }
+
+        if (null == idamOpenIdClient) {
+            idamOpenIdClient = new IdamOpenIdClient(configProperties);
+        }
+
+        testRequestHandler = new FuncTestRequestHandler(targetInstance, s2sToken, idamOpenIdClient);
     }
 
     protected UserProfileCreationResponse createActiveUserProfileWithGivenRoles(HttpStatus expectedStatus,
@@ -115,6 +128,23 @@ public class AbstractFunctional extends AbstractTestExecutionListener {
         List<String> sidamRoles = new ArrayList<>();
         sidamRoles.add("pui-user-manager");
         Map<String, String> userCreds = idamOpenIdClient.createUser(sidamRoles);
+
+        //create User profile with same email to get 409 scenario
+        userProfileCreationData.setRoles(xuiuRoles);
+        userProfileCreationData.setEmail(userCreds.get(EMAIL));
+        return createUserProfile(userProfileCreationData, HttpStatus.CREATED);
+    }
+
+    protected UserProfileCreationResponse createActiveUserProfileWithGivenFields(
+            UserProfileCreationData userProfileCreationData) throws Exception {
+        List<String> xuiuRoles = new ArrayList();
+        xuiuRoles.add("pui-user-manager");
+        xuiuRoles.add("pui-case-manager");
+
+        //create user with "pui-user-manager" role in SIDAM
+        List<String> sidamRoles = new ArrayList<>();
+        sidamRoles.add("pui-user-manager");
+        Map<String, String> userCreds = idamOpenIdClient.createUserWithGivenFields(sidamRoles, userProfileCreationData);
 
         //create User profile with same email to get 409 scenario
         userProfileCreationData.setRoles(xuiuRoles);
@@ -198,7 +228,7 @@ public class AbstractFunctional extends AbstractTestExecutionListener {
     }
 
 
-    public  UserProfileDataRequest buildUserProfileDataRequest(List<String> userIds) {
+    public UserProfileDataRequest buildUserProfileDataRequest(List<String> userIds) {
         return new UserProfileDataRequest(userIds);
     }
 }
