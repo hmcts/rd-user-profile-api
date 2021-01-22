@@ -19,6 +19,7 @@ import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import net.thucydides.core.annotations.WithTag;
 import net.thucydides.core.annotations.WithTags;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 @Slf4j
 @RunWith(SpringIntegrationSerenityRunner.class)
 @WithTags({@WithTag("testType:Functional")})
+@Ignore
 public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
 
     @Autowired
@@ -48,6 +50,7 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
     }
 
     @Test
+    @Ignore("Convert To Integration Test")
     public void test_update_user_profile_with_roles_successfully() throws Exception {
 
 
@@ -139,6 +142,7 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
     }
 
     @Test
+    @Ignore("Remove - not required")
     public void rdcc_418_ac1_should_update_user_status_from_active_to_suspended() throws Exception {
         UserProfileCreationData data = createUserProfileData();
         List<String> roles = new ArrayList<>();
@@ -184,6 +188,7 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
     }
 
     @Test
+    @Ignore("Remove - not required")
     public void rdcc_418_ac1_should_update_user_status_from_active_to_suspended_from_header() throws Exception {
         UserProfileCreationData data = createUserProfileData();
         List<String> roles = new ArrayList<>();
@@ -231,6 +236,7 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
 
 
     @Test
+    @Ignore("Remove - not required")
     public void rdcc_418_ac2_should_update_user_status_from_suspended_to_active() throws Exception {
         UserProfileCreationData data = createUserProfileData();
         List<String> roles = new ArrayList<>();
@@ -302,6 +308,7 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
     }
 
     @Test
+    @Ignore("Remove - not required")
     public void rdcc_418_ac2_should_update_user_status_from_suspended_to_active_fromHeader() throws Exception {
         UserProfileCreationData data = createUserProfileData();
         List<String> roles = new ArrayList<>();
@@ -374,6 +381,7 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
     }
 
     @Test
+    @Ignore("convert to integration test once RDCC-2050 is completed")
     public void should_throw_412_while_add_roles_with_invalid_roles_passed() throws Exception {
 
         List<String> roles = new ArrayList<>();
@@ -391,6 +399,7 @@ public class AddRolesToExistingUserFuncTest extends AbstractFunctional {
     }
 
     @Test
+    @Ignore("convert to integration test once RDCC-2050 is completed")
     public void should_throw_412_while_add_roles_with_already_assigned_roles_passed() throws Exception {
         List<String> roles = new ArrayList<>();
         roles.add(puiUserManager);
