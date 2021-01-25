@@ -131,7 +131,7 @@ public class UserProfileController {
             resource = userProfileService.create(userProfileCreationData);
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(resource);
+        return ResponseEntity.status(resource.getIdamRegistrationResponse()).body(resource);
 
     }
 
