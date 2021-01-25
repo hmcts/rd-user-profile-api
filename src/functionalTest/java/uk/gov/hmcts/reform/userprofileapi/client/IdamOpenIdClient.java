@@ -44,6 +44,8 @@ public class IdamOpenIdClient {
     }
 
     public Map<String, String> createUser(List<String> roles) {
+        log.info(":::: Creating a User");
+
         //Generating a random user
         String userEmail = generateRandomEmail();
         String firstName = "First";
@@ -78,7 +80,9 @@ public class IdamOpenIdClient {
 
     public Map<String, String> createUserWithGivenFields(List<String> roles,
                                                          UserProfileCreationData userProfileCreationData) {
-        //Generating a random user
+
+        log.info(":::: Creating a User");
+
         String userEmail = userProfileCreationData.getEmail();
         String firstName = userProfileCreationData.getFirstName();
         String lastName = userProfileCreationData.getLastName();

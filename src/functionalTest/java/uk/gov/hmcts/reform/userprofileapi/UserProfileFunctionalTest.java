@@ -10,6 +10,7 @@ import net.thucydides.core.annotations.WithTags;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
@@ -27,6 +28,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import static com.microsoft.applicationinsights.boot.dependencies.google.common.collect.ImmutableList.of;
 import static java.util.Arrays.asList;
@@ -35,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
+import static uk.gov.hmcts.reform.userprofileapi.client.FuncTestRequestHandler.BEARER;
 import static uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus.ACTIVE;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.generateRandomEmail;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.getIdamRolesJson;
@@ -123,6 +126,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
     public void endpointSecurityScenarios() {
         unauthenticatedRequestsShouldReturn401();
         invalidServiceAuthorisationRequestsShouldReturn401();
+        invalidBearerTokenRequestsShouldReturn401();
     }
 
     /**
@@ -352,5 +356,19 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
                         .get(endpoint)
                         .then()
                         .statusCode(HttpStatus.UNAUTHORIZED.value()));
+    }
+
+    public void invalidBearerTokenRequestsShouldReturn401() {
+        SerenityRest
+                .given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .baseUri(targetInstance)
+                .header("ServiceAuthorization", BEARER + s2sToken)
+                .header("Authorization", BEARER + "invalidBearerToken")
+                .when()
+                .get(requestUri + "?userId=" + UUID.randomUUID())
+                .then()
+                .log().all(true)
+                .statusCode(HttpStatus.UNAUTHORIZED.value()).extract().response();
     }
 }
