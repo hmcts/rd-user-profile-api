@@ -49,7 +49,7 @@ public class RetrieveUserProfileFuncTest extends AbstractFunctional {
     }
 
     @Test
-    @Ignore("Convert to integration test")
+    @Ignore("convert to integration test once RDCC-2050 is completed")
     public void should_get_user_profile_by_email() throws Exception {
 
         UserProfileCreationData userProfileCreationData = createUserProfileData();
@@ -78,7 +78,7 @@ public class RetrieveUserProfileFuncTest extends AbstractFunctional {
     }
 
     @Test
-    @Ignore("Convert to integration test")
+    @Ignore("convert to integration test once RDCC-2050 is completed")
     public void should_get_user_profile_with_roles_by_email() throws Exception {
 
         UserProfileCreationData userProfileCreationData = createUserProfileData();
