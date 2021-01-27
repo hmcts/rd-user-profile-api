@@ -14,6 +14,7 @@ import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import net.thucydides.core.annotations.WithTag;
 import net.thucydides.core.annotations.WithTags;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -32,6 +33,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 @RunWith(SpringIntegrationSerenityRunner.class)
 @WithTags({@WithTag("testType:Functional")})
+@Ignore
 public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeleteRolesToExistingUserFuncTest.class);
@@ -114,6 +116,7 @@ public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
     }
 
     @Test
+    @Ignore("convert to integration test once RDCC-2050 is completed")
     public void should_throw_412_while_delete_user_profile_with_invalid_roles_passed() throws Exception {
         List<String> roles = new ArrayList<>();
         roles.add(puiUserManager);
@@ -131,6 +134,7 @@ public class DeleteRolesToExistingUserFuncTest extends AbstractFunctional {
     }
 
     @Test
+    @Ignore("convert to integration test once RDCC-2050 is completed")
     public void should_throw_412_while_delete_user_profile_with_unassigned_roles_passed() throws Exception {
         List<String> roles = new ArrayList<>();
         roles.add(puiUserManager);

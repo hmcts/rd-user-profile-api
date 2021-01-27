@@ -7,6 +7,7 @@ import net.thucydides.core.annotations.WithTag;
 import net.thucydides.core.annotations.WithTags;
 import org.junit.Before;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreatio
 @RunWith(SpringIntegrationSerenityRunner.class)
 @WithTags({@WithTag("testType:Functional")})
 @SpringBootTest
+@Ignore
 public class UpdateUserProfileFuncTest extends AbstractFunctional {
 
     private static final Logger LOG = LoggerFactory.getLogger(UpdateUserProfileFuncTest.class);
@@ -37,6 +39,7 @@ public class UpdateUserProfileFuncTest extends AbstractFunctional {
 
 
     @Test
+    @Ignore("convert to integration test once RDCC-2050 is completed")
     public void should_throw_404_while_update_profile_with_userId_not_in_db() throws Exception {
         updateUserProfile(updateUserProfileData(), UUID.randomUUID().toString(), HttpStatus.NOT_FOUND);
     }

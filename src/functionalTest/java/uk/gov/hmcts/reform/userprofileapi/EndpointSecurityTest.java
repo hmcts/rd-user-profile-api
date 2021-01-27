@@ -15,6 +15,7 @@ import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import net.serenitybdd.rest.SerenityRest;
 import net.thucydides.core.annotations.WithTag;
 import net.thucydides.core.annotations.WithTags;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -24,6 +25,7 @@ import org.springframework.test.context.TestPropertySource;
 @RunWith(SpringIntegrationSerenityRunner.class)
 @WithTags({@WithTag("testType:Functional")})
 @TestPropertySource("classpath:application-functional.yaml")
+@Ignore
 public class EndpointSecurityTest extends AbstractFunctional {
 
 
@@ -31,6 +33,7 @@ public class EndpointSecurityTest extends AbstractFunctional {
         ImmutableList.of("/v1/userprofile/1", "/v1/userprofile");
 
     @Test
+    @Ignore("convert to integration test once RDCC-2050 is completed")
     public void should_allow_unauthenticated_requests_to_welcome_message_and_return_200_response_code() {
 
         Response response = RestAssured
@@ -47,6 +50,7 @@ public class EndpointSecurityTest extends AbstractFunctional {
     }
 
     @Test
+    @Ignore("convert to integration test once RDCC-2050 is completed")
     public void should_allow_unauthenticated_requests_to_health_check_and_return_200_response_code() {
 
         String response =
@@ -95,6 +99,9 @@ public class EndpointSecurityTest extends AbstractFunctional {
                 .then()
                 .statusCode(HttpStatus.UNAUTHORIZED.value())
         );
+
     }
+
+    //TODO: Add one test case for invalid bearer token
 
 }

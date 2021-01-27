@@ -9,6 +9,7 @@ import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import net.thucydides.core.annotations.WithTag;
 import net.thucydides.core.annotations.WithTags;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 @RunWith(SpringIntegrationSerenityRunner.class)
 @WithTags({@WithTag("testType:Functional")})
+@Ignore
 public class DeleteUserProfileFuncTest extends AbstractFunctional {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeleteUserProfileFuncTest.class);
@@ -34,6 +36,7 @@ public class DeleteUserProfileFuncTest extends AbstractFunctional {
     }
 
     @Test
+    @Ignore("convert to integration test once RDCC-2050 is completed")
     public void should_delete_pending_user_profile_successfully_return_204() throws Exception {
         UserProfileCreationData data = createUserProfileData();
         //creating user profile
@@ -65,6 +68,7 @@ public class DeleteUserProfileFuncTest extends AbstractFunctional {
     }
 
     @Test
+    @Ignore("convert to integration test once RDCC-2050 is completed")
     public void should_delete_active_user_profile_successfully_return_204() throws Exception {
 
         UserProfileCreationData data = createUserProfileData();
@@ -79,6 +83,7 @@ public class DeleteUserProfileFuncTest extends AbstractFunctional {
     }
 
     @Test
+    @Ignore("convert to integration test once RDCC-2050 is completed")
     public void should_not_delete_user_profile_with_unknown_user_Id_return_404() throws Exception {
 
         UserProfileCreationData data = createUserProfileData();

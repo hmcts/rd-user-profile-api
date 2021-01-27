@@ -7,6 +7,7 @@ import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import net.thucydides.core.annotations.WithTag;
 import net.thucydides.core.annotations.WithTags;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -23,6 +24,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 @RunWith(SpringIntegrationSerenityRunner.class)
 @WithTags({@WithTag("testType:Functional")})
 @SpringBootTest
+@Ignore
 public class RetrieveUserProfileFuncTest extends AbstractFunctional {
 
     private static final Logger LOG = LoggerFactory.getLogger(RetrieveUserProfileFuncTest.class);
@@ -47,6 +49,7 @@ public class RetrieveUserProfileFuncTest extends AbstractFunctional {
     }
 
     @Test
+    @Ignore("convert to integration test once RDCC-2050 is completed")
     public void should_get_user_profile_by_email() throws Exception {
 
         UserProfileCreationData userProfileCreationData = createUserProfileData();
@@ -75,6 +78,7 @@ public class RetrieveUserProfileFuncTest extends AbstractFunctional {
     }
 
     @Test
+    @Ignore("convert to integration test once RDCC-2050 is completed")
     public void should_get_user_profile_with_roles_by_email() throws Exception {
 
         UserProfileCreationData userProfileCreationData = createUserProfileData();
@@ -107,18 +111,21 @@ public class RetrieveUserProfileFuncTest extends AbstractFunctional {
     }
 
     @Test
+    @Ignore("convert to integration test once RDCC-2050 is completed")
     public void should_return_400_when_required_email_field_is_missing() {
         String json = "{\"firstName\":\"iWvKhGLXCiOMMbZtngbR\",\"lastName\":\"mXlpNLcbodhABAWKCKbj\"}";
         testRequestHandler.sendPost(json, HttpStatus.BAD_REQUEST, requestUri);
     }
 
     @Test
+    @Ignore("convert to integration test once RDCC-2050 is completed")
     public void should_return_404_when_retrieving_user_profile_when_email_param_is_empty() {
         String emailUrl = requestUri + "?email=";
         testRequestHandler.sendGet(HttpStatus.NOT_FOUND, emailUrl);
     }
 
     @Test
+    @Ignore("convert to integration test once RDCC-2050 is completed")
     public void should_return_400_and_not_allow_get_request_on_base_url_with_no_params() {
         testRequestHandler.sendGet(HttpStatus.BAD_REQUEST, requestUri);
     }

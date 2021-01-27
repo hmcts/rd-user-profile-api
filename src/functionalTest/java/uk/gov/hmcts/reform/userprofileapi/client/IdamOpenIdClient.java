@@ -26,6 +26,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 @Slf4j
 public class IdamOpenIdClient {
@@ -36,11 +37,15 @@ public class IdamOpenIdClient {
 
     private Gson gson = new Gson();
 
+    private static String bearerToken;
+
     public IdamOpenIdClient(TestConfigProperties testConfig) {
         this.testConfig = testConfig;
     }
 
     public Map<String, String> createUser(List<String> roles) {
+        log.info(":::: Creating a User");
+
         //Generating a random user
         String userEmail = generateRandomEmail();
         String firstName = "First";
@@ -73,35 +78,74 @@ public class IdamOpenIdClient {
         return userCreds;
     }
 
-    public String getBearerToken() {
+    public Map<String, String> createUserWithGivenFields(List<String> roles,
+                                                         UserProfileCreationData userProfileCreationData) {
 
-        List<String> roles = new ArrayList<>();
-        roles.add("prd-admin");
-        Map<String, String>  userCreds = createUser(roles);
-        Map<String, String> tokenParams = new HashMap<>();
-        tokenParams.put("grant_type", "password");
-        tokenParams.put("username", userCreds.get(EMAIL));
-        tokenParams.put("password", userCreds.get(CREDS));
-        tokenParams.put("client_id", testConfig.getClientId());
-        tokenParams.put("client_secret", testConfig.getClientSecret());
-        tokenParams.put("redirect_uri", testConfig.getOauthRedirectUrl());
-        tokenParams.put("scope", "openid profile roles manage-user create-user search-user");
+        log.info(":::: Creating a User");
 
-        Response bearerTokenResponse = RestAssured
+        String userEmail = userProfileCreationData.getEmail();
+        String firstName = userProfileCreationData.getFirstName();
+        String lastName = userProfileCreationData.getLastName();
+        String password = generateSidamPassword();
+
+        String id = UUID.randomUUID().toString();
+
+        List<Role> rolesList = roles.stream().map(Role::new).collect(Collectors.toList());
+
+        User user = new User(userEmail, firstName, id, lastName, password, rolesList);
+
+        String serializedUser = gson.toJson(user);
+
+        Response createdUserResponse = RestAssured
                 .given()
                 .relaxedHTTPSValidation()
                 .baseUri(testConfig.getIdamApiUrl())
-                .header(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE)
-                .params(tokenParams)
-                .post("/o/token")
+                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .body(serializedUser)
+                .post("/testing-support/accounts")
                 .andReturn();
 
-        assertThat(bearerTokenResponse.getStatusCode()).isEqualTo(200);
 
-        BearerTokenResponse accessTokenResponse = gson.fromJson(bearerTokenResponse.getBody().asString(),
-                BearerTokenResponse.class);
-        return accessTokenResponse.getAccessToken();
+        assertThat(createdUserResponse.getStatusCode()).isEqualTo(201);
 
+        Map<String, String> userCreds = new HashMap<>();
+        userCreds.put(EMAIL, userEmail);
+        userCreds.put(CREDS, password);
+        return userCreds;
+    }
+
+    public String getBearerToken() {
+        if (null == bearerToken) {
+            log.info(":::: Generating Bearer Token");
+            List<String> roles = new ArrayList<>();
+            roles.add("prd-admin");
+            Map<String, String> userCreds = createUser(roles);
+            Map<String, String> tokenParams = new HashMap<>();
+            tokenParams.put("grant_type", "password");
+            tokenParams.put("username", userCreds.get(EMAIL));
+            tokenParams.put("password", userCreds.get(CREDS));
+            tokenParams.put("client_id", testConfig.getClientId());
+            tokenParams.put("client_secret", testConfig.getClientSecret());
+            tokenParams.put("redirect_uri", testConfig.getOauthRedirectUrl());
+            tokenParams.put("scope", "openid profile roles manage-user create-user search-user");
+
+            Response bearerTokenResponse = RestAssured
+                    .given()
+                    .relaxedHTTPSValidation()
+                    .baseUri(testConfig.getIdamApiUrl())
+                    .header(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE)
+                    .params(tokenParams)
+                    .post("/o/token")
+                    .andReturn();
+
+            assertThat(bearerTokenResponse.getStatusCode()).isEqualTo(200);
+
+            BearerTokenResponse accessTokenResponse = gson.fromJson(bearerTokenResponse.getBody().asString(),
+                    BearerTokenResponse.class);
+
+            bearerToken = accessTokenResponse.getAccessToken();
+        }
+        return bearerToken;
     }
 
     public static String generateSidamPassword() {

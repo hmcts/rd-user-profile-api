@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import net.thucydides.core.annotations.WithTag;
 import net.thucydides.core.annotations.WithTags;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.http.HttpStatus;
@@ -14,10 +15,12 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 @RunWith(SpringIntegrationSerenityRunner.class)
 @WithTags({@WithTag("testType:Functional")})
+@Ignore
 public class ReInviteUserFuncTest extends AbstractFunctional {
 
     //AC3: resend invite to a given user who does not exist
     @Test
+    @Ignore("convert to integration test once RDCC-2050 is completed")
     public void should_return_404_when_user_reinvited_if_user_not_exists() throws Exception {
 
         ErrorResponse errorResponse = testRequestHandler.sendPost(
@@ -31,6 +34,7 @@ public class ReInviteUserFuncTest extends AbstractFunctional {
 
     //AC4: resend invite to a given user who is not in the 'Pending' state
     @Test
+    @Ignore("convert to integration test once RDCC-2050 is completed")
     public void should_return_400_when_user_reinvited_if_user_is_active() throws Exception {
 
         UserProfileCreationData activeUserData = createUserProfileData();

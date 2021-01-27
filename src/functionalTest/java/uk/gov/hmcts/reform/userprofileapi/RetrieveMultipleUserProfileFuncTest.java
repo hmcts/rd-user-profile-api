@@ -10,6 +10,7 @@ import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import net.thucydides.core.annotations.WithTag;
 import net.thucydides.core.annotations.WithTags;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 @RunWith(SpringIntegrationSerenityRunner.class)
 @WithTags({@WithTag("testType:Functional")})
 @SpringBootTest
+@Ignore
 public class RetrieveMultipleUserProfileFuncTest extends AbstractFunctional {
 
     private static final Logger LOG = LoggerFactory.getLogger(RetrieveMultipleUserProfileFuncTest.class);
@@ -60,6 +62,7 @@ public class RetrieveMultipleUserProfileFuncTest extends AbstractFunctional {
     }
 
     @Test
+    @Ignore("convert to integration test once RDCC-2050 is completed")
     public void should_get_multiple_users_profile_with_param_showdeleted_true() throws Exception {
 
         UserProfileCreationData userProfileCreationData1 = createUserProfileData();
@@ -84,6 +87,7 @@ public class RetrieveMultipleUserProfileFuncTest extends AbstractFunctional {
     }
 
     @Test
+    @Ignore("convert to integration test once RDCC-2050 is completed")
     public void should_return_404_when_no_users_profiles_in_db() throws Exception {
 
         List<String> userIds = new ArrayList<String>();
@@ -100,6 +104,7 @@ public class RetrieveMultipleUserProfileFuncTest extends AbstractFunctional {
     }
 
     @Test
+    @Ignore("convert to integration test once RDCC-2050 is completed")
     public void should_return_404_when_param_invalid() throws Exception {
 
         List<String> userIds = new ArrayList<String>();
