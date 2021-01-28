@@ -175,6 +175,12 @@ public abstract class AuthorizationEnabledIntegrationTest {
                     + "\"A user is already registered with this email.\""
                     + "]"
                     + "}";
+        } else  if (status == 404 && !setBodyEmpty) {
+            body = "{"
+                    + "\"status\": \"404\","
+                    + "\"errorMessage\": \"16 Resource not found\","
+                    + "\"errorDescription\": \"The role to be assigned does not exist.\""
+                    + "}";
         }
         idamService.stubFor(post(urlEqualTo("/api/v1/users/registration"))
                 .willReturn(aResponse()
