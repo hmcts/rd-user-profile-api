@@ -49,22 +49,6 @@ public class RetrieveUserProfileFuncTest extends AbstractFunctional {
     }
 
     @Test
-    @Ignore("convert to integration test once RDCC-2050 is completed")
-    public void should_get_user_profile_by_email() throws Exception {
-
-        UserProfileCreationData userProfileCreationData = createUserProfileData();
-        UserProfileCreationResponse createdResource = createUserProfile(userProfileCreationData, HttpStatus.CREATED);
-        UserProfileResponse resource =
-                testRequestHandler.sendGet(
-                        requestUri + "?email=" + userProfileCreationData.getEmail().toLowerCase(),
-                        UserProfileResponse.class
-                );
-
-        verifyGetUserProfile(resource, userProfileCreationData);
-        assertThat(createdResource.getIdamId()).isNotNull();
-    }
-
-    @Test
     public void should_get_user_profile_with_roles_by_userId() throws Exception {
 
         UserProfileCreationData userProfileCreationData = createUserProfileData();
@@ -75,22 +59,6 @@ public class RetrieveUserProfileFuncTest extends AbstractFunctional {
                         UserProfileWithRolesResponse.class);
 
         verifyGetUserProfileWithRoles(resource, userProfileCreationData);
-    }
-
-    @Test
-    @Ignore("convert to integration test once RDCC-2050 is completed")
-    public void should_get_user_profile_with_roles_by_email() throws Exception {
-
-        UserProfileCreationData userProfileCreationData = createUserProfileData();
-        UserProfileCreationResponse createdResource = createUserProfile(userProfileCreationData, HttpStatus.CREATED);
-        UserProfileWithRolesResponse resource =
-                testRequestHandler.sendGet(
-                        requestUri + "/roles?email=" + userProfileCreationData.getEmail().toLowerCase(),
-                        UserProfileWithRolesResponse.class
-                );
-
-        verifyGetUserProfileWithRoles(resource, userProfileCreationData);
-        assertThat(createdResource.getIdamId()).isNotNull();
     }
 
     @Test
@@ -109,25 +77,4 @@ public class RetrieveUserProfileFuncTest extends AbstractFunctional {
         verifyGetUserProfile(resource, userProfileCreationData);
         assertThat(createdResource.getIdamId()).isNotNull();
     }
-
-    @Test
-    @Ignore("convert to integration test once RDCC-2050 is completed")
-    public void should_return_400_when_required_email_field_is_missing() {
-        String json = "{\"firstName\":\"iWvKhGLXCiOMMbZtngbR\",\"lastName\":\"mXlpNLcbodhABAWKCKbj\"}";
-        testRequestHandler.sendPost(json, HttpStatus.BAD_REQUEST, requestUri);
-    }
-
-    @Test
-    @Ignore("convert to integration test once RDCC-2050 is completed")
-    public void should_return_404_when_retrieving_user_profile_when_email_param_is_empty() {
-        String emailUrl = requestUri + "?email=";
-        testRequestHandler.sendGet(HttpStatus.NOT_FOUND, emailUrl);
-    }
-
-    @Test
-    @Ignore("convert to integration test once RDCC-2050 is completed")
-    public void should_return_400_and_not_allow_get_request_on_base_url_with_no_params() {
-        testRequestHandler.sendGet(HttpStatus.BAD_REQUEST, requestUri);
-    }
-
 }
