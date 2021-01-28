@@ -38,7 +38,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 @Transactional
 public class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest {
 
-    String id =  UUID.randomUUID().toString();
+    String id = UUID.randomUUID().toString();
     RoleName role1 = new RoleName("pui-case-manager");
     RoleName role2 = new RoleName("prd-Admin");
 
@@ -133,7 +133,8 @@ public class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegr
                     + "\"status\": \"412\","
                     + "\"errorMessage\": \"One or more of the roles provided does not exist.\""
                     + "}";
-        }if (httpStatus.value() == 412 && isBodyRequired && isUnassignedRole) {
+        }
+        if (httpStatus.value() == 412 && isBodyRequired && isUnassignedRole) {
             body = "{"
                     + "\"status\": \"412\","
                     + "\"errorMessage\": \"The role provided is not assigned to the user.\""
@@ -177,10 +178,10 @@ public class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegr
 
         userRoles.setRolesAdd(roles);
         userProfileRequestHandlerTest.sendPut(
-                        mockMvc,
-                  APP_BASE_PATH + "/" + userId,
-                        userRoles,
-                        OK
+                mockMvc,
+                APP_BASE_PATH + "/" + userId,
+                userRoles,
+                OK
         );
 
     }
