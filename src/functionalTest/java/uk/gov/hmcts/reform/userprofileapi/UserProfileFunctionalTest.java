@@ -153,7 +153,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
     public void updateUserProfileShouldReturnSuccess() throws Exception {
         log.info("updateUserProfileShouldReturnSuccess :: STARTED");
 
-        updateUserProfile(updateUserProfileData, activeUserProfile.getIdamId(), HttpStatus.OK);
+        updateUserProfile(updateUserProfileData, activeUserProfile.getIdamId());
 
         log.info("updateUserProfileShouldReturnSuccess :: ENDED");
     }
@@ -198,7 +198,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
     public void getAllUsersByUserIdsWithShowDeletedFalseShouldReturnSuccess() throws Exception {
         log.info("getAllUsersByUserIdsWithShowDeletedFalseShouldReturnSuccess :: STARTED");
 
-        pendingUserProfile = createUserProfile(pendingUserProfileCreationData, HttpStatus.CREATED);
+        pendingUserProfile = createUserProfile(pendingUserProfileCreationData);
 
         verifyCreateUserProfile(pendingUserProfile);
 
