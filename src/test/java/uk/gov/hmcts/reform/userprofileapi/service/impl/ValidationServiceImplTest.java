@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -59,14 +58,14 @@ public class ValidationServiceImplTest {
 
     @Before
     public void setUp() {
-        when(userProfileRepositoryMock.findByIdamId(eq(userId))).thenReturn(Optional.of(userProfile));
+        when(userProfileRepositoryMock.findByIdamId(userId)).thenReturn(Optional.of(userProfile));
     }
 
     @Test
     public void test_ValidateUpdateWithoutId() {
         userProfile.setStatus(IdamStatus.SUSPENDED);
 
-        when(validationHelperServiceMock.validateUserId(eq(userId))).thenReturn(true);
+        when(validationHelperServiceMock.validateUserId(userId)).thenReturn(true);
         when(validationHelperServiceMock.validateUpdateUserProfileRequestValid(updateUserProfileData, userId,
                 ResponseSource.API)).thenReturn(true);
 

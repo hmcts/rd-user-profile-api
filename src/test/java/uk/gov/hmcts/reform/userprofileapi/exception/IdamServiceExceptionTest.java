@@ -17,8 +17,9 @@ public class IdamServiceExceptionTest {
         String message = "this-is-a-test-message";
         IdamServiceException exception = new IdamServiceException(message, HttpStatus.NOT_FOUND);
 
-        assertThat(exception).hasMessage(message);
-        assertThat(exception).isInstanceOf(RuntimeException.class);
+        assertThat(exception)
+                .hasMessage(message)
+                .isInstanceOf(RuntimeException.class);
         assertThat(exception.getHttpStatus()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 }

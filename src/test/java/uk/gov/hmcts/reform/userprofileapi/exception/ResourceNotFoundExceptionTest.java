@@ -14,8 +14,8 @@ public class ResourceNotFoundExceptionTest {
         String message = "this-is-a-test-message";
         ResourceNotFoundException exception = new ResourceNotFoundException(message);
 
-        assertThat(exception).hasMessage(message);
-        assertThat(exception).isInstanceOf(ResourceNotFoundException.class);
+        assertThat(exception)
+                .hasMessage(message)
+                .isInstanceOf(ResourceNotFoundException.class);
     }
-
 }
