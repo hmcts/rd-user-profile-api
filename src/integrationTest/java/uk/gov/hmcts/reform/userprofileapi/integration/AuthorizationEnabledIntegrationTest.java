@@ -158,7 +158,6 @@ public abstract class AuthorizationEnabledIntegrationTest {
                 ));
     }
 
-
     protected void setSidamRegistrationMockWithStatus(int status, boolean setBodyEmpty) {
         String body = null;
         if (status == 400 && !setBodyEmpty) {
@@ -208,6 +207,16 @@ public abstract class AuthorizationEnabledIntegrationTest {
                         .withBody(body)
                 ));
 
+    }
+
+    public void healthEndpointMock() {
+        s2sService.stubFor(get(urlEqualTo("/health"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{"
+                                + "\"status\": \"UP\""
+                                + "}")));
     }
 
     protected UserProfileDataResponse getMultipleUsers(UserProfileDataRequest request, HttpStatus expectedStatus,
