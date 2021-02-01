@@ -15,12 +15,8 @@ public class RequiredFieldMissingExceptionTest {
         String message = "this-is-a-test-message";
         RequiredFieldMissingException exception = new RequiredFieldMissingException(message);
 
-        assertThat(exception).hasMessage(message);
-        assertThat(exception).isInstanceOf(RuntimeException.class);
-
-
+        assertThat(exception)
+                .hasMessage(message)
+                .isInstanceOf(RuntimeException.class);
     }
-
-
-
 }

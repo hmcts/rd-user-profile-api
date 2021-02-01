@@ -158,7 +158,6 @@ public abstract class AuthorizationEnabledIntegrationTest {
                 ));
     }
 
-
     protected void setSidamRegistrationMockWithStatus(int status, boolean setBodyEmpty) {
         String body = null;
         if (status == 400 && !setBodyEmpty) {
@@ -174,6 +173,12 @@ public abstract class AuthorizationEnabledIntegrationTest {
                     + "\"errorMessages\": ["
                     + "\"A user is already registered with this email.\""
                     + "]"
+                    + "}";
+        } else  if (status == 404 && !setBodyEmpty) {
+            body = "{"
+                    + "\"status\": \"404\","
+                    + "\"errorMessage\": \"16 Resource not found\","
+                    + "\"errorDescription\": \"The role to be assigned does not exist.\""
                     + "}";
         }
         idamService.stubFor(post(urlEqualTo("/api/v1/users/registration"))
@@ -202,6 +207,16 @@ public abstract class AuthorizationEnabledIntegrationTest {
                         .withBody(body)
                 ));
 
+    }
+
+    public void healthEndpointMock() {
+        s2sService.stubFor(get(urlEqualTo("/health"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{"
+                                + "\"status\": \"UP\""
+                                + "}")));
     }
 
     protected UserProfileDataResponse getMultipleUsers(UserProfileDataRequest request, HttpStatus expectedStatus,

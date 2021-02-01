@@ -82,7 +82,7 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
                                                       boolean rolesRequired) {
         //get all users from UP DB
         List<UserProfile> userProfiles = querySupplier.getProfilesByIds(identifier, showDeleted)
-                .orElse(new ArrayList<UserProfile>());
+                .orElse(new ArrayList<>());
         if (CollectionUtils.isEmpty(userProfiles)) {
             throw new ResourceNotFoundException("Could not find resource");
         }

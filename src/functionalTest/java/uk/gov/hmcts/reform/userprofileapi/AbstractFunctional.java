@@ -2,9 +2,7 @@ package uk.gov.hmcts.reform.userprofileapi;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
-import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildUpdateUserProfileData;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.restassured.RestAssured;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,17 +22,12 @@ import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
-import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @ContextConfiguration(classes = {TestConfigProperties.class})
 @ComponentScan("uk.gov.hmcts.reform.userprofileapi")
@@ -76,7 +69,6 @@ public class AbstractFunctional extends AbstractTestExecutionListener {
     protected static IdamOpenIdClient idamOpenIdClient;
     protected static String s2sToken;
 
-
     @Override
     public void beforeTestClass(TestContext testContext) {
         testContext.getApplicationContext()
@@ -97,42 +89,17 @@ public class AbstractFunctional extends AbstractTestExecutionListener {
         testRequestHandler = new FuncTestRequestHandler(targetInstance, s2sToken, idamOpenIdClient);
     }
 
-    protected UserProfileCreationResponse createActiveUserProfileWithGivenRoles(HttpStatus expectedStatus,
-                                                                                List<String> roles) throws Exception {
-        UserProfileCreationData data = createUserProfileData();
-        Map<String, String> userCreds = idamOpenIdClient.createUser(roles);
-        data.setEmail(userCreds.get(EMAIL));
-        return createUserProfile(data, expectedStatus);
-    }
-
-    protected UserProfileCreationResponse createUserProfile(UserProfileCreationData userProfileCreationData,
-                                                            HttpStatus expectedStatus) throws Exception {
+    protected UserProfileCreationResponse createUserProfile(
+            UserProfileCreationData userProfileCreationData) throws Exception {
 
         UserProfileCreationResponse resource = testRequestHandler.sendPost(
                 userProfileCreationData,
-                expectedStatus,
+                HttpStatus.CREATED,
                 requestUri,
                 UserProfileCreationResponse.class
         );
         verifyCreateUserProfile(resource);
         return resource;
-    }
-
-    protected UserProfileCreationResponse createActiveUserProfile(UserProfileCreationData userProfileCreationData)
-            throws Exception {
-        List<String> xuiuRoles = new ArrayList();
-        xuiuRoles.add("pui-user-manager");
-        xuiuRoles.add("pui-case-manager");
-
-        //create user with "pui-user-manager" role in SIDAM
-        List<String> sidamRoles = new ArrayList<>();
-        sidamRoles.add("pui-user-manager");
-        Map<String, String> userCreds = idamOpenIdClient.createUser(sidamRoles);
-
-        //create User profile with same email to get 409 scenario
-        userProfileCreationData.setRoles(xuiuRoles);
-        userProfileCreationData.setEmail(userCreds.get(EMAIL));
-        return createUserProfile(userProfileCreationData, HttpStatus.CREATED);
     }
 
     protected UserProfileCreationResponse createActiveUserProfileWithGivenFields(
@@ -149,15 +116,14 @@ public class AbstractFunctional extends AbstractTestExecutionListener {
         //create User profile with same email to get 409 scenario
         userProfileCreationData.setRoles(xuiuRoles);
         userProfileCreationData.setEmail(userCreds.get(EMAIL));
-        return createUserProfile(userProfileCreationData, HttpStatus.CREATED);
+        return createUserProfile(userProfileCreationData);
     }
 
-    protected void updateUserProfile(UpdateUserProfileData updateUserProfileData, String userId,
-                                     HttpStatus expectedStatus) throws Exception {
+    protected void updateUserProfile(UpdateUserProfileData updateUserProfileData, String userId) throws Exception {
 
         testRequestHandler.sendPut(
                 updateUserProfileData,
-                expectedStatus,
+                HttpStatus.OK,
                 requestUri + "/" + userId);
     }
 
@@ -168,10 +134,6 @@ public class AbstractFunctional extends AbstractTestExecutionListener {
     protected UserProfileCreationData createUserProfileDataWithReInvite() {
 
         return buildCreateUserProfileData(true);
-    }
-
-    protected UpdateUserProfileData updateUserProfileData() {
-        return buildUpdateUserProfileData();
     }
 
     protected void verifyCreateUserProfile(UserProfileCreationResponse resource) {
@@ -190,43 +152,6 @@ public class AbstractFunctional extends AbstractTestExecutionListener {
         assertThat(resource.getEmail()).isEqualTo(expectedResource.getEmail().toLowerCase());
         assertThat(resource.getIdamStatus()).isNotNull();
     }
-
-    protected void verifyGetUserProfileWithRoles(UserProfileWithRolesResponse resource,
-                                                 UserProfileCreationData expectedResource) {
-
-        verifyGetUserProfile(resource, expectedResource);
-
-    }
-
-    protected UserProfileRolesResponse addRoleRequestWithGivenRoles(Set<RoleName> roles, String idamId)
-            throws JsonProcessingException {
-        Set<RoleName> rolesToAdd = new HashSet<>();
-        rolesToAdd.addAll(roles);
-
-        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData();
-        updateUserProfileData.setRolesAdd(rolesToAdd);
-        return addDeleteRole(updateUserProfileData, idamId);
-    }
-
-    protected UserProfileRolesResponse deleteRoleRequestWithGivenRoles(Set<RoleName> roles, String idamId)
-            throws JsonProcessingException {
-        Set<RoleName> rolesToDelete = new HashSet<>();
-        rolesToDelete.addAll(roles);
-
-        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData();
-        updateUserProfileData.setRolesDelete(rolesToDelete);
-        return addDeleteRole(updateUserProfileData, idamId);
-    }
-
-    protected UserProfileRolesResponse addDeleteRole(UpdateUserProfileData updateUserProfileData, String idamId)
-            throws JsonProcessingException {
-        return testRequestHandler.sendDelete(
-                updateUserProfileData,
-                HttpStatus.OK,
-                requestUri + "/" + idamId,
-                UserProfileRolesResponse.class);
-    }
-
 
     public UserProfileDataRequest buildUserProfileDataRequest(List<String> userIds) {
         return new UserProfileDataRequest(userIds);

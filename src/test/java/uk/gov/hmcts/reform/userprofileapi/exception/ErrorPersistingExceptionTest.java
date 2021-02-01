@@ -14,7 +14,8 @@ public class ErrorPersistingExceptionTest {
         String message = "this-is-a-test-message";
         ErrorPersistingException exception = new ErrorPersistingException(message);
 
-        assertThat(exception).hasMessage(message);
-        assertThat(exception).isInstanceOf(ErrorPersistingException.class);
+        assertThat(exception)
+                .hasMessage(message)
+                .isInstanceOf(ErrorPersistingException.class);
     }
 }

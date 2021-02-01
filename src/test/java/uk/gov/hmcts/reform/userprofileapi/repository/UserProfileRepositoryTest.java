@@ -42,7 +42,7 @@ public class UserProfileRepositoryTest {
         Optional<UserProfile> user = userProfileRepository.findByEmail(userProfile.getEmail());
 
         assertTrue(user.isPresent());
-        assertThat(user.get()).isEqualTo(userProfile);
+        assertThat(user).contains(userProfile);
     }
 
     @Test
@@ -50,6 +50,6 @@ public class UserProfileRepositoryTest {
         Optional<UserProfile> user = userProfileRepository.findByIdamId(userProfile.getIdamId());
 
         assertTrue(user.isPresent());
-        assertThat(user.get()).isEqualTo(userProfile);
+        assertThat(user).contains(userProfile);
     }
 }

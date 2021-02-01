@@ -36,13 +36,6 @@ public class FuncTestRequestHandler {
                         .as(clazz);
     }
 
-    public void sendPost(Object data, HttpStatus expectedStatus, String path) throws JsonProcessingException {
-
-        sendPost(objectMapper.writeValueAsString(data),
-                expectedStatus,
-                path);
-    }
-
     public Response sendPost(String jsonBody, HttpStatus expectedStatus, String path) {
         log.info("User object to be created : {}", jsonBody);
         Response response = withAuthenticatedRequest()
@@ -89,12 +82,6 @@ public class FuncTestRequestHandler {
                 expectedStatus,
                 path)
                 .as(clazz);
-    }
-
-    public void sendDelete(Object data, HttpStatus expectedStatus, String path) throws JsonProcessingException {
-        sendPut(objectMapper.writeValueAsString(data),
-                expectedStatus,
-                path);
     }
 
     public Response sendDelete(String jsonBody, HttpStatus expectedStatus, String path) {
