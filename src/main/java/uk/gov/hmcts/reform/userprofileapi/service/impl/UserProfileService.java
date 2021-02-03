@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.reform.userprofileapi.service.ResourceRetriever;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceUpdator;
 
 @Service
+@AllArgsConstructor
 public class UserProfileService<T extends RequestData> {
 
     @Autowired

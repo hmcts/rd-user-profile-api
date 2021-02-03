@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.userprofileapi.controller.response;
 import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.getStatusCodeValueFromResponseEntity;
 import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.resolveStatusAndReturnMessage;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 
 @Getter
 @Setter
+@AllArgsConstructor
 @NoArgsConstructor
 public class RoleDeletionResponse {
     private String roleName;
