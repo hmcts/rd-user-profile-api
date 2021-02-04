@@ -54,21 +54,30 @@ public class IdamOpenIdClient {
 
         String id = UUID.randomUUID().toString();
 
-        List<Role> rolesList = roles.stream().map(role -> new Role(role)).collect(Collectors.toList());
+        List<Role> rolesList = roles.stream().map(Role::new).collect(Collectors.toList());
 
         User user = new User(userEmail, firstName, id, lastName, password, rolesList);
 
         String serializedUser = gson.toJson(user);
 
-        Response createdUserResponse = RestAssured
-                .given()
-                .relaxedHTTPSValidation()
-                .baseUri(testConfig.getIdamApiUrl())
-                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                .body(serializedUser)
-                .post("/testing-support/accounts")
-                .andReturn();
+        Response createdUserResponse = null;
 
+        for (int i = 0; i < 5; i++) {
+            log.info("SIDAM createUser retry attempt : " + i + 1);
+            createdUserResponse = RestAssured
+                    .given()
+                    .relaxedHTTPSValidation()
+                    .baseUri(testConfig.getIdamApiUrl())
+                    .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                    .body(serializedUser)
+                    .post("/testing-support/accounts")
+                    .andReturn();
+            if (createdUserResponse.getStatusCode() == 504) {
+                log.info("SIDAM createUser retry response for attempt " + i + 1 + " 504");
+            } else {
+                break;
+            }
+        }
 
         assertThat(createdUserResponse.getStatusCode()).isEqualTo(201);
 
