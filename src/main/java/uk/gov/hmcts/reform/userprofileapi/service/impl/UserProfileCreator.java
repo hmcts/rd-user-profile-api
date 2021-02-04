@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,6 +41,7 @@ import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 @Service
 @Slf4j
+@NoArgsConstructor
 @AllArgsConstructor
 public class UserProfileCreator implements ResourceCreator<UserProfileCreationData> {
 

@@ -2,11 +2,11 @@
 
 @Library("Infrastructure")
 
+import uk.gov.hmcts.contino.AppPipelineDsl
+
 def type = "java"
 def product = "rd"
 def component = "user-profile-api"
-
-import uk.gov.hmcts.contino.AppPipelineDsl
 
 def secrets = [
     's2s-${env}': [

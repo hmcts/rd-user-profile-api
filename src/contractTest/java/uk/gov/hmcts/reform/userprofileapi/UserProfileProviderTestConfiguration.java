@@ -69,8 +69,8 @@ public class UserProfileProviderTestConfiguration {
     @Bean
     @Primary
     public UserProfileCreator getResourceCreator() {
-        return new UserProfileCreator("Uri",idamService,userProfileRepository,
-                auditRepository,validationHelperService,"1","loggingCompName");
+        return new UserProfileCreator("secretUri",idamService,userProfileRepository,
+                auditRepository,validationHelperService,"1","RD_User_Profile_API");
     }
 
     @Bean
