@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.oidc;
 
+import static java.lang.Boolean.TRUE;
 import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.ACCESS_TOKEN;
 
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public class JwtGrantedAuthoritiesConverter implements Converter<Jwt, Collection
     @Override
     public Collection<GrantedAuthority> convert(Jwt jwt) {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        if (jwt.containsClaim(TOKEN_NAME) && jwt.getClaim(TOKEN_NAME).equals(ACCESS_TOKEN)) {
+        if (TRUE.equals(jwt.containsClaim(TOKEN_NAME)) && jwt.getClaim(TOKEN_NAME).equals(ACCESS_TOKEN)) {
             userInfo = idamRepository.getUserInfo(jwt.getTokenValue());
             authorities = extractAuthorityFromClaims(userInfo.getRoles());
 

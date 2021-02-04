@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.userprofileapi.integration;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,12 +63,12 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
         UserProfile userProfile = userProfileMap.get("user");
 
         UserProfileResponse retrievedResource =
-            userProfileRequestHandlerTest.sendGet(
-                mockMvc,
-                APP_BASE_PATH + "?" + "userId=" + userProfile.getIdamId(),
-                OK,
-                UserProfileResponse.class
-            );
+                userProfileRequestHandlerTest.sendGet(
+                        mockMvc,
+                        APP_BASE_PATH + "?" + "userId=" + userProfile.getIdamId(),
+                        OK,
+                        UserProfileResponse.class
+                );
 
         assertThat(retrievedResource).isNotNull();
     }
@@ -205,6 +207,11 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
     }
 
     @Test
+    public void should_return_400_and_not_allow_get_request_on_base_url_with_no_params() throws Exception {
+        userProfileRequestHandlerTest.sendGet(mockMvc, APP_BASE_PATH, BAD_REQUEST);
+    }
+
+    @Test
     public void should_retrieve_user_profile_resource_with_email_from_header() throws Exception {
         UserProfile userProfile = userProfileMap.get("user");
 
@@ -242,11 +249,11 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
     public void should_return_404_when_user_profile_id_not_in_the_db() throws Exception {
 
         MvcResult result =
-            userProfileRequestHandlerTest.sendGet(
-                mockMvc,
-                APP_BASE_PATH + "?userId=" + UUID.randomUUID().toString(),
-                NOT_FOUND
-            );
+                userProfileRequestHandlerTest.sendGet(
+                        mockMvc,
+                        APP_BASE_PATH + "?userId=" + UUID.randomUUID().toString(),
+                        NOT_FOUND
+                );
 
         assertThat(result.getResponse()).isNotNull();
         assertThat(result.getResponse().getContentAsString()).isNotEmpty();
@@ -261,11 +268,11 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
         assertThat(userProfiles).isEmpty();
 
         MvcResult result =
-            userProfileRequestHandlerTest.sendGet(
-                mockMvc,
-                APP_BASE_PATH + "?userId=" + UUID.randomUUID().toString(),
-                NOT_FOUND
-            );
+                userProfileRequestHandlerTest.sendGet(
+                        mockMvc,
+                        APP_BASE_PATH + "?userId=" + UUID.randomUUID().toString(),
+                        NOT_FOUND
+                );
         assertThat(result.getResponse()).isNotNull();
         assertThat(result.getResponse().getContentAsString()).isNotEmpty();
 
@@ -275,11 +282,11 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
     public void should_return_404_when_user_profile_email_not_in_the_db() throws Exception {
 
         MvcResult result =
-            userProfileRequestHandlerTest.sendGet(
-                mockMvc,
-                APP_BASE_PATH + "?email=" + "randomemail@somewhere.com",
-                NOT_FOUND
-            );
+                userProfileRequestHandlerTest.sendGet(
+                        mockMvc,
+                        APP_BASE_PATH + "?email=" + "randomemail@somewhere.com",
+                        NOT_FOUND
+                );
 
         assertThat(result.getResponse()).isNotNull();
         assertThat(result.getResponse().getContentAsString()).isNotEmpty();
@@ -294,11 +301,11 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
         assertThat(userProfiles).isEmpty();
 
         MvcResult result =
-            userProfileRequestHandlerTest.sendGet(
-                mockMvc,
-                APP_BASE_PATH + "?email=" + "randomemail@somewhere.com",
-                NOT_FOUND
-            );
+                userProfileRequestHandlerTest.sendGet(
+                        mockMvc,
+                        APP_BASE_PATH + "?email=" + "randomemail@somewhere.com",
+                        NOT_FOUND
+                );
 
         assertThat(result.getResponse()).isNotNull();
         assertThat(result.getResponse().getContentAsString()).isNotEmpty();
@@ -308,11 +315,11 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
     @Test
     public void should_return_404_when_query_by_email_is_empty() throws Exception {
         MvcResult result =
-            userProfileRequestHandlerTest.sendGet(
-                mockMvc,
-                APP_BASE_PATH + "?email=",
-                NOT_FOUND
-            );
+                userProfileRequestHandlerTest.sendGet(
+                        mockMvc,
+                        APP_BASE_PATH + "?email=",
+                        NOT_FOUND
+                );
 
         assertThat(result.getResponse()).isNotNull();
         assertThat(result.getResponse().getContentAsString()).isNotEmpty();
@@ -338,11 +345,11 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
     public void should_return_404_when_query_by_userId_is_empty() throws Exception {
 
         MvcResult result =
-            userProfileRequestHandlerTest.sendGet(
-                mockMvc,
-                APP_BASE_PATH + "?userId=",
-                NOT_FOUND
-            );
+                userProfileRequestHandlerTest.sendGet(
+                        mockMvc,
+                        APP_BASE_PATH + "?userId=",
+                        NOT_FOUND
+                );
 
         assertThat(result.getResponse()).isNotNull();
         assertThat(result.getResponse().getContentAsString()).isNotEmpty();

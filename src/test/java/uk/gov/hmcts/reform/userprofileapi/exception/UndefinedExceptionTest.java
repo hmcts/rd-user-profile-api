@@ -14,8 +14,9 @@ public class UndefinedExceptionTest {
         String message = "this-is-a-test-message";
         UndefinedException exception = new UndefinedException(message);
 
-        assertThat(exception).hasMessage(message);
-        assertThat(exception).isInstanceOf(UndefinedException.class);
+        assertThat(exception)
+                .hasMessage(message)
+                .isInstanceOf(UndefinedException.class);
     }
 
 }

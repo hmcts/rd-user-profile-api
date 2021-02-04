@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -83,7 +82,7 @@ public class ValidationHelperServiceTest {
         final Throwable raisedException = catchThrowable(() -> sut.validateUserId(""));
         assertThat(raisedException).isInstanceOf(ResourceNotFoundException.class);
 
-        verify(auditServiceMock, times(1)).persistAudit(eq(HttpStatus.NOT_FOUND), eq(SYNC));
+        verify(auditServiceMock, times(1)).persistAudit(HttpStatus.NOT_FOUND, SYNC);
     }
 
     @Test
@@ -102,7 +101,7 @@ public class ValidationHelperServiceTest {
 
         sut.validateUserIsPresent(Optional.empty());
 
-        verify(auditServiceMock, times(1)).persistAudit(eq(HttpStatus.NOT_FOUND), eq(SYNC));
+        verify(auditServiceMock, times(1)).persistAudit(HttpStatus.NOT_FOUND, SYNC);
     }
 
     @Test
@@ -129,10 +128,10 @@ public class ValidationHelperServiceTest {
 
         final Throwable raisedException = catchThrowable(() ->
                 sut.validateUpdateUserProfileRequestValid(updateUserProfileData,
-                "f56e5539-a8f7-4ae6-b378-cc1015b72dcc", API));
+                        "f56e5539-a8f7-4ae6-b378-cc1015b72dcc", API));
         assertThat(raisedException).isInstanceOf(RequiredFieldMissingException.class);
 
-        verify(auditServiceMock, times(1)).persistAudit(eq(HttpStatus.BAD_REQUEST), eq(API));
+        verify(auditServiceMock, times(1)).persistAudit(HttpStatus.BAD_REQUEST, API);
     }
 
     @Test
@@ -144,7 +143,7 @@ public class ValidationHelperServiceTest {
                 + "changed to ACTIVE or SUSPENDED for userId: null");
         assertThat(raisedException).isInstanceOf(RequiredFieldMissingException.class);
 
-        verify(auditServiceMock, times(1)).persistAudit(eq(HttpStatus.BAD_REQUEST), eq(API));
+        verify(auditServiceMock, times(1)).persistAudit(HttpStatus.BAD_REQUEST, API);
     }
 
     @Test
@@ -156,7 +155,7 @@ public class ValidationHelperServiceTest {
                 .concat("changed to ACTIVE or SUSPENDED for userId: null"));
         assertThat(raisedException).isInstanceOf(RequiredFieldMissingException.class);
 
-        verify(auditServiceMock, times(1)).persistAudit(eq(HttpStatus.BAD_REQUEST), eq(API));
+        verify(auditServiceMock, times(1)).persistAudit(HttpStatus.BAD_REQUEST, API);
     }
 
     @Test

@@ -203,7 +203,7 @@ public class JsonFeignResponseHelperTest {
         Optional optionalObj = getResponseMapperClass(getResponse(400,false),
                 IdamErrorResponse.class);
         assertTrue(optionalObj.isPresent());
-        assertThat(optionalObj.get()).isEqualTo(IdamErrorResponse.class);
+        assertThat(optionalObj).contains(IdamErrorResponse.class);
     }
 
     @Test

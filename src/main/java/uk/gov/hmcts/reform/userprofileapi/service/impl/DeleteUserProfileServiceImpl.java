@@ -38,8 +38,8 @@ public class DeleteUserProfileServiceImpl implements DeleteResourceService<UserP
     @Transactional
     public UserProfilesDeletionResponse delete(UserProfileDataRequest profilesData) {
 
-        List<UserProfile> userProfiles = new ArrayList<UserProfile>();
-        Set<String> userIds = new HashSet<String>(profilesData.getUserIds());
+        List<UserProfile> userProfiles = new ArrayList<>();
+        Set<String> userIds = new HashSet<>(profilesData.getUserIds());
         userIds.forEach(userId -> userProfiles.add(validateUserStatus(userId)));
 
         return deleteUserProfiles(userProfiles);
