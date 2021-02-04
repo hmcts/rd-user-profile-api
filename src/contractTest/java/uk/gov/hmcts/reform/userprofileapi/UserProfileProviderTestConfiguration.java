@@ -63,15 +63,14 @@ public class UserProfileProviderTestConfiguration {
     @Primary
     public UserProfileService<RequestData> userProfileService() {
         return new UserProfileService<>(resourceCreator, resourceRetriever,
-                resourceUpdator,
-                resourceDeleter, userProfileRepository);
+                resourceUpdator, resourceDeleter, userProfileRepository);
     }
 
     @Bean
     @Primary
     public UserProfileCreator getResourceCreator() {
-        return new UserProfileCreator("Uri",idamService,userProfileRepository,auditRepository,validationHelperService
-                ,"1","loggingCompName");
+        return new UserProfileCreator("Uri",idamService,userProfileRepository,
+                auditRepository,validationHelperService,"1","loggingCompName");
     }
 
     @Bean

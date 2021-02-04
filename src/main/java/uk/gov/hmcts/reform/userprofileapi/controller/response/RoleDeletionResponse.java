@@ -4,7 +4,6 @@ import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.getStat
 import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.resolveStatusAndReturnMessage;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

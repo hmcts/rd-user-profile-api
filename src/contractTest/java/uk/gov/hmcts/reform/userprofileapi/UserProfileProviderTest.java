@@ -20,11 +20,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.userprofileapi.controller.UserProfileController;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.RoleAdditionResponse;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.RoleDeletionResponse;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
+import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.LanguagePreference;
@@ -33,7 +30,6 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserType;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
-import uk.gov.hmcts.reform.userprofileapi.service.DeleteResourceService;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileQueryProvider;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
@@ -45,10 +41,8 @@ import static org.mockito.Mockito.doReturn;
 
 import java.nio.charset.Charset;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -62,9 +56,6 @@ public class UserProfileProviderTest {
 
     @Autowired
     private UserProfileService<RequestData> userProfileService;
-
-    @Autowired
-    private DeleteResourceService<RequestData> resourceDeleter;
 
     @Autowired
     private UserProfileRepository userProfileRepository;
@@ -96,18 +87,16 @@ public class UserProfileProviderTest {
         context.setTarget(testTarget);
     }
 
-    @State({"A user profile create request is submitted"})
-    public void createUserProfile() {
-        //doReturn(caseWorkerProfile).when(caseWorkerProfileRepo).findByCaseWorkerIdIn(userRequest);
-    }
-
-    @State({"A user profile get request is submitted with valid email"})
+    @State({"A user profile with roles get request is submitted with valid Id"})
     public void getUserProfile() {
         Supplier<Optional<UserProfile>> up = () -> Optional.of(genUserProfile());
         doReturn(up).when(querySupplier).getRetrieveByIdQuery(any());
+        IdamRolesInfo idamRolesInfo = new IdamRolesInfo("007", "james.bond@justice.gov.uk", "James", "Bond",
+                Collections.singletonList("Secret-Agent"), true, false,HttpStatus.OK,"11 OK");
+        doReturn(idamRolesInfo).when(idamService).fetchUserById(any());
     }
 
-    @State({"A user profile update request is submitted"})
+    @State({"A user profile update request is submitted for roles"})
     public void updateUserProfile() {
         Optional<UserProfile> userProfileOptional = Optional.of(genUserProfile());
 
@@ -122,41 +111,22 @@ public class UserProfileProviderTest {
                 .when(idamClient).deleteUserRole(any(),anyString());
     }
 
+    @State({"A user profile create request is submitted"})
+    public void createUserProfile() {
+        IdamRegistrationInfo idamRegistrationInfo =
+                new IdamRegistrationInfo(HttpStatus.OK,"11 OK", ResponseEntity.accepted().build());
+        doReturn(idamRegistrationInfo).when(idamService).registerUser(any());
+    }
+
     private Request userProfileRequest(Request.HttpMethod httpMethod) {
         return Request.create(httpMethod, "url", getResponseHeaders(), Request.Body.empty(),
                 new RequestTemplate());
     }
 
-    private UserProfileResponse getUserProfileResponse() {
-        String idamMessage = "idamMessage";
-        List<RoleDeletionResponse> roleDeletionResponses = new ArrayList<>();
-        roleDeletionResponses.add(new RoleDeletionResponse("role", new ResponseEntity<Object>(HttpStatus.CREATED)));
-        return UserProfileResponse.builder()
-                .email("james.bond@justice.gov.uk")
-                .firstName("james")
-                .lastName("bond")
-                .idamId("idamId")
-                .idamStatus("idamStatus")
-                .attributeResponse(new AttributeResponse(1, idamMessage))
-                .roleAdditionResponse(new RoleAdditionResponse("200", idamMessage))
-                .roleDeletionResponse(roleDeletionResponses)
-                .roles(Collections.singletonList("role"))
-                .build();
-    }
-
-    private UserProfileRolesResponse getUserProfileRolesResponse() {
-        List<RoleDeletionResponse> roleDeletionResponses = new ArrayList<>();
-        roleDeletionResponses.add(new RoleDeletionResponse("caseworker",
-                new ResponseEntity<Object>(HttpStatus.CREATED)));
-        return new UserProfileRolesResponse(
-                new AttributeResponse(200, "success"),
-                new RoleAdditionResponse("200", "idamMessage"),
-                roleDeletionResponses);
-    }
-
     private UserProfile genUserProfile() {
-        return new UserProfile(007L,"007","james.bond@justice.gov.uk", "james", "bond", LanguagePreference.EN,true,
-                LocalDateTime.now(),true,LocalDateTime.now(), UserCategory.PROFESSIONAL, UserType.INTERNAL,
+        return new UserProfile(007L,"007","james.bond@justice.gov.uk", "james", "bond",
+                LanguagePreference.EN,true, LocalDateTime.now(),true,
+                LocalDateTime.now(), UserCategory.PROFESSIONAL, UserType.INTERNAL,
                 IdamStatus.ACTIVE, 1, LocalDateTime.now(),LocalDateTime.now(),null,
                 Collections.singletonList("Secret Agent"),"none","200");
     }

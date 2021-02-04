@@ -5,12 +5,15 @@ import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.getStat
 import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.resolveStatusAndReturnMessage;
 
 import java.util.List;
+
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamUserResponse;
 
 @Getter
+@AllArgsConstructor
 public class IdamRolesInfo {
 
     private String id;
