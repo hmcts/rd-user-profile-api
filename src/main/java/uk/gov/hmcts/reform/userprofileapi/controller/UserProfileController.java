@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.userprofileapi.controller;
 
+import static com.nimbusds.oauth2.sdk.util.CollectionUtils.isNotEmpty;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateCreateUserProfileRequest;
@@ -271,7 +273,7 @@ public class UserProfileController {
     )
     @ResponseBody
     public ResponseEntity<UserProfileResponse> getUserProfileByEmail(@RequestParam(value = "email",
-                                                                                 required = false) String email,
+            required = false) String email,
                                                                      @RequestParam(value = "userId", required = false)
                                                                              String userId) {
         UserProfileResponse response;
@@ -310,8 +312,8 @@ public class UserProfileController {
                     message = "An invalid request has been provided"
             ),
             @ApiResponse(
-            code = 401,
-            message = "Unauthorized Error : The requested resource is restricted and requires authentication"
+                    code = 401,
+                    message = "Unauthorized Error : The requested resource is restricted and requires authentication"
             ),
             @ApiResponse(
                     code = 403,
@@ -338,11 +340,11 @@ public class UserProfileController {
     )
 
     @ResponseBody
-    public ResponseEntity<UserProfileRolesResponse> updateUserProfile(@Valid @RequestBody UpdateUserProfileData
-                                                                                  updateUserProfileData,
-                                            @PathVariable String userId,
-                                            @ApiParam(name = "origin", required = false) @RequestParam(value = "origin",
-                                                    required = false) String origin) {
+    public ResponseEntity<UserProfileRolesResponse> updateUserProfile(
+            @Valid @RequestBody UpdateUserProfileData updateUserProfileData,
+            @PathVariable String userId,
+            @ApiParam(name = "origin") @RequestParam(value = "origin", required = false) String origin) {
+
         UserProfileRolesResponse userProfileResponse = null;
         if (CollectionUtils.isEmpty(updateUserProfileData.getRolesAdd())
                 && CollectionUtils.isEmpty(updateUserProfileData.getRolesDelete())) {
@@ -406,14 +408,14 @@ public class UserProfileController {
     )
     @ResponseBody
     public ResponseEntity<UserProfileDataResponse> retrieveUserProfiles(@ApiParam(name = "showdeleted", required = true)
-                                                                            @RequestParam(value = "showdeleted",
-                                                                                    required = true) String showDeleted,
+                                                                        @RequestParam(value = "showdeleted",
+                                                                                required = true) String showDeleted,
                                                                         @ApiParam(name = "rolesRequired",
                                                                                 required = true)
                                                                         @RequestParam(value = "rolesRequired",
                                                                                 required = true) String rolesRequired,
                                                                         @RequestBody UserProfileDataRequest
-                                                                                    userProfileDataRequest) {
+                                                                                userProfileDataRequest) {
         //Retrieving multiple user profiles
 
         boolean showDeletedBoolean = UserProfileValidator.validateAndReturnBooleanForParam(showDeleted);
@@ -461,16 +463,28 @@ public class UserProfileController {
     )
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @ResponseBody
-    public ResponseEntity<UserProfilesDeletionResponse> deleteUserProfiles(@Valid @RequestBody UserProfileDataRequest
-                                                                                       userProfilesDeletionDataReq) {
-        UserProfilesDeletionResponse resource = null;
-        validateUserIds(userProfilesDeletionDataReq);
-        resource = userProfileService.delete(userProfilesDeletionDataReq);
-        return ResponseEntity.status(resource.getStatusCode()).body(resource);
+    public ResponseEntity<UserProfilesDeletionResponse> deleteUserProfiles(
+            @Valid @RequestBody(required = false) UserProfileDataRequest userProfilesDeletionDataReq,
+            @RequestParam(value = "userId", required = false) String userId,
+            @RequestParam(value = "emailPattern", required = false) String emailPattern) {
 
+        UserProfilesDeletionResponse resource = null;
+
+        if (!userId.isBlank()) {
+            resource = userProfileService.deleteByUserId(userId);
+
+        } else if (!emailPattern.isBlank()) {
+            resource = userProfileService.deleteByEmailPattern(emailPattern);
+
+        } else if (isNotEmpty(userProfilesDeletionDataReq.getUserIds())) {
+            validateUserIds(userProfilesDeletionDataReq);
+            resource = userProfileService.delete(userProfilesDeletionDataReq);
+        }
+
+        return ResponseEntity.status(resource.getStatusCode()).body(resource);
     }
 
-    private  String getUserEmail(String email) {
+    private String getUserEmail(String email) {
         String userEmail = null;
         ServletRequestAttributes servletRequestAttributes =
                 ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes());
