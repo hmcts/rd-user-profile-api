@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
@@ -476,10 +477,10 @@ public class UserProfileController {
         } else if (isNotBlank(emailPattern)) {
             resource = userProfileService.deleteByEmailPattern(emailPattern);
 
-        } else if (isNotEmpty(userProfilesDeletionDataReq.getUserIds())) {
+        } else {
             validateUserIds(userProfilesDeletionDataReq);
             resource = userProfileService.delete(userProfilesDeletionDataReq);
-        }
+        } 
 
         return ResponseEntity.status(resource.getStatusCode()).body(resource);
     }

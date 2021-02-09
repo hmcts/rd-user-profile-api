@@ -49,9 +49,6 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
 import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileService;
 
-
-
-
 @RunWith(MockitoJUnitRunner.class)
 public class UserProfileControllerTest {
 
