@@ -65,7 +65,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         getAllUsersByUserIdsScenario();
         addOrDeleteUserRolesScenarios();
         reinviteUserScenario();
-        deleteUserScenario();
+        deleteUserScenarios();
         endpointSecurityScenarios();
     }
 
@@ -119,8 +119,9 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         reinviteUserWhenReinvitedWithinOneHourShouldReturn429();
     }
 
-    public void deleteUserScenario() throws JsonProcessingException {
-        deleteActiveAndPendingUserShouldReturnSuccess();
+    public void deleteUserScenarios() {
+        deleteActiveUserByIdShouldReturnSuccess();
+        deleteUsersByEmailPatternShouldReturnSuccess();
     }
 
     public void endpointSecurityScenarios() {
@@ -318,21 +319,25 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         log.info("reinviteUserReturn429WhenReinvitedWithinOneHour :: ENDED");
     }
 
-    public void deleteActiveAndPendingUserShouldReturnSuccess() throws JsonProcessingException {
-        log.info("deleteActiveUserShouldReturnSuccess :: STARTED");
 
-        List<String> userIds = asList(activeUserProfile.getIdamId(), pendingUserProfile.getIdamId());
+    public void deleteActiveUserByIdShouldReturnSuccess() {
+        log.info("deleteActiveUserByIdShouldReturnSuccess :: STARTED");
 
-        UserProfileDataRequest deletionRequest = buildUserProfileDataRequest(userIds);
+        testRequestHandler.sendDelete(NO_CONTENT, requestUri + "?userId=" + activeUserProfile.getIdamId());
 
-        testRequestHandler.sendDelete(
-                objectMapper.writeValueAsString(deletionRequest),
-                NO_CONTENT, requestUri);
+        testRequestHandler.sendGet(NOT_FOUND, requestUri + "?userId=" + activeUserProfile.getIdamId());
 
-        testRequestHandler.sendGet(NOT_FOUND,
-                requestUri + "?userId=" + userIds.get(0));
+        log.info("deleteActiveUserByIdShouldReturnSuccess :: ENDED");
+    }
 
-        log.info("deleteActiveUserShouldReturnSuccess :: ENDED");
+    public void deleteUsersByEmailPatternShouldReturnSuccess() {
+        log.info("deleteUsersByEmailPatternShouldReturnSuccess :: STARTED");
+
+        testRequestHandler.sendDelete(NO_CONTENT, requestUri + "?emailPattern=@prdfunctestuser.com");
+
+        testRequestHandler.sendGet(NOT_FOUND, requestUri + "?userId=" + pendingUserProfile.getIdamId());
+
+        log.info("deleteUsersByEmailPatternShouldReturnSuccess :: ENDED");
     }
 
     public void unauthenticatedRequestsShouldReturn401() {
