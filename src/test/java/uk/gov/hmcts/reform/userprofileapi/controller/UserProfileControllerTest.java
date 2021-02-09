@@ -246,7 +246,7 @@ public class UserProfileControllerTest {
         when(userProfileServiceMock.delete(any(UserProfileDataRequest.class)))
                 .thenReturn(userProfilesDeletionResponse);
         ResponseEntity<UserProfilesDeletionResponse> responseEntityActual = sut
-                .deleteUserProfiles(userProfileDataRequest);
+                .deleteUserProfiles(userProfileDataRequest, null, null);
         assertThat(responseEntityActual).isNotNull();
 
         verify(userProfileServiceMock, times(1)).delete(any(UserProfileDataRequest.class));
@@ -261,7 +261,7 @@ public class UserProfileControllerTest {
         List<String> userIds = new ArrayList<>();
         userIds.add("");
         UserProfileDataRequest userProfileDataRequest = new UserProfileDataRequest(userIds);
-        sut.deleteUserProfiles(userProfileDataRequest);
+        sut.deleteUserProfiles(userProfileDataRequest, null, null);
         verify(userProfileServiceMock, times(0)).delete(any(UserProfileDataRequest.class));
 
     }
