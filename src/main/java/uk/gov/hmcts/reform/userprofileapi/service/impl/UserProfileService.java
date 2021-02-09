@@ -67,4 +67,14 @@ public class UserProfileService<T extends RequestData> {
     public UserProfilesDeletionResponse delete(T requestData) {
         return resourceDeleter.delete(requestData);
     }
+
+    public UserProfilesDeletionResponse deleteByUserId(String userId) {
+        return resourceDeleter.deleteByUserId(userId);
+    }
+
+    public UserProfilesDeletionResponse deleteByEmailPattern(String emailPattern) {
+        return resourceDeleter.deleteByEmailPattern(emailPattern);
+    }
+
+
 }

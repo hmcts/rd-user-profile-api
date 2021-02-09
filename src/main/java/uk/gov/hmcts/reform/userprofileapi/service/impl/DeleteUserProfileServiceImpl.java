@@ -5,7 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import feign.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,10 +17,15 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfilesDeletionResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
 import uk.gov.hmcts.reform.userprofileapi.service.DeleteResourceService;
+
+import static java.util.Collections.singletonList;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @Service
 @Slf4j
@@ -30,16 +37,61 @@ public class DeleteUserProfileServiceImpl implements DeleteResourceService<UserP
     @Autowired
     private AuditService auditService;
 
+    @Autowired
+    private IdamFeignClient idamClient;
+
     @Value("${loggingComponentName}")
     private String loggingComponentName;
 
 
     @Override
     @Transactional
+    public UserProfilesDeletionResponse deleteByUserId(String userId) {
+        Response idamResponse = idamClient.deleteUser(userId);
+
+        if (idamResponse.status() != NO_CONTENT.value() || idamResponse.status() != NOT_FOUND.value()) {
+            UserProfilesDeletionResponse deletionResponse = new UserProfilesDeletionResponse();
+            deletionResponse.setMessage("IDAM Delete request failed for userId: " + userId);
+            deletionResponse.setStatusCode(idamResponse.status());
+            return deletionResponse;
+        }
+
+        UserProfile userProfile = validateUserStatus(userId);
+
+        return deleteUserProfiles(singletonList(userProfile));
+    }
+
+    @Override
+    @Transactional
+    public UserProfilesDeletionResponse deleteByEmailPattern(String emailPattern) {
+
+        List<UserProfile> userProfiles = userProfileRepository.findByEmailIgnoreCaseContaining(emailPattern);
+
+        userProfiles.forEach(userProfile -> {
+            Response idamResponse = idamClient.deleteUser(userProfile.getIdamId());
+
+            if (idamResponse.status() != NO_CONTENT.value() || idamResponse.status() != NOT_FOUND.value()) {
+                userProfiles.remove(userProfile);
+            }
+        });
+
+        Set<String> userIds = userProfiles.stream()
+                .map(UserProfile::getIdamId)
+                .collect(Collectors.toSet());
+
+        userIds.forEach(userId -> userProfiles.add(validateUserStatus(userId)));
+
+        return deleteUserProfiles(userProfiles);
+    }
+
+    @Override
+    @Transactional
     public UserProfilesDeletionResponse delete(UserProfileDataRequest profilesData) {
 
         List<UserProfile> userProfiles = new ArrayList<>();
+
         Set<String> userIds = new HashSet<>(profilesData.getUserIds());
+
         userIds.forEach(userId -> userProfiles.add(validateUserStatus(userId)));
 
         return deleteUserProfiles(userProfiles);
@@ -52,7 +104,7 @@ public class DeleteUserProfileServiceImpl implements DeleteResourceService<UserP
 
         userProfileRepository.deleteAll(userProfiles);
         UserProfilesDeletionResponse deletionResponse = new UserProfilesDeletionResponse();
-        HttpStatus status = HttpStatus.NO_CONTENT;
+        HttpStatus status = NO_CONTENT;
         userProfiles.forEach(userProfile -> {
             UserProfilesDeletionResponse auditResponse = new UserProfilesDeletionResponse();
             auditResponse.setMessage("UserProfile Successfully Deleted::" + userProfile.getIdamId());
@@ -67,11 +119,10 @@ public class DeleteUserProfileServiceImpl implements DeleteResourceService<UserP
 
     /**
      * This method is used to find the user profile exist or not with the give userId.
-     *
      */
-    public  UserProfile validateUserStatus(String userId) {
+    public UserProfile validateUserStatus(String userId) {
         Optional<UserProfile> userProfileOptional = userProfileRepository.findByIdamId(userId.trim());
-        if (!userProfileOptional.isPresent()) {
+        if (userProfileOptional.isEmpty()) {
             throw new ResourceNotFoundException("could not find user profile for userId:" + userId);
         }
         return userProfileOptional.get();
