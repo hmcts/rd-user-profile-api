@@ -47,5 +47,9 @@ public interface IdamFeignClient {
     @Headers({"Content-Type: application/json"})
     public Response updateUserDetails(@RequestBody Object updateUserDetails, @PathVariable("userId") String userId);
 
+    @DeleteMapping(value = "/api/v1/users/{userId}")
+    @RequestLine("DELETE /api/v1/users/{userId}")
+    @Headers("Content-Type: application/json")
+    public Response deleteUser(@PathVariable("userId") String userId);
 
 }
