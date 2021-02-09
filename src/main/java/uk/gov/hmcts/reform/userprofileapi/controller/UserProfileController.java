@@ -470,10 +470,10 @@ public class UserProfileController {
 
         UserProfilesDeletionResponse resource = null;
 
-        if (!userId.isBlank()) {
+        if (isNotBlank(userId)) {
             resource = userProfileService.deleteByUserId(userId);
 
-        } else if (!emailPattern.isBlank()) {
+        } else if (isNotBlank(emailPattern)) {
             resource = userProfileService.deleteByEmailPattern(emailPattern);
 
         } else if (isNotEmpty(userProfilesDeletionDataReq.getUserIds())) {

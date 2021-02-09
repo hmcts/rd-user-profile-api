@@ -284,7 +284,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         UpdateUserProfileData userProfileDataDelete = new UpdateUserProfileData();
         userProfileDataDelete.setRolesDelete(rolesDelete);
 
-        testRequestHandler.sendDeleteWithoutBody(
+        testRequestHandler.sendDelete(
                 userProfileDataDelete, HttpStatus.OK,
                 requestUri + "/" + activeUserProfile.getIdamId(), UserProfileRolesResponse.class);
 
