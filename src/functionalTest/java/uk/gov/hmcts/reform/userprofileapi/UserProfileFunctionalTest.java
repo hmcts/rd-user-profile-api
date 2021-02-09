@@ -284,7 +284,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         UpdateUserProfileData userProfileDataDelete = new UpdateUserProfileData();
         userProfileDataDelete.setRolesDelete(rolesDelete);
 
-        testRequestHandler.sendDelete(
+        testRequestHandler.sendDeleteWithoutBody(
                 userProfileDataDelete, HttpStatus.OK,
                 requestUri + "/" + activeUserProfile.getIdamId(), UserProfileRolesResponse.class);
 
@@ -323,7 +323,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
     public void deleteActiveUserByIdShouldReturnSuccess() {
         log.info("deleteActiveUserByIdShouldReturnSuccess :: STARTED");
 
-        testRequestHandler.sendDelete(NO_CONTENT, requestUri + "?userId=" + activeUserProfile.getIdamId());
+        testRequestHandler.sendDeleteWithoutBody(NO_CONTENT, requestUri + "?userId=" + activeUserProfile.getIdamId());
 
         testRequestHandler.sendGet(NOT_FOUND, requestUri + "?userId=" + activeUserProfile.getIdamId());
 
@@ -333,7 +333,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
     public void deleteUsersByEmailPatternShouldReturnSuccess() {
         log.info("deleteUsersByEmailPatternShouldReturnSuccess :: STARTED");
 
-        testRequestHandler.sendDelete(NO_CONTENT, requestUri + "?emailPattern=@prdfunctestuser.com");
+        testRequestHandler.sendDeleteWithoutBody(NO_CONTENT, requestUri + "?emailPattern=@prdfunctestuser.com");
 
         testRequestHandler.sendGet(NOT_FOUND, requestUri + "?userId=" + pendingUserProfile.getIdamId());
 

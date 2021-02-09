@@ -75,7 +75,7 @@ public class FuncTestRequestHandler {
                 .statusCode(expectedStatus.value()).extract().response();
     }
 
-    public <T> T sendDelete(Object data, HttpStatus expectedStatus, String path, Class<T> clazz)
+    public <T> T sendDeleteWithoutBody(Object data, HttpStatus expectedStatus, String path, Class<T> clazz)
             throws JsonProcessingException {
 
         return sendPut(objectMapper.writeValueAsString(data),
@@ -84,7 +84,7 @@ public class FuncTestRequestHandler {
                 .as(clazz);
     }
 
-    public Response sendDelete(HttpStatus expectedStatus, String path) {
+    public Response sendDeleteWithoutBody(HttpStatus expectedStatus, String path) {
 
         return withAuthenticatedRequest()
                 .delete(path)
