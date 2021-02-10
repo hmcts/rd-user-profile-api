@@ -84,6 +84,16 @@ public class FuncTestRequestHandler {
                 .as(clazz);
     }
 
+    public Response sendDelete(String jsonBody, HttpStatus expectedStatus, String path) {
+
+        return withAuthenticatedRequest()
+                .body(jsonBody)
+                .delete(path)
+                .then()
+                .log().all(true)
+                .statusCode(expectedStatus.value()).extract().response();
+    }
+
     public Response sendDeleteWithoutBody(HttpStatus expectedStatus, String path) {
 
         return withAuthenticatedRequest()
