@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.userprofileapi.controller;
 
-import static com.nimbusds.oauth2.sdk.util.CollectionUtils.isNotEmpty;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -38,7 +37,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
@@ -480,7 +478,7 @@ public class UserProfileController {
         } else {
             validateUserIds(userProfilesDeletionDataReq);
             resource = userProfileService.delete(userProfilesDeletionDataReq);
-        } 
+        }
 
         return ResponseEntity.status(resource.getStatusCode()).body(resource);
     }
