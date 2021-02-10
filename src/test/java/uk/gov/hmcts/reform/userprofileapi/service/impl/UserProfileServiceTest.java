@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -25,6 +26,7 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataRes
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfilesDeletionResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdentifierName;
 import uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder;
@@ -45,6 +47,9 @@ public class UserProfileServiceTest {
 
     @Mock
     private UserProfileRetriever userProfileRetriever;
+
+    @Mock
+    private DeleteUserProfileServiceImpl deleteUserProfileService;
 
     @Mock
     UserProfileRepository userProfileRepository;
@@ -166,5 +171,31 @@ public class UserProfileServiceTest {
         assertThat(response).isNotNull();
         assertThat(response.getIdamId()).isEqualTo(userProfile.getIdamId());
         assertThat(response.getIdamRegistrationResponse()).isEqualTo(201);
+    }
+
+    @Test
+    public void test_deleteUserById() {
+        UserProfilesDeletionResponse userProfilesDeletionResponse =
+                new UserProfilesDeletionResponse(204, "UserProfiles Successfully Deleted");
+
+        when(deleteUserProfileService.deleteByUserId(anyString())).thenReturn(userProfilesDeletionResponse);
+
+        UserProfilesDeletionResponse response = userProfileService.deleteByUserId(anyString());
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(204);
+    }
+
+    @Test
+    public void test_deleteUserByEmailPattern() {
+        UserProfilesDeletionResponse userProfilesDeletionResponse =
+                new UserProfilesDeletionResponse(204, "UserProfiles Successfully Deleted");
+
+        when(deleteUserProfileService.deleteByEmailPattern(anyString())).thenReturn(userProfilesDeletionResponse);
+
+        UserProfilesDeletionResponse response = userProfileService.deleteByEmailPattern(anyString());
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(204);
     }
 }
