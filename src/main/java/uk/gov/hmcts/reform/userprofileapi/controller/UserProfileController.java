@@ -17,6 +17,7 @@ import io.swagger.annotations.Authorization;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -64,6 +65,7 @@ import uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator;
 
 @Slf4j
 @RestController
+@AllArgsConstructor
 public class UserProfileController {
 
     @Autowired
