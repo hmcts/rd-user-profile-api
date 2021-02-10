@@ -14,6 +14,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Transient;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -32,6 +33,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 @Setter
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 @SequenceGenerator(name = "user_profile_id_seq", sequenceName = "user_profile_id_seq", allocationSize = 1)
 public class UserProfile {
 
