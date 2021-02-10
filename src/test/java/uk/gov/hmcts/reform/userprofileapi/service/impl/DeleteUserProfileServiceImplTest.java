@@ -6,6 +6,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 import java.util.ArrayList;
@@ -119,6 +121,47 @@ public class DeleteUserProfileServiceImplTest {
     }
 
     @Test
+    public void testDeleteUserProfileByUserId_WhenIdamReturns404() {
+        Response responseMock = mock(Response.class);
+
+        UserProfilesDeletionResponse deletionResponse = new UserProfilesDeletionResponse();
+        deletionResponse.setMessage("UserProfiles Successfully Deleted");
+        deletionResponse.setStatusCode(NO_CONTENT.value());
+
+        when(idamClientMock.deleteUser(userProfile.getIdamId())).thenReturn(responseMock);
+        when(responseMock.status()).thenReturn(NOT_FOUND.value());
+        when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+
+        UserProfilesDeletionResponse deletionResp = sut.deleteByUserId(userProfile.getIdamId());
+
+        assertThat(deletionResp.getStatusCode()).isEqualTo(deletionResponse.getStatusCode());
+        assertThat(deletionResp.getMessage()).isEqualTo(deletionResponse.getMessage());
+
+        verify(userProfileRepositoryMock, times(1)).findByIdamId(any(String.class));
+        verify(userProfileRepositoryMock, times(1)).deleteAll(any());
+        verify(auditServiceMock, times(1)).persistAudit(any());
+    }
+
+    @Test
+    public void testDeleteUserProfileByUserId_WhenIdamReutrnsError() {
+        Response responseMock = mock(Response.class);
+
+        UserProfilesDeletionResponse deletionResponse = new UserProfilesDeletionResponse();
+        deletionResponse.setMessage("IDAM Delete request failed for userId: " + userProfile.getIdamId());
+        deletionResponse.setStatusCode(BAD_REQUEST.value());
+
+        when(idamClientMock.deleteUser(userProfile.getIdamId())).thenReturn(responseMock);
+        when(responseMock.status()).thenReturn(BAD_REQUEST.value());
+
+        UserProfilesDeletionResponse deletionResp = sut.deleteByUserId(userProfile.getIdamId());
+
+        assertThat(deletionResp.getStatusCode()).isEqualTo(deletionResponse.getStatusCode());
+        assertThat(deletionResp.getMessage()).isEqualTo(deletionResponse.getMessage());
+
+        verify(responseMock, times(3)).status();
+    }
+
+    @Test
     public void testDeleteUserProfileByEmailPattern() {
         List<UserProfile> userProfiles = new ArrayList<>();
         userProfiles.add(userProfile);
@@ -131,6 +174,35 @@ public class DeleteUserProfileServiceImplTest {
 
         when(idamClientMock.deleteUser(userProfile.getIdamId())).thenReturn(responseMock);
         when(responseMock.status()).thenReturn(NO_CONTENT.value());
+        when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+        when(userProfileRepositoryMock
+                .findByEmailIgnoreCaseContaining("@prdfunctestuser.com")).thenReturn(userProfiles);
+
+        UserProfilesDeletionResponse deletionResp = sut.deleteByEmailPattern("@prdfunctestuser.com");
+
+        assertThat(deletionResp.getStatusCode()).isEqualTo(deletionResponse.getStatusCode());
+        assertThat(deletionResp.getMessage()).isEqualTo(deletionResponse.getMessage());
+
+        verify(userProfileRepositoryMock, times(1)).findByIdamId(any(String.class));
+        verify(userProfileRepositoryMock, times(1))
+                .findByEmailIgnoreCaseContaining(any(String.class));
+        verify(userProfileRepositoryMock, times(1)).deleteAll(any());
+        verify(auditServiceMock, times(2)).persistAudit(any());
+    }
+
+    @Test
+    public void testDeleteUserProfileByEmailPattern_WhenIdamReturns404() {
+        List<UserProfile> userProfiles = new ArrayList<>();
+        userProfiles.add(userProfile);
+
+        Response responseMock = mock(Response.class);
+
+        UserProfilesDeletionResponse deletionResponse = new UserProfilesDeletionResponse();
+        deletionResponse.setMessage("UserProfiles Successfully Deleted");
+        deletionResponse.setStatusCode(NO_CONTENT.value());
+
+        when(idamClientMock.deleteUser(userProfile.getIdamId())).thenReturn(responseMock);
+        when(responseMock.status()).thenReturn(NOT_FOUND.value());
         when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
         when(userProfileRepositoryMock
                 .findByEmailIgnoreCaseContaining("@prdfunctestuser.com")).thenReturn(userProfiles);
