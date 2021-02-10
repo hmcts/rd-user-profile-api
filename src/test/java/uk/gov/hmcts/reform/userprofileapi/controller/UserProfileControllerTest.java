@@ -253,13 +253,50 @@ public class UserProfileControllerTest {
 
     @Test(expected = RequiredFieldMissingException.class)
     public void testDeleteUserProfilesWithEmptyUserIdInTheRequest() {
-
-        UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         List<String> userIds = new ArrayList<>();
         userIds.add("");
+
         UserProfileDataRequest userProfileDataRequest = new UserProfileDataRequest(userIds);
         sut.deleteUserProfiles(userProfileDataRequest, null, null);
-        verify(userProfileServiceMock, times(0)).delete(any(UserProfileDataRequest.class));
 
+        verify(userProfileServiceMock, times(0)).delete(any(UserProfileDataRequest.class));
     }
+
+    @Test
+    public void testDeleteUserById() {
+        UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
+
+        UserProfilesDeletionResponse userProfilesDeletionResponse =
+                new UserProfilesDeletionResponse(204, "UserProfiles Successfully Deleted");
+
+        when(userProfileServiceMock.deleteByUserId(anyString())).thenReturn(userProfilesDeletionResponse);
+
+        ResponseEntity<UserProfilesDeletionResponse> responseEntityActual =
+                sut.deleteUserProfiles(null, userProfile.getIdamId(), null);
+
+        assertThat(responseEntityActual).isNotNull();
+        verify(userProfileServiceMock, times(1)).deleteByUserId(userProfile.getIdamId());
+        assertThat(responseEntityActual.getStatusCodeValue()).isEqualTo(204);
+        assertThat(responseEntityActual.getBody().getMessage()).isEqualTo("UserProfiles Successfully Deleted");
+    }
+
+    @Test
+    public void testDeleteUserByEmailPattern() {
+        String emailPattern = "@prdfunctestuser.com";
+
+        UserProfilesDeletionResponse userProfilesDeletionResponse =
+                new UserProfilesDeletionResponse(204, "UserProfiles Successfully Deleted");
+
+        when(userProfileServiceMock.deleteByEmailPattern(emailPattern))
+                .thenReturn(userProfilesDeletionResponse);
+
+        ResponseEntity<UserProfilesDeletionResponse> responseEntityActual =
+                sut.deleteUserProfiles(null, null, emailPattern);
+
+        assertThat(responseEntityActual).isNotNull();
+        verify(userProfileServiceMock, times(1)).deleteByEmailPattern(emailPattern);
+        assertThat(responseEntityActual.getStatusCodeValue()).isEqualTo(204);
+        assertThat(responseEntityActual.getBody().getMessage()).isEqualTo("UserProfiles Successfully Deleted");
+    }
+
 }
