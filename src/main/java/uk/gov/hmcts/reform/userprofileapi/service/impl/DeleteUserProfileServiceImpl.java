@@ -43,22 +43,21 @@ public class DeleteUserProfileServiceImpl implements DeleteResourceService<UserP
     @Value("${loggingComponentName}")
     private String loggingComponentName;
 
-
     @Override
     @Transactional
     public UserProfilesDeletionResponse deleteByUserId(String userId) {
         Response idamResponse = idamClient.deleteUser(userId);
 
-        if (idamResponse.status() != NO_CONTENT.value() || idamResponse.status() != NOT_FOUND.value()) {
+        if (idamResponse.status() == NO_CONTENT.value() || idamResponse.status() == NOT_FOUND.value()) {
+            UserProfile userProfile = validateUserStatus(userId);
+            return deleteUserProfiles(singletonList(userProfile));
+
+        } else {
             UserProfilesDeletionResponse deletionResponse = new UserProfilesDeletionResponse();
             deletionResponse.setMessage("IDAM Delete request failed for userId: " + userId);
             deletionResponse.setStatusCode(idamResponse.status());
             return deletionResponse;
         }
-
-        UserProfile userProfile = validateUserStatus(userId);
-
-        return deleteUserProfiles(singletonList(userProfile));
     }
 
     @Override
@@ -67,13 +66,15 @@ public class DeleteUserProfileServiceImpl implements DeleteResourceService<UserP
 
         List<UserProfile> userProfiles = userProfileRepository.findByEmailIgnoreCaseContaining(emailPattern);
 
-        userProfiles.forEach(userProfile -> {
-            Response idamResponse = idamClient.deleteUser(userProfile.getIdamId());
+        for (int i = userProfiles.size() - 1; i >= 0; i--) {
+            Response idamResponse = idamClient.deleteUser(userProfiles.get(i).getIdamId());
 
-            if (idamResponse.status() != NO_CONTENT.value() || idamResponse.status() != NOT_FOUND.value()) {
-                userProfiles.remove(userProfile);
+            if (idamResponse.status() == NO_CONTENT.value() || idamResponse.status() == NOT_FOUND.value()) {
+                break;
+            } else {
+                userProfiles.remove(i);
             }
-        });
+        }
 
         Set<String> userIds = userProfiles.stream()
                 .map(UserProfile::getIdamId)
