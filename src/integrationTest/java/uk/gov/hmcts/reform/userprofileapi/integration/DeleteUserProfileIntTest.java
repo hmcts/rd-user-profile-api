@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.userprofileapi.integration;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
@@ -17,9 +18,11 @@ import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfilesDeletionResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 @SpringBootTest(webEnvironment = MOCK)
 @Transactional
@@ -35,7 +38,7 @@ public class DeleteUserProfileIntTest extends AuthorizationEnabledIntegrationTes
 
         //user profile create and  delete
         createAndDeleteSingleUserProfile(buildCreateUserProfileData());
-        verifyUserProfileDeletion(1,2);
+        verifyUserProfileDeletion(1, 2);
 
     }
 
@@ -51,11 +54,53 @@ public class DeleteUserProfileIntTest extends AuthorizationEnabledIntegrationTes
         userIds.add(response2.getIdamId());
         //user profile to delete
         deleteUserProfiles(userIds, NO_CONTENT);
-        verifyUserProfileDeletion(2,4);
+        verifyUserProfileDeletion(2, 4);
     }
 
     @Test
-    public void return404WhenUnableToFindProfileForOneOfUserIdInTheDeleteRequestForMulUserProfiles()throws Exception {
+    public void should_return_204_and_delete_user_profile_by_user_id() throws Exception {
+
+        UserProfileCreationData data = buildCreateUserProfileData();
+
+        //user profile create and  delete
+        UserProfileCreationResponse createdResource =
+                userProfileRequestHandlerTest.sendPost(mockMvc, APP_BASE_PATH,
+                        data, CREATED, UserProfileCreationResponse.class);
+
+        verifyUserProfileCreation(createdResource, CREATED, data);
+
+        userProfileRequestHandlerTest.sendDeleteWithoutBody(mockMvc,
+                APP_BASE_PATH + "?userId=" + createdResource.getIdamId(),
+                NO_CONTENT,
+                UserProfilesDeletionResponse.class);
+
+        verifyUserProfileDeletion(1, 2);
+
+    }
+
+    @Test
+    public void should_return_204_and_delete_user_profile_by_email_pattern() throws Exception {
+
+        UserProfileCreationData data = buildCreateUserProfileData();
+
+        //user profile create and  delete
+        UserProfileCreationResponse createdResource =
+                userProfileRequestHandlerTest.sendPost(mockMvc, APP_BASE_PATH,
+                        data, CREATED, UserProfileCreationResponse.class);
+
+        verifyUserProfileCreation(createdResource, CREATED, data);
+
+        userProfileRequestHandlerTest.sendDeleteWithoutBody(mockMvc,
+                APP_BASE_PATH + "?emailPattern=" + "@prdfunctestuser.com",
+                NO_CONTENT,
+                UserProfilesDeletionResponse.class);
+
+        List<UserProfile> userProfiles = (List<UserProfile>) userProfileRepository.findAll();
+        assertThat(userProfiles.size()).isEqualTo(0);
+    }
+
+    @Test
+    public void return404WhenUnableToFindProfileForOneOfUserIdInTheDeleteRequestForMulUserProfiles() throws Exception {
 
         UserProfileCreationResponse response1 = createUserProfile(buildCreateUserProfileData());
         //user profile two created

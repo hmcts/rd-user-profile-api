@@ -122,7 +122,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
     public void deleteUserScenarios() throws Exception {
         deletePendingUserShouldReturnSuccess();
         deleteActiveUserByIdShouldReturnSuccess();
-        deleteActiveUsersByEmailPatternShouldReturnSuccess();
+        deleteActiveUserByEmailPatternShouldReturnSuccess();
     }
 
     public void endpointSecurityScenarios() {
@@ -346,7 +346,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         log.info("deleteActiveUserByIdShouldReturnSuccess :: ENDED");
     }
 
-    public void deleteActiveUsersByEmailPatternShouldReturnSuccess() throws Exception {
+    public void deleteActiveUserByEmailPatternShouldReturnSuccess() throws Exception {
         log.info("deleteActiveUsersByEmailPatternShouldReturnSuccess :: STARTED");
 
         activeUserProfile = createActiveUserProfileWithGivenFields(activeUserProfileCreationData);

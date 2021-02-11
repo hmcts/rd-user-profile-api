@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.delete;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.patch;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -121,6 +122,14 @@ public abstract class AuthorizationEnabledIntegrationTest {
                                 + "  \"roles\": ["
                                 + "    \"pui-organisation-manager\""
                                 + "  ]"
+                                + "}")));
+
+        idamService.stubFor(delete(urlMatching("/api/v1/users/.*"))
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withStatus(204)
+                        .withBody("{"
+                                + "  \"response\": \"User deleted successfully.\""
                                 + "}")));
 
         idamService.stubFor(get(urlEqualTo("/o/userinfo"))
