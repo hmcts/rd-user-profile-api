@@ -66,6 +66,10 @@ public class DeleteUserProfileServiceImpl implements DeleteResourceService<UserP
 
         List<UserProfile> userProfiles = userProfileRepository.findByEmailIgnoreCaseContaining(emailPattern);
 
+        if (userProfiles.isEmpty()) {
+            throw new ResourceNotFoundException("No User Profiles found for email pattern: " + emailPattern);
+        }
+
         for (int i = userProfiles.size() - 1; i >= 0; i--) {
             Response idamResponse = idamClient.deleteUser(userProfiles.get(i).getIdamId());
 
@@ -124,10 +128,9 @@ public class DeleteUserProfileServiceImpl implements DeleteResourceService<UserP
     public UserProfile validateUserStatus(String userId) {
         Optional<UserProfile> userProfileOptional = userProfileRepository.findByIdamId(userId.trim());
         if (userProfileOptional.isEmpty()) {
-            throw new ResourceNotFoundException("could not find user profile for userId:" + userId);
+            throw new ResourceNotFoundException("could not find user profile for userId: " + userId);
         }
         return userProfileOptional.get();
     }
 
 }
-
