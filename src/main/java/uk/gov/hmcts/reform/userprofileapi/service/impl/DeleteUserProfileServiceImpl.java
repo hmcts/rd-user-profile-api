@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import feign.Response;
 import lombok.extern.slf4j.Slf4j;
@@ -63,6 +62,7 @@ public class DeleteUserProfileServiceImpl implements DeleteResourceService<UserP
     @Override
     @Transactional
     public UserProfilesDeletionResponse deleteByEmailPattern(String emailPattern) {
+        Set<String> validUserIdsToDelete = new HashSet<>();
 
         List<UserProfile> userProfiles = userProfileRepository.findByEmailIgnoreCaseContaining(emailPattern);
 
@@ -70,21 +70,15 @@ public class DeleteUserProfileServiceImpl implements DeleteResourceService<UserP
             throw new ResourceNotFoundException("No User Profiles found for email pattern: " + emailPattern);
         }
 
-        for (int i = userProfiles.size() - 1; i >= 0; i--) {
-            Response idamResponse = idamClient.deleteUser(userProfiles.get(i).getIdamId());
+        userProfiles.forEach(up -> {
+            Response idamResponse = idamClient.deleteUser(up.getIdamId());
 
             if (idamResponse.status() == NO_CONTENT.value() || idamResponse.status() == NOT_FOUND.value()) {
-                break;
-            } else {
-                userProfiles.remove(i);
+                validUserIdsToDelete.add(up.getIdamId());
             }
-        }
+        });
 
-        Set<String> userIds = userProfiles.stream()
-                .map(UserProfile::getIdamId)
-                .collect(Collectors.toSet());
-
-        userIds.forEach(userId -> userProfiles.add(validateUserStatus(userId)));
+        validUserIdsToDelete.forEach(userId -> userProfiles.add(validateUserStatus(userId)));
 
         return deleteUserProfiles(userProfiles);
     }
