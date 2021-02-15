@@ -243,7 +243,7 @@ public class UserProfileControllerTest {
         when(userProfileServiceMock.delete(any(UserProfileDataRequest.class)))
                 .thenReturn(userProfilesDeletionResponse);
         ResponseEntity<UserProfilesDeletionResponse> responseEntityActual = sut
-                .deleteUserProfiles(userProfileDataRequest, null, null);
+                .deleteUserProfiles(userProfileDataRequest);
         assertThat(responseEntityActual).isNotNull();
 
         verify(userProfileServiceMock, times(1)).delete(any(UserProfileDataRequest.class));
@@ -257,7 +257,7 @@ public class UserProfileControllerTest {
         userIds.add("");
 
         UserProfileDataRequest userProfileDataRequest = new UserProfileDataRequest(userIds);
-        sut.deleteUserProfiles(userProfileDataRequest, null, null);
+        sut.deleteUserProfiles(userProfileDataRequest);
 
         verify(userProfileServiceMock, times(0)).delete(any(UserProfileDataRequest.class));
     }
@@ -272,7 +272,7 @@ public class UserProfileControllerTest {
         when(userProfileServiceMock.deleteByUserId(anyString())).thenReturn(userProfilesDeletionResponse);
 
         ResponseEntity<UserProfilesDeletionResponse> responseEntityActual =
-                sut.deleteUserProfiles(null, userProfile.getIdamId(), null);
+                sut.deleteUserProfileByIdOrEmailPattern(userProfile.getIdamId(), null);
 
         assertThat(responseEntityActual).isNotNull();
         verify(userProfileServiceMock, times(1)).deleteByUserId(userProfile.getIdamId());
@@ -291,7 +291,7 @@ public class UserProfileControllerTest {
                 .thenReturn(userProfilesDeletionResponse);
 
         ResponseEntity<UserProfilesDeletionResponse> responseEntityActual =
-                sut.deleteUserProfiles(null, null, emailPattern);
+                sut.deleteUserProfileByIdOrEmailPattern(null, emailPattern);
 
         assertThat(responseEntityActual).isNotNull();
         verify(userProfileServiceMock, times(1)).deleteByEmailPattern(emailPattern);
