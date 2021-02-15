@@ -352,9 +352,10 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         activeUserProfile = createActiveUserProfileWithGivenFields(activeUserProfileCreationData);
         verifyCreateUserProfile(activeUserProfile);
 
-        testRequestHandler.sendDeleteWithoutBody(NO_CONTENT, requestUri + "?emailPattern=@prdfunctestuser.com");
+        testRequestHandler
+                .sendDeleteWithoutBody(NO_CONTENT, requestUri + "/users?emailPattern=@prdfunctestuser.com");
 
-        testRequestHandler.sendGet(NOT_FOUND, requestUri + "/users?userId=" + activeUserProfile.getIdamId());
+        testRequestHandler.sendGet(NOT_FOUND, requestUri + "?userId=" + activeUserProfile.getIdamId());
 
         log.info("deleteActiveUsersByEmailPatternShouldReturnSuccess :: ENDED");
     }
