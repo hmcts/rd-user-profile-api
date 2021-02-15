@@ -70,7 +70,7 @@ public class DeleteUserProfileIntTest extends AuthorizationEnabledIntegrationTes
         verifyUserProfileCreation(createdResource, CREATED, data);
 
         userProfileRequestHandlerTest.sendDeleteWithoutBody(mockMvc,
-                APP_BASE_PATH + "?userId=" + createdResource.getIdamId(),
+                APP_BASE_PATH + "/users?userId=" + createdResource.getIdamId(),
                 NO_CONTENT,
                 UserProfilesDeletionResponse.class);
 
@@ -91,7 +91,7 @@ public class DeleteUserProfileIntTest extends AuthorizationEnabledIntegrationTes
         verifyUserProfileCreation(createdResource, CREATED, data);
 
         userProfileRequestHandlerTest.sendDeleteWithoutBody(mockMvc,
-                APP_BASE_PATH + "?emailPattern=" + "@prdfunctestuser.com",
+                APP_BASE_PATH + "/users?emailPattern=" + "@prdfunctestuser.com",
                 NO_CONTENT,
                 UserProfilesDeletionResponse.class);
 
