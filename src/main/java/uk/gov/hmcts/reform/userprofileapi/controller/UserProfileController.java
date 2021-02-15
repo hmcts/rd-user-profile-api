@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
@@ -429,7 +430,7 @@ public class UserProfileController {
 
     }
 
-    @ApiOperation(value = "Delete an User Profiles",
+    @ApiOperation(value = "Delete User Profiles",
             authorizations = {
                     @Authorization(value = "ServiceAuthorization"),
                     @Authorization(value = "Authorization")
@@ -464,22 +465,66 @@ public class UserProfileController {
     )
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @ResponseBody
-    public ResponseEntity<UserProfilesDeletionResponse> deleteUserProfiles(
-            @Valid @RequestBody(required = false) UserProfileDataRequest userProfilesDeletionDataReq,
+    public ResponseEntity<UserProfilesDeletionResponse> deleteUserProfiles(@Valid @RequestBody UserProfileDataRequest
+                                                                                   userProfilesDeletionDataReq) {
+        UserProfilesDeletionResponse resource;
+
+        validateUserIds(userProfilesDeletionDataReq);
+
+        resource = userProfileService.delete(userProfilesDeletionDataReq);
+
+        return ResponseEntity.status(resource.getStatusCode()).body(resource);
+    }
+
+    @ApiOperation(value = "Delete User Profiles by User ID or Email Pattern",
+            authorizations = {
+                    @Authorization(value = "ServiceAuthorization"),
+                    @Authorization(value = "Authorization")
+            })
+    @ApiResponses({
+            @ApiResponse(
+                    code = 204,
+                    message = "User Profiles deleted successfully",
+                    response = UserProfilesDeletionResponse.class
+            ),
+            @ApiResponse(
+                    code = 400,
+                    message = "An invalid request has been provided"
+            ),
+            @ApiResponse(
+                    code = 401,
+                    message = "Unauthorized Error : The requested resource is restricted and requires authentication"
+            ),
+            @ApiResponse(
+                    code = 403,
+                    message = "Forbidden Error: Access denied"
+            ),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error"
+            )
+    })
+
+    @DeleteMapping(
+            path = "/users",
+            consumes = APPLICATION_JSON_VALUE,
+            produces = APPLICATION_JSON_VALUE
+    )
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    @ResponseBody
+    public ResponseEntity<UserProfilesDeletionResponse> deleteUserProfileByIdOrEmailPattern(
             @RequestParam(value = "userId", required = false) String userId,
             @RequestParam(value = "emailPattern", required = false) String emailPattern) {
 
-        UserProfilesDeletionResponse resource = null;
+        UserProfilesDeletionResponse resource;
 
         if (isNotBlank(userId)) {
             resource = userProfileService.deleteByUserId(userId);
 
         } else if (isNotBlank(emailPattern)) {
             resource = userProfileService.deleteByEmailPattern(emailPattern);
-
         } else {
-            validateUserIds(userProfilesDeletionDataReq);
-            resource = userProfileService.delete(userProfilesDeletionDataReq);
+            throw new InvalidRequest("No User ID or Email Pattern provided to delete the User(s)");
         }
 
         return ResponseEntity.status(resource.getStatusCode()).body(resource);
