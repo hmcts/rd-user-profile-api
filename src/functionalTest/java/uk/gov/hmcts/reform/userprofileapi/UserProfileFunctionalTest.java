@@ -339,7 +339,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         log.info("deleteActiveUserByIdShouldReturnSuccess :: STARTED");
 
         testRequestHandler
-                .sendDeleteWithoutBody(NO_CONTENT, requestUri + "?userId=" + activeUserProfile.getIdamId());
+                .sendDeleteWithoutBody(NO_CONTENT, requestUri + "/users?userId=" + activeUserProfile.getIdamId());
 
         testRequestHandler.sendGet(NOT_FOUND, requestUri + "?userId=" + activeUserProfile.getIdamId());
 
@@ -354,7 +354,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
 
         testRequestHandler.sendDeleteWithoutBody(NO_CONTENT, requestUri + "?emailPattern=@prdfunctestuser.com");
 
-        testRequestHandler.sendGet(NOT_FOUND, requestUri + "?userId=" + activeUserProfile.getIdamId());
+        testRequestHandler.sendGet(NOT_FOUND, requestUri + "/users?userId=" + activeUserProfile.getIdamId());
 
         log.info("deleteActiveUsersByEmailPatternShouldReturnSuccess :: ENDED");
     }
