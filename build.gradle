@@ -38,7 +38,8 @@ def versions = [
         springBoot         : '2.3.3.RELEASE',
         springHystrix      : '2.1.1.RELEASE',
         springfoxSwagger   : '2.9.2',
-        pact_version       : '3.5.24'
+        pact_version       : '3.5.24',
+        launchDarklySdk    : "5.1.1"
 ]
 
 mainClassName = 'uk.gov.hmcts.reform.userprofileapi.Application'
@@ -314,6 +315,9 @@ dependencies {
     compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.1.0'
     compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: versions.reformS2sClient
     //compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: versions.reformHealthStarter
+
+    compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: versions.launchDarklySdk
+    compile group:"org.yaml", name: "snakeyaml", version:"1.26"
 
     compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.11.3'
     compile group: 'io.jsonwebtoken', name: 'jjwt', version:'0.9.1'
