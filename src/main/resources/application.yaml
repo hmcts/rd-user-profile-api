@@ -103,3 +103,9 @@ resendInterval: 60
 syncInterval: 60
 
 loggingComponentName: RD_User_Profile_API
+
+launchdarkly:
+  sdk:
+    key: ${LD_SDK_KEY:}
+    environment: ${LAUNCH_DARKLY_ENV:local}
+    user: rd

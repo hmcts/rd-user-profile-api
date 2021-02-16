@@ -34,7 +34,7 @@ public class FeatureToggleServiceImpl implements FeatureToggleService {
     public void mapServiceToFlag() {
         launchDarklyMap = new HashMap<>();
         launchDarklyMap.put("UserProfileController.deleteUserProfileByIdOrEmailPattern",
-                "up-delete-by-id-or-email-pattern");
+                "delete-user-by-id-or-email-pattern");
     }
 
     @Override
