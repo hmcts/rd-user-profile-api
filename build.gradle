@@ -39,7 +39,7 @@ def versions = [
         springHystrix      : '2.1.1.RELEASE',
         springfoxSwagger   : '2.9.2',
         pact_version       : '3.5.24',
-        launchDarklySdk    : "5.1.1"
+        launchDarklySdk    : "5.2.1"
 ]
 
 mainClassName = 'uk.gov.hmcts.reform.userprofileapi.Application'
