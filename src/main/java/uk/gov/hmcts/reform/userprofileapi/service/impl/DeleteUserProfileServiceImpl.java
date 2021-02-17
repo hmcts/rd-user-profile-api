@@ -45,14 +45,16 @@ public class DeleteUserProfileServiceImpl implements DeleteResourceService<UserP
     @Override
     @Transactional
     public UserProfilesDeletionResponse deleteByUserId(String userId) {
+        UserProfilesDeletionResponse deletionResponse = new UserProfilesDeletionResponse();
+
         Response idamResponse = idamClient.deleteUser(userId);
 
         if (idamResponse.status() == NO_CONTENT.value() || idamResponse.status() == NOT_FOUND.value()) {
-            UserProfile userProfile = validateUserStatus(userId);
-            return deleteUserProfiles(singletonList(userProfile));
+            Optional<UserProfile> userProfile = userProfileRepository.findByIdamId(userId.trim());
+
+            return validateUserAfterIdamDelete(userProfile, userId, idamResponse.status());
 
         } else {
-            UserProfilesDeletionResponse deletionResponse = new UserProfilesDeletionResponse();
             deletionResponse.setMessage("IDAM Delete request failed for userId: " + userId);
             deletionResponse.setStatusCode(idamResponse.status());
             return deletionResponse;
@@ -62,7 +64,7 @@ public class DeleteUserProfileServiceImpl implements DeleteResourceService<UserP
     @Override
     @Transactional
     public UserProfilesDeletionResponse deleteByEmailPattern(String emailPattern) {
-        Set<String> validUserIdsToDelete = new HashSet<>();
+        List<String> validUserIdsToDelete = new ArrayList<>();
 
         List<UserProfile> userProfiles = userProfileRepository.findByEmailIgnoreCaseContaining(emailPattern);
 
@@ -125,6 +127,24 @@ public class DeleteUserProfileServiceImpl implements DeleteResourceService<UserP
             throw new ResourceNotFoundException("could not find user profile for userId: " + userId);
         }
         return userProfileOptional.get();
+    }
+
+    public UserProfilesDeletionResponse validateUserAfterIdamDelete(
+            Optional<UserProfile> userProfile, String userId, int status) {
+        UserProfilesDeletionResponse deletionResponse = new UserProfilesDeletionResponse();
+
+        if (userProfile.isPresent()) {
+            return deleteUserProfiles(singletonList(userProfile.get()));
+
+        } else if (status == 204) {
+            deletionResponse.setMessage("User deleted in IDAM but was not present in UP with userId: " + userId);
+
+        } else {
+            deletionResponse.setMessage("User was not present in IDAM or UP with userId: " + userId);
+        }
+
+        deletionResponse.setStatusCode(status);
+        return deletionResponse;
     }
 
 }

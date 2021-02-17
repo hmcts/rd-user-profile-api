@@ -516,6 +516,10 @@ public class UserProfileController {
             @RequestParam(value = "userId", required = false) String userId,
             @RequestParam(value = "emailPattern", required = false) String emailPattern) {
 
+        /** TODO:
+         * This API will need to be revisited if it is to be used for business functionality.
+         */
+
         UserProfilesDeletionResponse resource;
 
         if (isNotBlank(userId)) {
