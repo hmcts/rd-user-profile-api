@@ -95,6 +95,7 @@ public class FuncTestRequestHandler {
     }
 
     public Response sendDeleteWithoutBody(HttpStatus expectedStatus, String path) {
+        
         return withAuthenticatedRequest()
                 .delete(path)
                 .then()
