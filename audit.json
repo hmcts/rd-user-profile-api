@@ -39,5 +39,13 @@
   "10010_Cookie No HttpOnly Flag_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile_DELETE": "ignore",
   "100000_A Client Error response code was returned by the server_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile_DELETE": "ignore",
   "90033_Loosely Scoped Cookie_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile_DELETE": "ignore",
-  "10054_Cookie Without SameSite Attribute_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile_DELETE": "ignore"
+  "10054_Cookie Without SameSite Attribute_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile_DELETE": "ignore",
+  "10096_Timestamp Disclosure - Unix_http://rd-user-profile-api-aat.service.core-compute-aat.internal/_GET": "ignore",
+  "10096_Timestamp Disclosure - Unix_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile?email=foo-bar@example.com&userId=userId_GET": "ignore",
+  "10096_Timestamp Disclosure - Unix_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile_POST": "ignore",
+  "10096_Timestamp Disclosure - Unix_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile/roles?email=foo-bar@example.com_GET": "ignore",
+  "10096_Timestamp Disclosure - Unix_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v2/api-docs_GET": "ignore",
+  "10096_Timestamp Disclosure - Unix_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile_DELETE": "ignore",
+  "10096_Timestamp Disclosure - Unix_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile/users?rolesRequired=rolesRequired&showdeleted=showdeleted_POST": "ignore",
+  "10096_Timestamp Disclosure - Unix_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile/id/roles_GET": "ignore"
 }

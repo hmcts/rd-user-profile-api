@@ -18,7 +18,7 @@ plugins {
     id 'org.sonarqube' version '3.0'
     id 'org.springframework.boot' version '2.3.4.RELEASE'
     id "org.flywaydb.flyway" version "7.0.2"
-    id 'au.com.dius.pact' version '4.1.12'
+    id 'au.com.dius.pact' version '4.1.7'// do not change, otherwise serenity report fails
 }
 
 apply plugin: 'java'
@@ -346,7 +346,7 @@ dependencies {
         because 'Apache HttpClient versions prior to version 4.5.13 can misinterpret malformed authority component in ' +
                 'request URIs passed to the library as java.net.URI object and pick the wrong target host for request execution.'
     }
-    implementation('org.hibernate:hibernate-core:5.4.24.Final') {
+    implementation('org.hibernate:hibernate-core:5.4.27.Final') {
         because 'A flaw was found in hibernate-core in versions prior to and including 5.4.23.Final. ' +
                 'A SQL injection in the implementation of the JPA Criteria API can permit unsanitized literals when a ' +
                 'literal is used in the SQL comments of the query. This flaw could allow an attacker to access unauthorized ' +
