@@ -20,7 +20,7 @@ java:
       secrets:
         - user-profile-api-s2s-secret
         - user-profile-api-POSTGRES-PASS
-        - AppInsightsInstrumentationKey
+        - ApplicationInsightsInstrumentationKey
   autoscaling:
     enabled: true
     maxReplicas: 5
