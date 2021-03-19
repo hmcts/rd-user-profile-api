@@ -1,13 +1,12 @@
 package uk.gov.hmcts.reform.userprofileapi.controller.response;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.List;
 
-import com.nimbusds.oauth2.sdk.util.CollectionUtils;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
@@ -31,7 +30,7 @@ public class UserProfileWithRolesResponse extends UserProfileResponse {
         idamStatusCode = " ";
         idamMessage = IdamStatusResolver.NO_IDAM_CALL;
         if (rolesRequired) {
-            if (IdamStatus.ACTIVE == userProfile.getStatus() && CollectionUtils.isNotEmpty(userProfile.getRoles())) {
+            if (IdamStatus.ACTIVE == userProfile.getStatus() && !CollectionUtils.isEmpty(userProfile.getRoles())) {
                 roles = userProfile.getRoles();
             }
             idamStatusCode = userProfile.getErrorStatusCode();
