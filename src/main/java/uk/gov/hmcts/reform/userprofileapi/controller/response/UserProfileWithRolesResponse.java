@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.userprofileapi.controller.response;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
+
+import com.nimbusds.oauth2.sdk.util.CollectionUtils;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -29,7 +31,7 @@ public class UserProfileWithRolesResponse extends UserProfileResponse {
         idamStatusCode = " ";
         idamMessage = IdamStatusResolver.NO_IDAM_CALL;
         if (rolesRequired) {
-            if (IdamStatus.ACTIVE == userProfile.getStatus() && !userProfile.getRoles().isEmpty()) {
+            if (IdamStatus.ACTIVE == userProfile.getStatus() && CollectionUtils.isNotEmpty(userProfile.getRoles())) {
                 roles = userProfile.getRoles();
             }
             idamStatusCode = userProfile.getErrorStatusCode();
