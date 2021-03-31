@@ -5,8 +5,10 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.TextCodec;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.method.HandlerMethod;
@@ -32,6 +34,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.userprofileapi.util.FeatureConditionEvaluation.BEARER;
 import static uk.gov.hmcts.reform.userprofileapi.util.FeatureConditionEvaluation.SERVICE_AUTHORIZATION;
 
+@RunWith(MockitoJUnitRunner.class)
 public class FeatureConditionEvaluationTest {
 
     FeatureToggleServiceImpl featureToggleService = mock(FeatureToggleServiceImpl.class);
@@ -46,10 +49,10 @@ public class FeatureConditionEvaluationTest {
 
     @Before
     public void before() {
-        MockitoAnnotations.openMocks(this);
         when(method.getName()).thenReturn("test");
         doReturn(WelcomeController.class).when(method).getDeclaringClass();
         when(handlerMethod.getMethod()).thenReturn(method);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
