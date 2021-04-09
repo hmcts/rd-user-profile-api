@@ -7,6 +7,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+import static uk.gov.hmcts.reform.userprofileapi.client.UserProfileRequestHandlerTest.COMMON_EMAIL_PATTERN;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 
 import java.util.ArrayList;
@@ -91,7 +92,7 @@ public class DeleteUserProfileIntTest extends AuthorizationEnabledIntegrationTes
         verifyUserProfileCreation(createdResource, CREATED, data);
 
         userProfileRequestHandlerTest.sendDeleteWithoutBody(mockMvc,
-                APP_BASE_PATH + "/users?emailPattern=" + "@prdfunctestuser.com",
+                APP_BASE_PATH + "/users?emailPattern=" + COMMON_EMAIL_PATTERN,
                 NO_CONTENT,
                 UserProfilesDeletionResponse.class);
 

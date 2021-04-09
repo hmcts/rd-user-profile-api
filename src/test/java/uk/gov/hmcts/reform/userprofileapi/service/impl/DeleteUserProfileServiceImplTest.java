@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static uk.gov.hmcts.reform.userprofileapi.constants.TestConstants.COMMON_EMAIL_PATTERN;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -176,9 +177,9 @@ public class DeleteUserProfileServiceImplTest {
         when(responseMock.status()).thenReturn(NO_CONTENT.value());
         when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
         when(userProfileRepositoryMock
-                .findByEmailIgnoreCaseContaining("@prdfunctestuser.com")).thenReturn(userProfiles);
+                .findByEmailIgnoreCaseContaining(COMMON_EMAIL_PATTERN)).thenReturn(userProfiles);
 
-        UserProfilesDeletionResponse deletionResp = sut.deleteByEmailPattern("@prdfunctestuser.com");
+        UserProfilesDeletionResponse deletionResp = sut.deleteByEmailPattern(COMMON_EMAIL_PATTERN);
 
         assertThat(deletionResp.getStatusCode()).isEqualTo(deletionResponse.getStatusCode());
         assertThat(deletionResp.getMessage()).isEqualTo(deletionResponse.getMessage());
@@ -205,9 +206,9 @@ public class DeleteUserProfileServiceImplTest {
         when(responseMock.status()).thenReturn(NOT_FOUND.value());
         when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
         when(userProfileRepositoryMock
-                .findByEmailIgnoreCaseContaining("@prdfunctestuser.com")).thenReturn(userProfiles);
+                .findByEmailIgnoreCaseContaining(COMMON_EMAIL_PATTERN)).thenReturn(userProfiles);
 
-        UserProfilesDeletionResponse deletionResp = sut.deleteByEmailPattern("@prdfunctestuser.com");
+        UserProfilesDeletionResponse deletionResp = sut.deleteByEmailPattern(COMMON_EMAIL_PATTERN);
 
         assertThat(deletionResp.getStatusCode()).isEqualTo(deletionResponse.getStatusCode());
         assertThat(deletionResp.getMessage()).isEqualTo(deletionResponse.getMessage());

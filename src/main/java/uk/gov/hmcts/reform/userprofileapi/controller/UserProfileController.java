@@ -507,7 +507,6 @@ public class UserProfileController {
 
     @DeleteMapping(
             path = "/users",
-            consumes = APPLICATION_JSON_VALUE,
             produces = APPLICATION_JSON_VALUE
     )
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
@@ -516,7 +515,7 @@ public class UserProfileController {
             @RequestParam(value = "userId", required = false) String userId,
             @RequestParam(value = "emailPattern", required = false) String emailPattern) {
 
-        /** TODO:
+        /**
          * This API will need to be revisited if it is to be used for business functionality.
          */
 
@@ -527,6 +526,7 @@ public class UserProfileController {
 
         } else if (isNotBlank(emailPattern)) {
             resource = userProfileService.deleteByEmailPattern(emailPattern);
+
         } else {
             throw new InvalidRequest("No User ID or Email Pattern provided to delete the User(s)");
         }

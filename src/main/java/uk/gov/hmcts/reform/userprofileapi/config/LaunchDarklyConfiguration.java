@@ -23,8 +23,7 @@ public class LaunchDarklyConfiguration implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(featureConditionEvaluation)
-                .addPathPatterns("/v1/userprofile/users?userId*");
-        registry.addInterceptor(featureConditionEvaluation)
-                .addPathPatterns("/v1/userprofile/users?emailPattern*");
+                .addPathPatterns(
+                        "/v1/userprofile/users**");
     }
 }

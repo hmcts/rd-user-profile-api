@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.ResponseEntity.status;
+import static uk.gov.hmcts.reform.userprofileapi.constants.TestConstants.COMMON_EMAIL_PATTERN;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildUpdateUserProfileData;
 
 import java.util.ArrayList;
@@ -282,7 +283,7 @@ public class UserProfileControllerTest {
 
     @Test
     public void testDeleteUserByEmailPattern() {
-        String emailPattern = "@prdfunctestuser.com";
+        String emailPattern = COMMON_EMAIL_PATTERN;
 
         UserProfilesDeletionResponse userProfilesDeletionResponse =
                 new UserProfilesDeletionResponse(204, "UserProfiles Successfully Deleted");

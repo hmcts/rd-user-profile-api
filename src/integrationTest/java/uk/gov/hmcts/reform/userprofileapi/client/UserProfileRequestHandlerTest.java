@@ -30,6 +30,7 @@ public class UserProfileRequestHandlerTest {
     private static final String JWT_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZS"
             .concat("I6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c");
 
+    public static final String COMMON_EMAIL_PATTERN = "@prdfunctestuser.com";
 
     public MvcResult sendPost(MockMvc mockMvc,
                               String path,

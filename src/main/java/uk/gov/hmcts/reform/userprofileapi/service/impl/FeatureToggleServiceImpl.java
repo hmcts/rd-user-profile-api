@@ -14,6 +14,8 @@ import java.util.Map;
 @Service
 public class FeatureToggleServiceImpl implements FeatureToggleService {
 
+    public static final String UP_DELETE_BY_ID_OR_EMAILPATTERN_FLAG = "delete-userprofile-by-id-or-emailpattern";
+
     @Autowired
     private final LDClient ldClient;
 
@@ -34,7 +36,7 @@ public class FeatureToggleServiceImpl implements FeatureToggleService {
     public void mapServiceToFlag() {
         launchDarklyMap = new HashMap<>();
         launchDarklyMap.put("UserProfileController.deleteUserProfileByIdOrEmailPattern",
-                "delete-user-by-id-or-email-pattern");
+                UP_DELETE_BY_ID_OR_EMAILPATTERN_FLAG);
     }
 
     @Override

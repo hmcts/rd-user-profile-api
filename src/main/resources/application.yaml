@@ -116,6 +116,6 @@ logging.level.com.zaxxer.hikari: DEBUG
 
 launchdarkly:
   sdk:
-    key: ${LD_SDK_KEY:}
+    key: ${RD_LD_SDK_KEY:}
     environment: ${LAUNCH_DARKLY_ENV:local}
     user: rd
