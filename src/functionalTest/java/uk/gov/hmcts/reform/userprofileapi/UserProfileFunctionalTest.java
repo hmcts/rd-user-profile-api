@@ -82,11 +82,9 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
 
         pendingUserProfileCreationData = createUserProfileData();
 
-        activeUserProfileCreationData = new UserProfileCreationData(
-                generateRandomEmail(), randomAlphabetic(20),
-                randomAlphabetic(20), LanguagePreference.EN.toString(),
-                false, false,
-                UserCategory.PROFESSIONAL.toString(),
+        activeUserProfileCreationData = new UserProfileCreationData(generateRandomEmail(),
+                randomAlphabetic(20), randomAlphabetic(20), LanguagePreference.EN.toString(),
+                false, false, UserCategory.PROFESSIONAL.toString(),
                 UserType.EXTERNAL.toString(), getIdamRolesJson(), false);
 
         updateUserProfileData = new UpdateUserProfileData();
@@ -126,9 +124,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
     }
 
     public void deleteUserScenarios() throws Exception {
-        deletePendingUserShouldReturnSuccess();
-        deleteActiveUserByIdShouldReturnSuccess();
-        deleteActiveUserByEmailPatternShouldReturnSuccess();
+        deleteActiveAndPendingUserShouldReturnSuccess();
     }
 
     public void endpointSecurityScenarios() {
@@ -326,47 +322,26 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         log.info("reinviteUserReturn429WhenReinvitedWithinOneHour :: ENDED");
     }
 
-    public void deletePendingUserShouldReturnSuccess() throws JsonProcessingException {
-        log.info("deletePendingUserShouldReturnSuccess :: STARTED");
+    public void deleteActiveAndPendingUserShouldReturnSuccess() throws JsonProcessingException {
+        log.info("deleteActiveUserShouldReturnSuccess :: STARTED");
 
-        List<String> userIds = asList(pendingUserProfile.getIdamId());
+        List<String> userIds = asList(activeUserProfile.getIdamId(), pendingUserProfile.getIdamId());
 
         UserProfileDataRequest deletionRequest = buildUserProfileDataRequest(userIds);
 
-        testRequestHandler.sendDelete(objectMapper.writeValueAsString(deletionRequest), NO_CONTENT, requestUri);
+        testRequestHandler.sendDelete(
+                objectMapper.writeValueAsString(deletionRequest),
+                NO_CONTENT, requestUri);
 
         testRequestHandler.sendGet(NOT_FOUND,
                 requestUri + "?userId=" + userIds.get(0));
 
-        log.info("deletePendingUserShouldReturnSuccess :: ENDED");
-    }
-
-    public void deleteActiveUserByIdShouldReturnSuccess() {
-        log.info("deleteActiveUserByIdShouldReturnSuccess :: STARTED");
-
-        testRequestHandler
-                .sendDeleteWithoutBody(NO_CONTENT, requestUri + "/users?userId=" + activeUserProfile.getIdamId());
-
-        testRequestHandler.sendGet(NOT_FOUND, requestUri + "?userId=" + activeUserProfile.getIdamId());
-
-        log.info("deleteActiveUserByIdShouldReturnSuccess :: ENDED");
-    }
-
-    public void deleteActiveUserByEmailPatternShouldReturnSuccess() throws Exception {
-        log.info("deleteActiveUsersByEmailPatternShouldReturnSuccess :: STARTED");
-
-        activeUserProfile = createActiveUserProfileWithGivenFields(activeUserProfileCreationData);
-        verifyCreateUserProfile(activeUserProfile);
-
-        testRequestHandler
-                .sendDeleteWithoutBody(NO_CONTENT, requestUri + "/users?emailPattern=@prdfunctestuser.com");
-
-        testRequestHandler.sendGet(NOT_FOUND, requestUri + "?userId=" + activeUserProfile.getIdamId());
-
-        log.info("deleteActiveUsersByEmailPatternShouldReturnSuccess :: ENDED");
+        log.info("deleteActiveUserShouldReturnSuccess :: ENDED");
     }
 
     public void unauthenticatedRequestsShouldReturn401() {
+        log.info("unauthenticatedRequestsShouldReturn401 :: STARTED");
+
         endpoints.forEach(callbackEndpoint ->
                 SerenityRest.given()
                         .relaxedHTTPSValidation()
@@ -375,9 +350,13 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
                         .get(callbackEndpoint)
                         .then()
                         .statusCode(HttpStatus.UNAUTHORIZED.value()));
+
+        log.info("unauthenticatedRequestsShouldReturn401 :: ENDED");
     }
 
     public void invalidServiceAuthorisationRequestsShouldReturn401() {
+        log.info("invalidServiceAuthorisationRequestsShouldReturn401 :: STARTED");
+
         endpoints.forEach(endpoint ->
                 SerenityRest.given()
                         .relaxedHTTPSValidation()
@@ -387,9 +366,13 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
                         .get(endpoint)
                         .then()
                         .statusCode(HttpStatus.UNAUTHORIZED.value()));
+
+        log.info("invalidServiceAuthorisationRequestsShouldReturn401 :: ENDED");
     }
 
     public void invalidBearerTokenRequestsShouldReturn401() {
+        log.info("invalidBearerTokenRequestsShouldReturn401 :: STARTED");
+
         SerenityRest
                 .given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -401,6 +384,56 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
                 .then()
                 .log().all(true)
                 .statusCode(HttpStatus.UNAUTHORIZED.value()).extract().response();
+
+        log.info("invalidBearerTokenRequestsShouldReturn401 :: ENDED");
+    }
+
+    @Test
+    @ToggleEnable(mapKey = DELETE_USER_BY_ID_OR_EMAIL_PATTERN, withFeature = true)
+    public void deleteActiveUserByIdShouldReturnSuccess() throws Exception {
+        log.info("deleteActiveUserByIdShouldReturnSuccess :: STARTED");
+
+        UserProfileCreationData userProfileCreationData = new UserProfileCreationData(generateRandomEmail(),
+                randomAlphabetic(20), randomAlphabetic(20), LanguagePreference.EN.toString(),
+                false, false, UserCategory.PROFESSIONAL.toString(),
+                UserType.EXTERNAL.toString(), getIdamRolesJson(), false);
+
+        UserProfileCreationResponse activeUserProfile =
+                createActiveUserProfileWithGivenFields(userProfileCreationData);
+        verifyCreateUserProfile(activeUserProfile);
+
+        Response response = testRequestHandler
+                .sendDeleteWithoutBody(NO_CONTENT, requestUri + "/users?userId=" + activeUserProfile.getIdamId());
+
+        assertThat(response.getStatusCode()).isEqualTo(204);
+
+        testRequestHandler.sendGet(NOT_FOUND, requestUri + "?userId=" + activeUserProfile.getIdamId());
+
+        log.info("deleteActiveUserByIdShouldReturnSuccess :: ENDED");
+    }
+
+    @Test
+    @ToggleEnable(mapKey = DELETE_USER_BY_ID_OR_EMAIL_PATTERN, withFeature = true)
+    public void deleteActiveUserByEmailPatternShouldReturnSuccess() throws Exception {
+        log.info("deleteActiveUsersByEmailPatternShouldReturnSuccess :: STARTED");
+
+        UserProfileCreationData userProfileCreationData = new UserProfileCreationData(generateRandomEmail(),
+                randomAlphabetic(20), randomAlphabetic(20), LanguagePreference.EN.toString(),
+                false, false, UserCategory.PROFESSIONAL.toString(),
+                UserType.EXTERNAL.toString(), getIdamRolesJson(), false);
+
+        UserProfileCreationResponse activeUserProfile =
+                createActiveUserProfileWithGivenFields(userProfileCreationData);
+        verifyCreateUserProfile(activeUserProfile);
+
+        Response response = testRequestHandler
+                .sendDeleteWithoutBody(NO_CONTENT, requestUri + "/users?emailPattern=@prdfunctestuser.com");
+
+        assertThat(response.getStatusCode()).isEqualTo(204);
+
+        testRequestHandler.sendGet(NOT_FOUND, requestUri + "?userId=" + activeUserProfile.getIdamId());
+
+        log.info("deleteActiveUsersByEmailPatternShouldReturnSuccess :: ENDED");
     }
 
     @Test
