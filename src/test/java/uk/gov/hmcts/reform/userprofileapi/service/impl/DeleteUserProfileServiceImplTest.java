@@ -14,6 +14,7 @@ import static uk.gov.hmcts.reform.userprofileapi.constants.TestConstants.COMMON_
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import feign.Response;
 import org.junit.Before;
@@ -220,4 +221,35 @@ public class DeleteUserProfileServiceImplTest {
         verify(auditServiceMock, times(2)).persistAudit(any());
     }
 
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testValidateUserAfterIdamDeleteWhenStatusIs204() {
+        Optional<UserProfile> userProfile = mock(Optional.class);
+        String userId = UUID.randomUUID().toString();
+
+        when(userProfile.isPresent()).thenReturn(false);
+
+        UserProfilesDeletionResponse deletionResponse =
+                sut.validateUserAfterIdamDelete(userProfile, userId, 204);
+
+        assertThat(deletionResponse.getStatusCode()).isEqualTo(204);
+        assertThat(deletionResponse.getMessage())
+                .isEqualTo("User deleted in IDAM but was not present in UP with userId: " + userId);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testValidateUserAfterIdamDeleteWhenStatusIsNot204() {
+        Optional<UserProfile> userProfile = mock(Optional.class);
+        String userId = UUID.randomUUID().toString();
+
+        when(userProfile.isPresent()).thenReturn(false);
+
+        UserProfilesDeletionResponse deletionResponse =
+                sut.validateUserAfterIdamDelete(userProfile, userId, 404);
+
+        assertThat(deletionResponse.getStatusCode()).isEqualTo(404);
+        assertThat(deletionResponse.getMessage())
+                .isEqualTo("User was not present in IDAM or UP with userId: " + userId);
+    }
 }
