@@ -136,7 +136,7 @@ public class DeleteUserProfileServiceImpl implements DeleteResourceService<UserP
         if (userProfile.isPresent()) {
             return deleteUserProfiles(singletonList(userProfile.get()));
 
-        } else if (status == 204) {
+        } else if (status == NO_CONTENT.value()) {
             deletionResponse.setMessage("User deleted in IDAM but was not present in UP with userId: " + userId);
 
         } else {
