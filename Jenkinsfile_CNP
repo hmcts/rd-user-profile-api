@@ -13,7 +13,7 @@ def secrets = [
         secret('microservicekey-rd-user-profile-api', 'S2S_SECRET')
     ],
     'rd-${env}': [
-            secret('LD-SDK-KEY', 'LD_SDK_KEY')
+            secret('LD-SDK-KEY', 'RD_LD_SDK_KEY')
     ]
 ]
 
