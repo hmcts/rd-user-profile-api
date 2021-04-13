@@ -49,7 +49,7 @@ public interface IdamFeignClient {
 
     @DeleteMapping(value = "/api/v1/users/{userId}")
     @RequestLine("DELETE /api/v1/users/{userId}")
-    @Headers("Content-Type: application/json")
+    @Headers({"Authorization: {authorization}", "Content-Type: application/json"})
     public Response deleteUser(@PathVariable("userId") String userId);
 
 }
