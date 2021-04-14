@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
 import uk.gov.hmcts.reform.userprofileapi.service.DeleteResourceService;
 
 import static java.util.Collections.singletonList;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
@@ -49,13 +50,15 @@ public class DeleteUserProfileServiceImpl implements DeleteResourceService<UserP
 
         Response idamResponse = idamClient.deleteUser(userId);
 
-        if (idamResponse.status() == NO_CONTENT.value() || idamResponse.status() == NOT_FOUND.value()) {
+        if (idamResponse.status() == NO_CONTENT.value() || idamResponse.status() == NOT_FOUND.value()
+                || idamResponse.reason().contains("pending")) {
             Optional<UserProfile> userProfile = userProfileRepository.findByIdamId(userId.trim());
 
             return validateUserAfterIdamDelete(userProfile, userId, idamResponse.status());
 
         } else {
-            deletionResponse.setMessage("IDAM Delete request failed for userId: " + userId);
+            deletionResponse.setMessage("IDAM Delete request failed for userId: " + userId
+                    + ". With following IDAM message: " + idamResponse.reason());
             deletionResponse.setStatusCode(idamResponse.status());
             return deletionResponse;
         }
@@ -133,14 +136,24 @@ public class DeleteUserProfileServiceImpl implements DeleteResourceService<UserP
             Optional<UserProfile> userProfile, String userId, int status) {
         UserProfilesDeletionResponse deletionResponse = new UserProfilesDeletionResponse();
 
-        if (userProfile.isPresent()) {
+        if (userProfile.isPresent() && status == BAD_REQUEST.value()) {
+            deletionResponse = deleteUserProfiles(singletonList(userProfile.get()));
+            deletionResponse.setMessage("User deleted in UP with userId: " + userId
+                    + " but not in IDAM due to pending status");
+            deletionResponse.setStatusCode(NO_CONTENT.value());
+            return deletionResponse;
+
+        } else if (userProfile.isPresent()) {
             return deleteUserProfiles(singletonList(userProfile.get()));
 
         } else if (status == NO_CONTENT.value()) {
             deletionResponse.setMessage("User deleted in IDAM but was not present in UP with userId: " + userId);
 
+        } else if (status == BAD_REQUEST.value()) {
+            deletionResponse.setMessage("User is pending in IDAM and not present in UP with userId: " + userId);
         } else {
             deletionResponse.setMessage("User was not present in IDAM or UP with userId: " + userId);
+
         }
 
         deletionResponse.setStatusCode(status);
