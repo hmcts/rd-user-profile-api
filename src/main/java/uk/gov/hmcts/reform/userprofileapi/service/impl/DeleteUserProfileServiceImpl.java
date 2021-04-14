@@ -51,7 +51,7 @@ public class DeleteUserProfileServiceImpl implements DeleteResourceService<UserP
         Response idamResponse = idamClient.deleteUser(userId);
 
         if (idamResponse.status() == NO_CONTENT.value() || idamResponse.status() == NOT_FOUND.value()
-                || idamResponse.reason().contains("pending")) {
+                || idamResponse.body().toString().contains("pending")) {
             Optional<UserProfile> userProfile = userProfileRepository.findByIdamId(userId.trim());
 
             return validateUserAfterIdamDelete(userProfile, userId, idamResponse.status());

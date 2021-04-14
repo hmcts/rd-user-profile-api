@@ -146,21 +146,24 @@ public class DeleteUserProfileServiceImplTest {
 
     @Test
     public void testDeleteUserProfileByUserId_WhenIdamReutrnsError() {
-        Response responseMock = mock(Response.class);
-
         UserProfilesDeletionResponse deletionResponse = new UserProfilesDeletionResponse();
         deletionResponse.setMessage("IDAM Delete request failed for userId: " + userProfile.getIdamId()
                 + ". With following IDAM message: INTERNAL SERVER ERROR");
         deletionResponse.setStatusCode(BAD_REQUEST.value());
 
+        Response responseMock = mock(Response.class);
+        Response.Body bodyMock = mock(Response.Body.class);
+
         when(idamClientMock.deleteUser(userProfile.getIdamId())).thenReturn(responseMock);
         when(responseMock.status()).thenReturn(BAD_REQUEST.value());
-        when(responseMock.reason()).thenReturn("INTERNAL SERVER ERROR");
+        when(responseMock.body()).thenReturn(bodyMock);
+        when(bodyMock.toString()).thenReturn("INTERNAL SERVER ERROR");
+        when(responseMock.body().toString()).thenReturn("INTERNAL SERVER ERROR");
 
         UserProfilesDeletionResponse deletionResp = sut.deleteByUserId(userProfile.getIdamId());
 
         assertThat(deletionResp.getStatusCode()).isEqualTo(deletionResponse.getStatusCode());
-        assertThat(deletionResp.getMessage()).isEqualTo(deletionResponse.getMessage());
+        assertThat(deletionResp.getMessage()).contains("IDAM Delete request failed for userId");
 
         verify(responseMock, times(3)).status();
     }
@@ -176,10 +179,12 @@ public class DeleteUserProfileServiceImplTest {
         deletionResponse.setStatusCode(NO_CONTENT.value());
 
         Response responseMock = mock(Response.class);
+        Response.Body bodyMock = mock(Response.Body.class);
 
         when(idamClientMock.deleteUser(userId)).thenReturn(responseMock);
         when(responseMock.status()).thenReturn(BAD_REQUEST.value());
-        when(responseMock.reason()).thenReturn("The user cannot be modified as their state is 'pending'");
+        when(responseMock.body()).thenReturn(bodyMock);
+        when(responseMock.body().toString()).thenReturn("The user cannot be modified as their state is 'pending'");
         when(userProfileRepositoryMock.findByIdamId(userId)).thenReturn(Optional.ofNullable(userProfile));
 
         UserProfilesDeletionResponse deletionResp = sut.deleteByUserId(userId);
