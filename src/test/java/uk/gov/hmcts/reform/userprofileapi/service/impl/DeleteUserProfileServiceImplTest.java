@@ -149,11 +149,13 @@ public class DeleteUserProfileServiceImplTest {
         Response responseMock = mock(Response.class);
 
         UserProfilesDeletionResponse deletionResponse = new UserProfilesDeletionResponse();
-        deletionResponse.setMessage("IDAM Delete request failed for userId: " + userProfile.getIdamId());
+        deletionResponse.setMessage("IDAM Delete request failed for userId: " + userProfile.getIdamId()
+                + ". With following IDAM message: INTERNAL SERVER ERROR");
         deletionResponse.setStatusCode(BAD_REQUEST.value());
 
         when(idamClientMock.deleteUser(userProfile.getIdamId())).thenReturn(responseMock);
         when(responseMock.status()).thenReturn(BAD_REQUEST.value());
+        when(responseMock.reason()).thenReturn("INTERNAL SERVER ERROR");
 
         UserProfilesDeletionResponse deletionResp = sut.deleteByUserId(userProfile.getIdamId());
 
@@ -161,6 +163,33 @@ public class DeleteUserProfileServiceImplTest {
         assertThat(deletionResp.getMessage()).isEqualTo(deletionResponse.getMessage());
 
         verify(responseMock, times(3)).status();
+    }
+
+    @Test
+    public void testDeleteUserProfileByUserId_WhenUserIsPendingInIdam() {
+        String userId = UUID.randomUUID().toString();
+        userProfile.setIdamId(userId);
+
+        UserProfilesDeletionResponse deletionResponse = new UserProfilesDeletionResponse();
+        deletionResponse.setMessage("User deleted in UP with userId: " + userId
+                + " but not in IDAM due to pending status");
+        deletionResponse.setStatusCode(NO_CONTENT.value());
+
+        Response responseMock = mock(Response.class);
+
+        when(idamClientMock.deleteUser(userId)).thenReturn(responseMock);
+        when(responseMock.status()).thenReturn(BAD_REQUEST.value());
+        when(responseMock.reason()).thenReturn("The user cannot be modified as their state is 'pending'");
+        when(userProfileRepositoryMock.findByIdamId(userId)).thenReturn(Optional.ofNullable(userProfile));
+
+        UserProfilesDeletionResponse deletionResp = sut.deleteByUserId(userId);
+
+        assertThat(deletionResp.getStatusCode()).isEqualTo(deletionResponse.getStatusCode());
+        assertThat(deletionResp.getMessage()).isEqualTo(deletionResponse.getMessage());
+
+        verify(userProfileRepositoryMock, times(1)).findByIdamId(userId);
+        verify(userProfileRepositoryMock, times(1)).deleteAll(any());
+        verify(auditServiceMock, times(1)).persistAudit(any());
     }
 
     @Test
