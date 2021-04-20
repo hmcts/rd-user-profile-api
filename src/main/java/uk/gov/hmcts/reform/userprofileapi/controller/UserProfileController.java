@@ -4,6 +4,7 @@ import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.NO_USER_ID_OR_EMAIL_PATTERN_PROVIDED_TO_DELETE;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateCreateUserProfileRequest;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateUserIds;
@@ -528,7 +529,7 @@ public class UserProfileController {
             resource = userProfileService.deleteByEmailPattern(emailPattern);
 
         } else {
-            throw new InvalidRequest("No User ID or Email Pattern provided to delete the User(s)");
+            throw new InvalidRequest(NO_USER_ID_OR_EMAIL_PATTERN_PROVIDED_TO_DELETE.getErrorMessage());
         }
 
         return ResponseEntity.status(resource.getStatusCode()).body(resource);
