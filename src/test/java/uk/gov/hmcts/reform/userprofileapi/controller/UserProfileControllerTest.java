@@ -23,6 +23,7 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -31,6 +32,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
@@ -62,6 +64,10 @@ public class UserProfileControllerTest {
     HttpServletRequest httpRequest = mock(HttpServletRequest.class);
 
     private static final String ORIGIN = "EXUI";
+
+    @Before public void setUp() {
+        ReflectionTestUtils.setField(sut, "environmentName", "preview");
+    }
 
     @Test
     public void test_CreateUserProfile() {
@@ -283,6 +289,7 @@ public class UserProfileControllerTest {
 
     @Test
     public void testDeleteUserByEmailPattern() {
+
         String emailPattern = COMMON_EMAIL_PATTERN;
 
         UserProfilesDeletionResponse userProfilesDeletionResponse =

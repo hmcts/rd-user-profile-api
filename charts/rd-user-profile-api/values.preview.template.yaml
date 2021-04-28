@@ -7,6 +7,8 @@ java:
     POSTGRES_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
     POSTGRES_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
     LAUNCH_DARKLY_ENV: "preview"
+    ENVIRONMENT_NAME: "preview"
+
 
   postgresql:
     enabled: true

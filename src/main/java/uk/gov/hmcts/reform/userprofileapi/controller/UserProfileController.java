@@ -4,6 +4,7 @@ import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.API_IS_NOT_AVAILABLE_IN_PROD_ENV;
 import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.NO_USER_ID_OR_EMAIL_PATTERN_PROVIDED_TO_DELETE;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateCreateUserProfileRequest;
@@ -22,8 +23,10 @@ import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -79,6 +82,9 @@ public class UserProfileController {
 
     @Autowired
     private ValidationService validationService;
+
+    @Value("${environment_name}")
+    private String environmentName;
 
 
     @ApiOperation(value = "Create a User Profile",
@@ -519,6 +525,12 @@ public class UserProfileController {
         /**
          * This API will need to be revisited if it is to be used for business functionality.
          */
+
+        log.info("ENVIRONMENT NAME:::::: " + environmentName);
+
+        if (environmentName.equalsIgnoreCase("PROD")) {
+            throw new AccessDeniedException(API_IS_NOT_AVAILABLE_IN_PROD_ENV.getErrorMessage());
+        }
 
         UserProfilesDeletionResponse resource;
 

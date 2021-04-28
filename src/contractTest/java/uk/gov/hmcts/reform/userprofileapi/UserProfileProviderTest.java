@@ -83,7 +83,8 @@ public class UserProfileProviderTest {
     void beforeCreate(PactVerificationContext context) {
         MockMvcTestTarget testTarget = new MockMvcTestTarget();
         System.getProperties().setProperty("pact.verifier.publishResults", "true");
-        testTarget.setControllers(new UserProfileController(userProfileService, idamService, validationService));
+        testTarget.setControllers(new UserProfileController(userProfileService, idamService,
+                validationService, "preview"));
         context.setTarget(testTarget);
     }
 
