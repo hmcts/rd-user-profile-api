@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -71,6 +72,7 @@ import uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator;
 
 @Slf4j
 @RestController
+@NoArgsConstructor
 @AllArgsConstructor
 public class UserProfileController {
 
