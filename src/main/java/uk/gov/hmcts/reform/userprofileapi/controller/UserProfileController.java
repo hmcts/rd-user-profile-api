@@ -27,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,6 +52,7 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesRe
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfilesDeletionResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdentifierName;
+import uk.gov.hmcts.reform.userprofileapi.exception.ForbiddenException;
 import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
@@ -531,7 +531,7 @@ public class UserProfileController {
         log.info("ENVIRONMENT NAME:::::: " + environmentName);
 
         if (environmentName.equalsIgnoreCase("PROD")) {
-            throw new AccessDeniedException(API_IS_NOT_AVAILABLE_IN_PROD_ENV.getErrorMessage());
+            throw new ForbiddenException(API_IS_NOT_AVAILABLE_IN_PROD_ENV.getErrorMessage());
         }
 
         UserProfilesDeletionResponse resource;
