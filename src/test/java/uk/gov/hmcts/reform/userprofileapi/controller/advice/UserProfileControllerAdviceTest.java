@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.client.HttpClientErrorException;
+import uk.gov.hmcts.reform.userprofileapi.exception.ForbiddenException;
 import uk.gov.hmcts.reform.userprofileapi.exception.IdamServiceException;
 import uk.gov.hmcts.reform.userprofileapi.exception.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
@@ -125,5 +126,16 @@ public class UserProfileControllerAdviceTest {
 
         ResponseEntity response = advice.handleTooManyRequestsException(request, exception);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.TOO_MANY_REQUESTS);
+    }
+
+    @Test
+    public void test_return_403_when_LD_forbidden_exception() {
+        String message = "feature flag is not released";
+
+        ForbiddenException exception = new ForbiddenException(message);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+
+        ResponseEntity response = advice.handleForbiddenException(request, exception);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 }

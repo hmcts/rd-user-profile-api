@@ -7,4 +7,8 @@ public interface DeleteResourceService<T extends RequestData> {
 
     UserProfilesDeletionResponse delete(T profileData);
 
+    UserProfilesDeletionResponse deleteByUserId(String userId);
+
+    UserProfilesDeletionResponse deleteByEmailPattern(String emailPattern);
+
 }

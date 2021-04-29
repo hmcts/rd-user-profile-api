@@ -22,14 +22,17 @@ public enum ErrorConstants {
     UNKNOWN_EXCEPTION("8 : error was caused by an unknown exception"),
 
     TOO_MANY_REQUESTS(
-            "10 : The request was last made less than %s minutes ago. Please try after some time");
+            "10 : The request was last made less than %s minutes ago. Please try after some time"),
 
+    NO_USER_ID_OR_EMAIL_PATTERN_PROVIDED_TO_DELETE("No User ID or Email Pattern provided to delete the User(s)"),
+
+    API_IS_NOT_AVAILABLE_IN_PROD_ENV("This API is not available in Production Environment");
 
 
     private final String errorMessage;
 
-    ErrorConstants(String  errorMessage) {
-        this.errorMessage  = errorMessage;
+    ErrorConstants(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 
     public String getErrorMessage() {

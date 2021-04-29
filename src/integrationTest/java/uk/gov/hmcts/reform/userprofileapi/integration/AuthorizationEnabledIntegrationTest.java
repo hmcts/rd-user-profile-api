@@ -1,12 +1,15 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.delete;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.patch;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
@@ -25,6 +28,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
@@ -46,6 +50,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserType;
 import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
+import uk.gov.hmcts.reform.userprofileapi.service.impl.FeatureToggleServiceImpl;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 @Configuration
@@ -75,11 +80,15 @@ public abstract class AuthorizationEnabledIntegrationTest {
     @Autowired
     protected ObjectMapper objectMapper;
 
+    @MockBean
+    protected FeatureToggleServiceImpl featureToggleService;
+
     @ClassRule
     public  static WireMockRule s2sService = new WireMockRule(8990);
 
     @ClassRule
     public  static WireMockRule idamService = new WireMockRule(5000);
+
 
     @Before
     public void setUpWireMock() {
@@ -123,6 +132,14 @@ public abstract class AuthorizationEnabledIntegrationTest {
                                 + "  ]"
                                 + "}")));
 
+        idamService.stubFor(delete(urlMatching("/api/v1/users/.*"))
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withStatus(204)
+                        .withBody("{"
+                                + "  \"response\": \"User deleted successfully.\""
+                                + "}")));
+
         idamService.stubFor(get(urlEqualTo("/o/userinfo"))
                 .willReturn(aResponse()
                         .withStatus(200)
@@ -139,6 +156,8 @@ public abstract class AuthorizationEnabledIntegrationTest {
                                 +  "  ]"
                                 +  "}")
                         ));
+
+        when(featureToggleService.isFlagEnabled(anyString(), anyString())).thenReturn(true);
 
     }
 

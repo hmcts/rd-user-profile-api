@@ -1,9 +1,12 @@
 package uk.gov.hmcts.reform.userprofileapi.repository;
 
+import static com.nimbusds.oauth2.sdk.util.CollectionUtils.isNotEmpty;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
+import static uk.gov.hmcts.reform.userprofileapi.constants.TestConstants.COMMON_EMAIL_PATTERN;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.Before;
@@ -51,5 +54,14 @@ public class UserProfileRepositoryTest {
 
         assertTrue(user.isPresent());
         assertThat(user).contains(userProfile);
+    }
+
+    @Test
+    public void findByEmailIgnoreCaseContaining() {
+
+        List<UserProfile> users = userProfileRepository.findByEmailIgnoreCaseContaining(COMMON_EMAIL_PATTERN);
+
+        assertTrue(isNotEmpty(users));
+        assertThat(users).contains(userProfile);
     }
 }

@@ -2,8 +2,8 @@ package uk.gov.hmcts.reform.userprofileapi;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
-import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import net.serenitybdd.rest.SerenityRest;
 import net.thucydides.core.annotations.WithTag;
 import net.thucydides.core.annotations.WithTags;
@@ -24,6 +24,9 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserType;
 import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
+import uk.gov.hmcts.reform.userprofileapi.util.CustomSerenityRunner;
+import uk.gov.hmcts.reform.userprofileapi.util.FeatureConditionEvaluation;
+import uk.gov.hmcts.reform.userprofileapi.util.ToggleEnable;
 
 import java.util.HashSet;
 import java.util.List;
@@ -43,9 +46,12 @@ import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDat
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.getIdamRolesJson;
 
 @Slf4j
-@RunWith(SpringIntegrationSerenityRunner.class)
+@RunWith(CustomSerenityRunner.class)
 @WithTags({@WithTag("testType:Functional")})
 public class UserProfileFunctionalTest extends AbstractFunctional {
+
+    public static final String DELETE_USER_BY_ID_OR_EMAIL_PATTERN =
+            "UserProfileController.deleteUserProfileByIdOrEmailPattern";
 
     private ObjectMapper objectMapper;
     private static List<String> endpoints;
@@ -65,7 +71,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         getAllUsersByUserIdsScenario();
         addOrDeleteUserRolesScenarios();
         reinviteUserScenario();
-        deleteUserScenario();
+        deleteUserScenarios();
         endpointSecurityScenarios();
     }
 
@@ -76,11 +82,9 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
 
         pendingUserProfileCreationData = createUserProfileData();
 
-        activeUserProfileCreationData = new UserProfileCreationData(
-                generateRandomEmail(), randomAlphabetic(20),
-                randomAlphabetic(20), LanguagePreference.EN.toString(),
-                false, false,
-                UserCategory.PROFESSIONAL.toString(),
+        activeUserProfileCreationData = new UserProfileCreationData(generateRandomEmail(),
+                randomAlphabetic(20), randomAlphabetic(20), LanguagePreference.EN.toString(),
+                false, false, UserCategory.PROFESSIONAL.toString(),
                 UserType.EXTERNAL.toString(), getIdamRolesJson(), false);
 
         updateUserProfileData = new UpdateUserProfileData();
@@ -119,7 +123,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         reinviteUserWhenReinvitedWithinOneHourShouldReturn429();
     }
 
-    public void deleteUserScenario() throws JsonProcessingException {
+    public void deleteUserScenarios() throws Exception {
         deleteActiveAndPendingUserShouldReturnSuccess();
     }
 
@@ -336,6 +340,8 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
     }
 
     public void unauthenticatedRequestsShouldReturn401() {
+        log.info("unauthenticatedRequestsShouldReturn401 :: STARTED");
+
         endpoints.forEach(callbackEndpoint ->
                 SerenityRest.given()
                         .relaxedHTTPSValidation()
@@ -344,9 +350,13 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
                         .get(callbackEndpoint)
                         .then()
                         .statusCode(HttpStatus.UNAUTHORIZED.value()));
+
+        log.info("unauthenticatedRequestsShouldReturn401 :: ENDED");
     }
 
     public void invalidServiceAuthorisationRequestsShouldReturn401() {
+        log.info("invalidServiceAuthorisationRequestsShouldReturn401 :: STARTED");
+
         endpoints.forEach(endpoint ->
                 SerenityRest.given()
                         .relaxedHTTPSValidation()
@@ -356,9 +366,13 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
                         .get(endpoint)
                         .then()
                         .statusCode(HttpStatus.UNAUTHORIZED.value()));
+
+        log.info("invalidServiceAuthorisationRequestsShouldReturn401 :: ENDED");
     }
 
     public void invalidBearerTokenRequestsShouldReturn401() {
+        log.info("invalidBearerTokenRequestsShouldReturn401 :: STARTED");
+
         SerenityRest
                 .given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -370,5 +384,71 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
                 .then()
                 .log().all(true)
                 .statusCode(HttpStatus.UNAUTHORIZED.value()).extract().response();
+
+        log.info("invalidBearerTokenRequestsShouldReturn401 :: ENDED");
     }
+
+    @Test
+    @ToggleEnable(mapKey = DELETE_USER_BY_ID_OR_EMAIL_PATTERN, withFeature = true)
+    public void deleteActiveUserByIdShouldReturnSuccess() throws Exception {
+        log.info("deleteActiveUserByIdShouldReturnSuccess :: STARTED");
+
+        UserProfileCreationData userProfileCreationData = new UserProfileCreationData(generateRandomEmail(),
+                randomAlphabetic(20), randomAlphabetic(20), LanguagePreference.EN.toString(),
+                false, false, UserCategory.PROFESSIONAL.toString(),
+                UserType.EXTERNAL.toString(), getIdamRolesJson(), false);
+
+        UserProfileCreationResponse activeUserProfile =
+                createActiveUserProfileWithGivenFields(userProfileCreationData);
+        verifyCreateUserProfile(activeUserProfile);
+
+        Response response = testRequestHandler
+                .sendDeleteWithoutBody(NO_CONTENT, requestUri + "/users?userId=" + activeUserProfile.getIdamId());
+
+        assertThat(response.getStatusCode()).isEqualTo(204);
+
+        testRequestHandler.sendGet(NOT_FOUND, requestUri + "?userId=" + activeUserProfile.getIdamId());
+
+        log.info("deleteActiveUserByIdShouldReturnSuccess :: ENDED");
+    }
+
+    @Test
+    @ToggleEnable(mapKey = DELETE_USER_BY_ID_OR_EMAIL_PATTERN, withFeature = true)
+    public void deleteActiveUserByEmailPatternShouldReturnSuccess() throws Exception {
+        log.info("deleteActiveUsersByEmailPatternShouldReturnSuccess :: STARTED");
+
+        UserProfileCreationData userProfileCreationData = new UserProfileCreationData(generateRandomEmail(),
+                randomAlphabetic(20), randomAlphabetic(20), LanguagePreference.EN.toString(),
+                false, false, UserCategory.PROFESSIONAL.toString(),
+                UserType.EXTERNAL.toString(), getIdamRolesJson(), false);
+
+        UserProfileCreationResponse activeUserProfile =
+                createActiveUserProfileWithGivenFields(userProfileCreationData);
+        verifyCreateUserProfile(activeUserProfile);
+
+        Response response = testRequestHandler
+                .sendDeleteWithoutBody(NO_CONTENT, requestUri + "/users?emailPattern=@prdfunctestuser.com");
+
+        assertThat(response.getStatusCode()).isEqualTo(204);
+
+        testRequestHandler.sendGet(NOT_FOUND, requestUri + "?userId=" + activeUserProfile.getIdamId());
+
+        log.info("deleteActiveUsersByEmailPatternShouldReturnSuccess :: ENDED");
+    }
+
+    @Test
+    @ToggleEnable(mapKey = DELETE_USER_BY_ID_OR_EMAIL_PATTERN, withFeature = false)
+    public void deleteActiveUserByEmailPatternShouldReturnFailureWhenToggledOff() {
+        log.info("deleteActiveUserByEmailPatternShouldReturnFailureWhenToggledOff :: STARTED");
+
+        Response response = testRequestHandler
+                .sendDeleteWithoutBody(NO_CONTENT, requestUri + "/users?emailPattern=@prdfunctestuser.com");
+
+        assertThat(HttpStatus.FORBIDDEN.value()).isEqualTo(response.statusCode());
+        assertThat(response.getBody().asString()).contains(CustomSerenityRunner.getFeatureFlagName().concat(" ")
+                .concat(FeatureConditionEvaluation.FORBIDDEN_EXCEPTION_LD));
+
+        log.info("deleteActiveUserByEmailPatternShouldReturnFailureWhenToggledOff :: ENDED");
+    }
+
 }

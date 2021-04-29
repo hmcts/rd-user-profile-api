@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.openMocks;
 import static org.springframework.http.HttpStatus.ACCEPTED;
 import static org.springframework.http.ResponseEntity.status;
 
@@ -17,6 +18,7 @@ import java.util.function.Supplier;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -36,6 +38,7 @@ public class UserProfileQueryProviderTest {
     @Mock
     private UserProfileRepository userProfileRepositoryMock;
 
+    @InjectMocks
     private UserProfileQueryProvider userProfileQueryProvider;
 
     private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(status(ACCEPTED).build());
@@ -46,11 +49,11 @@ public class UserProfileQueryProviderTest {
 
     @Before
     public void setUp() {
-        userProfileQueryProvider = new UserProfileQueryProvider(userProfileRepositoryMock);
-
         userProfile.setStatus(IdamStatus.ACTIVE);
         userProfile.setIdamId("1234");
         userProfile.setId((long) 1234);
+
+        openMocks(this);
     }
 
     @Test
@@ -125,12 +128,13 @@ public class UserProfileQueryProviderTest {
 
         userProfileRepositoryMock.save(userProfile);
 
-        when(userProfileRepositoryMock.findByIdamIdInAndStatusNot(any(), any(IdamStatus.class)))
-                .thenReturn(Optional.of(userProfiles));
-
         UserProfileIdentifier userProfileIdentifierWithMultipleValue
                 = new UserProfileIdentifier(IdentifierName.UUID_LIST,
                 Collections.singletonList(userProfile.getIdamId()));
+
+
+        when(userProfileRepositoryMock.findByIdamIdInAndStatusNot(any(), any(IdamStatus.class)))
+                .thenReturn(Optional.of(userProfiles));
 
         Optional<List<UserProfile>> result
                 = userProfileQueryProvider.getProfilesByIds(userProfileIdentifierWithMultipleValue, Boolean.FALSE);

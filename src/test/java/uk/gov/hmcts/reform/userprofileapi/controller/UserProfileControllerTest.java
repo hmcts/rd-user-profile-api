@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.ResponseEntity.status;
+import static uk.gov.hmcts.reform.userprofileapi.constants.TestConstants.COMMON_EMAIL_PATTERN;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildUpdateUserProfileData;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -30,6 +32,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
@@ -49,9 +52,6 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
 import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileService;
 
-
-
-
 @RunWith(MockitoJUnitRunner.class)
 public class UserProfileControllerTest {
 
@@ -64,6 +64,10 @@ public class UserProfileControllerTest {
     HttpServletRequest httpRequest = mock(HttpServletRequest.class);
 
     private static final String ORIGIN = "EXUI";
+
+    @Before public void setUp() {
+        ReflectionTestUtils.setField(sut, "environmentName", "preview");
+    }
 
     @Test
     public void test_CreateUserProfile() {
@@ -256,13 +260,51 @@ public class UserProfileControllerTest {
 
     @Test(expected = RequiredFieldMissingException.class)
     public void testDeleteUserProfilesWithEmptyUserIdInTheRequest() {
-
-        UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         List<String> userIds = new ArrayList<>();
         userIds.add("");
+
         UserProfileDataRequest userProfileDataRequest = new UserProfileDataRequest(userIds);
         sut.deleteUserProfiles(userProfileDataRequest);
-        verify(userProfileServiceMock, times(0)).delete(any(UserProfileDataRequest.class));
 
+        verify(userProfileServiceMock, times(0)).delete(any(UserProfileDataRequest.class));
     }
+
+    @Test
+    public void testDeleteUserById() {
+        UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
+
+        UserProfilesDeletionResponse userProfilesDeletionResponse =
+                new UserProfilesDeletionResponse(204, "UserProfiles Successfully Deleted");
+
+        when(userProfileServiceMock.deleteByUserId(anyString())).thenReturn(userProfilesDeletionResponse);
+
+        ResponseEntity<UserProfilesDeletionResponse> responseEntityActual =
+                sut.deleteUserProfileByIdOrEmailPattern(userProfile.getIdamId(), null);
+
+        assertThat(responseEntityActual).isNotNull();
+        verify(userProfileServiceMock, times(1)).deleteByUserId(userProfile.getIdamId());
+        assertThat(responseEntityActual.getStatusCodeValue()).isEqualTo(204);
+        assertThat(responseEntityActual.getBody().getMessage()).isEqualTo("UserProfiles Successfully Deleted");
+    }
+
+    @Test
+    public void testDeleteUserByEmailPattern() {
+
+        String emailPattern = COMMON_EMAIL_PATTERN;
+
+        UserProfilesDeletionResponse userProfilesDeletionResponse =
+                new UserProfilesDeletionResponse(204, "UserProfiles Successfully Deleted");
+
+        when(userProfileServiceMock.deleteByEmailPattern(emailPattern))
+                .thenReturn(userProfilesDeletionResponse);
+
+        ResponseEntity<UserProfilesDeletionResponse> responseEntityActual =
+                sut.deleteUserProfileByIdOrEmailPattern(null, emailPattern);
+
+        assertThat(responseEntityActual).isNotNull();
+        verify(userProfileServiceMock, times(1)).deleteByEmailPattern(emailPattern);
+        assertThat(responseEntityActual.getStatusCodeValue()).isEqualTo(204);
+        assertThat(responseEntityActual.getBody().getMessage()).isEqualTo("UserProfiles Successfully Deleted");
+    }
+
 }

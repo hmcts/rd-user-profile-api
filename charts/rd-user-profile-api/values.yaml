@@ -14,6 +14,8 @@ java:
     OPEN_ID_API_BASE_URI: https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net/o
     IDAM_URL: https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net
     AUTH_IDAM_CLIENT_BASEURL: https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net
+    LAUNCH_DARKLY_ENV: "{{ .Values.global.environment }}"
+    ENVIRONMENT_NAME: "{{ .Values.global.environment }}"
 
   keyVaults:
     rd:
@@ -21,6 +23,8 @@ java:
         - user-profile-api-s2s-secret
         - user-profile-api-POSTGRES-PASS
         - ApplicationInsightsInstrumentationKey
+        - LD-SDK-KEY
+
   autoscaling:
     enabled: true
     maxReplicas: 5

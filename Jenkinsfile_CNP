@@ -11,6 +11,9 @@ def component = "user-profile-api"
 def secrets = [
     's2s-${env}': [
         secret('microservicekey-rd-user-profile-api', 'S2S_SECRET')
+    ],
+    'rd-${env}': [
+            secret('LD-SDK-KEY', 'RD_LD_SDK_KEY')
     ]
 ]
 
@@ -50,6 +53,14 @@ withPipeline(type, product, component) {
 
     // Sync environment specific branches with master branch
     syncBranchesWithMaster(branchesToSync)
+
+    before('functionalTest:preview') {
+        env.execution_environment = "preview"
+    }
+
+    before('functionalTest:aat') {
+        env.execution_environment = "aat"
+    }
 
     after('integrationTest:preview') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'

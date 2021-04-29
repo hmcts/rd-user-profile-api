@@ -19,6 +19,7 @@ public class FuncTestRequestHandler {
     protected String baseUrl;
     protected String s2sToken;
     public static final String BEARER = "Bearer ";
+    public static final String COMMON_EMAIL_PATTERN = "@prdfunctestuser.com";
     public static IdamOpenIdClient idamOpenIdClient;
 
     public FuncTestRequestHandler(String baseUrl, String s2sToken, IdamOpenIdClient idamOpenIdClient) {
@@ -92,6 +93,12 @@ public class FuncTestRequestHandler {
                 .then()
                 .log().all(true)
                 .statusCode(expectedStatus.value()).extract().response();
+    }
+
+    public Response sendDeleteWithoutBody(HttpStatus expectedStatus, String path) {
+        
+        return withAuthenticatedRequest()
+                .delete(path).andReturn();
     }
 
     public <T> T sendGet(String urlPath, Class<T> clazz) {

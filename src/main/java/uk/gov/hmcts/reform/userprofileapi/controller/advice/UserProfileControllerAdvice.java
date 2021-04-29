@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.controller.advice;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.HttpClientErrorException;
+import uk.gov.hmcts.reform.userprofileapi.exception.ForbiddenException;
 import uk.gov.hmcts.reform.userprofileapi.exception.IdamServiceException;
 import uk.gov.hmcts.reform.userprofileapi.exception.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
@@ -106,6 +108,14 @@ public class UserProfileControllerAdvice {
             IdamServiceException e
     ) {
         return errorDetailsResponseEntity(e, e.getHttpStatus(), resolveStatusAndReturnMessage(e.getHttpStatus()));
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    protected ResponseEntity<Object> handleForbiddenException(
+            HttpServletRequest request,
+            ForbiddenException e
+    ) {
+        return errorDetailsResponseEntity(e, FORBIDDEN, e.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
