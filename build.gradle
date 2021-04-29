@@ -391,7 +391,7 @@ dependencies {
         endorseStrictVersions()
     }
 
-    contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.7.0")
+    contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.7.1")
     contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.7.0")
     contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.7.0')
 
