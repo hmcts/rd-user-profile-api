@@ -47,5 +47,7 @@
   "10096_Timestamp Disclosure - Unix_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v2/api-docs_GET": "ignore",
   "10096_Timestamp Disclosure - Unix_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile_DELETE": "ignore",
   "10096_Timestamp Disclosure - Unix_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile/users?rolesRequired=rolesRequired&showdeleted=showdeleted_POST": "ignore",
-  "10096_Timestamp Disclosure - Unix_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile/id/roles_GET": "ignore"
+  "10096_Timestamp Disclosure - Unix_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile/id/roles_GET": "ignore",
+  "100000_A Client Error response code was returned by the server_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile/users?emailPattern=emailPattern&userId=userId_DELETE" : "ignore",
+  "10024_Information Disclosure - Sensitive Information in URL_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile/users?emailPattern=emailPattern&userId=userId_DELETE" : "ignore"
 }
