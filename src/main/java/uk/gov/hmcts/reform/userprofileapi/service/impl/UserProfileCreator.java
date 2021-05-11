@@ -161,7 +161,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
 
         if (responseEntity != null) {
             //get userId from location header
-            locationHeader = idamRegistrationInfo.getResponse().getHeaders().getFirst("locationHeader");
+            locationHeader = idamRegistrationInfo.getResponse().getHeaders().getFirst("location");
             userId = locationHeader != null ? locationHeader.substring(sidamGetUri.length()) : null;
             log.error("{}:: Received existing idam user", loggingComponentName);
             // search with id to get roles
