@@ -155,7 +155,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
 
         HttpStatus idamStatus;
         String idamStatusMessage;
-        URI userIdUri;
+        String locationHeader;
         String userId;
         UserProfile userProfile = null;
         IdamRolesInfo idamRolesInfo;
@@ -163,8 +163,8 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
 
         if (responseEntity != null) {
             //get userId from location header
-            userIdUri = idamRegistrationInfo.getResponse().getHeaders().getLocation();
-            userId = userIdUri != null ? userIdUri.toString().substring(sidamGetUri.length()) : null;
+            locationHeader = idamRegistrationInfo.getResponse().getHeaders().getFirst("locationHeader");
+            userId = locationHeader != null ? locationHeader.substring(sidamGetUri.length()) : null;
             log.error("{}:: Received existing idam user", loggingComponentName);
             // search with id to get roles
             idamRolesInfo = idamService.fetchUserById(userId);
@@ -197,7 +197,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
                 persistAuditAndThrowIdamException(idamStatusMessage, idamStatus, null);
             }
         } else {
-            log.error("{}:: Did not get location header", loggingComponentName);
+            log.error("{}:: Did not get locationHeader header", loggingComponentName);
             idamStatus = HttpStatus.INTERNAL_SERVER_ERROR;
             persistAuditAndThrowIdamException(IdamStatusResolver.resolveStatusAndReturnMessage(idamStatus),
                     idamStatus, null);
