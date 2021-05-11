@@ -29,11 +29,13 @@ spring:
             oidc:
               client-id: microservicekey-rd-user-profile-api
               client-secret: ${S2S_SECRET:AAAAAAAAAAAAAAAA}
+  config:
+    import: "optional:configtree:/mnt/secrets/rd/"
 
 ### database configuration
   datasource:
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5428}/${POSTGRES_NAME:dbuserprofile}${POSTGRES_CONNECTION_OPTIONS:?}
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_NAME:dbuserprofile}${POSTGRES_CONNECTION_OPTIONS:?}
     username: ${POSTGRES_USERNAME:dbuserprofile}
     password: ${POSTGRES_PASSWORD:dbuserprofile}
     properties:
