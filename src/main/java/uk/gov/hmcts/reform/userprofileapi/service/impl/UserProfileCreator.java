@@ -3,8 +3,6 @@ package uk.gov.hmcts.reform.userprofileapi.service.impl;
 import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.USER_ALREADY_ACTIVE;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileMapper.mapUpdatableFieldsForReInvite;
 
-import java.net.URI;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -197,7 +195,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
                 persistAuditAndThrowIdamException(idamStatusMessage, idamStatus, null);
             }
         } else {
-            log.error("{}:: Did not get locationHeader header", loggingComponentName);
+            log.error("{}:: Did not get location header", loggingComponentName);
             idamStatus = HttpStatus.INTERNAL_SERVER_ERROR;
             persistAuditAndThrowIdamException(IdamStatusResolver.resolveStatusAndReturnMessage(idamStatus),
                     idamStatus, null);
