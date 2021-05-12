@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
+import static java.util.Objects.nonNull;
 import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.USER_ALREADY_ACTIVE;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileMapper.mapUpdatableFieldsForReInvite;
 
@@ -162,7 +163,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
         if (responseEntity != null) {
             //get userId from location header
             locationHeader = idamRegistrationInfo.getResponse().getHeaders().getFirst("location");
-            userId = locationHeader != null ? locationHeader.substring(sidamGetUri.length()) : null;
+            userId = nonNull(locationHeader) ? locationHeader.substring(sidamGetUri.length()) : null;
             log.error("{}:: Received existing idam user", loggingComponentName);
             // search with id to get roles
             idamRolesInfo = idamService.fetchUserById(userId);
