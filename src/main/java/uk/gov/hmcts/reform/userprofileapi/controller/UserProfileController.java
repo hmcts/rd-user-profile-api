@@ -245,8 +245,8 @@ public class UserProfileController {
             throw new InvalidRequest("No User Email provided via header or param");
         }
 
-        UserProfileWithRolesResponse response =
-                userProfileService.retrieveWithRoles(new UserProfileIdentifier(IdentifierName.EMAIL, userEmail));
+        UserProfileWithRolesResponse response = userProfileService
+                .retrieveWithRoles(new UserProfileIdentifier(IdentifierName.EMAIL, userEmail.toLowerCase()));
 
         return ResponseEntity.ok(response);
     }
