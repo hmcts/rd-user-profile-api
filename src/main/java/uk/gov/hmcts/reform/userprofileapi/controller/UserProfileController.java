@@ -237,7 +237,7 @@ public class UserProfileController {
     @ResponseBody
     public ResponseEntity<UserProfileWithRolesResponse> getUserProfileWithRolesByEmail(
             @ApiParam(name = "email")
-            @RequestParam(value = "email", required = false) String email) {
+            @RequestParam(value = "email", required = false, defaultValue = "") String email) {
         //Getting user profile by email from header or request param
         String userEmail = getUserEmail(email);
         requireNonNull(userEmail, "email cannot be null");
