@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.controller;
 
 import static java.util.Objects.nonNull;
-import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.API_IS_NOT_AVAILABLE_IN_PROD_ENV;
@@ -239,9 +238,9 @@ public class UserProfileController {
             @RequestParam(value = "email", required = false) String email) {
         //Getting user profile by email from header or request param
         String userEmail = getUserEmail(email);
-        requireNonNull(userEmail, "email cannot be null");
+
         UserProfileWithRolesResponse response = userProfileService
-                .retrieveWithRoles(new UserProfileIdentifier(IdentifierName.EMAIL, userEmail.toLowerCase()));
+                .retrieveWithRoles(new UserProfileIdentifier(IdentifierName.EMAIL, userEmail));
         return ResponseEntity.ok(response);
     }
 
@@ -553,9 +552,19 @@ public class UserProfileController {
         String userEmail = null;
         ServletRequestAttributes servletRequestAttributes =
                 ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes());
+
         if (nonNull(servletRequestAttributes)) {
             HttpServletRequest request = servletRequestAttributes.getRequest();
-            userEmail = request.getHeader("UserEmail") != null ? request.getHeader("UserEmail") : email;
+
+            if (nonNull(request.getHeader("UserEmail"))) {
+                userEmail = request.getHeader("UserEmail").toLowerCase();
+
+            } else if (nonNull(email)) {
+                userEmail = email.toLowerCase();
+
+            } else {
+                throw new InvalidRequest("No User Email provided via header or param");
+            }
         }
         return userEmail;
     }
