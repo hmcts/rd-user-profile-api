@@ -100,25 +100,16 @@ public class FuncTestRequestHandler {
     }
 
     public Response sendDeleteWithoutBody(HttpStatus expectedStatus, String path) {
-        
+
         return withAuthenticatedRequest()
                 .delete(path).andReturn();
     }
 
     public <T> T sendGet(String urlPath, Class<T> clazz) {
-        return sendGet(HttpStatus.OK,urlPath).as(clazz);
+        return getUserProfileResponse(HttpStatus.OK, urlPath).as(clazz);
     }
 
-    public void getUserByNonExistentId(String urlPath, HttpStatus expectedStatus) {
-        sendGet(expectedStatus, urlPath);
-    }
-
-    public <T> T getUserByEmailInHeaderWithRoles(String urlPath, String email,
-                                                 HttpStatus httpStatus, Class<T> tClass) {
-         return getUserByEmailInHeaderWithRoles(httpStatus, urlPath, email).as(tClass);
-    }
-
-    public Response sendGet(HttpStatus httpStatus, String urlPath) {
+    public Response getUserProfileResponse(HttpStatus httpStatus, String urlPath) {
         String bearerToken = getBearerToken();
 
         log.info("S2S Token : {}, Bearer Token : {}", s2sToken, bearerToken);
@@ -137,7 +128,7 @@ public class FuncTestRequestHandler {
                 .statusCode(httpStatus.value()).extract().response();
     }
 
-    public Response getUserByEmailInHeaderWithRoles(HttpStatus httpStatus, String urlPath, String email) {
+    public <T> T getUserByEmailInHeaderWithRoles(String urlPath, String email, HttpStatus httpStatus, Class<T> clazz) {
         String bearerToken = getBearerToken();
 
         log.info("S2S Token : {}, Bearer Token : {}", s2sToken, bearerToken);
@@ -154,21 +145,13 @@ public class FuncTestRequestHandler {
                 .get(urlPath)
                 .then()
                 .log().all(true)
-                .statusCode(httpStatus.value()).extract().response();
+                .statusCode(httpStatus.value()).extract().response()
+                .as(clazz);
     }
 
     public <T> T getUserProfileByEmailFromHeader(String urlPath, Class<T> clazz, String email) {
         return getUserProfileByEmailFromHeader(HttpStatus.OK, urlPath, email).as(clazz);
     }
-
-    public <T> T getUserProfileByEmailFromQueryParam(String urlPath, Class<T> clazz) {
-        return getUserProfileByEmailFromQueryParam(urlPath, HttpStatus.OK).as(clazz);
-    }
-
-    public Response getUserProfileWithNoEmail(String urlPath,HttpStatus expectedStatus) {
-        return getUserProfileByEmailFromQueryParam(urlPath, expectedStatus);
-    }
-
 
     public Response getUserProfileByEmailFromHeader(HttpStatus httpStatus, String urlPath, String email) {
         String bearerToken = getBearerToken();
@@ -189,7 +172,7 @@ public class FuncTestRequestHandler {
                 .statusCode(httpStatus.value()).extract().response();
     }
 
-    public Response getUserProfileByEmailFromQueryParam(String urlPath, HttpStatus httpStatus) {
+    public <T> T getUserProfileByEmailFromQueryParam(String urlPath, HttpStatus httpStatus, Class<T> clazz) {
         String bearerToken = getBearerToken();
 
         log.info("S2S Token : {}, Bearer Token : {}", s2sToken, bearerToken);
@@ -204,7 +187,8 @@ public class FuncTestRequestHandler {
                 .get(urlPath)
                 .then()
                 .log().all(true)
-                .statusCode(httpStatus.value()).extract().response();
+                .statusCode(httpStatus.value()).extract().response()
+                .as(clazz);
     }
 
     public String asJsonString(Object source) throws JsonProcessingException {

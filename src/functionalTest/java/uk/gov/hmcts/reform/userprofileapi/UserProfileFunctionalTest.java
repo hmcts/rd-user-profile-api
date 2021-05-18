@@ -37,8 +37,10 @@ import static com.google.common.collect.ImmutableList.of;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static uk.gov.hmcts.reform.userprofileapi.client.FuncTestRequestHandler.BEARER;
 import static uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus.ACTIVE;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.generateRandomEmail;
@@ -103,14 +105,11 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
     public void findUserByEmailScenario() {
         findUserByEmailInQueryParamShouldReturnSuccess();
         findUserByEmailInHeaderShouldReturnSuccess();
-        findUserWithNoEmailInHeaderAndQueryParamShouldReturnBadRequest();
         findUserByEmailInQueryParamWithRolesShouldReturnSuccess();
         findUserByEmailInHeaderWithRolesShouldReturnSuccess();
-        findUserByNoEmailInHeaderAndQueryParamWithRolesShouldReturnBadRequest();
     }
 
     public void findUserByUserIdScenarios() {
-        findUserByNonExistentUserIdWithRolesShouldReturnNotFound();
         findUserByUserIdShouldReturnSuccess();
         findUserByUserIdWithRolesShouldReturnSuccess();
     }
@@ -196,6 +195,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         UserProfileResponse resource =
                 testRequestHandler.getUserProfileByEmailFromQueryParam(
                         requestUri + "?email=" + activeUserProfileCreationData.getEmail().toLowerCase(),
+                        HttpStatus.OK,
                         UserProfileResponse.class);
 
         verifyGetUserProfile(resource, activeUserProfileCreationData);
@@ -215,14 +215,6 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         verifyGetUserProfile(resource, activeUserProfileCreationData);
 
         log.info("findUserByEmailInHeaderShouldReturnSuccess :: ENDED");
-    }
-
-    public void findUserWithNoEmailInHeaderAndQueryParamShouldReturnBadRequest() {
-        log.info("findUserWithNoEmailInHeaderAndQueryParamShouldReturnBadRequest :: STARTED");
-
-        testRequestHandler.getUserProfileWithNoEmail(requestUri, HttpStatus.BAD_REQUEST);
-
-        log.info("findUserWithNoEmailInHeaderAndQueryParamShouldReturnBadRequest :: ENDED");
     }
 
     public void findUserByUserIdShouldReturnSuccess() {
@@ -250,18 +242,6 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         assertThat(resource.getRoles()).contains("pui-user-manager");
 
         log.info("findUserByUserIdWithRolesShouldReturnSuccess :: ENDED");
-    }
-
-    public void findUserByNonExistentUserIdWithRolesShouldReturnNotFound() {
-        log.info("findUserByNonExistentUserIdWithRolesShouldReturnNotFound :: STARTED");
-
-        final String nonExistentId = UUID.randomUUID().toString();
-
-        testRequestHandler.getUserByNonExistentId(
-                requestUri + "/" + nonExistentId + "/roles",
-                NOT_FOUND);
-
-        log.info("findUserByNonExistentUserIdWithRolesShouldReturnNotFound :: ENDED");
     }
 
     public void findUserByEmailInQueryParamWithRolesShouldReturnSuccess() {
@@ -296,17 +276,6 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         log.info("findUserByEmailInHeaderWithRolesShouldReturnSuccess :: ENDED");
     }
 
-    public void findUserByNoEmailInHeaderAndQueryParamWithRolesShouldReturnBadRequest() {
-        log.info("findUserByNoEmailInHeaderAndQueryParamWithRolesShouldReturnBadRequest :: STARTED");
-
-        final Response response =
-                testRequestHandler.getUserProfileWithNoEmail(requestUri + "/roles", HttpStatus.BAD_REQUEST);
-
-        response.then().body("errorDescription", equalTo("No User Email provided via header or param"));
-
-        log.info("findUserByNoEmailInHeaderAndQueryParamWithRolesShouldReturnBadRequest :: ENDED");
-    }
-
     public void getAllUsersByUserIdsWithShowDeletedFalseShouldReturnSuccess() throws Exception {
         log.info("getAllUsersByUserIdsWithShowDeletedFalseShouldReturnSuccess :: STARTED");
 
@@ -334,8 +303,11 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         updateUserProfileData.setRolesAdd(rolesName);
 
         UserProfileResponse resource =
-                testRequestHandler.getUserProfileByEmailFromQueryParam(requestUri + "?email=" + updateUserProfileData.getEmail(),
-                        UserProfileResponse.class);
+                testRequestHandler
+                        .getUserProfileByEmailFromQueryParam(requestUri
+                                        + "?email=" + updateUserProfileData.getEmail(),
+                                HttpStatus.OK,
+                                UserProfileResponse.class);
 
         testRequestHandler.sendPut(updateUserProfileData, OK,
                 requestUri + "/" + resource.getIdamId(), UserProfileRolesResponse.class);
@@ -415,7 +387,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
                 objectMapper.writeValueAsString(deletionRequest),
                 NO_CONTENT, requestUri);
 
-        testRequestHandler.sendGet(NOT_FOUND,
+        testRequestHandler.getUserProfileResponse(NOT_FOUND,
                 requestUri + "?userId=" + userIds.get(0));
 
         log.info("deleteActiveUserShouldReturnSuccess :: ENDED");
@@ -489,7 +461,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
 
         assertThat(response.getStatusCode()).isEqualTo(204);
 
-        testRequestHandler.sendGet(NOT_FOUND, requestUri + "?userId=" + activeUserProfile.getIdamId());
+        testRequestHandler.getUserProfileResponse(NOT_FOUND, requestUri + "?userId=" + activeUserProfile.getIdamId());
 
         log.info("deleteActiveUserByIdShouldReturnSuccess :: ENDED");
     }
@@ -513,7 +485,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
 
         assertThat(response.getStatusCode()).isEqualTo(204);
 
-        testRequestHandler.sendGet(NOT_FOUND, requestUri + "?userId=" + activeUserProfile.getIdamId());
+        testRequestHandler.getUserProfileResponse(NOT_FOUND, requestUri + "?userId=" + activeUserProfile.getIdamId());
 
         log.info("deleteActiveUsersByEmailPatternShouldReturnSuccess :: ENDED");
     }

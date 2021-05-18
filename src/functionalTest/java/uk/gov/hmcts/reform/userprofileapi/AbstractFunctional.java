@@ -134,8 +134,7 @@ public class AbstractFunctional extends AbstractTestExecutionListener {
     }
 
     protected void updateUserProfile(UpdateUserProfileData updateUserProfileData, String userId) throws Exception {
-
-         testRequestHandler.sendPut(
+        testRequestHandler.sendPut(
                 updateUserProfileData,
                 HttpStatus.OK,
                 requestUri + "/" + userId);
