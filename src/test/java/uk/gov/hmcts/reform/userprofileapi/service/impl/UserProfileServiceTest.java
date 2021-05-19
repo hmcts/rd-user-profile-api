@@ -101,7 +101,7 @@ public class UserProfileServiceTest {
 
         UserProfileCreationResponse resource = userProfileService.create(userProfileData);
 
-        assertThat(resource).isEqualToComparingFieldByField(expected);
+        assertThat(resource).usingRecursiveComparison().isEqualTo(expected);
         verify(userProfileCreator).create(any(UserProfileCreationData.class));
 
     }
@@ -117,7 +117,7 @@ public class UserProfileServiceTest {
 
         UserProfileResponse resource = userProfileService.retrieve(identifier);
 
-        assertThat(resource).isEqualToComparingFieldByField(expected);
+        assertThat(resource).usingRecursiveComparison().isEqualTo(expected);
 
         verify(userProfileRetriever, times(1)).retrieve(any(), any(boolean.class));
 
@@ -134,7 +134,7 @@ public class UserProfileServiceTest {
 
         UserProfileWithRolesResponse resource = userProfileService.retrieveWithRoles(identifier);
 
-        assertThat(resource).isEqualToComparingFieldByField(expected);
+        assertThat(resource).usingRecursiveComparison().isEqualTo(expected);
 
         verify(userProfileRetriever, times(1)).retrieve(any(), any(boolean.class));
 

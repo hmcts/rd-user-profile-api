@@ -33,13 +33,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import static com.microsoft.applicationinsights.boot.dependencies.google.common.collect.ImmutableList.of;
+import static com.google.common.collect.ImmutableList.of;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static uk.gov.hmcts.reform.userprofileapi.client.FuncTestRequestHandler.BEARER;
 import static uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus.ACTIVE;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.generateRandomEmail;
@@ -65,10 +66,10 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
     public void testUserProfileScenarios() throws Exception {
         setUpTestData();
         createUserScenario();
-        updateUserScenario();
         findUserByEmailScenario();
         findUserByUserIdScenarios();
         getAllUsersByUserIdsScenario();
+        updateUserScenario();
         addOrDeleteUserRolesScenarios();
         reinviteUserScenario();
         deleteUserScenarios();
@@ -94,6 +95,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
 
     public void createUserScenario() throws Exception {
         createUserProfileWithIdamDuplicateShouldReturnRolesAndSuccess();
+        createDuplicateUserProfileShouldReturnConflict();
     }
 
     public void updateUserScenario() throws Exception {
@@ -101,7 +103,10 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
     }
 
     public void findUserByEmailScenario() {
-        findUserByEmailWithHeaderShouldReturnSuccess();
+        findUserByEmailInQueryParamShouldReturnSuccess();
+        findUserByEmailInHeaderShouldReturnSuccess();
+        findUserByEmailInQueryParamWithRolesShouldReturnSuccess();
+        findUserByEmailInHeaderWithRolesShouldReturnSuccess();
     }
 
     public void findUserByUserIdScenarios() {
@@ -115,7 +120,6 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
 
     public void addOrDeleteUserRolesScenarios() throws JsonProcessingException {
         addRolesToActiveUserProfileShouldReturnSuccess();
-        addRolesFromHeaderToActiveUserProfileShouldReturnSuccess();
         deleteRolesOfActiveUserProfileShouldReturnSuccess();
     }
 
@@ -154,33 +158,71 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         log.info("createUserProfileWithIdamDuplicateShouldReturnRolesAndSuccess :: ENDED");
     }
 
+    public void createDuplicateUserProfileShouldReturnConflict() throws Exception {
+        log.info("createDuplicateUserProfileShouldReturnConflict :: STARTED");
+
+        activeUserProfile = createDuplicateUserProfileWithGivenFields(activeUserProfileCreationData, CONFLICT);
+        verifyCreateUserProfile(activeUserProfile);
+
+        UserProfileWithRolesResponse resource =
+                testRequestHandler.sendGet(
+                        requestUri + "/" + activeUserProfile.getIdamId() + "/roles",
+                        UserProfileWithRolesResponse.class);
+
+        assertThat(resource.getRoles()).contains("pui-case-manager");
+        assertThat(resource.getRoles()).contains("pui-user-manager");
+    }
+
     public void updateUserProfileShouldReturnSuccess() throws Exception {
         log.info("updateUserProfileShouldReturnSuccess :: STARTED");
 
+        updateUserProfileData.setFirstName(randomAlphabetic(20));
+        updateUserProfileData.setLastName(randomAlphabetic(20));
+
         updateUserProfile(updateUserProfileData, activeUserProfile.getIdamId());
+
+        UserProfileResponse resource = testRequestHandler.sendGet(
+                requestUri + "?userId=" + activeUserProfile.getIdamId(), UserProfileResponse.class);
+
+        verifyUpdatedUserProfile(resource, updateUserProfileData);
 
         log.info("updateUserProfileShouldReturnSuccess :: ENDED");
     }
 
-    public void findUserByEmailWithHeaderShouldReturnSuccess() {
-        log.info("findUserByEmailShouldReturnSuccess :: STARTED");
+    public void findUserByEmailInQueryParamShouldReturnSuccess() {
+        log.info("findUserByEmailInQueryParamShouldReturnSuccess :: STARTED");
 
         UserProfileResponse resource =
-                testRequestHandler.getEmailFromHeader(
+                testRequestHandler.getUserProfileByEmailFromQueryParam(
                         requestUri + "?email=" + activeUserProfileCreationData.getEmail().toLowerCase(),
+                        HttpStatus.OK,
+                        UserProfileResponse.class);
+
+        verifyGetUserProfile(resource, activeUserProfileCreationData);
+
+        log.info("findUserByEmailInQueryParamShouldReturnSuccess :: ENDED");
+    }
+
+    public void findUserByEmailInHeaderShouldReturnSuccess() {
+        log.info("findUserByEmailInHeaderShouldReturnSuccess :: STARTED");
+
+        UserProfileResponse resource =
+                testRequestHandler.getUserProfileByEmailFromHeader(
+                        requestUri,
                         UserProfileResponse.class,
                         activeUserProfileCreationData.getEmail().toLowerCase());
 
         verifyGetUserProfile(resource, activeUserProfileCreationData);
 
-        log.info("findUserByEmailShouldReturnSuccess :: ENDED");
+        log.info("findUserByEmailInHeaderShouldReturnSuccess :: ENDED");
     }
 
     public void findUserByUserIdShouldReturnSuccess() {
         log.info("findUserByUserIdShouldReturnSuccess :: STARTED");
 
         UserProfileResponse resource = testRequestHandler.sendGet(
-                requestUri + "?userId=" + activeUserProfile.getIdamId(), UserProfileResponse.class);
+                requestUri + "?userId=" + activeUserProfile.getIdamId(),
+                UserProfileResponse.class);
 
         verifyGetUserProfile(resource, activeUserProfileCreationData);
 
@@ -196,13 +238,48 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
 
         verifyGetUserProfile(resource, activeUserProfileCreationData);
 
+        assertThat(resource.getRoles()).contains("pui-case-manager");
+        assertThat(resource.getRoles()).contains("pui-user-manager");
+
         log.info("findUserByUserIdWithRolesShouldReturnSuccess :: ENDED");
+    }
+
+    public void findUserByEmailInQueryParamWithRolesShouldReturnSuccess() {
+        log.info("findUserByEmailWithRolesShouldReturnSuccess :: STARTED");
+
+        UserProfileResponse resource = testRequestHandler.sendGet(
+                requestUri + "/roles?email=" + activeUserProfileCreationData.getEmail().toLowerCase(),
+                UserProfileWithRolesResponse.class);
+
+        verifyGetUserProfile(resource, activeUserProfileCreationData);
+
+        assertThat(resource.getRoles()).contains("pui-case-manager");
+        assertThat(resource.getRoles()).contains("pui-user-manager");
+
+        log.info("findUserByEmailWithRolesShouldReturnSuccess :: ENDED");
+    }
+
+    public void findUserByEmailInHeaderWithRolesShouldReturnSuccess() {
+        log.info("findUserByEmailInHeaderWithRolesShouldReturnSuccess :: STARTED");
+
+        UserProfileResponse resource = testRequestHandler.getUserByEmailInHeaderWithRoles(
+                requestUri + "/roles",
+                activeUserProfileCreationData.getEmail().toLowerCase(),
+                OK,
+                UserProfileWithRolesResponse.class);
+
+        verifyGetUserProfile(resource, activeUserProfileCreationData);
+
+        assertThat(resource.getRoles()).contains("pui-case-manager");
+        assertThat(resource.getRoles()).contains("pui-user-manager");
+
+        log.info("findUserByEmailInHeaderWithRolesShouldReturnSuccess :: ENDED");
     }
 
     public void getAllUsersByUserIdsWithShowDeletedFalseShouldReturnSuccess() throws Exception {
         log.info("getAllUsersByUserIdsWithShowDeletedFalseShouldReturnSuccess :: STARTED");
 
-        pendingUserProfile = createUserProfile(pendingUserProfileCreationData);
+        pendingUserProfile = createUserProfile(pendingUserProfileCreationData, HttpStatus.CREATED);
 
         verifyCreateUserProfile(pendingUserProfile);
 
@@ -226,8 +303,11 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         updateUserProfileData.setRolesAdd(rolesName);
 
         UserProfileResponse resource =
-                testRequestHandler.sendGet(requestUri + "?email=" + updateUserProfileData.getEmail(),
-                        UserProfileResponse.class);
+                testRequestHandler
+                        .getUserProfileByEmailFromQueryParam(requestUri
+                                        + "?email=" + updateUserProfileData.getEmail(),
+                                HttpStatus.OK,
+                                UserProfileResponse.class);
 
         testRequestHandler.sendPut(updateUserProfileData, OK,
                 requestUri + "/" + resource.getIdamId(), UserProfileRolesResponse.class);
@@ -243,32 +323,6 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         log.info("addRolesToActiveUserProfileShouldReturnSuccess :: ENDED");
     }
 
-    public void addRolesFromHeaderToActiveUserProfileShouldReturnSuccess() throws JsonProcessingException {
-        log.info("addRolesFromHeaderToActiveUserProfileShouldReturnSuccess :: STARTED");
-
-        Set<RoleName> rolesName = new HashSet<>();
-        rolesName.add(new RoleName(puiOrgManager));
-        updateUserProfileData.setRolesAdd(rolesName);
-
-        UserProfileResponse resource =
-                testRequestHandler.getEmailFromHeader(requestUri + "?email=" + " ",
-                        UserProfileResponse.class, updateUserProfileData.getEmail());
-
-        testRequestHandler.sendPut(updateUserProfileData, OK,
-                requestUri + "/" + resource.getIdamId(), UserProfileRolesResponse.class);
-
-        UserProfileWithRolesResponse resource2 =
-                testRequestHandler.sendGet(
-                        "/v1/userprofile/" + resource.getIdamId() + "/roles",
-                        UserProfileWithRolesResponse.class);
-
-        assertThat(resource2.getRoles().size()).isEqualTo(4);
-        assertThat(resource2.getRoles()
-                .contains("pui-finance-manager,pui-case-manager,pui-org-manager,pui-user-manager"));
-
-        log.info("addRolesFromHeaderToActiveUserProfileShouldReturnSuccess :: ENDED");
-    }
-
     public void deleteRolesOfActiveUserProfileShouldReturnSuccess() throws JsonProcessingException {
         log.info("deleteRolesOfActiveUserProfileShouldReturnSuccess :: STARTED");
 
@@ -278,7 +332,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
                         UserProfileWithRolesResponse.class);
 
         assertThat(resource2.getRoles().size()).isNotNull();
-        assertThat(resource2.getRoles().size()).isEqualTo(4);
+        assertThat(resource2.getRoles().size()).isEqualTo(3);
         assertThat(resource2.getRoles().contains("pui-finance-manager,pui-case-manager,pui-user-manager"));
 
         Set<RoleName> rolesDelete = new HashSet<>();
@@ -333,7 +387,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
                 objectMapper.writeValueAsString(deletionRequest),
                 NO_CONTENT, requestUri);
 
-        testRequestHandler.sendGet(NOT_FOUND,
+        testRequestHandler.getUserProfileResponse(NOT_FOUND,
                 requestUri + "?userId=" + userIds.get(0));
 
         log.info("deleteActiveUserShouldReturnSuccess :: ENDED");
@@ -407,7 +461,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
 
         assertThat(response.getStatusCode()).isEqualTo(204);
 
-        testRequestHandler.sendGet(NOT_FOUND, requestUri + "?userId=" + activeUserProfile.getIdamId());
+        testRequestHandler.getUserProfileResponse(NOT_FOUND, requestUri + "?userId=" + activeUserProfile.getIdamId());
 
         log.info("deleteActiveUserByIdShouldReturnSuccess :: ENDED");
     }
@@ -431,7 +485,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
 
         assertThat(response.getStatusCode()).isEqualTo(204);
 
-        testRequestHandler.sendGet(NOT_FOUND, requestUri + "?userId=" + activeUserProfile.getIdamId());
+        testRequestHandler.getUserProfileResponse(NOT_FOUND, requestUri + "?userId=" + activeUserProfile.getIdamId());
 
         log.info("deleteActiveUsersByEmailPatternShouldReturnSuccess :: ENDED");
     }

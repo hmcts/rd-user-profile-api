@@ -79,7 +79,7 @@ public class UserProfileControllerTest {
         when(userProfileServiceMock.create(userProfileCreationData)).thenReturn(expectedBody);
 
         ResponseEntity<UserProfileCreationResponse> resource = sut.createUserProfile(userProfileCreationData);
-        assertThat(resource.getBody()).isEqualToComparingFieldByField(expectedBody);
+        assertThat(resource.getBody()).usingRecursiveComparison().isEqualTo(expectedBody);
 
         verify(userProfileServiceMock, times(1)).create(any(UserProfileCreationData.class));
         verify(userProfileServiceMock, times(0))
@@ -97,7 +97,7 @@ public class UserProfileControllerTest {
         when(userProfileServiceMock.reInviteUser(userProfileCreationData)).thenReturn(expectedBody);
 
         ResponseEntity<UserProfileCreationResponse> resource = sut.createUserProfile(userProfileCreationData);
-        assertThat(resource.getBody()).isEqualToComparingFieldByField(expectedBody);
+        assertThat(resource.getBody()).usingRecursiveComparison().isEqualTo(expectedBody);
 
         verify(userProfileServiceMock, times(0)).create(any(UserProfileCreationData.class));
         verify(userProfileServiceMock, times(1))
