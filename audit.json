@@ -56,5 +56,6 @@
   "10054_Cookie without SameSite Attribute_http://rd-user-profile-api-aat.service.core-compute-aat.internal/_GET" : "ignore",
   "10054_Cookie without SameSite Attribute_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile/roles?email=foo-bar@example.com_GET" : "ignore",
   "10054_Cookie without SameSite Attribute_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile_POST" : "ignore",
-  "10054_Cookie without SameSite Attribute_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile_DELETE" : "ignore"
+  "10054_Cookie without SameSite Attribute_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile_DELETE" : "ignore",
+  "10096_Timestamp Disclosure - Unix_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile/users?emailPattern=emailPattern&userId=userId_DELETE" : "ignore"
 }
