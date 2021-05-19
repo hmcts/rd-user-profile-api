@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.userprofileapi.controller;
 
 import static java.util.Objects.nonNull;
-import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.API_IS_NOT_AVAILABLE_IN_PROD_ENV;
 import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.NO_USER_ID_OR_EMAIL_PATTERN_PROVIDED_TO_DELETE;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
@@ -88,6 +88,7 @@ public class UserProfileController {
     @Value("${environment_name}")
     private String environmentName;
 
+    public static final String USER_EMAIL = "UserEmail";
 
     @ApiOperation(value = "Create a User Profile",
             authorizations = {
@@ -231,17 +232,22 @@ public class UserProfileController {
     })
     @GetMapping(
             path = "/roles",
-            params = "email",
             produces = APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    public ResponseEntity<UserProfileWithRolesResponse> getUserProfileWithRolesByEmail(@RequestParam(value = "email",
-            required = false) String email) {
+    public ResponseEntity<UserProfileWithRolesResponse> getUserProfileWithRolesByEmail(
+            @ApiParam(name = "email")
+            @RequestParam(value = "email", required = false) String email) {
         //Getting user profile by email from header or request param
         String userEmail = getUserEmail(email);
-        requireNonNull(userEmail, "email cannot be null");
+
+        if (isEmpty(userEmail)) {
+            throw new InvalidRequest("No User Email provided via header or param");
+        }
+
         UserProfileWithRolesResponse response = userProfileService
                 .retrieveWithRoles(new UserProfileIdentifier(IdentifierName.EMAIL, userEmail.toLowerCase()));
+
         return ResponseEntity.ok(response);
     }
 
@@ -555,7 +561,7 @@ public class UserProfileController {
                 ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes());
         if (nonNull(servletRequestAttributes)) {
             HttpServletRequest request = servletRequestAttributes.getRequest();
-            userEmail = request.getHeader("UserEmail") != null ? request.getHeader("UserEmail") : email;
+            userEmail = request.getHeader(USER_EMAIL) != null ? request.getHeader(USER_EMAIL) : email;
         }
         return userEmail;
     }

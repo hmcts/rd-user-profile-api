@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
@@ -90,11 +91,11 @@ public class AbstractFunctional extends AbstractTestExecutionListener {
     }
 
     protected UserProfileCreationResponse createUserProfile(
-            UserProfileCreationData userProfileCreationData) throws Exception {
+            UserProfileCreationData userProfileCreationData, HttpStatus httpStatus) throws Exception {
 
         UserProfileCreationResponse resource = testRequestHandler.sendPost(
                 userProfileCreationData,
-                HttpStatus.CREATED,
+                httpStatus,
                 requestUri,
                 UserProfileCreationResponse.class
         );
@@ -116,11 +117,23 @@ public class AbstractFunctional extends AbstractTestExecutionListener {
         //create User profile with same email to get 409 scenario
         userProfileCreationData.setRoles(xuiuRoles);
         userProfileCreationData.setEmail(userCreds.get(EMAIL));
-        return createUserProfile(userProfileCreationData);
+        return createUserProfile(userProfileCreationData,HttpStatus.CREATED);
+    }
+
+
+    protected UserProfileCreationResponse createDuplicateUserProfileWithGivenFields(
+            UserProfileCreationData userProfileCreationData, HttpStatus expectedStatusCode) throws Exception {
+        List<String> xuiuRoles = new ArrayList();
+        xuiuRoles.add("pui-user-manager");
+        xuiuRoles.add("pui-case-manager");
+
+        //create User profile with same email to get 409 scenario
+        userProfileCreationData.setRoles(xuiuRoles);
+        userProfileCreationData.setEmail(userProfileCreationData.getEmail());
+        return createUserProfile(userProfileCreationData,expectedStatusCode);
     }
 
     protected void updateUserProfile(UpdateUserProfileData updateUserProfileData, String userId) throws Exception {
-
         testRequestHandler.sendPut(
                 updateUserProfileData,
                 HttpStatus.OK,
@@ -151,6 +164,17 @@ public class AbstractFunctional extends AbstractTestExecutionListener {
         assertThat(resource.getLastName()).isEqualTo(expectedResource.getLastName());
         assertThat(resource.getEmail()).isEqualTo(expectedResource.getEmail().toLowerCase());
         assertThat(resource.getIdamStatus()).isNotNull();
+    }
+
+    protected void verifyUpdatedUserProfile(UserProfileResponse resource, UpdateUserProfileData expectedResource) {
+
+        assertThat(resource).isNotNull();
+        assertThat(resource.getIdamId()).isNotNull().isExactlyInstanceOf(String.class);
+        assertThat(resource.getFirstName()).isEqualTo(expectedResource.getFirstName());
+        assertThat(resource.getLastName()).isEqualTo(expectedResource.getLastName());
+        assertThat(resource.getEmail()).isEqualTo(expectedResource.getEmail().toLowerCase());
+        assertThat(resource.getIdamStatus()).isNotNull();
+        assertThat(resource.getIdamStatus()).isEqualTo(IdamStatus.ACTIVE.name());
     }
 
     public UserProfileDataRequest buildUserProfileDataRequest(List<String> userIds) {

@@ -20,10 +20,14 @@ java:
   keyVaults:
     rd:
       secrets:
-        - user-profile-api-s2s-secret
-        - user-profile-api-POSTGRES-PASS
-        - ApplicationInsightsInstrumentationKey
-        - LD-SDK-KEY
+        - name: user-profile-api-s2s-secret
+          alias: idam.s2s-auth.totp_secret
+        - name: user-profile-api-POSTGRES-PASS
+          alias: spring.datasource.password
+        - name: ApplicationInsightsInstrumentationKey
+          alias: azure.application-insights.instrumentation-key
+        - name: LD-SDK-KEY
+          alias: RD_LD_SDK_KEY
 
   autoscaling:
     enabled: true
