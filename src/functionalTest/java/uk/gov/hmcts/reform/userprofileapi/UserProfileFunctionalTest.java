@@ -461,7 +461,8 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
 
         assertThat(response.getStatusCode()).isEqualTo(204);
 
-        testRequestHandler.getUserProfileResponse(NOT_FOUND, requestUri + "?userId=" + activeUserProfile.getIdamId());
+        testRequestHandler.getUserProfileResponse(
+                NOT_FOUND, requestUri + "?userId=" + activeUserProfile.getIdamId());
 
         log.info("deleteActiveUserByIdShouldReturnSuccess :: ENDED");
     }
@@ -487,8 +488,8 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
             testRequestHandler.getUserProfileResponse(
                     NOT_FOUND, requestUri + "?userId=" + activeUserProfile.getIdamId());
         } else {
-            log.info("deleteActiveUsersByEmailPatternShouldReturnSuccess ::" +
-                    " delete response status code: " + response.statusCode());
+            log.info("deleteActiveUsersByEmailPatternShouldReturnSuccess ::"
+                    + " delete response status code: " + response.statusCode());
         }
 
         log.info("deleteActiveUsersByEmailPatternShouldReturnSuccess :: ENDED");
