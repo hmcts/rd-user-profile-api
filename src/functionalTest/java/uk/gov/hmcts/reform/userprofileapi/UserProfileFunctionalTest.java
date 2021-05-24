@@ -459,9 +459,13 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
     }
 
     @AfterClass
-    public static void cleanUpTestData() throws Exception {
-        deleteActiveUserByIdShouldReturnSuccess();
-        deleteActiveUserByEmailPatternShouldReturnSuccess();
+    public static void cleanUpTestData() {
+        try {
+            deleteActiveUserByIdShouldReturnSuccess();
+            deleteActiveUserByEmailPatternShouldReturnSuccess();
+        } catch (Exception e) {
+            log.error("cleanUpTestData :: threw the following exception: " + e);
+        }
     }
 
     @ToggleEnable(mapKey = DELETE_USER_BY_ID_OR_EMAIL_PATTERN, withFeature = true)
