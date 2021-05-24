@@ -99,7 +99,7 @@ public class FuncTestRequestHandler {
                 .statusCode(expectedStatus.value()).extract().response();
     }
 
-    public Response sendDeleteWithoutBody(HttpStatus expectedStatus, String path) {
+    public Response sendDeleteWithoutBody(String path) {
 
         return withAuthenticatedRequest()
                 .delete(path).andReturn();
