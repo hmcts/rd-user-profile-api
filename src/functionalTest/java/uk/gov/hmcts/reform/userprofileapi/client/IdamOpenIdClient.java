@@ -104,16 +104,26 @@ public class IdamOpenIdClient {
         User user = new User(userEmail, firstName, id, lastName, password, rolesList);
 
         String serializedUser = gson.toJson(user);
+        Response createdUserResponse = null;
 
-        Response createdUserResponse = RestAssured
-                .given()
-                .relaxedHTTPSValidation()
-                .baseUri(testConfig.getIdamApiUrl())
-                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                .body(serializedUser)
-                .post("/testing-support/accounts")
-                .andReturn();
+        for (int i = 0; i < 5; i++) {
+            log.info("SIDAM createUser retry attempt : " + i + 1);
+            createdUserResponse = RestAssured
+                    .given()
+                    .relaxedHTTPSValidation()
+                    .baseUri(testConfig.getIdamApiUrl())
+                    .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                    .body(serializedUser)
+                    .post("/testing-support/accounts")
+                    .andReturn();
+            if (createdUserResponse.getStatusCode() == 504) {
+                log.info("SIDAM createUser retry response for attempt " + i + 1 + " 504");
+            } else {
+                break;
+            }
+        }
 
+        log.info("SIDAM createUser response: " + createdUserResponse.getStatusCode());
 
         assertThat(createdUserResponse.getStatusCode()).isEqualTo(201);
 
