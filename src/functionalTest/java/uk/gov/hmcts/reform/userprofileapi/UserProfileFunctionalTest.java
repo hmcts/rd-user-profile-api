@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.rest.SerenityRest;
 import net.thucydides.core.annotations.WithTag;
 import net.thucydides.core.annotations.WithTags;
+import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.http.HttpStatus;
@@ -443,8 +444,32 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
     }
 
     @Test
+    @ToggleEnable(mapKey = DELETE_USER_BY_ID_OR_EMAIL_PATTERN, withFeature = false)
+    public void deleteActiveUserByEmailPatternShouldReturnFailureWhenToggledOff() {
+        log.info("deleteActiveUserByEmailPatternShouldReturnFailureWhenToggledOff :: STARTED");
+
+        Response response = testRequestHandler
+                .sendDeleteWithoutBody(requestUri + "/users?emailPattern=@prdfunctestuser.com");
+
+        assertThat(HttpStatus.FORBIDDEN.value()).isEqualTo(response.statusCode());
+        assertThat(response.getBody().asString()).contains(CustomSerenityRunner.getFeatureFlagName().concat(" ")
+                .concat(FeatureConditionEvaluation.FORBIDDEN_EXCEPTION_LD));
+
+        log.info("deleteActiveUserByEmailPatternShouldReturnFailureWhenToggledOff :: ENDED");
+    }
+
+    @AfterClass
+    public static void cleanUpTestData() {
+        try {
+            deleteActiveUserByIdShouldReturnSuccess();
+            deleteActiveUserByEmailPatternShouldReturnSuccess();
+        } catch (Exception e) {
+            log.error("cleanUpTestData :: threw the following exception: " + e);
+        }
+    }
+
     @ToggleEnable(mapKey = DELETE_USER_BY_ID_OR_EMAIL_PATTERN, withFeature = true)
-    public void deleteActiveUserByIdShouldReturnSuccess() throws Exception {
+    public static void deleteActiveUserByIdShouldReturnSuccess() throws Exception {
         log.info("deleteActiveUserByIdShouldReturnSuccess :: STARTED");
 
         UserProfileCreationData userProfileCreationData = new UserProfileCreationData(generateRandomEmail(),
@@ -457,18 +482,21 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         verifyCreateUserProfile(activeUserProfile);
 
         Response response = testRequestHandler
-                .sendDeleteWithoutBody(NO_CONTENT, requestUri + "/users?userId=" + activeUserProfile.getIdamId());
+                .sendDeleteWithoutBody(requestUri + "/users?userId=" + activeUserProfile.getIdamId());
 
-        assertThat(response.getStatusCode()).isEqualTo(204);
-
-        testRequestHandler.getUserProfileResponse(NOT_FOUND, requestUri + "?userId=" + activeUserProfile.getIdamId());
+        if (NO_CONTENT.value() == response.statusCode()) {
+            testRequestHandler.getUserProfileResponse(
+                    NOT_FOUND, requestUri + "?userId=" + activeUserProfile.getIdamId());
+        } else {
+            log.info("deleteActiveUserByIdShouldReturnSuccess ::"
+                    + " delete response status code: " + response.statusCode());
+        }
 
         log.info("deleteActiveUserByIdShouldReturnSuccess :: ENDED");
     }
 
-    @Test
     @ToggleEnable(mapKey = DELETE_USER_BY_ID_OR_EMAIL_PATTERN, withFeature = true)
-    public void deleteActiveUserByEmailPatternShouldReturnSuccess() throws Exception {
+    public static void deleteActiveUserByEmailPatternShouldReturnSuccess() throws Exception {
         log.info("deleteActiveUsersByEmailPatternShouldReturnSuccess :: STARTED");
 
         UserProfileCreationData userProfileCreationData = new UserProfileCreationData(generateRandomEmail(),
@@ -481,28 +509,17 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         verifyCreateUserProfile(activeUserProfile);
 
         Response response = testRequestHandler
-                .sendDeleteWithoutBody(NO_CONTENT, requestUri + "/users?emailPattern=@prdfunctestuser.com");
+                .sendDeleteWithoutBody(requestUri + "/users?emailPattern=@prdfunctestuser.com");
 
-        assertThat(response.getStatusCode()).isEqualTo(204);
-
-        testRequestHandler.getUserProfileResponse(NOT_FOUND, requestUri + "?userId=" + activeUserProfile.getIdamId());
+        if (NO_CONTENT.value() == response.statusCode()) {
+            testRequestHandler.getUserProfileResponse(
+                    NOT_FOUND, requestUri + "?userId=" + activeUserProfile.getIdamId());
+        } else {
+            log.info("deleteActiveUsersByEmailPatternShouldReturnSuccess ::"
+                    + " delete response status code: " + response.statusCode());
+        }
 
         log.info("deleteActiveUsersByEmailPatternShouldReturnSuccess :: ENDED");
-    }
-
-    @Test
-    @ToggleEnable(mapKey = DELETE_USER_BY_ID_OR_EMAIL_PATTERN, withFeature = false)
-    public void deleteActiveUserByEmailPatternShouldReturnFailureWhenToggledOff() {
-        log.info("deleteActiveUserByEmailPatternShouldReturnFailureWhenToggledOff :: STARTED");
-
-        Response response = testRequestHandler
-                .sendDeleteWithoutBody(NO_CONTENT, requestUri + "/users?emailPattern=@prdfunctestuser.com");
-
-        assertThat(HttpStatus.FORBIDDEN.value()).isEqualTo(response.statusCode());
-        assertThat(response.getBody().asString()).contains(CustomSerenityRunner.getFeatureFlagName().concat(" ")
-                .concat(FeatureConditionEvaluation.FORBIDDEN_EXCEPTION_LD));
-
-        log.info("deleteActiveUserByEmailPatternShouldReturnFailureWhenToggledOff :: ENDED");
     }
 
 }

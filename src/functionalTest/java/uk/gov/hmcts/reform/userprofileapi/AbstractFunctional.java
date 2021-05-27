@@ -42,7 +42,7 @@ public class AbstractFunctional extends AbstractTestExecutionListener {
     @Autowired
     protected TestConfigProperties configProperties;
 
-    protected String requestUri = "/v1/userprofile";
+    protected static String requestUri = "/v1/userprofile";
     @Value("${targetInstance}")
     protected String targetInstance;
     @Value("${s2s.auth.secret}")
@@ -90,7 +90,7 @@ public class AbstractFunctional extends AbstractTestExecutionListener {
         testRequestHandler = new FuncTestRequestHandler(targetInstance, s2sToken, idamOpenIdClient);
     }
 
-    protected UserProfileCreationResponse createUserProfile(
+    protected static UserProfileCreationResponse createUserProfile(
             UserProfileCreationData userProfileCreationData, HttpStatus httpStatus) throws Exception {
 
         UserProfileCreationResponse resource = testRequestHandler.sendPost(
@@ -103,7 +103,7 @@ public class AbstractFunctional extends AbstractTestExecutionListener {
         return resource;
     }
 
-    protected UserProfileCreationResponse createActiveUserProfileWithGivenFields(
+    protected static UserProfileCreationResponse createActiveUserProfileWithGivenFields(
             UserProfileCreationData userProfileCreationData) throws Exception {
         List<String> xuiuRoles = new ArrayList();
         xuiuRoles.add("pui-user-manager");
@@ -149,7 +149,7 @@ public class AbstractFunctional extends AbstractTestExecutionListener {
         return buildCreateUserProfileData(true);
     }
 
-    protected void verifyCreateUserProfile(UserProfileCreationResponse resource) {
+    protected static void verifyCreateUserProfile(UserProfileCreationResponse resource) {
 
         assertThat(resource).isNotNull();
         assertThat(resource.getIdamId()).isNotNull();
