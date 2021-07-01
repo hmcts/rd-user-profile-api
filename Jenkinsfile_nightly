@@ -26,7 +26,8 @@ def secrets = [
                 secret('user-profile-api-POSTGRES-PASS', 'FUNC_DATABASE_PASS'),
                 secret('user-profile-api-POSTGRES-USER', 'FUNC_DATABASE_USER'),
                 secret('user-profile-api-POSTGRES-DATABASE', 'FUNC_DATABASE_NAME'),
-                secret('user-profile-api-POSTGRES-PORT', 'FUNC_DATABASE_PORT')
+                secret('user-profile-api-POSTGRES-PORT', 'FUNC_DATABASE_PORT'),
+                secret('LD-SDK-KEY', 'RD_LD_SDK_KEY')
         ]
 ]
 
@@ -55,6 +56,7 @@ withNightlyPipeline(type, product, component) {
     env.TEST_URL = params.URL_TO_TEST
     env.S2S_URL_FOR_TESTS = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     env.Rules = params.SecurityRules
+    env.execution_environment = "aat"
 
     overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)
@@ -64,6 +66,8 @@ withNightlyPipeline(type, product, component) {
     enableSecurityScan()
 
     after('fullFunctionalTest') {
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+
         print "calling delete script for nightly"
         withSubscription(subscription) {
             withTeamSecrets(config, params.ENVIRONMENT) {

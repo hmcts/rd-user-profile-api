@@ -88,7 +88,12 @@ public class UserProfileCreatorTest {
 
         UserProfile response = userProfileCreator.create(userProfileCreationData);
 
-        assertThat(response).isEqualToIgnoringGivenFields(userProfile, "idamId");
+        assertThat(response.getEmail()).isEqualTo(userProfile.getEmail());
+        assertThat(response.getFirstName()).isEqualTo(userProfile.getFirstName());
+        assertThat(response.getLastName()).isEqualTo(userProfile.getLastName());
+        assertThat(response.getStatus()).isEqualTo(userProfile.getStatus());
+        assertThat(response.getUserCategory()).isEqualTo(userProfile.getUserCategory());
+        assertThat(response.getUserType()).isEqualTo(userProfile.getUserType());
 
         InOrder inOrder = inOrder(idamService, userProfileRepository);
         inOrder.verify(idamService, times(1)).registerUser(any(IdamRegisterUserRequest.class));
@@ -108,7 +113,12 @@ public class UserProfileCreatorTest {
         userProfileCreationData.setStatus(IdamStatus.PENDING);
         UserProfile response = userProfileCreator.create(userProfileCreationData);
 
-        assertThat(response).isEqualToIgnoringGivenFields(userProfile, "idamId");
+        assertThat(response.getEmail()).isEqualTo(userProfile.getEmail());
+        assertThat(response.getFirstName()).isEqualTo(userProfile.getFirstName());
+        assertThat(response.getLastName()).isEqualTo(userProfile.getLastName());
+        assertThat(response.getStatus()).isEqualTo(userProfile.getStatus());
+        assertThat(response.getUserCategory()).isEqualTo(userProfile.getUserCategory());
+        assertThat(response.getUserType()).isEqualTo(userProfile.getUserType());
 
         InOrder inOrder = inOrder(idamService, userProfileRepository);
         inOrder.verify(idamService, times(1)).registerUser(any(IdamRegisterUserRequest.class));
@@ -130,7 +140,7 @@ public class UserProfileCreatorTest {
 
         UserProfile response = userProfileCreator.create(userProfileCreationData);
 
-        assertThat(response).isEqualToComparingFieldByField(userProfile);
+        assertThat(response).usingRecursiveComparison().isEqualTo(userProfile);
 
         InOrder inOrder = inOrder(idamService, userProfileRepository);
         inOrder.verify(idamService, times(1)).registerUser(any(IdamRegisterUserRequest.class));
@@ -403,7 +413,7 @@ public class UserProfileCreatorTest {
 
         UserProfile response = userProfileCreator.reInviteUser(userProfileCreationData);
 
-        assertThat(response).isEqualToIgnoringGivenFields(userProfile, "idamId");
+        assertThat(response).usingRecursiveComparison().isEqualTo(userProfile);
         assertThat(response.getIdamRegistrationResponse()).isEqualTo(CREATED.value());
 
         InOrder inOrder = inOrder(idamService, userProfileRepository);

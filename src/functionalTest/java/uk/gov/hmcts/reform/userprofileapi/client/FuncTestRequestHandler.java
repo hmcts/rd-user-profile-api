@@ -40,11 +40,13 @@ public class FuncTestRequestHandler {
     public Response sendPost(String jsonBody, HttpStatus expectedStatus, String path) {
         log.info("User object to be created : {}", jsonBody);
         Response response = withAuthenticatedRequest()
+                .log().all(true)
                 .body(jsonBody)
                 .post(path)
                 .andReturn();
 
         response.then()
+                .log().all(true)
                 .assertThat()
                 .statusCode(expectedStatus.value());
 
@@ -69,10 +71,12 @@ public class FuncTestRequestHandler {
     public Response sendPut(String jsonBody, HttpStatus expectedStatus, String path) {
 
         return withAuthenticatedRequest()
+                .log().all(true)
                 .body(jsonBody)
                 .put(path)
                 .then()
                 .log().all(true)
+                .assertThat()
                 .statusCode(expectedStatus.value()).extract().response();
     }
 
@@ -95,17 +99,17 @@ public class FuncTestRequestHandler {
                 .statusCode(expectedStatus.value()).extract().response();
     }
 
-    public Response sendDeleteWithoutBody(HttpStatus expectedStatus, String path) {
-        
+    public Response sendDeleteWithoutBody(String path) {
+
         return withAuthenticatedRequest()
                 .delete(path).andReturn();
     }
 
     public <T> T sendGet(String urlPath, Class<T> clazz) {
-        return sendGet(HttpStatus.OK, urlPath).as(clazz);
+        return getUserProfileResponse(HttpStatus.OK, urlPath).as(clazz);
     }
 
-    public Response sendGet(HttpStatus httpStatus, String urlPath) {
+    public Response getUserProfileResponse(HttpStatus httpStatus, String urlPath) {
         String bearerToken = getBearerToken();
 
         log.info("S2S Token : {}, Bearer Token : {}", s2sToken, bearerToken);
@@ -117,18 +121,39 @@ public class FuncTestRequestHandler {
                 .header("ServiceAuthorization", BEARER + s2sToken)
                 .header("Authorization", BEARER + bearerToken)
                 .when()
+                .log().all(true)
                 .get(urlPath)
                 .then()
                 .log().all(true)
                 .statusCode(httpStatus.value()).extract().response();
     }
 
-    public <T> T getEmailFromHeader(String urlPath, Class<T> clazz, String email) {
-        return getEmailFromHeader(HttpStatus.OK, urlPath, email).as(clazz);
+    public <T> T getUserByEmailInHeaderWithRoles(String urlPath, String email, HttpStatus httpStatus, Class<T> clazz) {
+        String bearerToken = getBearerToken();
+
+        log.info("S2S Token : {}, Bearer Token : {}", s2sToken, bearerToken);
+
+        return SerenityRest
+                .given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .baseUri(baseUrl)
+                .header("ServiceAuthorization", BEARER + s2sToken)
+                .header("Authorization", BEARER + bearerToken)
+                .header("UserEmail", email)
+                .when()
+                .log().all(true)
+                .get(urlPath)
+                .then()
+                .log().all(true)
+                .statusCode(httpStatus.value()).extract().response()
+                .as(clazz);
     }
 
+    public <T> T getUserProfileByEmailFromHeader(String urlPath, Class<T> clazz, String email) {
+        return getUserProfileByEmailFromHeader(HttpStatus.OK, urlPath, email).as(clazz);
+    }
 
-    public Response getEmailFromHeader(HttpStatus httpStatus, String urlPath, String email) {
+    public Response getUserProfileByEmailFromHeader(HttpStatus httpStatus, String urlPath, String email) {
         String bearerToken = getBearerToken();
 
         log.info("S2S Token : {}, Bearer Token : {}", s2sToken, bearerToken);
@@ -145,6 +170,25 @@ public class FuncTestRequestHandler {
                 .then()
                 .log().all(true)
                 .statusCode(httpStatus.value()).extract().response();
+    }
+
+    public <T> T getUserProfileByEmailFromQueryParam(String urlPath, HttpStatus httpStatus, Class<T> clazz) {
+        String bearerToken = getBearerToken();
+
+        log.info("S2S Token : {}, Bearer Token : {}", s2sToken, bearerToken);
+
+        return SerenityRest
+                .given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .baseUri(baseUrl)
+                .header("ServiceAuthorization", BEARER + s2sToken)
+                .header("Authorization", BEARER + bearerToken)
+                .when()
+                .get(urlPath)
+                .then()
+                .log().all(true)
+                .statusCode(httpStatus.value()).extract().response()
+                .as(clazz);
     }
 
     public String asJsonString(Object source) throws JsonProcessingException {

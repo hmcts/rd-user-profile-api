@@ -189,7 +189,6 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
 
     }
 
-
     @Test
     public void should_retrieve_user_profile_resource_with_email() throws Exception {
         UserProfile userProfile = userProfileMap.get("user");
@@ -353,6 +352,34 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
 
         assertThat(result.getResponse()).isNotNull();
         assertThat(result.getResponse().getContentAsString()).isNotEmpty();
+
+    }
+
+    @Test
+    public void should_return_400_when_query_with_no_email_in_header_and_query_param() throws Exception {
+        userProfileRequestHandlerTest.sendGet(
+                mockMvc,
+                APP_BASE_PATH,
+                BAD_REQUEST
+        );
+    }
+
+    @Test
+    public void should_return_badRequest_when_retrieve_userprofile_with_roles_by_no_email() throws Exception {
+
+        MvcResult retrievedResource =
+                userProfileRequestHandlerTest.sendGet(
+                        mockMvc,
+                        APP_BASE_PATH + SLASH + "roles",
+                        BAD_REQUEST
+                );
+
+        assertThat(retrievedResource).isNotNull();
+
+        Exception resolvedException = retrievedResource.getResolvedException();
+
+        assertThat(resolvedException).isNotNull();
+        assertThat(resolvedException.getMessage()).isEqualTo("No User Email provided via header or param");
 
     }
 }

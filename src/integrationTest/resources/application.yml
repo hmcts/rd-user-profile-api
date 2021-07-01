@@ -19,6 +19,7 @@ spring:
             oidc:
               client-id: microservicekey-rd-user-profile-api
               client-secret: ${S2S_SECRET:AAAAAAAAAAAAAAAA}
+
 security:
   anonymousPaths:
     - "/"
