@@ -66,6 +66,8 @@ withNightlyPipeline(type, product, component) {
     enableSecurityScan()
 
     after('fullFunctionalTest') {
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+
         print "calling delete script for nightly"
         withSubscription(subscription) {
             withTeamSecrets(config, params.ENVIRONMENT) {
