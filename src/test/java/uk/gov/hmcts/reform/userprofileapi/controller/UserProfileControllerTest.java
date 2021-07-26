@@ -151,10 +151,10 @@ public class UserProfileControllerTest {
         UserProfileWithRolesResponse responseMock = Mockito.mock(UserProfileWithRolesResponse.class);
         when(userProfileServiceMock.retrieveWithRoles(any(UserProfileIdentifier.class))).thenReturn(responseMock);
         String email = "test@test.com";
-        assertThat(sut.getUserProfileWithRolesByEmail(email)).isEqualTo(ResponseEntity.ok(responseMock));
+        assertThat(sut.getUserProfileWithRolesByEmail()).isEqualTo(ResponseEntity.ok(responseMock));
         verify(userProfileServiceMock, times(1))
                 .retrieveWithRoles(any(UserProfileIdentifier.class));
-        verify(httpRequest, times(2)).getHeader(anyString());
+        verify(httpRequest, times(3)).getHeader(anyString());
     }
 
     @Test
@@ -165,10 +165,10 @@ public class UserProfileControllerTest {
         when(httpRequest.getHeader(anyString())).thenReturn("test@test.com");
         when(userProfileServiceMock.retrieveWithRoles(any(UserProfileIdentifier.class))).thenReturn(responseMock);
         String email = " ";
-        assertThat(sut.getUserProfileWithRolesByEmail(email)).isEqualTo(ResponseEntity.ok(responseMock));
+        assertThat(sut.getUserProfileWithRolesByEmail()).isEqualTo(ResponseEntity.ok(responseMock));
         verify(userProfileServiceMock, times(1))
                 .retrieveWithRoles(any(UserProfileIdentifier.class));
-        verify(httpRequest, times(2)).getHeader(anyString());
+        verify(httpRequest, times(3)).getHeader(anyString());
     }
 
     @Test
