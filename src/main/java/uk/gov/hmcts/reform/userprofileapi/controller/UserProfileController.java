@@ -289,12 +289,10 @@ public class UserProfileController {
             produces = APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    public ResponseEntity<UserProfileResponse> getUserProfileByEmail(@RequestParam(value = "email",
-            required = false) String email,
-                                                                     @RequestParam(value = "userId", required = false)
-                                                                             String userId) {
+    public ResponseEntity<UserProfileResponse> getUserProfileByEmail(
+            @RequestParam(value = "userId", required = false) String userId) {
         UserProfileResponse response;
-        String userEmail = getUserEmail(email);
+        String userEmail = getUserEmailFromHeader(false);
         if (userEmail == null && userId == null) {
             return ResponseEntity.badRequest().build();
         } else if (userEmail != null) {
@@ -553,6 +551,26 @@ public class UserProfileController {
         }
 
         return ResponseEntity.status(resource.getStatusCode()).body(resource);
+    }
+
+    public String getUserEmailFromHeader(boolean isEmailRequired) {
+        String userEmail = null;
+        ServletRequestAttributes servletRequestAttributes =
+                ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes());
+
+        if (nonNull(servletRequestAttributes)) {
+
+            HttpServletRequest request = servletRequestAttributes.getRequest();
+            if (nonNull(request.getHeader(USER_EMAIL))) {
+
+                userEmail = request.getHeader(USER_EMAIL);
+                log.warn("** Setting user email on the header  ** referer - {} ", request.getHeader("Referer"));
+            } else if (isEmailRequired) {
+                throw new InvalidRequest("No User Email provided via header");
+            }
+        }
+
+        return userEmail;
     }
 
     private String getUserEmail(String email) {
