@@ -235,15 +235,9 @@ public class UserProfileController {
             produces = APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    public ResponseEntity<UserProfileWithRolesResponse> getUserProfileWithRolesByEmail(
-            @ApiParam(name = "email")
-            @RequestParam(value = "email", required = false) String email) {
+    public ResponseEntity<UserProfileWithRolesResponse> getUserProfileWithRolesByEmail() {
         //Getting user profile by email from header or request param
-        String userEmail = getUserEmail(email);
-
-        if (isEmpty(userEmail)) {
-            throw new InvalidRequest("No User Email provided via header or param");
-        }
+        String userEmail = getUserEmailFromHeader(true);
 
         UserProfileWithRolesResponse response = userProfileService
                 .retrieveWithRoles(new UserProfileIdentifier(IdentifierName.EMAIL, userEmail.toLowerCase()));
