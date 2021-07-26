@@ -95,17 +95,6 @@ public class RetrieveUserProfileInternalServerErrorIntTest extends Authorization
     }
 
     @Test
-    public void should_return_500_when_query_by_email_and_repository_throws_an_unknown_exception() throws Exception {
-        when(userProfileRepository.findByEmail(anyString()))
-                .thenThrow(new RuntimeException("This is a test exception"));
-
-        MvcResult result = userProfileRequestHandlerTest.sendGet(mockMvc, APP_BASE_PATH + "?email="
-                .concat("randomemail@somewhere.com"), INTERNAL_SERVER_ERROR);
-
-        assertThat(result.getResponse().getContentAsString()).isNotEmpty();
-    }
-
-    @Test
     public void should_return_500_when_email_from_header_and_repository_throws_an_unknown_exception() throws Exception {
         when(userProfileRepository.findByEmail(anyString()))
                 .thenThrow(new RuntimeException("This is a test exception"));
