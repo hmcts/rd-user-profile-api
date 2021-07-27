@@ -1,10 +1,11 @@
 package uk.gov.hmcts.reform.userprofileapi.controller;
 
-import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.API_IS_NOT_AVAILABLE_IN_PROD_ENV;
 import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.NO_USER_ID_OR_EMAIL_PATTERN_PROVIDED_TO_DELETE;
+import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileUtil.getUserEmailFromHeader;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateCreateUserProfileRequest;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateUserIds;
@@ -16,7 +17,6 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import lombok.AllArgsConstructor;
@@ -39,8 +39,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
@@ -86,8 +84,6 @@ public class UserProfileController {
 
     @Value("${environment_name}")
     private String environmentName;
-
-    public static final String USER_EMAIL = "UserEmail";
 
     @ApiOperation(value = "Create a User Profile",
             authorizations = {
@@ -235,8 +231,11 @@ public class UserProfileController {
     )
     @ResponseBody
     public ResponseEntity<UserProfileWithRolesResponse> getUserProfileWithRolesByEmail() {
-        //Getting user profile by email from header or request param
-        String userEmail = getUserEmailFromHeader(true);
+        String userEmail = getUserEmailFromHeader();
+
+        if (isEmpty(userEmail)) {
+            throw new InvalidRequest("No User Email provided via header");
+        }
 
         UserProfileWithRolesResponse response = userProfileService
                 .retrieveWithRoles(new UserProfileIdentifier(IdentifierName.EMAIL, userEmail.toLowerCase()));
@@ -285,12 +284,10 @@ public class UserProfileController {
     public ResponseEntity<UserProfileResponse> getUserProfileByEmail(
             @RequestParam(value = "userId", required = false) String userId) {
         UserProfileResponse response;
-        String userEmail = getUserEmailFromHeader(false);
+        String userEmail = getUserEmailFromHeader();
         if (userEmail == null && userId == null) {
             return ResponseEntity.badRequest().build();
         } else if (userEmail != null) {
-
-            //Getting user profile by email
 
             response =
                     userProfileService.retrieve(
@@ -544,26 +541,6 @@ public class UserProfileController {
         }
 
         return ResponseEntity.status(resource.getStatusCode()).body(resource);
-    }
-
-    public String getUserEmailFromHeader(boolean isEmailRequired) {
-        String userEmail = null;
-        ServletRequestAttributes servletRequestAttributes =
-                ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes());
-
-        if (nonNull(servletRequestAttributes)) {
-
-            HttpServletRequest request = servletRequestAttributes.getRequest();
-            if (nonNull(request.getHeader(USER_EMAIL))) {
-
-                userEmail = request.getHeader(USER_EMAIL);
-                log.warn("** Setting user email on the header  ** referer - {} ", request.getHeader("Referer"));
-            } else if (isEmailRequired) {
-                throw new InvalidRequest("No User Email provided via header");
-            }
-        }
-
-        return userEmail;
     }
 
 }
