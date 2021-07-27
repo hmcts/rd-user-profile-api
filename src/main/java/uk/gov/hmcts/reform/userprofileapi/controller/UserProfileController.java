@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.userprofileapi.controller;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.API_IS_NOT_AVAILABLE_IN_PROD_ENV;
 import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.NO_USER_ID_OR_EMAIL_PATTERN_PROVIDED_TO_DELETE;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
@@ -564,17 +563,6 @@ public class UserProfileController {
             }
         }
 
-        return userEmail;
-    }
-
-    private String getUserEmail(String email) {
-        String userEmail = null;
-        ServletRequestAttributes servletRequestAttributes =
-                ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes());
-        if (nonNull(servletRequestAttributes)) {
-            HttpServletRequest request = servletRequestAttributes.getRequest();
-            userEmail = request.getHeader(USER_EMAIL) != null ? request.getHeader(USER_EMAIL) : email;
-        }
         return userEmail;
     }
 
