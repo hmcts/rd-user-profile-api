@@ -230,21 +230,6 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         log.info("findUserByUserIdWithRolesShouldReturnSuccess :: ENDED");
     }
 
-    public void findUserByEmailInQueryParamWithRolesShouldReturnSuccess() {
-        log.info("findUserByEmailWithRolesShouldReturnSuccess :: STARTED");
-
-        UserProfileResponse resource = testRequestHandler.sendGet(
-                requestUri + "/roles?email=" + activeUserProfileCreationData.getEmail().toLowerCase(),
-                UserProfileWithRolesResponse.class);
-
-        verifyGetUserProfile(resource, activeUserProfileCreationData);
-
-        assertThat(resource.getRoles()).contains("pui-case-manager");
-        assertThat(resource.getRoles()).contains("pui-user-manager");
-
-        log.info("findUserByEmailWithRolesShouldReturnSuccess :: ENDED");
-    }
-
     public void findUserByEmailInHeaderWithRolesShouldReturnSuccess() {
         log.info("findUserByEmailInHeaderWithRolesShouldReturnSuccess :: STARTED");
 
