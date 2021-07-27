@@ -104,7 +104,6 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
     }
 
     public void findUserByEmailScenario() {
-        findUserByEmailInQueryParamShouldReturnSuccess();
         findUserByEmailInHeaderShouldReturnSuccess();
         findUserByEmailInQueryParamWithRolesShouldReturnSuccess();
         findUserByEmailInHeaderWithRolesShouldReturnSuccess();
@@ -188,20 +187,6 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         verifyUpdatedUserProfile(resource, updateUserProfileData);
 
         log.info("updateUserProfileShouldReturnSuccess :: ENDED");
-    }
-
-    public void findUserByEmailInQueryParamShouldReturnSuccess() {
-        log.info("findUserByEmailInQueryParamShouldReturnSuccess :: STARTED");
-
-        UserProfileResponse resource =
-                testRequestHandler.getUserProfileByEmailFromQueryParam(
-                        requestUri + "?email=" + activeUserProfileCreationData.getEmail().toLowerCase(),
-                        HttpStatus.OK,
-                        UserProfileResponse.class);
-
-        verifyGetUserProfile(resource, activeUserProfileCreationData);
-
-        log.info("findUserByEmailInQueryParamShouldReturnSuccess :: ENDED");
     }
 
     public void findUserByEmailInHeaderShouldReturnSuccess() {
@@ -304,11 +289,10 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         updateUserProfileData.setRolesAdd(rolesName);
 
         UserProfileResponse resource =
-                testRequestHandler
-                        .getUserProfileByEmailFromQueryParam(requestUri
-                                        + "?email=" + updateUserProfileData.getEmail(),
-                                HttpStatus.OK,
-                                UserProfileResponse.class);
+                testRequestHandler.getUserProfileByEmailFromHeader(
+                        requestUri,
+                        UserProfileResponse.class,
+                        updateUserProfileData.getEmail());
 
         testRequestHandler.sendPut(updateUserProfileData, OK,
                 requestUri + "/" + resource.getIdamId(), UserProfileRolesResponse.class);
