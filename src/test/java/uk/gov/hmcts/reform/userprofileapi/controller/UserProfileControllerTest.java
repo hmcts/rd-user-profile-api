@@ -154,7 +154,7 @@ public class UserProfileControllerTest {
         assertThat(sut.getUserProfileWithRolesByEmail()).isEqualTo(ResponseEntity.ok(responseMock));
         verify(userProfileServiceMock, times(1))
                 .retrieveWithRoles(any(UserProfileIdentifier.class));
-        verify(httpRequest, times(3)).getHeader(anyString());
+        verify(httpRequest, times(2)).getHeader(anyString());
     }
 
     @Test
@@ -168,7 +168,7 @@ public class UserProfileControllerTest {
         assertThat(sut.getUserProfileWithRolesByEmail()).isEqualTo(ResponseEntity.ok(responseMock));
         verify(userProfileServiceMock, times(1))
                 .retrieveWithRoles(any(UserProfileIdentifier.class));
-        verify(httpRequest, times(3)).getHeader(anyString());
+        verify(httpRequest, times(2)).getHeader(anyString());
     }
 
     @Test

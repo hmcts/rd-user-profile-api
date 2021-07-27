@@ -336,7 +336,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
                 userProfileRequestHandlerTest.sendGetFromHeader(
                         mockMvc,
                         APP_BASE_PATH + SLASH + "roles",
-                        NOT_FOUND,
+                        BAD_REQUEST,
                         ""
                 );
 
@@ -346,7 +346,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
 
         assertThat(resolvedException).isNotNull();
         assertThat(resolvedException.getMessage())
-                .isEqualTo("Could not find resource from database with given identifier");
+                .isEqualTo("No User Email provided via header");
 
     }
 }
