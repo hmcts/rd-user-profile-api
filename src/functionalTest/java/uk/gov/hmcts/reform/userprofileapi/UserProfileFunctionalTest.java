@@ -105,7 +105,6 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
 
     public void findUserByEmailScenario() {
         findUserByEmailInHeaderShouldReturnSuccess();
-        findUserByEmailInQueryParamWithRolesShouldReturnSuccess();
         findUserByEmailInHeaderWithRolesShouldReturnSuccess();
     }
 
