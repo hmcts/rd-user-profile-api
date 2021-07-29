@@ -129,11 +129,12 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
         UserProfile userProfile = userProfileMap.get("user");
 
         UserProfileWithRolesResponse retrievedResource =
-                userProfileRequestHandlerTest.sendGet(
+                userProfileRequestHandlerTest.sendGetFromHeader(
                         mockMvc,
-                        APP_BASE_PATH + SLASH + "roles" + "?" + "email=" + userProfile.getEmail(),
+                        APP_BASE_PATH + SLASH + "roles",
                         OK,
-                        UserProfileWithRolesResponse.class
+                        UserProfileWithRolesResponse.class,
+                        userProfile.getEmail()
                 );
 
         assertThat(retrievedResource).isNotNull();
@@ -190,22 +191,6 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
     }
 
     @Test
-    public void should_retrieve_user_profile_resource_with_email() throws Exception {
-        UserProfile userProfile = userProfileMap.get("user");
-
-        UserProfileResponse retrievedResource =
-                userProfileRequestHandlerTest.sendGet(
-                        mockMvc,
-                        APP_BASE_PATH + "?" + "email=" + userProfile.getEmail(),
-                        OK,
-                        UserProfileResponse.class
-                );
-
-        assertThat(retrievedResource).isNotNull();
-
-    }
-
-    @Test
     public void should_return_400_and_not_allow_get_request_on_base_url_with_no_params() throws Exception {
         userProfileRequestHandlerTest.sendGet(mockMvc, APP_BASE_PATH, BAD_REQUEST);
     }
@@ -217,7 +202,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
         UserProfileResponse retrievedResource =
                 userProfileRequestHandlerTest.sendGetFromHeader(
                         mockMvc,
-                        APP_BASE_PATH + "?" + "email=" + userProfile.getEmail(),
+                        APP_BASE_PATH,
                         OK,
                         UserProfileResponse.class,
                         userProfile.getEmail()
@@ -281,10 +266,11 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
     public void should_return_404_when_user_profile_email_not_in_the_db() throws Exception {
 
         MvcResult result =
-                userProfileRequestHandlerTest.sendGet(
+                userProfileRequestHandlerTest.sendGetFromHeader(
                         mockMvc,
-                        APP_BASE_PATH + "?email=" + "randomemail@somewhere.com",
-                        NOT_FOUND
+                        APP_BASE_PATH,
+                        NOT_FOUND,
+                        "randomemail@somewhere.com"
                 );
 
         assertThat(result.getResponse()).isNotNull();
@@ -300,11 +286,13 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
         assertThat(userProfiles).isEmpty();
 
         MvcResult result =
-                userProfileRequestHandlerTest.sendGet(
+                userProfileRequestHandlerTest.sendGetFromHeader(
                         mockMvc,
-                        APP_BASE_PATH + "?email=" + "randomemail@somewhere.com",
-                        NOT_FOUND
+                        APP_BASE_PATH,
+                        NOT_FOUND,
+                        "randomemail@somewhere.com"
                 );
+
 
         assertThat(result.getResponse()).isNotNull();
         assertThat(result.getResponse().getContentAsString()).isNotEmpty();
@@ -312,25 +300,11 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
     }
 
     @Test
-    public void should_return_404_when_query_by_email_is_empty() throws Exception {
-        MvcResult result =
-                userProfileRequestHandlerTest.sendGet(
-                        mockMvc,
-                        APP_BASE_PATH + "?email=",
-                        NOT_FOUND
-                );
-
-        assertThat(result.getResponse()).isNotNull();
-        assertThat(result.getResponse().getContentAsString()).isNotEmpty();
-
-    }
-
-    @Test
-    public void should_return_404_when_query_by_email_is_empty_and_header_isEmpty() throws Exception {
+    public void should_return_400_when_query_by_email_header_isEmpty() throws Exception {
         MvcResult result =
                 userProfileRequestHandlerTest.sendGetFromHeader(
                         mockMvc,
-                        APP_BASE_PATH + "?email=",
+                        APP_BASE_PATH,
                         NOT_FOUND,
                         ""
                 );
@@ -356,22 +330,14 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
     }
 
     @Test
-    public void should_return_400_when_query_with_no_email_in_header_and_query_param() throws Exception {
-        userProfileRequestHandlerTest.sendGet(
-                mockMvc,
-                APP_BASE_PATH,
-                BAD_REQUEST
-        );
-    }
-
-    @Test
     public void should_return_badRequest_when_retrieve_userprofile_with_roles_by_no_email() throws Exception {
 
         MvcResult retrievedResource =
-                userProfileRequestHandlerTest.sendGet(
+                userProfileRequestHandlerTest.sendGetFromHeader(
                         mockMvc,
                         APP_BASE_PATH + SLASH + "roles",
-                        BAD_REQUEST
+                        BAD_REQUEST,
+                        ""
                 );
 
         assertThat(retrievedResource).isNotNull();
@@ -379,7 +345,8 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
         Exception resolvedException = retrievedResource.getResolvedException();
 
         assertThat(resolvedException).isNotNull();
-        assertThat(resolvedException.getMessage()).isEqualTo("No User Email provided via header or param");
+        assertThat(resolvedException.getMessage())
+                .isEqualTo("No User Email provided via header");
 
     }
 }
