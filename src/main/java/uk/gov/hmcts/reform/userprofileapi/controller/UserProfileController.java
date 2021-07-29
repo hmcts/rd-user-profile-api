@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.userprofileapi.controller;
 
-import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.API_IS_NOT_AVAILABLE_IN_PROD_ENV;
 import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.NO_USER_ID_OR_EMAIL_PATTERN_PROVIDED_TO_DELETE;
+import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileUtil.getUserEmailFromHeader;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateCreateUserProfileRequest;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateUserIds;
@@ -17,7 +17,6 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.Authorization;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import lombok.AllArgsConstructor;
@@ -40,8 +39,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
@@ -87,8 +84,6 @@ public class UserProfileController {
 
     @Value("${environment_name}")
     private String environmentName;
-
-    public static final String USER_EMAIL = "UserEmail";
 
     @ApiOperation(value = "Create a User Profile",
             authorizations = {
@@ -235,14 +230,11 @@ public class UserProfileController {
             produces = APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    public ResponseEntity<UserProfileWithRolesResponse> getUserProfileWithRolesByEmail(
-            @ApiParam(name = "email")
-            @RequestParam(value = "email", required = false) String email) {
-        //Getting user profile by email from header or request param
-        String userEmail = getUserEmail(email);
+    public ResponseEntity<UserProfileWithRolesResponse> getUserProfileWithRolesByEmail() {
+        String userEmail = getUserEmailFromHeader();
 
         if (isEmpty(userEmail)) {
-            throw new InvalidRequest("No User Email provided via header or param");
+            throw new InvalidRequest("No User Email provided via header");
         }
 
         UserProfileWithRolesResponse response = userProfileService
@@ -289,17 +281,13 @@ public class UserProfileController {
             produces = APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    public ResponseEntity<UserProfileResponse> getUserProfileByEmail(@RequestParam(value = "email",
-            required = false) String email,
-                                                                     @RequestParam(value = "userId", required = false)
-                                                                             String userId) {
+    public ResponseEntity<UserProfileResponse> getUserProfileByEmail(
+            @RequestParam(value = "userId", required = false) String userId) {
         UserProfileResponse response;
-        String userEmail = getUserEmail(email);
+        String userEmail = getUserEmailFromHeader();
         if (userEmail == null && userId == null) {
             return ResponseEntity.badRequest().build();
         } else if (userEmail != null) {
-
-            //Getting user profile by email
 
             response =
                     userProfileService.retrieve(
@@ -553,17 +541,6 @@ public class UserProfileController {
         }
 
         return ResponseEntity.status(resource.getStatusCode()).body(resource);
-    }
-
-    private String getUserEmail(String email) {
-        String userEmail = null;
-        ServletRequestAttributes servletRequestAttributes =
-                ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes());
-        if (nonNull(servletRequestAttributes)) {
-            HttpServletRequest request = servletRequestAttributes.getRequest();
-            userEmail = request.getHeader(USER_EMAIL) != null ? request.getHeader(USER_EMAIL) : email;
-        }
-        return userEmail;
     }
 
 }
