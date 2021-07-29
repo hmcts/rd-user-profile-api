@@ -81,29 +81,6 @@ public class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabl
     }
 
     @Test
-    public void should_fail_when_idam_returns_unsuccessfull_response_resource_with_roles_by_email() throws Exception {
-        UserProfile userProfile = userProfileMap.get("user");
-        MvcResult result =
-                userProfileRequestHandlerTest.sendGet(
-                        mockMvc,
-                        APP_BASE_PATH + SLASH + "roles" + "?" + "email=" + userProfile.getEmail(),
-                        NOT_FOUND
-                );
-
-        List<Audit> matchedAuditRecords = getMatchedAuditRecords(auditRepository.findAll(), userProfile.getIdamId());
-        assertThat(matchedAuditRecords.size()).isEqualTo(1);
-        Audit audit = matchedAuditRecords.get(0);
-
-        assertThat(audit).isNotNull();
-        assertThat(audit.getIdamRegistrationResponse()).isEqualTo(404);
-        assertThat(audit.getStatusMessage()).isEqualTo(IdamStatusResolver.NOT_FOUND);
-        assertThat(audit.getSource()).isEqualTo(ResponseSource.API);
-        assertThat(audit.getUserProfile().getIdamId()).isNotNull();
-        assertThat(audit.getAuditTs()).isNotNull();
-
-    }
-
-    @Test
     public void shouldFailWhenIdamReturnsUnSuccessfullResponseResourceWithRolesByEmailFromHeader() throws Exception {
         UserProfile userProfile = userProfileMap.get("user");
         MvcResult result =
