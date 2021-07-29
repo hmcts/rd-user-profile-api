@@ -104,9 +104,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
     }
 
     public void findUserByEmailScenario() {
-        findUserByEmailInQueryParamShouldReturnSuccess();
         findUserByEmailInHeaderShouldReturnSuccess();
-        findUserByEmailInQueryParamWithRolesShouldReturnSuccess();
         findUserByEmailInHeaderWithRolesShouldReturnSuccess();
     }
 
@@ -190,20 +188,6 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         log.info("updateUserProfileShouldReturnSuccess :: ENDED");
     }
 
-    public void findUserByEmailInQueryParamShouldReturnSuccess() {
-        log.info("findUserByEmailInQueryParamShouldReturnSuccess :: STARTED");
-
-        UserProfileResponse resource =
-                testRequestHandler.getUserProfileByEmailFromQueryParam(
-                        requestUri + "?email=" + activeUserProfileCreationData.getEmail().toLowerCase(),
-                        HttpStatus.OK,
-                        UserProfileResponse.class);
-
-        verifyGetUserProfile(resource, activeUserProfileCreationData);
-
-        log.info("findUserByEmailInQueryParamShouldReturnSuccess :: ENDED");
-    }
-
     public void findUserByEmailInHeaderShouldReturnSuccess() {
         log.info("findUserByEmailInHeaderShouldReturnSuccess :: STARTED");
 
@@ -243,21 +227,6 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         assertThat(resource.getRoles()).contains("pui-user-manager");
 
         log.info("findUserByUserIdWithRolesShouldReturnSuccess :: ENDED");
-    }
-
-    public void findUserByEmailInQueryParamWithRolesShouldReturnSuccess() {
-        log.info("findUserByEmailWithRolesShouldReturnSuccess :: STARTED");
-
-        UserProfileResponse resource = testRequestHandler.sendGet(
-                requestUri + "/roles?email=" + activeUserProfileCreationData.getEmail().toLowerCase(),
-                UserProfileWithRolesResponse.class);
-
-        verifyGetUserProfile(resource, activeUserProfileCreationData);
-
-        assertThat(resource.getRoles()).contains("pui-case-manager");
-        assertThat(resource.getRoles()).contains("pui-user-manager");
-
-        log.info("findUserByEmailWithRolesShouldReturnSuccess :: ENDED");
     }
 
     public void findUserByEmailInHeaderWithRolesShouldReturnSuccess() {
@@ -304,11 +273,10 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         updateUserProfileData.setRolesAdd(rolesName);
 
         UserProfileResponse resource =
-                testRequestHandler
-                        .getUserProfileByEmailFromQueryParam(requestUri
-                                        + "?email=" + updateUserProfileData.getEmail(),
-                                HttpStatus.OK,
-                                UserProfileResponse.class);
+                testRequestHandler.getUserProfileByEmailFromHeader(
+                        requestUri,
+                        UserProfileResponse.class,
+                        updateUserProfileData.getEmail());
 
         testRequestHandler.sendPut(updateUserProfileData, OK,
                 requestUri + "/" + resource.getIdamId(), UserProfileRolesResponse.class);
