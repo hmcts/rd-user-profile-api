@@ -74,11 +74,6 @@ public class JsonFeignResponseHelperTest {
                 JsonFeignResponseHelper.decode(response1, Optional.of(UserProfileCreationResponse.class));
 
         assertThat(createUserProfileResponseOptional1).isNotEmpty();
-
-        Optional<UserProfileCreationResponse> createUserProfileResponseOptional2 = JsonFeignResponseHelper
-                .decode(response1, Optional.of(UserProfileCreationResponse.class));
-
-        assertThat(createUserProfileResponseOptional2).isNotEmpty();
     }
 
     @Test
