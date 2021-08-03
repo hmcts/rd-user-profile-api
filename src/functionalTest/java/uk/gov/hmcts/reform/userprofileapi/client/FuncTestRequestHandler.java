@@ -172,25 +172,6 @@ public class FuncTestRequestHandler {
                 .statusCode(httpStatus.value()).extract().response();
     }
 
-    public <T> T getUserProfileByEmailFromQueryParam(String urlPath, HttpStatus httpStatus, Class<T> clazz) {
-        String bearerToken = getBearerToken();
-
-        log.info("S2S Token : {}, Bearer Token : {}", s2sToken, bearerToken);
-
-        return SerenityRest
-                .given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .baseUri(baseUrl)
-                .header("ServiceAuthorization", BEARER + s2sToken)
-                .header("Authorization", BEARER + bearerToken)
-                .when()
-                .get(urlPath)
-                .then()
-                .log().all(true)
-                .statusCode(httpStatus.value()).extract().response()
-                .as(clazz);
-    }
-
     public String asJsonString(Object source) throws JsonProcessingException {
         return objectMapper.writeValueAsString(source);
     }
