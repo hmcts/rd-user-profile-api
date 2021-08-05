@@ -52,7 +52,7 @@ public class JsonFeignResponseHelperTest {
     }
 
     @Test
-    public void test_Decode_without_gzip() {
+    public void test_Decode_without_gzip_and_code_not_200_and_null() {
         Request request = mock(Request.class);
 
         Map<String, Collection<String>> header = new HashMap<>();
@@ -66,40 +66,14 @@ public class JsonFeignResponseHelperTest {
                 JsonFeignResponseHelper.decode(response, Optional.of(UserProfileCreationResponse.class));
 
         assertThat(createUserProfileResponseOptional).isNotEmpty();
-    }
 
-    @Test
-    public void test_Decode_with_status_code_not_200() {
-        Request request = mock(Request.class);
-
-        Map<String, Collection<String>> header = new HashMap<>();
-        Collection<String> list = new ArrayList<>();
-        header.put("content-encoding", list);
-
-        Response response = Response.builder().status(400).reason("OK").headers(header)
+        Response response1 = Response.builder().status(400).reason("OK").headers(header)
                 .body("{\"idamId\": 1}", UTF_8).request(request).build();
 
-        Optional<UserProfileCreationResponse> createUserProfileResponseOptional =
-                JsonFeignResponseHelper.decode(response, Optional.of(UserProfileCreationResponse.class));
+        Optional<UserProfileCreationResponse> createUserProfileResponseOptional1 =
+                JsonFeignResponseHelper.decode(response1, Optional.of(UserProfileCreationResponse.class));
 
-        assertThat(createUserProfileResponseOptional).isNotEmpty();
-    }
-
-    @Test
-    public void test_Decode_with_class_to_decode_is_passed_null() {
-        Request request = mock(Request.class);
-
-        Map<String, Collection<String>> header = new HashMap<>();
-        Collection<String> list = new ArrayList<>();
-        header.put("content-encoding", list);
-
-        Response response = Response.builder().status(400).reason("OK").headers(header)
-                .body("{\"idamId\": 1}", UTF_8).request(request).build();
-
-        Optional<UserProfileCreationResponse> createUserProfileResponseOptional = JsonFeignResponseHelper
-                .decode(response, Optional.of(UserProfileCreationResponse.class));
-
-        assertThat(createUserProfileResponseOptional).isNotEmpty();
+        assertThat(createUserProfileResponseOptional1).isNotEmpty();
     }
 
     @Test
