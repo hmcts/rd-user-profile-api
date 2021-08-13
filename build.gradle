@@ -351,6 +351,9 @@ dependencies {
         exclude group: "com.sun.xml.bind", module: "jaxb-osgi"
         exclude group: "org.apache.sling"
     }
+    //Fix for CVE-2021-28170
+    implementation group: "org.glassfish", name: "jakarta.el", version: "4.0.1"
+
     compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     testCompileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
