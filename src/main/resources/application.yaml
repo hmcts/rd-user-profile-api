@@ -31,6 +31,10 @@ spring:
               client-secret: ${S2S_SECRET:AAAAAAAAAAAAAAAA}
   config:
     import: "optional:configtree:/mnt/secrets/rd/"
+    cache:
+      cache-names: token
+      caffeine:
+        spec: maximumSize=50,expireAfterWrite=1m
 
 ### database configuration
   datasource:
