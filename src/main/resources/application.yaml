@@ -28,7 +28,7 @@ spring:
           registration:
             oidc:
               client-id: microservicekey-rd-user-profile-api
-              client-secret: ${S2S_SECRET:AAAAAAAAAAAAAAAA}
+              client-secret: ${S2S_SECRET:}
   config:
     import: "optional:configtree:/mnt/secrets/rd/"
 
@@ -37,7 +37,7 @@ spring:
     driverClassName: org.postgresql.Driver
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5428}/${POSTGRES_NAME:dbuserprofile}${POSTGRES_CONNECTION_OPTIONS:?}
     username: ${POSTGRES_USERNAME:dbuserprofile}
-    password: ${POSTGRES_PASSWORD:dbuserprofile}
+    password: ${POSTGRES_PASSWORD:}
     properties:
       charSet: UTF-8
     hikari:
@@ -88,7 +88,7 @@ security:
 ### dependency configuration
 idam:
   s2s-auth:
-    totp_secret: ${S2S_SECRET:AAAAAAAAAAAAAAAA}
+    totp_secret: ${S2S_SECRET:}
     microservice: rd_user_profile_api
     url: ${S2S_URL:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
     pbaFromUserAccountMap: false

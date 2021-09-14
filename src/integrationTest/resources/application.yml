@@ -18,7 +18,7 @@ spring:
           registration:
             oidc:
               client-id: microservicekey-rd-user-profile-api
-              client-secret: ${S2S_SECRET:AAAAAAAAAAAAAAAA}
+              client-secret: ${S2S_SECRET:}
 
 security:
   anonymousPaths:
@@ -36,7 +36,7 @@ security:
 
 idam:
   s2s-auth:
-    totp_secret: ${S2S_SECRET:AAAAAAAAAAAAAAAA}
+    totp_secret: ${S2S_SECRET:}
     microservice: rd_user_profile_api
     url: ${S2S_URL:http://127.0.0.1:8990}
 
