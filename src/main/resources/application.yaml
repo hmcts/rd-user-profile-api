@@ -28,7 +28,7 @@ spring:
           registration:
             oidc:
               client-id: microservicekey-rd-user-profile-api
-              client-secret: ${S2S_SECRET:}
+              client-secret: ${USER_PROFILE_API_S2S_SECRET:}
   config:
     import: "optional:configtree:/mnt/secrets/rd/"
 
@@ -88,7 +88,7 @@ security:
 ### dependency configuration
 idam:
   s2s-auth:
-    totp_secret: ${S2S_SECRET:}
+    totp_secret: ${USER_PROFILE_API_S2S_SECRET:}
     microservice: rd_user_profile_api
     url: ${S2S_URL:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
     pbaFromUserAccountMap: false
@@ -120,6 +120,6 @@ logging.level.com.zaxxer.hikari: DEBUG
 
 launchdarkly:
   sdk:
-    key: ${RD_LD_SDK_KEY:}
+    key: ${LD_SDK_KEY:}
     environment: ${LAUNCH_DARKLY_ENV:local}
     user: rd
