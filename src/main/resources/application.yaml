@@ -37,7 +37,7 @@ spring:
     driverClassName: org.postgresql.Driver
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5428}/${POSTGRES_NAME:dbuserprofile}${POSTGRES_CONNECTION_OPTIONS:?}
     username: ${POSTGRES_USERNAME:dbuserprofile}
-    password: ${POSTGRES_PASSWORD:}
+    password: ${POSTGRES_PASSWORD:dbuserprofile}
     properties:
       charSet: UTF-8
     hikari:
