@@ -3,7 +3,7 @@ spring.flyway.enabled: false
 
 idam.api.url: ${IDAM_URL_TO_TEST:https://idam-api.aat.platform.hmcts.net}
 
-s2s.auth.secret: ${S2S_SECRET:AAAAAAAAAAAAAAAA}
+s2s.auth.secret: ${USER_PROFILE_API_S2S_SECRET:}
 s2s.auth.url: ${S2S_URL_TO_TEST:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
 
 s2s-name: rd_user_profile_api
@@ -34,6 +34,6 @@ postgres.port: ${FUNC_DATABASE_PORT}
 
 launchdarkly:
   sdk:
-    key: ${RD_LD_SDK_KEY:}
+    key: ${LD_SDK_KEY:}
     environment: ${LAUNCH_DARKLY_ENV:local}
     user: rd
