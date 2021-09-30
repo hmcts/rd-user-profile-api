@@ -21,13 +21,13 @@ java:
     rd:
       secrets:
         - name: user-profile-api-s2s-secret
-          alias: idam.s2s-auth.totp_secret
+          alias: USER_PROFILE_API_S2S_SECRET
         - name: user-profile-api-POSTGRES-PASS
           alias: spring.datasource.password
         - name: ApplicationInsightsInstrumentationKey
           alias: azure.application-insights.instrumentation-key
         - name: LD-SDK-KEY
-          alias: RD_LD_SDK_KEY
+          alias: LD_SDK_KEY
 
   autoscaling:
     enabled: true
