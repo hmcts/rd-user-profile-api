@@ -29,7 +29,7 @@ services:
       - LOGBACK_REQUIRE_ALERT_LEVEL=false
       - LOGBACK_REQUIRE_ERROR_CODE=false
       - S2S_URL=http://service-auth-provider-api:8080
-      - S2S_SECRET=${S2S_SECRET}
+      - USER_PROFILE_API_S2S_SECRET=${USER_PROFILE_API_S2S_SECRET}
     ports:
       - ${SERVER_PORT:-8091}:${SERVER_PORT:-8091}
     depends_on:
@@ -60,8 +60,8 @@ services:
     environment:
       JAVA_OPTS: -Xmx384m
       SERVER_PORT: 8080
-      MICROSERVICEKEYS_RD_USER_PROFILE_API: "${S2S_SECRET}"
-      MICROSERVICEKEYS_RD_PROFESSIONAL_API: "${S2S_SECRET}"
+      MICROSERVICEKEYS_RD_USER_PROFILE_API: "${USER_PROFILE_API_S2S_SECRET}"
+      MICROSERVICEKEYS_RD_PROFESSIONAL_API: "${USER_PROFILE_API_S2S_SECRET}"
       TESTING_SUPPORT_ENABLED: "true"
 
   service-token-provider:
@@ -70,7 +70,7 @@ services:
       environment:
         - S2S_URL=http://service-auth-provider-api:8080
         - S2S_MICROSERVICE=rd_user_profile_api
-        - S2S_SECRET=${S2S_SECRET}
+        - USER_PROFILE_API_S2S_SECRET=${USER_PROFILE_API_S2S_SECRET}
       ports:
         - 8099:8090
       depends_on:
