@@ -1,13 +1,13 @@
 package uk.gov.hmcts.reform.userprofileapi.controller.request;
 
+import org.junit.jupiter.api.Test;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
-
-public class UpdateUserDetailsTest {
+class UpdateUserDetailsTest {
 
     @Test
-    public void test_hold_values_after_creation() {
+    void test_hold_values_after_creation() {
         String firstName = "fname";
         String lastName = "lname";
         Boolean statusTrue = Boolean.TRUE;

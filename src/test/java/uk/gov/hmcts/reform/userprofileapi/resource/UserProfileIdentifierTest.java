@@ -1,17 +1,17 @@
 package uk.gov.hmcts.reform.userprofileapi.resource;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdentifierName;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.junit.Test;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdentifierName;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class UserProfileIdentifierTest {
+class UserProfileIdentifierTest {
 
     @Test
-    public void test_hold_values_after_creation() {
+    void test_hold_values_after_creation() {
         UserProfileIdentifier userProfileIdentifierWithOneValue = new UserProfileIdentifier(IdentifierName.EMAIL,
                 "test_email@hmcts.net");
         UserProfileIdentifier userProfileIdentifierWithMultipleValue

@@ -1,10 +1,10 @@
 package uk.gov.hmcts.reform.userprofileapi.controller.response;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class IdamUserResponseTest {
 

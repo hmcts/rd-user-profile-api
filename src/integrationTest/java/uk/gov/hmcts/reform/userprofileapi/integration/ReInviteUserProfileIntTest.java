@@ -1,23 +1,8 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.TOO_MANY_REQUESTS;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
-import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Optional;
-import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Before;
-import org.junit.Test;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,9 +13,24 @@ import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.TOO_MANY_REQUESTS;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
+
 @SpringBootTest(webEnvironment = MOCK)
 @Slf4j
-public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
+class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
 
     UserProfileCreationData pendingUserRequest = null;
 
@@ -53,12 +53,10 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
             try (Statement statement = connection.createStatement()) {
                 statement.executeUpdate(query);
             }
-        } catch (Exception exe) {
-            throw exe;
         }
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
 
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
@@ -73,7 +71,7 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
 
     // AC1: resend invite to a given user
     @Test
-    public void should_return_201_when_user_reinvited() throws Exception {
+    void should_return_201_when_user_reinvited() throws Exception {
 
         updateLastUpdatedTimestamp(userProfile.getIdamId());
 
@@ -87,7 +85,7 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
 
     // AC3: resend invite to a given user who does not exist
     @Test
-    public void should_return_404_when_user_doesnt_exists() throws Exception {
+    void should_return_404_when_user_doesnt_exists() throws Exception {
 
         UserProfileCreationData data = buildCreateUserProfileData(true);
         ErrorResponse errorResponse = (ErrorResponse) createUser(data, NOT_FOUND, ErrorResponse.class);
@@ -97,7 +95,7 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
 
     // AC4: resend invite to a given user who is not in the 'Pending' state
     @Test
-    public void should_return_400_when_user_reinvited_is_not_pending() throws Exception {
+    void should_return_400_when_user_reinvited_is_not_pending() throws Exception {
 
         userProfile.setStatus(IdamStatus.ACTIVE);
         userProfileRepository.save(userProfile);
@@ -114,7 +112,7 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
 
     // AC8: resend invite to a given user who was last invited less than 1 hour before
     @Test
-    public void should_return_429_when_user_reinvited_within_one_hour() throws Exception {
+    void should_return_429_when_user_reinvited_within_one_hour() throws Exception {
 
         UserProfileCreationData data = buildCreateUserProfileData(true);
         data.setEmail(pendingUserRequest.getEmail());
@@ -128,14 +126,14 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
 
     // AC9: invited more than an hour ago but has recently activated their account
     @Test
-    public void should_return_409_when_reinvited_user_gets_active_in_sidam_but_pending_in_up() throws Exception {
+    void should_return_409_when_reinvited_user_gets_active_in_sidam_but_pending_in_up() throws Exception {
 
         updateLastUpdatedTimestamp(userProfile.getIdamId());
         setSidamRegistrationMockWithStatus(HttpStatus.CONFLICT.value(), false);
         UserProfileCreationData data = buildCreateUserProfileData(true);
         data.setEmail(pendingUserRequest.getEmail());
         ErrorResponse errorResponse = (ErrorResponse) createUser(data, HttpStatus.CONFLICT, ErrorResponse.class);
-        assertThat(errorResponse.getErrorMessage()).isEqualTo(String.format("17 User with this email already exists"));
+        assertThat(errorResponse.getErrorMessage()).isEqualTo("17 User with this email already exists");
         assertThat(errorResponse.getErrorDescription())
                 .contains("7 : Resend invite failed as user is already active. "
                         .concat("Wait for some time for the system to refresh."));
@@ -143,7 +141,7 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
 
     // resend invite fail with 429 if user is already invited and again within 1 hour
     @Test
-    public void should_return_429_when_user_reinvited_successfully_and_again_reinvited_within_one_hour()
+    void should_return_429_when_user_reinvited_successfully_and_again_reinvited_within_one_hour()
             throws Exception {
 
         updateLastUpdatedTimestamp(userProfile.getIdamId());
@@ -164,7 +162,7 @@ public class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationT
 
     // resend invite fail with 429 if user is already invited and again within 1 hour and fields are not changed
     @Test
-    public void sld_rtn_429_when_usr_reinvited_successfully_and_again_reinvited_in_1_hour_with_no_rqst_fields_change()
+    void sld_rtn_429_when_usr_reinvited_successfully_and_again_reinvited_in_1_hour_with_no_rqst_fields_change()
             throws Exception {
 
         updateLastUpdatedTimestamp(userProfile.getIdamId());

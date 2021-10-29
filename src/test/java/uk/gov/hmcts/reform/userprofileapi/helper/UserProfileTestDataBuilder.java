@@ -1,16 +1,17 @@
 package uk.gov.hmcts.reform.userprofileapi.helper;
 
-import static org.apache.commons.lang.RandomStringUtils.randomAlphanumeric;
-import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
+import org.assertj.core.util.Lists;
+import org.springframework.http.HttpStatus;
+import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import org.assertj.core.util.Lists;
-import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
+
+import static org.apache.commons.lang.RandomStringUtils.randomAlphanumeric;
+import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 
 public class UserProfileTestDataBuilder {
 
@@ -41,7 +42,7 @@ public class UserProfileTestDataBuilder {
     public static UserProfile buildUserProfileWithAllFields() {
 
         List<String> unInitFields =
-            Lists.newArrayList("id", "idamId", "status", "created", "lastUpdated");
+                Lists.newArrayList("id", "idamId", "status", "created", "lastUpdated");
 
         UserProfile userProfile = new UserProfile(buildCreateUserProfileData(), HttpStatus.CREATED);
 
@@ -70,7 +71,7 @@ public class UserProfileTestDataBuilder {
     }
 
     public static UserProfile buildUserProfileWithAnIdamId() {
-        UserProfile userProfile = new UserProfile(buildCreateUserProfileData(),HttpStatus.CREATED);
+        UserProfile userProfile = new UserProfile(buildCreateUserProfileData(), HttpStatus.CREATED);
 
         Field idamIdField;
         try {

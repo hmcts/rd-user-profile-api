@@ -1,23 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
-import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
-import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfile;
-import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfileWithDeletedStatus;
-import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfileWithSuspendedStatus;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -30,9 +14,26 @@ import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfile;
+import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfileWithDeletedStatus;
+import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfileWithSuspendedStatus;
+
 @SpringBootTest(webEnvironment = MOCK)
 @Transactional
-public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledIntegrationTest {
+class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledIntegrationTest {
 
     private Map<String, UserProfile> userProfileMap;
     private Map<String, UserProfile> userProfileMapWithUuid;
@@ -43,7 +44,7 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
     private WebApplicationContext webApplicationContext;
 
     public void mockWithGetSuccess() {
-        idamService.stubFor(get(urlMatching("/api/v1/users/.*"))
+        idamMockService.stubFor(get(urlMatching("/api/v1/users/.*"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(200)
@@ -59,7 +60,7 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
 
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
 
@@ -85,7 +86,7 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
         UserProfile user3 = userProfileRepository.save(buildUserProfileWithDeletedStatus());
         UserProfile user4 = userProfileRepository.save(buildUserProfileWithDeletedStatus());
         UserProfile user5 = userProfileRepository.save(buildUserProfileWithSuspendedStatus());
-        
+
         userProfileMap.put("user3", user3);
         userProfileMap.put("user4", user4);
         userProfileMap.put("user5", user5);
@@ -109,19 +110,19 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
     }
 
     @Test
-    public void should_retrieve_multiple_user_profiles_with_showDeleted_true() throws Exception {
+    void should_retrieve_multiple_user_profiles_with_showDeleted_true() throws Exception {
 
         mockWithGetSuccess();
         UserProfileDataRequest request = new UserProfileDataRequest(userIds);
         request.getUserIds().add(UUID.randomUUID().toString());
 
-        UserProfileDataResponse response = getMultipleUsers(request, OK,"true","true");
+        UserProfileDataResponse response = getMultipleUsers(request, OK, "true", "true");
 
         assertThat(response).isNotNull();
         assertThat(response.getUserProfiles().size()).isEqualTo(5);
 
         response.getUserProfiles().forEach(getUserProfilesResponse -> {
-            UserProfile up =  userProfileMapWithUuid.get(getUserProfilesResponse.getIdamId());
+            UserProfile up = userProfileMapWithUuid.get(getUserProfilesResponse.getIdamId());
             assertThat(getUserProfilesResponse.getEmail()).isEqualTo(up.getEmail());
             assertThat(getUserProfilesResponse.getFirstName()).isEqualTo(up.getFirstName());
             assertThat(getUserProfilesResponse.getLastName()).isEqualTo(up.getLastName());
@@ -145,28 +146,28 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
         assertThat(actualAudit1.getIdamRegistrationResponse()).isEqualTo(200);
 
         matchedAudit = getMatchedAuditRecords(audits, userProfileMap.get("user3").getIdamId());
-        assertThat(matchedAudit.size()).isEqualTo(0);
+        assertThat(matchedAudit.size()).isZero();
 
         matchedAudit = getMatchedAuditRecords(audits, userProfileMap.get("user4").getIdamId());
-        assertThat(matchedAudit.size()).isEqualTo(0);
+        assertThat(matchedAudit.size()).isZero();
     }
 
     @Test
-    public void should_retrieve_multiple_user_profiles_with_showDeleted_false() throws Exception {
+    void should_retrieve_multiple_user_profiles_with_showDeleted_false() throws Exception {
 
         UserProfileDataRequest request = new UserProfileDataRequest(userIds);
 
-        UserProfileDataResponse response = getMultipleUsers(request, OK,"false", "true");
+        UserProfileDataResponse response = getMultipleUsers(request, OK, "false", "true");
 
         assertThat(response).isNotNull();
         assertThat(response.getUserProfiles().size()).isEqualTo(3);
     }
 
     @Test
-    public void should_retrieve_a_suspended_user_profiles_with_showDeleted_false() throws Exception {
+    void should_retrieve_a_suspended_user_profiles_with_showDeleted_false() throws Exception {
         UserProfileDataRequest request = new UserProfileDataRequest(suspendedUserId);
 
-        UserProfileDataResponse response = getMultipleUsers(request, OK,"false", "true");
+        UserProfileDataResponse response = getMultipleUsers(request, OK, "false", "true");
 
         assertThat(response).isNotNull();
         assertThat(response.getUserProfiles().size()).isEqualTo(1);
@@ -174,7 +175,7 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
     }
 
     @Test
-    public void should_retrieve_multiple_user_profiles_with_idam_failure() throws Exception {
+    void should_retrieve_multiple_user_profiles_with_idam_failure() throws Exception {
 
         mockWithGetFail(HttpStatus.NOT_FOUND, false);
         UserProfileDataRequest request = new UserProfileDataRequest(userIds);
@@ -186,21 +187,21 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
     }
 
     @Test
-    public void should_return_400_multiple_user_profiles_with_invalid_param() throws Exception {
+    void should_return_400_multiple_user_profiles_with_invalid_param() throws Exception {
 
         UserProfileDataRequest request = new UserProfileDataRequest(userIds);
         getMultipleUsers(request, HttpStatus.BAD_REQUEST, "invalid", "true");
     }
 
     @Test
-    public void should_return_400_multiple_user_profiles_with_no_user_ids_in_request() throws Exception {
+    void should_return_400_multiple_user_profiles_with_no_user_ids_in_request() throws Exception {
 
         UserProfileDataRequest request = new UserProfileDataRequest(new ArrayList<String>());
         getMultipleUsers(request, HttpStatus.BAD_REQUEST, "true", "true");
     }
 
     @Test
-    public void should_return_404_multiple_user_profiles_with_user_ids_not_in_db() throws Exception {
+    void should_return_404_multiple_user_profiles_with_user_ids_not_in_db() throws Exception {
 
         List<String> userIdList = new ArrayList<String>();
         userIdList.add(UUID.randomUUID().toString());
@@ -211,19 +212,19 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
     }
 
     @Test
-    public void should_retrieve_multiple_user_profiles_without_roles() throws Exception {
+    void should_retrieve_multiple_user_profiles_without_roles() throws Exception {
 
         mockWithGetSuccess();
         UserProfileDataRequest request = new UserProfileDataRequest(userIds);
         request.getUserIds().add(UUID.randomUUID().toString());
 
-        UserProfileDataResponse response = getMultipleUsers(request, OK,"true", "false");
+        UserProfileDataResponse response = getMultipleUsers(request, OK, "true", "false");
 
         assertThat(response).isNotNull();
         assertThat(response.getUserProfiles().size()).isEqualTo(5);
 
         response.getUserProfiles().forEach(getUserProfilesResponse -> {
-            UserProfile up =  userProfileMapWithUuid.get(getUserProfilesResponse.getIdamId());
+            UserProfile up = userProfileMapWithUuid.get(getUserProfilesResponse.getIdamId());
             assertThat(getUserProfilesResponse.getEmail()).isEqualTo(up.getEmail());
             assertThat(getUserProfilesResponse.getFirstName()).isEqualTo(up.getFirstName());
             assertThat(getUserProfilesResponse.getLastName()).isEqualTo(up.getLastName());
@@ -235,7 +236,7 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
     }
 
     @Test
-    public void should_see_idam_error_message_with_no_body_while_retrieve_multiple_user_profiles_with_idam_failure()
+    void should_see_idam_error_message_with_no_body_while_retrieve_multiple_user_profiles_with_idam_failure()
             throws Exception {
 
         mockWithGetFail(HttpStatus.NOT_FOUND, false);
@@ -247,7 +248,7 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
     }
 
     @Test
-    public void should_see_idam_error_message_with_body_while_retrieve_multiple_user_profiles_with_idam_failure()
+    void should_see_idam_error_message_with_body_while_retrieve_multiple_user_profiles_with_idam_failure()
             throws Exception {
 
         mockWithGetFail(HttpStatus.NOT_FOUND, true);
@@ -264,7 +265,7 @@ public class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledInt
 
     public void verifyMultipleUserResponse(UserProfileDataResponse response, String errorMessageToVerify) {
         response.getUserProfiles().forEach(getUserProfilesResponse -> {
-            UserProfile up =  userProfileMapWithUuid.get(getUserProfilesResponse.getIdamId());
+            UserProfile up = userProfileMapWithUuid.get(getUserProfilesResponse.getIdamId());
             assertThat(getUserProfilesResponse.getEmail()).isEqualTo(up.getEmail());
             assertThat(getUserProfilesResponse.getFirstName()).isEqualTo(up.getFirstName());
             assertThat(getUserProfilesResponse.getLastName()).isEqualTo(up.getLastName());

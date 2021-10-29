@@ -1,13 +1,13 @@
 package uk.gov.hmcts.reform.userprofileapi.domain.entities;
 
+import org.junit.jupiter.api.Test;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
-
-public class UpdatedUserDetailsTest {
+class UpdatedUserDetailsTest {
 
     @Test
-    public void test_Update() {
+    void test_Update() {
         final String forename = "April";
         final String surname = "O'Neil";
         final boolean active = true;
@@ -20,7 +20,7 @@ public class UpdatedUserDetailsTest {
     }
 
     @Test
-    public void test_testUpdate_for_lombok_annotations() {
+    void test_testUpdate_for_lombok_annotations() {
         UpdatedUserDetails sut = new UpdatedUserDetails();
         assertThat(sut).isNotNull();
 
