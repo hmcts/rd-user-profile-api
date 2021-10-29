@@ -1,28 +1,12 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
-import static uk.gov.hmcts.reform.userprofileapi.constants.TestConstants.COMMON_EMAIL_PATTERN;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
 import feign.Response;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfilesDeletionResponse;
@@ -35,16 +19,33 @@ import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
 
-@RunWith(MockitoJUnitRunner.class)
-public class DeleteUserProfileServiceImplTest {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static uk.gov.hmcts.reform.userprofileapi.constants.TestConstants.COMMON_EMAIL_PATTERN;
+
+@ExtendWith(MockitoExtension.class)
+class DeleteUserProfileServiceImplTest {
 
     @Mock
     private UserProfileRepository userProfileRepositoryMock;
 
-    private UserProfileCreationData userProfileCreationData =
+    private final UserProfileCreationData userProfileCreationData =
             CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
 
-    private UserProfile userProfile = new UserProfile(userProfileCreationData, HttpStatus.OK);
+    private final UserProfile userProfile = new UserProfile(userProfileCreationData, HttpStatus.OK);
 
     @Mock
     private AuditService auditServiceMock;
@@ -55,7 +56,7 @@ public class DeleteUserProfileServiceImplTest {
     @InjectMocks
     private DeleteUserProfileServiceImpl sut;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         userProfile.setStatus(IdamStatus.PENDING);
         userProfile.setIdamId("1234");
@@ -63,7 +64,7 @@ public class DeleteUserProfileServiceImplTest {
     }
 
     @Test
-    public void testDeleteUserProfile() {
+    void testDeleteUserProfile() {
         List<String> userIds = new ArrayList<>();
         userIds.add("1234");
 
@@ -71,7 +72,7 @@ public class DeleteUserProfileServiceImplTest {
         deletionResponse.setMessage("UserProfiles Successfully Deleted");
         deletionResponse.setStatusCode(NO_CONTENT.value());
 
-        when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+        when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.of(userProfile));
 
         UserProfileDataRequest userProfilesDeletionData = new UserProfileDataRequest(userIds);
 
@@ -85,23 +86,25 @@ public class DeleteUserProfileServiceImplTest {
         verify(auditServiceMock, times(1)).persistAudit(any());
     }
 
-    @Test(expected = ResourceNotFoundException.class)
-    public void testShouldThrowExceptionWhenEmptyUserProfileToDelete() {
-        List<String> userIds = new ArrayList<String>();
+    @Test
+    void testShouldThrowExceptionWhenEmptyUserProfileToDelete() {
+        List<String> userIds = new ArrayList<>();
         userIds.add("1234");
 
         UserProfileDataRequest userProfilesDeletionData = new UserProfileDataRequest(userIds);
 
         when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(any()));
 
-        sut.delete(userProfilesDeletionData);
+        assertThrows(ResourceNotFoundException.class, () ->
+                sut.delete(userProfilesDeletionData)
+        );
 
         verify(userProfileRepositoryMock, times(1)).findByIdamId(any(String.class));
         verify(userProfileRepositoryMock, times(0)).deleteAll(any());
     }
 
     @Test
-    public void testDeleteUserProfileByUserId() {
+    void testDeleteUserProfileByUserId() {
         Response responseMock = mock(Response.class);
 
         UserProfilesDeletionResponse deletionResponse = new UserProfilesDeletionResponse();
@@ -110,7 +113,7 @@ public class DeleteUserProfileServiceImplTest {
 
         when(idamClientMock.deleteUser(userProfile.getIdamId())).thenReturn(responseMock);
         when(responseMock.status()).thenReturn(NO_CONTENT.value());
-        when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+        when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.of(userProfile));
 
         UserProfilesDeletionResponse deletionResp = sut.deleteByUserId(userProfile.getIdamId());
 
@@ -123,7 +126,7 @@ public class DeleteUserProfileServiceImplTest {
     }
 
     @Test
-    public void testDeleteUserProfileByUserId_WhenIdamReturns404() {
+    void testDeleteUserProfileByUserId_WhenIdamReturns404() {
         Response responseMock = mock(Response.class);
 
         UserProfilesDeletionResponse deletionResponse = new UserProfilesDeletionResponse();
@@ -132,7 +135,7 @@ public class DeleteUserProfileServiceImplTest {
 
         when(idamClientMock.deleteUser(userProfile.getIdamId())).thenReturn(responseMock);
         when(responseMock.status()).thenReturn(NOT_FOUND.value());
-        when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+        when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.of(userProfile));
 
         UserProfilesDeletionResponse deletionResp = sut.deleteByUserId(userProfile.getIdamId());
 
@@ -145,7 +148,7 @@ public class DeleteUserProfileServiceImplTest {
     }
 
     @Test
-    public void testDeleteUserProfileByUserId_WhenIdamReutrnsError() {
+    void testDeleteUserProfileByUserId_WhenIdamReutrnsError() {
         UserProfilesDeletionResponse deletionResponse = new UserProfilesDeletionResponse();
         deletionResponse.setMessage("IDAM Delete request failed for userId: " + userProfile.getIdamId()
                 + ". With following IDAM message: INTERNAL SERVER ERROR");
@@ -169,7 +172,7 @@ public class DeleteUserProfileServiceImplTest {
     }
 
     @Test
-    public void testDeleteUserProfileByUserId_WhenUserIsPendingInIdam() {
+    void testDeleteUserProfileByUserId_WhenUserIsPendingInIdam() {
         String userId = UUID.randomUUID().toString();
         userProfile.setIdamId(userId);
 
@@ -185,7 +188,7 @@ public class DeleteUserProfileServiceImplTest {
         when(responseMock.status()).thenReturn(BAD_REQUEST.value());
         when(responseMock.body()).thenReturn(bodyMock);
         when(responseMock.body().toString()).thenReturn("The user cannot be modified as their state is 'pending'");
-        when(userProfileRepositoryMock.findByIdamId(userId)).thenReturn(Optional.ofNullable(userProfile));
+        when(userProfileRepositoryMock.findByIdamId(userId)).thenReturn(Optional.of(userProfile));
 
         UserProfilesDeletionResponse deletionResp = sut.deleteByUserId(userId);
 
@@ -198,7 +201,7 @@ public class DeleteUserProfileServiceImplTest {
     }
 
     @Test
-    public void testDeleteUserProfileByEmailPattern() {
+    void testDeleteUserProfileByEmailPattern() {
         List<UserProfile> userProfiles = new ArrayList<>();
         userProfiles.add(userProfile);
 
@@ -210,7 +213,7 @@ public class DeleteUserProfileServiceImplTest {
 
         when(idamClientMock.deleteUser(userProfile.getIdamId())).thenReturn(responseMock);
         when(responseMock.status()).thenReturn(NO_CONTENT.value());
-        when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+        when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.of(userProfile));
         when(userProfileRepositoryMock
                 .findByEmailIgnoreCaseContaining(COMMON_EMAIL_PATTERN)).thenReturn(userProfiles);
 
@@ -227,7 +230,7 @@ public class DeleteUserProfileServiceImplTest {
     }
 
     @Test
-    public void testDeleteUserProfileByEmailPattern_WhenIdamReturns404() {
+    void testDeleteUserProfileByEmailPattern_WhenIdamReturns404() {
         List<UserProfile> userProfiles = new ArrayList<>();
         userProfiles.add(userProfile);
 
@@ -239,7 +242,7 @@ public class DeleteUserProfileServiceImplTest {
 
         when(idamClientMock.deleteUser(userProfile.getIdamId())).thenReturn(responseMock);
         when(responseMock.status()).thenReturn(NOT_FOUND.value());
-        when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+        when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.of(userProfile));
         when(userProfileRepositoryMock
                 .findByEmailIgnoreCaseContaining(COMMON_EMAIL_PATTERN)).thenReturn(userProfiles);
 
@@ -257,7 +260,7 @@ public class DeleteUserProfileServiceImplTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testValidateUserAfterIdamDeleteWhenStatusIs204() {
+    void testValidateUserAfterIdamDeleteWhenStatusIs204() {
         Optional<UserProfile> userProfile = mock(Optional.class);
         String userId = UUID.randomUUID().toString();
 
@@ -273,7 +276,7 @@ public class DeleteUserProfileServiceImplTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testValidateUserAfterIdamDeleteWhenStatusIsNot204() {
+    void testValidateUserAfterIdamDeleteWhenStatusIsNot204() {
         Optional<UserProfile> userProfile = mock(Optional.class);
         String userId = UUID.randomUUID().toString();
 

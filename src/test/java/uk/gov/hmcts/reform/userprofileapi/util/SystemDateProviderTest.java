@@ -1,20 +1,18 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
-import org.junit.Test;
-
-public class SystemDateProviderTest {
+class SystemDateProviderTest {
 
     private final SystemDateProvider systemDateProvider = new SystemDateProvider();
 
     @Test
-    public void test_returns_now_date() {
+    void test_returns_now_date() {
         LocalDate actualDate = systemDateProvider.now();
-        assertNotNull(actualDate);
-        assertFalse(actualDate.isAfter(LocalDate.now()));
+        Assertions.assertNotNull(actualDate);
+        Assertions.assertFalse(actualDate.isAfter(LocalDate.now()));
     }
 }

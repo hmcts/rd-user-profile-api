@@ -1,33 +1,14 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import static uk.gov.hmcts.reform.userprofileapi.service.impl.IdamServiceImplTest.StatusCode.CREATED;
-
 import feign.FeignException;
 import feign.Request;
 import feign.Response;
 import feign.RetryableException;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.IdamRegisterUserRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UpdateUserDetails;
@@ -37,15 +18,31 @@ import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-@RunWith(MockitoJUnitRunner.class)
-public class IdamServiceImplTest {
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.userprofileapi.service.impl.IdamServiceImplTest.StatusCode.CREATED;
+
+
+@ExtendWith(MockitoExtension.class)
+class IdamServiceImplTest {
 
     private final String userId = "test796-d05e-480d-bf3d-7cbfacb3ca29";
-    private final String email = "test.user@test.com";
     private final Map<String, Collection<String>> headerData = new HashMap<>();
 
-    private IdamFeignClient idamFeignClientMock = Mockito.mock(IdamFeignClient.class);
+    private final IdamFeignClient idamFeignClientMock = Mockito.mock(IdamFeignClient.class);
 
     @InjectMocks
     private IdamService sut = new IdamServiceImpl();
@@ -56,7 +53,7 @@ public class IdamServiceImplTest {
             .body("{\"idamId\": 1}", UTF_8).request(request).build();
 
     @Test
-    public void test_RegisterUser() {
+    void test_RegisterUser() {
         IdamRegisterUserRequest dataMock = Mockito.mock(IdamRegisterUserRequest.class);
         Response responseMock = Mockito.mock(Response.class);
 
@@ -73,7 +70,7 @@ public class IdamServiceImplTest {
     }
 
     @Test
-    public void test_FetchUserById() {
+    void test_FetchUserById() {
         Response response = Response.builder().status(200).reason("OK").headers(header)
                 .body("{\"idamId\": 1}", UTF_8).request(request).build();
         Response responseMock = Mockito.mock(Response.class);
@@ -94,7 +91,7 @@ public class IdamServiceImplTest {
     }
 
     @Test
-    public void test_RegisterUserWithFeignExceptionThrown() {
+    void test_RegisterUserWithFeignExceptionThrown() {
         FeignException feignExceptionMock = Mockito.mock(FeignException.class);
         IdamRegisterUserRequest dataMock = Mockito.mock(IdamRegisterUserRequest.class);
 
@@ -111,7 +108,7 @@ public class IdamServiceImplTest {
     }
 
     @Test
-    public void test_GetHttpStatusFromFeignException() {
+    void test_GetHttpStatusFromFeignException() {
         IdamServiceImpl idamService = new IdamServiceImpl();
         RetryableException retryableExceptionMock = mock(RetryableException.class);
 
@@ -126,7 +123,7 @@ public class IdamServiceImplTest {
     }
 
     @Test
-    public void test_UpdateUserRoles() {
+    void test_UpdateUserRoles() {
         List<String> roleRequest = new ArrayList<>();
         Response response = Response.builder().status(200).reason("OK").headers(header)
                 .body("{\"idamId\": 1}", UTF_8).request(request).build();
@@ -150,7 +147,7 @@ public class IdamServiceImplTest {
     }
 
     @Test
-    public void test_UpdateUserRolesWhenFeignException() {
+    void test_UpdateUserRolesWhenFeignException() {
         List<String> roleRequest = new ArrayList<>();
 
         FeignException feignExceptionMock = Mockito.mock(FeignException.class);
@@ -165,9 +162,9 @@ public class IdamServiceImplTest {
     }
 
     @Test
-    public void testAddUserRoles() {
+    void testAddUserRoles() {
         Set<Map<String, String>> roleRequest = new HashSet<>();
-        Map<String, String> rolesMap = new HashMap<String, String>();
+        Map<String, String> rolesMap = new HashMap<>();
         rolesMap.put("name", "pui-caa");
         roleRequest.add(rolesMap);
 
@@ -179,7 +176,7 @@ public class IdamServiceImplTest {
     }
 
     @Test
-    public void test_UpdateUserDetails() {
+    void test_UpdateUserDetails() {
         UpdateUserDetails updateUserDetailsMock = Mockito.mock(UpdateUserDetails.class);
 
         Response responseMock = Mockito.mock(Response.class);
@@ -202,7 +199,7 @@ public class IdamServiceImplTest {
     }
 
     @Test
-    public void test_UpdateUserDetails_withFailure() {
+    void test_UpdateUserDetails_withFailure() {
         UpdateUserDetails updateUserDetailsMock = Mockito.mock(UpdateUserDetails.class);
 
         FeignException feignExceptionMock = Mockito.mock(FeignException.class);
@@ -217,9 +214,9 @@ public class IdamServiceImplTest {
     }
 
     @Test
-    public void test_AddUserRolesWhenFeignException() {
+    void test_AddUserRolesWhenFeignException() {
         Set<Map<String, String>> roleRequest = new HashSet<>();
-        Map<String, String> rolesMap = new HashMap<String, String>();
+        Map<String, String> rolesMap = new HashMap<>();
         rolesMap.put("name", "pui-caa");
         roleRequest.add(rolesMap);
 
