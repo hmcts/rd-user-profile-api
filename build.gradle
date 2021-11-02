@@ -398,9 +398,9 @@ dependencies {
     }
 
     testImplementation group: 'com.github.mifmif', name: 'generex', version: '1.0.2'
-    testImplementation group: 'org.codehaus.groovy', name: 'groovy', version: '2.5.14'
-    testImplementation group: 'org.codehaus.groovy', name: 'groovy-xml', version: '2.5.14'
-    testImplementation group: 'org.codehaus.groovy', name: 'groovy-json', version: '2.5.14'
+    testImplementation group: 'org.codehaus.groovy', name: 'groovy', version: '2.5.15'
+    testImplementation group: 'org.codehaus.groovy', name: 'groovy-xml', version: '2.5.15'
+    testImplementation group: 'org.codehaus.groovy', name: 'groovy-json', version: '2.5.15'
     testCompile 'com.github.hmcts:fortify-client:1.2.0:all'
 
     contractTestImplementation(group: 'au.com.dius', name:'pact-jvm-consumer-junit5_2.12', version: versions.pact_version) {
