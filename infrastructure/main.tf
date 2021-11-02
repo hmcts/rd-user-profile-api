@@ -80,4 +80,5 @@ module "db-user-profile" {
   postgresql_user   = "dbuserprofile"
   database_name     = "dbuserprofile"
   common_tags       = var.common_tags
+  postgresql_version = "9.6"
 }
