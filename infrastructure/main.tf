@@ -82,3 +82,17 @@ module "db-user-profile" {
   common_tags       = var.common_tags
   postgresql_version = "9.6"
 }
+
+module "db-user-profile-v11" {
+  source             = "git@github.com:hmcts/cnp-module-postgres?ref=master"
+  product            = var.product
+  component          = var.component
+  name               = join("-", [var.product, var.component, "postgres-db", "v11"])
+  location           = var.location
+  subscription       = var.subscription
+  env                = var.env
+  postgresql_user    = "dbuserprofile"
+  database_name      = "dbuserprofile"
+  common_tags        = var.common_tags
+  postgresql_version = "11"
+}
