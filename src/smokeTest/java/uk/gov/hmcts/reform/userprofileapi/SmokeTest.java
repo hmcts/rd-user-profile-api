@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi;
 
 import io.restassured.response.Response;
-import net.serenitybdd.junit5.SerenityTest;
+//import net.serenitybdd.junit5.SerenityTest;
 import net.serenitybdd.junit5.extension.SerenityExtension;
 import net.serenitybdd.rest.SerenityRest;
 import net.thucydides.core.annotations.WithTag;
@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@SerenityTest
+//@SerenityTest
 @ExtendWith(SerenityExtension.class)
 @WithTags({@WithTag("testType:Smoke")})
 class SmokeTest {
