@@ -140,10 +140,10 @@ idea {
 
 
 configurations {
-    all {
-        exclude group: "junit", module: "junit"
-        exclude group: "org.junit.vintage", module: "junit-vintage-engine"
-    }
+//    all {
+//        exclude group: "junit", module: "junit"
+//        exclude group: "org.junit.vintage", module: "junit-vintage-engine"
+//    }
 
     integrationTestImplementation.extendsFrom testCompile
     integrationTestRuntime.extendsFrom testRuntime
