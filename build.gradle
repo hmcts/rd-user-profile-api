@@ -404,12 +404,10 @@ dependencies {
     testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.3.3'
     testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.9'
 
-    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
-
-//    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
-//        exclude group: 'junit', module: 'junit'
-//        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-//    }
+    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
+        exclude group: 'junit', module: 'junit'
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
 
     testImplementation group: 'org.pitest', name: 'pitest', version: versions.pitest
     testImplementation 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.0'
