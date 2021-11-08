@@ -1,7 +1,7 @@
-package uk.gov.hmcts.reform.userprofileapi.junit5;
+package uk.gov.hmcts.reform.userprofileapi.serenity5;
 
 import org.junit.jupiter.api.extension.ExtendWith;
-import uk.gov.hmcts.reform.userprofileapi.junit5.extension.SerenityReportExtension;
+import uk.gov.hmcts.reform.userprofileapi.serenity5.extension.SerenityReportExtension;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

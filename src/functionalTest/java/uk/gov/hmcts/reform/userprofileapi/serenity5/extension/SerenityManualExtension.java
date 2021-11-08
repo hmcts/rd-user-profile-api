@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.userprofileapi.junit5.extension;
+package uk.gov.hmcts.reform.userprofileapi.serenity5.extension;
 
 import lombok.extern.slf4j.Slf4j;
 import net.thucydides.core.annotations.Manual;
@@ -14,8 +14,6 @@ import java.lang.reflect.Method;
 import static net.thucydides.core.model.TestResult.FAILURE;
 import static net.thucydides.core.steps.StepEventBus.getEventBus;
 
-// net.serenitybdd.junit.runners.SerenityRunner.markAsManual
-// start and end events for tests will be fired by SerenityJUnitLifecycleAdapterExtension
 @Slf4j
 public class SerenityManualExtension implements InvocationInterceptor {
 
@@ -37,6 +35,7 @@ public class SerenityManualExtension implements InvocationInterceptor {
         }
     }
 
+    @SuppressWarnings("checkstyle:Indentation")
     private void markAsManual(final Manual manualAnnotation, final StepEventBus eventBus) throws Throwable {
         eventBus.testIsManual();
 
@@ -49,7 +48,7 @@ public class SerenityManualExtension implements InvocationInterceptor {
                 }
         );
 
-        switch(manualAnnotation.result()) {
+        switch (manualAnnotation.result()) {
             case SUCCESS:
                 return;
             case FAILURE:
@@ -58,19 +57,25 @@ public class SerenityManualExtension implements InvocationInterceptor {
                 throw failure;
             case ERROR:
             case COMPROMISED:
-            case UNSUCCESSFUL:
+            case UNSUCCESSFUL: {
                 final Throwable error = new ManualTestMarkedAsError(manualReasonDeclaredIn(manualAnnotation));
                 eventBus.testFailed(error);
                 throw error;
-            case IGNORED:
+            }
+            case IGNORED: {
                 eventBus.testIgnored();
                 throwMarkerExceptionForAnAbortedExecutionInJunit5(manualAnnotation);
-            case SKIPPED:
+                break;
+            }
+            case SKIPPED: {
                 eventBus.testSkipped();
                 throwMarkerExceptionForAnAbortedExecutionInJunit5(manualAnnotation);
-            default:
+                break;
+            }
+            default: {
                 eventBus.testPending();
                 throwMarkerExceptionForAnAbortedExecutionInJunit5(manualAnnotation);
+            }
         }
     }
 

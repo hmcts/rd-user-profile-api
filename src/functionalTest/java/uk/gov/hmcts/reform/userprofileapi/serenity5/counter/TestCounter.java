@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.userprofileapi.junit5.counter;
+package uk.gov.hmcts.reform.userprofileapi.serenity5.counter;
 
 import com.google.inject.BindingAnnotation;
 
@@ -10,4 +10,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD, ElementType.PARAMETER})
 @BindingAnnotation
-public @interface TestCounter {}
+public @interface TestCounter {
+}

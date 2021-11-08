@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.userprofileapi.junit5.extension.page;
+package uk.gov.hmcts.reform.userprofileapi.serenity5.extension.page;
 
 import net.thucydides.core.annotations.TestCaseAnnotations;
 import net.thucydides.core.webdriver.Configuration;

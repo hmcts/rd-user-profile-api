@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.userprofileapi.junit5.extension;
+package uk.gov.hmcts.reform.userprofileapi.serenity5.extension;
 
 import net.thucydides.core.steps.BaseStepListener;
 import net.thucydides.core.steps.StepEventBus;
@@ -14,7 +14,6 @@ import static net.thucydides.core.steps.StepAnnotations.injector;
 import static net.thucydides.core.steps.StepEventBus.getEventBus;
 import static net.thucydides.core.steps.StepFactory.getFactory;
 
-// Junit4: net.serenitybdd.junit.runners.SerenityStatement
 public class SerenityStepExtension implements BeforeEachCallback, InvocationInterceptor {
 
     @Override
@@ -29,8 +28,6 @@ public class SerenityStepExtension implements BeforeEachCallback, InvocationInte
         try {
             invocation.proceed();
         } catch (final AssertionError assertionError) {
-            // suppress assertion error outside a step method if a previous step method failed.
-            // net.thucydides.core.steps.StepInterceptor.executeTestStepMethod handles assertion error inside a step.
             if (noStepInTheCurrentTestHasFailed()) {
                 throw assertionError;
             }

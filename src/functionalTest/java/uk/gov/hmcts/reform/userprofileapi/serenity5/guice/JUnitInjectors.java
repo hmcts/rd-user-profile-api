@@ -1,13 +1,12 @@
-package uk.gov.hmcts.reform.userprofileapi.junit5.guice;
+package uk.gov.hmcts.reform.userprofileapi.serenity5.guice;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
-/**
- * Somewhere to hold the Guice injector.
- * There might be a better way to do this.
- */
 public class JUnitInjectors {
+
+    private JUnitInjectors() {
+    }
 
     private static Injector injector;
 

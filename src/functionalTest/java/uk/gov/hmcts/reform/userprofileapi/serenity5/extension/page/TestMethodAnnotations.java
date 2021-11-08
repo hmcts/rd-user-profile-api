@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.userprofileapi.junit5.extension.page;
+package uk.gov.hmcts.reform.userprofileapi.serenity5.extension.page;
 
 import com.google.common.base.Preconditions;
 import net.thucydides.core.annotations.DriverOptions;
@@ -7,7 +7,6 @@ import net.thucydides.core.annotations.WithDriver;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
-// Junit4: net.serenitybdd.junit.runners.TestMethodAnnotations
 public final class TestMethodAnnotations {
 
     private final Method method;

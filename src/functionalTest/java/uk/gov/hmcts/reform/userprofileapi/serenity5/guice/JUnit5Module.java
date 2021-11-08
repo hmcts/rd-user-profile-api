@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.userprofileapi.junit5.guice;
+package uk.gov.hmcts.reform.userprofileapi.serenity5.guice;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provider;
@@ -7,8 +7,8 @@ import net.thucydides.core.guice.Injectors;
 import net.thucydides.core.statistics.TestCount;
 import net.thucydides.core.steps.StepListener;
 import net.thucydides.core.util.EnvironmentVariables;
-import uk.gov.hmcts.reform.userprofileapi.junit5.counter.TestCountListener;
-import uk.gov.hmcts.reform.userprofileapi.junit5.counter.TestCounter;
+import uk.gov.hmcts.reform.userprofileapi.serenity5.counter.TestCountListener;
+import uk.gov.hmcts.reform.userprofileapi.serenity5.counter.TestCounter;
 
 public class JUnit5Module extends AbstractModule {
 
@@ -23,7 +23,8 @@ public class JUnit5Module extends AbstractModule {
     public static class TestCountListenerProvider implements Provider<StepListener> {
 
         public StepListener get() {
-            EnvironmentVariables environmentVariables = Injectors.getInjector().getProvider(EnvironmentVariables.class).get() ;
+            EnvironmentVariables environmentVariables = Injectors.getInjector()
+                    .getProvider(EnvironmentVariables.class).get();
             TestCount testCount = Injectors.getInjector().getInstance(TestCount.class);
             return new TestCountListener(environmentVariables, testCount);
         }

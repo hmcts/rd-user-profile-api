@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.userprofileapi.junit5.extension;
+package uk.gov.hmcts.reform.userprofileapi.serenity5.extension;
 
 import net.serenitybdd.core.environment.ConfiguredEnvironment;
 import net.thucydides.core.model.TestOutcome;
@@ -22,24 +22,16 @@ public class SerenityReportExtension implements AfterAllCallback {
         generateReports(baseStepListener);
     }
 
-    // net.serenitybdd.junit.runners.SerenityRunner.generateReports
     protected void generateReports(BaseStepListener baseStepListener) {
         generateReportsFor(baseStepListener.getTestOutcomes());
     }
 
-    // net.serenitybdd.junit.runners.SerenityRunner.generateReportsFor
-    /**
-     * @param testOutcomeResults the test results from the previous test run.
-     */
     private void generateReportsFor(final List<TestOutcome> testOutcomeResults) {
         final ReportService reportService = new ReportService(getOutputDirectory(), getDefaultReporters());
         reportService.generateReportsFor(testOutcomeResults);
         reportService.generateConfigurationsReport();
     }
 
-    /**
-     *  @return The default reporters applicable for standard test runs.
-     */
     protected Collection<AcceptanceTestReporter> getDefaultReporters() {
         return ReportService.getDefaultReporters();
     }

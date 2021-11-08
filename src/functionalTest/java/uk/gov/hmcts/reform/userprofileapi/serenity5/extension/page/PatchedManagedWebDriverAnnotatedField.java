@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.userprofileapi.junit5.extension.page;
+package uk.gov.hmcts.reform.userprofileapi.serenity5.extension.page;
 
 import net.thucydides.core.annotations.ClearCookiesPolicy;
 import net.thucydides.core.annotations.Fields;
@@ -14,17 +14,17 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Deprecated
 public class PatchedManagedWebDriverAnnotatedField {
 
-    private static final String NO_ANNOTATED_FIELD_ERROR 
-                                    = "No WebDriver field annotated with @Managed was found in the test case.";
+    private static final String NO_ANNOTATED_FIELD_ERROR
+            = "No WebDriver field annotated with @Managed was found in the test case.";
 
     private final Field field;
 
-    /**
-     * Find the first field in the class annotated with the <b>Managed</b> annotation.
-     */
+    private PatchedManagedWebDriverAnnotatedField(final Field field) {
+        this.field = field;
+    }
+
     static Optional<PatchedManagedWebDriverAnnotatedField> findOptionalAnnotatedField(final Class<?> testClass) {
 
         try {
@@ -33,14 +33,11 @@ public class PatchedManagedWebDriverAnnotatedField {
                     .filter(PatchedManagedWebDriverAnnotatedField::isFieldAnnotated)
                     .map(PatchedManagedWebDriverAnnotatedField::new)
                     .findFirst();
-        } catch(NoSuchElementException e) {
+        } catch (NoSuchElementException e) {
             return Optional.empty();
         }
     }
 
-    /**
-     * Find the first field in the class annotated with the <b>Managed</b> annotation.
-     */
     public static PatchedManagedWebDriverAnnotatedField findFirstAnnotatedField(final Class<?> testClass) {
 
         Optional<PatchedManagedWebDriverAnnotatedField> optionalField = findOptionalAnnotatedField(testClass);
@@ -66,7 +63,7 @@ public class PatchedManagedWebDriverAnnotatedField {
             return fieldsIn(testClass)
                     .stream()
                     .anyMatch(PatchedManagedWebDriverAnnotatedField::isFieldAnnotated);
-        } catch(NoSuchElementException e) {
+        } catch (NoSuchElementException e) {
             return false;
         }
     }
@@ -76,16 +73,16 @@ public class PatchedManagedWebDriverAnnotatedField {
     }
 
     private static boolean fieldIsRightType(final Field field) {
-        return (WebDriverFacade.class.isAssignableFrom(field.getType()) ||
-        		field.getType().isAssignableFrom(WebDriver.class));
+        return (WebDriverFacade.class.isAssignableFrom(field.getType())
+                || field.getType().isAssignableFrom(WebDriver.class));
     }
 
     private static boolean fieldIsAnnotatedCorrectly(final Field field) {
         return (field.getAnnotation(Managed.class) != null);
     }
 
-    private PatchedManagedWebDriverAnnotatedField(final Field field) {
-        this.field = field;
+    private static Set<Field> fieldsIn(Class clazz) {
+        return Fields.of(clazz).allFields();
     }
 
     public void setValue(final Object testCase, final WebDriver manageDriver) {
@@ -94,8 +91,8 @@ public class PatchedManagedWebDriverAnnotatedField {
             field.set(testCase, manageDriver);
         } catch (IllegalAccessException e) {
             throw new InvalidManagedWebDriverFieldException("Could not access or set web driver field: "
-                         + field 
-                         + " - is this field public?", e);
+                    + field
+                    + " - is this field public?", e);
         }
     }
 
@@ -108,10 +105,6 @@ public class PatchedManagedWebDriverAnnotatedField {
                     + field
                     + " - is this field public?", e);
         }
-    }
-
-    private static Set<Field> fieldsIn(Class clazz) {
-        return Fields.of(clazz).allFields();
     }
 
     public boolean isUniqueSession() {
@@ -130,5 +123,7 @@ public class PatchedManagedWebDriverAnnotatedField {
         return field.getAnnotation(Managed.class).options();
     }
 
-    public String getName() { return field.getName(); }
+    public String getName() {
+        return field.getName();
+    }
 }

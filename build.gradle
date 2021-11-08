@@ -140,10 +140,10 @@ idea {
 
 
 configurations {
-    all {
-        exclude group: "junit", module: "junit"
-        exclude group: "org.junit.vintage", module: "junit-vintage-engine"
-    }
+//    all {
+//        exclude group: "junit", module: "junit"
+//        exclude group: "org.junit.vintage", module: "junit-vintage-engine"
+//    }
 
     integrationTestImplementation.extendsFrom testCompile
     integrationTestRuntime.extendsFrom testRuntime
@@ -421,15 +421,15 @@ dependencies {
 
     testImplementation('net.serenity-bdd:serenity-core:3.0.2') {
         // optional: in case a newer version than the transitively included should be used
-        exclude group: 'junit', module: 'junit'
+//        exclude group: 'junit', module: 'junit'
     }
 
-    implementation group: 'io.github.fabianlinz', name: 'serenity-junit5', version: '1.6.0'
+//    implementation group: 'io.github.fabianlinz', name: 'serenity-junit5', version: '1.6.0'
     testImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity, {
-        exclude group: 'junit', module: 'junit'
+//        exclude group: 'junit', module: 'junit'
     }
     testImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: '3.0.2', {
-        exclude group: 'junit', module: 'junit'
+//        exclude group: 'junit', module: 'junit'
     }
 
     testImplementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.9.0'

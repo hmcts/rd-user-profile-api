@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.userprofileapi.junit5.extension;
+package uk.gov.hmcts.reform.userprofileapi.serenity5.extension;
 
 import com.google.inject.Key;
 import net.serenitybdd.core.injectors.EnvironmentDependencyInjector;
@@ -10,15 +10,12 @@ import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import uk.gov.hmcts.reform.userprofileapi.junit5.counter.TestCounter;
-import uk.gov.hmcts.reform.userprofileapi.junit5.guice.JUnitInjectors;
+import uk.gov.hmcts.reform.userprofileapi.serenity5.counter.TestCounter;
+import uk.gov.hmcts.reform.userprofileapi.serenity5.guice.JUnitInjectors;
 
 import static net.serenitybdd.core.environment.ConfiguredEnvironment.getConfiguration;
 import static net.thucydides.core.steps.StepEventBus.getEventBus;
 
-// Junit4: net.serenitybdd.junit.runners.SerenityRunner.initStepEventBus
-// Junit4: net.serenitybdd.junit.runners.SerenityRunner.initListeners
-// (no separate net.serenitybdd.junit.runners.SerenityRunner.initListenersUsing as pages will be configured via net.serenitybdd.junit.extension.page.SerenityPageExtension)
 public class SerenityExtension implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback {
 
     @Override
@@ -37,7 +34,6 @@ public class SerenityExtension implements BeforeAllCallback, AfterAllCallback, B
     }
 
     @Override
-    // JUnit4: net.serenitybdd.junit.runners.SerenityRunner.run
     public void afterAll(final ExtensionContext extensionContext) {
         StepEventBus.getEventBus().dropAllListeners();
     }
