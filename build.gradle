@@ -407,12 +407,8 @@ dependencies {
         exclude group: 'com.github.jknack'
     }
 
-    testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.4.6'
-    testImplementation group: 'org.mockito', name: 'mockito-inline', version: '3.6.28'
-    testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.3.3'
-    testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.9'
-
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
+        exclude group: "com.vaadin.external.google", module:"android-json"
         exclude group: 'junit', module: 'junit'
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
@@ -454,7 +450,7 @@ dependencies {
         endorseStrictVersions()
     }
 
-    functionalTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit
+    functionalTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.8.1'
     functionalTestRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit
     functionalTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: versions.junit
     functionalTestImplementation group: 'org.junit.platform', name: 'junit-platform-commons', version: versions.junitPlatform
@@ -472,15 +468,12 @@ dependencies {
     integrationTestImplementation group: 'org.junit.platform', name: 'junit-platform-commons', version: versions.junitPlatform
     integrationTestRuntimeOnly group: 'org.junit.platform', name: 'junit-platform-engine', version: versions.junitPlatform
 
-//    contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit
-//    contractTestRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit
-//    contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: versions.junit
-//    contractTestImplementation group: 'org.junit.platform', name: 'junit-platform-commons', version: versions.junitPlatform
-//    contractTestRuntimeOnly group: 'org.junit.platform', name: 'junit-platform-engine', version: versions.junitPlatform
-
-    contractTestImplementation("org.junit.jupiter:junit-jupiter-api:5.7.0")
-    contractTestRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.0")
-    contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.7.0')
+    contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit
+    contractTestRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit
+    contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: versions.junit
+    contractTestImplementation group: 'org.junit.platform', name: 'junit-platform-commons', version: versions.junitPlatform
+    contractTestRuntimeOnly group: 'org.junit.platform', name: 'junit-platform-engine', version: versions.junitPlatform
+    contractTestImplementation('org.scala-lang:scala-library:2.12.5')
 
     integrationTestImplementation sourceSets.main.runtimeClasspath
     integrationTestImplementation sourceSets.test.runtimeClasspath
@@ -491,9 +484,14 @@ dependencies {
     smokeTestImplementation sourceSets.main.runtimeClasspath
     smokeTestImplementation sourceSets.test.runtimeClasspath
 
-    contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: '4.1.7'
-    contractTestImplementation group: 'au.com.dius.pact.provider', name: 'spring', version: '4.1.7'
-    contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5spring', version: '4.1.7'
+//    contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: '4.1.7'
+//    contractTestImplementation group: 'au.com.dius.pact.provider', name: 'spring', version: '4.1.7'
+//    contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5spring', version: '4.1.7'
+
+    contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: '4.2.14'
+    contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: '4.2.14'
+    contractTestImplementation group: 'au.com.dius.pact.provider', name: 'spring', version: '4.2.14'
+    contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5spring', version: '4.2.14'
 
     contractTestImplementation sourceSets.main.runtimeClasspath
     contractTestImplementation sourceSets.test.runtimeClasspath
