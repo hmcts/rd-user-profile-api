@@ -27,7 +27,7 @@ apply plugin: 'project-report'
 apply plugin: 'idea'
 
 def versions = [
-        junit           : '5.6.2',
+        junit           : '5.8.1',
         junitPlatform   : '1.8.1',
         lombok             : '1.18.20',
         gradlePitest       : '1.3.0',
@@ -415,9 +415,9 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
 
-    testImplementation('net.serenity-bdd:serenity-core:3.0.2')
-    testImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
+    testImplementation group: 'net.serenity-bdd', name: 'serenity-core', version: '3.0.2'
     testImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: '3.0.2'
+    testImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
 
     testImplementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.9.0'
 
