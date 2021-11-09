@@ -11,10 +11,13 @@ import uk.gov.hmcts.reform.userprofileapi.service.impl.FeatureToggleServiceImpl;
 import java.lang.reflect.AnnotatedElement;
 import java.util.Optional;
 
+import static java.lang.System.getenv;
 import static org.apache.commons.lang.BooleanUtils.isNotTrue;
 import static org.junit.platform.commons.util.AnnotationUtils.findAnnotation;
 
 public class FeatureToggleConditionExtension implements ExecutionCondition {
+
+    private static LDClient ldClient;
 
     private static FeatureToggleServiceImpl featureToggleService;
 
@@ -76,13 +79,11 @@ public class FeatureToggleConditionExtension implements ExecutionCondition {
         return ConditionEvaluationResult.enabled("Feature toggled ON");
     }
 
-    @SuppressWarnings("checkstyle:CommentsIndentation")
-    private static void initialize() {
-//        ldClient = new LDClient(getenv("LD_SDK_KEY"));
-        LDClient ldClient = new LDClient("sdk-b1310c4a-e522-4512-9e68-d75d23b04c5d");
+    private void initialize() {
+        ldClient = new LDClient(getenv("LD_SDK_KEY"));
         featureToggleService = new FeatureToggleServiceImpl(ldClient, "rd");
-//        String executionEnvironment = getenv("execution_environment");
-        ReflectionTestUtils.setField(featureToggleService, "environment", "aat");
+        String executionEnvironment = getenv("execution_environment");
+        ReflectionTestUtils.setField(featureToggleService, "environment", executionEnvironment);
 
         isInitialized = true;
     }
