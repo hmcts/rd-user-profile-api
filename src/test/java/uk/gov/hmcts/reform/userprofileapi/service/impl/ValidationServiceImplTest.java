@@ -1,5 +1,25 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
+import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
+import uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder;
+import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
+import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
+import uk.gov.hmcts.reform.userprofileapi.service.ValidationHelperService;
+import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
+
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -8,31 +28,9 @@ import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.ACCEPTED;
 import static org.springframework.http.ResponseEntity.status;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.UUID;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
-import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
-import uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder;
-import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
-import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
-import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
-import uk.gov.hmcts.reform.userprofileapi.service.ValidationHelperService;
-import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
-
-
-@RunWith(MockitoJUnitRunner.class)
-public class ValidationServiceImplTest {
+@ExtendWith(MockitoExtension.class)
+class ValidationServiceImplTest {
 
     private final String userId = UUID.randomUUID().toString();
 
@@ -42,29 +40,25 @@ public class ValidationServiceImplTest {
     @Mock
     private ValidationHelperService validationHelperServiceMock;
 
-    private UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder
+    private final UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder
             .buildCreateUserProfileData();
-    private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(status(ACCEPTED).build());
-    private UserProfile userProfile = new UserProfile(userProfileCreationData, idamRegistrationInfo
+    private final IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(status(ACCEPTED).build());
+    private final UserProfile userProfile = new UserProfile(userProfileCreationData, idamRegistrationInfo
             .getIdamRegistrationResponse());
 
-    private UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("email@net.com",
-            "firstName", "lastName", "ACTIVE", new HashSet<RoleName>(),
-            new HashSet<RoleName>());
+    private final UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("email@net.com",
+            "firstName", "lastName", "ACTIVE", new HashSet<>(),
+            new HashSet<>());
 
 
     @InjectMocks
     private ValidationService sut = new ValidationServiceImpl();
 
-    @Before
-    public void setUp() {
-        when(userProfileRepositoryMock.findByIdamId(userId)).thenReturn(Optional.of(userProfile));
-    }
-
     @Test
-    public void test_ValidateUpdateWithoutId() {
+    void test_ValidateUpdateWithoutId() {
         userProfile.setStatus(IdamStatus.SUSPENDED);
 
+        when(userProfileRepositoryMock.findByIdamId(userId)).thenReturn(Optional.of(userProfile));
         when(validationHelperServiceMock.validateUserId(userId)).thenReturn(true);
         when(validationHelperServiceMock.validateUpdateUserProfileRequestValid(updateUserProfileData, userId,
                 ResponseSource.API)).thenReturn(true);
@@ -78,14 +72,14 @@ public class ValidationServiceImplTest {
     }
 
     @Test
-    public void test_IsValidForUserDetailUpdateHappyPath() {
+    void test_IsValidForUserDetailUpdateHappyPath() {
         when(validationHelperServiceMock.validateUserStatusBeforeUpdate(updateUserProfileData, userProfile,
                 ResponseSource.API)).thenReturn(true);
         assertThat(sut.isValidForUserDetailUpdate(updateUserProfileData, userProfile, ResponseSource.API)).isTrue();
     }
 
     @Test
-    public void test_IsValidForUserDetailUpdateSadPath() {
+    void test_IsValidForUserDetailUpdateSadPath() {
         assertThat(sut.isValidForUserDetailUpdate(updateUserProfileData, userProfile, ResponseSource.API)).isFalse();
         verify(validationHelperServiceMock, times(1))
                 .validateUserStatusBeforeUpdate(any(UpdateUserProfileData.class), any(UserProfile.class),
@@ -93,9 +87,8 @@ public class ValidationServiceImplTest {
     }
 
     @Test
-    public void test_IsExuiUpdateRequest() {
+    void test_IsExuiUpdateRequest() {
         assertThat(sut.isExuiUpdateRequest(ResponseSource.EXUI.name())).isTrue();
         assertThat(sut.isExuiUpdateRequest("INVALID")).isFalse();
     }
-
 }

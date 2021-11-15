@@ -1,19 +1,15 @@
 package uk.gov.hmcts.reform.userprofileapi.client;
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static uk.gov.hmcts.reform.userprofileapi.AbstractFunctional.EMAIL;
-import static uk.gov.hmcts.reform.userprofileapi.AbstractFunctional.CREDS;
-import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.generateRandomEmail;
-
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.mifmif.common.regex.Generex;
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import net.serenitybdd.rest.SerenityRest;
+import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,25 +18,28 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import uk.gov.hmcts.reform.userprofileapi.config.TestConfigProperties;
-import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static uk.gov.hmcts.reform.userprofileapi.AbstractFunctional.CREDS;
+import static uk.gov.hmcts.reform.userprofileapi.AbstractFunctional.EMAIL;
+import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.generateRandomEmail;
 
 @Slf4j
 public class IdamOpenIdClient {
 
-    private final TestConfigProperties testConfig;
+    private final TestConfigProperties testConfigProperties;
 
     public static String password;
 
-    private Gson gson = new Gson();
+    private final Gson gson = new Gson();
 
     private static String bearerToken;
 
-    public IdamOpenIdClient(TestConfigProperties testConfig) {
-        this.testConfig = testConfig;
+    public IdamOpenIdClient(TestConfigProperties testConfigProperties) {
+        this.testConfigProperties = testConfigProperties;
     }
 
     public Map<String, String> createUser(List<String> roles) {
@@ -64,10 +63,10 @@ public class IdamOpenIdClient {
 
         for (int i = 0; i < 5; i++) {
             log.info("SIDAM createUser retry attempt : " + i + 1);
-            createdUserResponse = RestAssured
+            createdUserResponse = SerenityRest
                     .given()
                     .relaxedHTTPSValidation()
-                    .baseUri(testConfig.getIdamApiUrl())
+                    .baseUri(testConfigProperties.getIdamApiUrl())
                     .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                     .body(serializedUser)
                     .post("/testing-support/accounts")
@@ -108,10 +107,10 @@ public class IdamOpenIdClient {
 
         for (int i = 0; i < 5; i++) {
             log.info("SIDAM createUser retry attempt : " + i + 1);
-            createdUserResponse = RestAssured
+            createdUserResponse = SerenityRest
                     .given()
                     .relaxedHTTPSValidation()
-                    .baseUri(testConfig.getIdamApiUrl())
+                    .baseUri(testConfigProperties.getIdamApiUrl())
                     .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                     .body(serializedUser)
                     .post("/testing-support/accounts")
@@ -143,15 +142,15 @@ public class IdamOpenIdClient {
             tokenParams.put("grant_type", "password");
             tokenParams.put("username", userCreds.get(EMAIL));
             tokenParams.put("password", userCreds.get(CREDS));
-            tokenParams.put("client_id", testConfig.getClientId());
-            tokenParams.put("client_secret", testConfig.getClientSecret());
-            tokenParams.put("redirect_uri", testConfig.getOauthRedirectUrl());
+            tokenParams.put("client_id", testConfigProperties.getClientId());
+            tokenParams.put("client_secret", testConfigProperties.getClientSecret());
+            tokenParams.put("redirect_uri", testConfigProperties.getOauthRedirectUrl());
             tokenParams.put("scope", "openid profile roles manage-user create-user search-user");
 
-            Response bearerTokenResponse = RestAssured
+            Response bearerTokenResponse = SerenityRest
                     .given()
                     .relaxedHTTPSValidation()
-                    .baseUri(testConfig.getIdamApiUrl())
+                    .baseUri(testConfigProperties.getIdamApiUrl())
                     .header(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE)
                     .params(tokenParams)
                     .post("/o/token")
@@ -175,7 +174,7 @@ public class IdamOpenIdClient {
     }
 
     @AllArgsConstructor
-    class User {
+    static class User {
         private String email;
         private String forename;
         private String id;
@@ -185,24 +184,24 @@ public class IdamOpenIdClient {
     }
 
     @AllArgsConstructor
-    class Role {
+    static class Role {
         private String code;
     }
 
     @AllArgsConstructor
-    class Group {
-        private String code;
-    }
-
-    @Getter
-    @AllArgsConstructor
-    class AuthorizationResponse {
+    static class Group {
         private String code;
     }
 
     @Getter
     @AllArgsConstructor
-    class BearerTokenResponse {
+    static class AuthorizationResponse {
+        private String code;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    static class BearerTokenResponse {
         @SerializedName("access_token")
         private String accessToken;
 

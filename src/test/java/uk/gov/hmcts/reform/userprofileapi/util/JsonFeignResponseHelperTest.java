@@ -1,15 +1,14 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.powermock.api.mockito.PowerMockito.when;
-import static uk.gov.hmcts.reform.userprofileapi.util.JsonFeignResponseHelper.getResponseMapperClass;
-
 import feign.Request;
 import feign.Response;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
+import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamErrorResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -23,18 +22,17 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.junit.Test;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
-import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamErrorResponse;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.powermock.api.mockito.PowerMockito.when;
+import static uk.gov.hmcts.reform.userprofileapi.util.JsonFeignResponseHelper.getResponseMapperClass;
 
 @SuppressWarnings("unchecked")
-public class JsonFeignResponseHelperTest {
+class JsonFeignResponseHelperTest {
 
     @Test
-    public void test_Decode_with_gzip() {
+    void test_Decode_with_gzip() {
         Request request = mock(Request.class);
 
         Collection<String> list = Arrays.asList("gzip", "");
@@ -52,7 +50,7 @@ public class JsonFeignResponseHelperTest {
     }
 
     @Test
-    public void test_Decode_without_gzip_and_code_not_200_and_null() {
+    void test_Decode_without_gzip_and_code_not_200_and_null() {
         Request request = mock(Request.class);
 
         Map<String, Collection<String>> header = new HashMap<>();
@@ -77,7 +75,7 @@ public class JsonFeignResponseHelperTest {
     }
 
     @Test
-    public void test_Decode_for_non_gzip_with_decode_fails_with_ioException() {
+    void test_Decode_for_non_gzip_with_decode_fails_with_ioException() {
         Request request = mock(Request.class);
         Response.Body bodyMock = mock(Response.Body.class);
 
@@ -96,12 +94,12 @@ public class JsonFeignResponseHelperTest {
 
         Optional<UserProfileCreationResponse> createUserProfileResponseOptional = JsonFeignResponseHelper
                 .decode(response, Optional.of(UserProfileCreationResponse.class));
-        
+
         assertThat(createUserProfileResponseOptional).isEmpty();
     }
 
     @Test
-    public void test_Decode_for_gzip_with_decode_fails_with_ioException() {
+    void test_Decode_for_gzip_with_decode_fails_with_ioException() {
 
         Map<String, Collection<String>> header = new HashMap<>();
         Collection<String> list = Arrays.asList("gzip", "");
@@ -122,7 +120,7 @@ public class JsonFeignResponseHelperTest {
     }
 
     @Test
-    public void test_convertHeaders() {
+    void test_convertHeaders() {
         Map<String, Collection<String>> header = new HashMap<>();
         Collection<String> list = Arrays.asList("gzip", "");
         header.put("content-encoding", list);
@@ -139,61 +137,62 @@ public class JsonFeignResponseHelperTest {
     }
 
     @Test
-    public void test_toResponseEntity_with_payload_not_empty() {
+    void test_toResponseEntity_with_payload_not_empty() {
 
-        ResponseEntity entity = JsonFeignResponseHelper.toResponseEntity(getResponse(200, true),
-                Optional.of(UserProfileCreationResponse.class));
+        ResponseEntity<UserProfileCreationResponse> profileCreationResponseResponseEntity =
+                JsonFeignResponseHelper.toResponseEntity(getResponse(200, true),
+                        Optional.of(UserProfileCreationResponse.class));
 
-        assertThat(entity).isNotNull();
-        assertThat(entity.getStatusCode().value()).isEqualTo(200);
-        assertThat(entity.getHeaders()).isNotEmpty();
-        assertThat(((UserProfileCreationResponse) Objects.requireNonNull(entity.getBody())).getIdamId()).isEqualTo("1");
+        assertThat(profileCreationResponseResponseEntity).isNotNull();
+        assertThat(profileCreationResponseResponseEntity.getStatusCode().value()).isEqualTo(200);
+        assertThat(profileCreationResponseResponseEntity.getHeaders()).isNotEmpty();
+        assertThat(Objects.requireNonNull(profileCreationResponseResponseEntity.getBody()).getIdamId()).isEqualTo("1");
     }
 
     @Test
-    public void test_privateConstructor() throws Exception {
+    void test_privateConstructor() throws Exception {
         Constructor<JsonFeignResponseHelper> constructor = JsonFeignResponseHelper.class.getDeclaredConstructor();
-        assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+        Assertions.assertTrue(Modifier.isPrivate(constructor.getModifiers()));
         constructor.setAccessible(true);
         constructor.newInstance((Object[]) null);
     }
 
     @Test
-    public void test_getResponseMapperClass_when_response_success_and_expected_mapper_class_is_passed() {
-        Optional optionalObj = getResponseMapperClass(getResponse(200, false),
+    void test_getResponseMapperClass_when_response_success_and_expected_mapper_class_is_passed() {
+        Optional<?> optionalObj = getResponseMapperClass(getResponse(200, false),
                 ErrorResponse.class);
-        assertTrue(optionalObj.isPresent());
+        Assertions.assertTrue(optionalObj.isPresent());
         assertThat(optionalObj).isExactlyInstanceOf(Optional.class);
     }
 
     @Test
-    public void test_getResponseMapperClass_when_response_success_and_expected_mapper_class_is_passed_empty() {
-        Optional optionalObj = getResponseMapperClass(getResponse(200,false), null);
-        assertFalse(optionalObj.isPresent());
+    void test_getResponseMapperClass_when_response_success_and_expected_mapper_class_is_passed_empty() {
+        Optional<?> optionalObj = getResponseMapperClass(getResponse(200, false), null);
+        Assertions.assertFalse(optionalObj.isPresent());
     }
 
     @Test
-    public void test_getResponseMapperClass_when_response_failure() {
-        Optional optionalObj = getResponseMapperClass(getResponse(400,false),
+    void test_getResponseMapperClass_when_response_failure() {
+        Optional<Object> optionalObj = getResponseMapperClass(getResponse(400, false),
                 IdamErrorResponse.class);
-        assertTrue(optionalObj.isPresent());
+        Assertions.assertTrue(optionalObj.isPresent());
         assertThat(optionalObj).contains(IdamErrorResponse.class);
     }
 
     @Test
-    public void test_getResponseMapperClass_when_response_failure_with_error_code_100() {
+    void test_getResponseMapperClass_when_response_failure_with_error_code_100() {
         Optional<IdamErrorResponse> optionalObj = getResponseMapperClass(getResponse(100, false),
                 null);
-        assertTrue(optionalObj.isPresent());
+        Assertions.assertTrue(optionalObj.isPresent());
     }
 
-    public Response getResponse(int statusCode, boolean isMultiHeader) {
+    Response getResponse(int statusCode, boolean isMultiHeader) {
 
         return Response.builder().status(statusCode).reason("OK").headers(getHeader(isMultiHeader))
                 .body("{\"idamId\": 1}", UTF_8).request(mock(Request.class)).build();
     }
 
-    public Map<String, Collection<String>>  getHeader(boolean isMultiheader) {
+    private Map<String, Collection<String>> getHeader(boolean isMultiheader) {
         Collection<String> list;
         Map<String, Collection<String>> header = new HashMap<>();
         if (isMultiheader) {

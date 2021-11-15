@@ -1,19 +1,19 @@
 package uk.gov.hmcts.reform.userprofileapi.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-public class WelcomeControllerTest {
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+class WelcomeControllerTest {
 
     private final WelcomeController welcomeController = new WelcomeController();
 
     @Test
-    public void test_return_welcome_response() {
+    void test_return_welcome_response() {
         String expectedMessage = "Welcome to the User Profile API";
         ResponseEntity<String> responseEntity = welcomeController.welcome();
 

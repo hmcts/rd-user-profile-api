@@ -1,20 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.docs;
 
-import static org.slf4j.LoggerFactory.getLogger;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
-
-import java.io.File;
-import java.io.FileOutputStream;
-
-import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
-import net.thucydides.core.annotations.WithTag;
-import net.thucydides.core.annotations.WithTags;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,16 +9,23 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.userprofileapi.Application;
 
+import java.io.File;
+import java.io.FileOutputStream;
+
+import static org.slf4j.LoggerFactory.getLogger;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+
 /**
  * Built-in feature which saves service's swagger specs in temporary directory.
  * Each travis run on master should automatically save and upload (if updated) documentation.
  */
-@RunWith(SpringIntegrationSerenityRunner.class)
-@WithTags({@WithTag("testType:Integration")})
 @SpringBootTest(classes = Application.class, webEnvironment = MOCK)
-public class SwaggerPublisher {
+class SwaggerPublisherTest {
 
-    private static final Logger LOG = getLogger(SwaggerPublisher.class);
+    private static final Logger LOG = getLogger(SwaggerPublisherTest.class);
 
     private static final String SWAGGER_DOC_JSON_FILE = "/tmp/swagger-specs.json";
 
@@ -40,13 +34,13 @@ public class SwaggerPublisher {
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
     }
 
     @Test
-    public void shouldGenerateDocs() throws Exception {
+    void shouldGenerateDocs() throws Exception {
 
         LOG.info("Generating Swagger Docs");
 
@@ -56,17 +50,17 @@ public class SwaggerPublisher {
         }
 
         byte[] specs = mockMvc.perform(get("/v2/api-docs"))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsByteArray();
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsByteArray();
 
         try (FileOutputStream outputStream = new FileOutputStream(SWAGGER_DOC_JSON_FILE)) {
             outputStream.write(specs);
         }
 
         LOG.info("Completed Generating Swagger docs to the following location {}",
-            SWAGGER_DOC_JSON_FILE);
+                SWAGGER_DOC_JSON_FILE);
     }
 
 }

@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
@@ -13,52 +13,72 @@ import uk.gov.hmcts.reform.userprofileapi.exception.RequiredFieldMissingExceptio
 import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
 import uk.gov.hmcts.reform.userprofileapi.exception.UndefinedException;
 
-@RunWith(MockitoJUnitRunner.class)
-public class ExceptionServiceImplTest {
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-    private ExceptionServiceImpl sut = new ExceptionServiceImpl();
+@ExtendWith(MockitoExtension.class)
+class ExceptionServiceImplTest {
 
-    @Test(expected = ResourceNotFoundException.class)
-    public void test_ThrowRuntimeException() {
-        sut.throwCustomRuntimeException(ExceptionType.RESOURCENOTFOUNDEXCEPTION, "ResourceNotFoundException Message");
+    private final ExceptionServiceImpl sut = new ExceptionServiceImpl();
+
+    @Test
+    void testThrowRuntimeException() {
+        assertThrows(ResourceNotFoundException.class, () ->
+                sut.throwCustomRuntimeException(ExceptionType.RESOURCENOTFOUNDEXCEPTION,
+                        "ResourceNotFoundException Message")
+        );
     }
 
-    @Test(expected = IdamServiceException.class)
-    public void test_ThrowIdamServiceException() {
-        sut.throwCustomRuntimeException(ExceptionType.IDAMSERVICEEXCEPTION, "IdamServiceException Message");
+    @Test
+    void testThrowIdamServiceException() {
+        assertThrows(IdamServiceException.class, () ->
+                sut.throwCustomRuntimeException(ExceptionType.IDAMSERVICEEXCEPTION, "IdamServiceException Message")
+        );
     }
 
-    @Test(expected = RequiredFieldMissingException.class)
-    public void test_ThrowRequiredFieldMissingException() {
-        sut.throwCustomRuntimeException(ExceptionType.REQUIREDFIELDMISSINGEXCEPTION,
-                "RequiredFieldMissingException Message");
+    @Test
+    void test_ThrowRequiredFieldMissingException() {
+        assertThrows(RequiredFieldMissingException.class, () ->
+                sut.throwCustomRuntimeException(ExceptionType.REQUIREDFIELDMISSINGEXCEPTION,
+                        "RequiredFieldMissingException Message")
+        );
     }
 
-    @Test(expected = UndefinedException.class)
-    public void test_ThrowDefaultException() {
-        sut.throwCustomRuntimeException(ExceptionType.UNDEFINDEDEXCEPTION, "ExceptionNotFound Message");
+    @Test
+    void test_ThrowDefaultException() {
+        assertThrows(UndefinedException.class, () ->
+                sut.throwCustomRuntimeException(ExceptionType.UNDEFINDEDEXCEPTION, "ExceptionNotFound Message")
+        );
     }
 
-    @Test(expected = ResourceNotFoundException.class)
-    public void test_OverloadedException() {
-        sut.throwCustomRuntimeException(ExceptionType.RESOURCENOTFOUNDEXCEPTION, "ResourceNotFoundException Message",
-                HttpStatus.ACCEPTED);
+    @Test
+    void test_OverloadedException() {
+        assertThrows(ResourceNotFoundException.class, () ->
+                sut.throwCustomRuntimeException(ExceptionType.RESOURCENOTFOUNDEXCEPTION,
+                        "ResourceNotFoundException Message",
+                        HttpStatus.ACCEPTED)
+        );
     }
 
-    @Test(expected = ErrorPersistingException.class)
-    public void test_ErrorPersistingException() {
-        sut.throwCustomRuntimeException(ExceptionType.ERRORPERSISTINGEXCEPTION, "Error while persisting user profile",
-                HttpStatus.ACCEPTED);
+    @Test
+    void test_ErrorPersistingException() {
+        assertThrows(ErrorPersistingException.class, () ->
+                sut.throwCustomRuntimeException(ExceptionType.ERRORPERSISTINGEXCEPTION,
+                        "Error while persisting user profile",
+                        HttpStatus.ACCEPTED)
+        );
     }
 
-    @Test(expected = InvalidRequest.class)
-    public void test_BadRequestException() {
-        sut.throwCustomRuntimeException(ExceptionType.BADREQUEST, "Bad request", HttpStatus.BAD_REQUEST);
+    @Test
+    void test_BadRequestException() {
+        assertThrows(InvalidRequest.class, () ->
+                sut.throwCustomRuntimeException(ExceptionType.BADREQUEST, "Bad request", HttpStatus.BAD_REQUEST)
+        );
     }
 
-    @Test(expected = HttpClientErrorException.class)
-    public void test_TooManyRequestException() {
-        sut.throwCustomRuntimeException(ExceptionType.TOOMANYREQUESTS, "too many request", HttpStatus.ACCEPTED);
+    @Test
+    void test_TooManyRequestException() {
+        assertThrows(HttpClientErrorException.class, () ->
+                sut.throwCustomRuntimeException(ExceptionType.TOOMANYREQUESTS, "too many request", HttpStatus.ACCEPTED)
+        );
     }
-
 }

@@ -1,38 +1,14 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.delete;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.patch;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
-import net.thucydides.core.annotations.WithTag;
-import net.thucydides.core.annotations.WithTags;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRequestHandlerTest;
@@ -47,16 +23,32 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserType;
+import uk.gov.hmcts.reform.userprofileapi.integration.wiremock.WireMockExtension;
 import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.service.impl.FeatureToggleServiceImpl;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.delete;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.patch;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+
 @Configuration
-@RunWith(SpringIntegrationSerenityRunner.class)
-@WithTags({@WithTag("testType:Integration")})
-@TestPropertySource(properties = {"S2S_URL=http://127.0.0.1:8990","IDAM_URL:http://127.0.0.1:5000"})
 @DirtiesContext
 public abstract class AuthorizationEnabledIntegrationTest {
 
@@ -83,17 +75,16 @@ public abstract class AuthorizationEnabledIntegrationTest {
     @MockBean
     protected FeatureToggleServiceImpl featureToggleService;
 
-    @ClassRule
-    public  static WireMockRule s2sService = new WireMockRule(8990);
+    @RegisterExtension
+    protected WireMockExtension idamMockService = new WireMockExtension(5000);
 
-    @ClassRule
-    public  static WireMockRule idamService = new WireMockRule(5000);
+    @RegisterExtension
+    protected WireMockExtension s2sMockService = new WireMockExtension(8990);
 
-
-    @Before
+    @BeforeEach
     public void setUpWireMock() {
 
-        s2sService.stubFor(get(urlEqualTo("/details"))
+        s2sMockService.stubFor(get(urlEqualTo("/details"))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
@@ -102,7 +93,7 @@ public abstract class AuthorizationEnabledIntegrationTest {
 
         setSidamRegistrationMockWithStatus(HttpStatus.CREATED.value(), true);
 
-        idamService.stubFor(get(urlMatching("/api/v1/users/.*"))
+        idamMockService.stubFor(get(urlMatching("/api/v1/users/.*"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(200)
@@ -117,7 +108,7 @@ public abstract class AuthorizationEnabledIntegrationTest {
                                 + "  ]"
                                 + "}")));
 
-        idamService.stubFor(get(urlMatching("/api/v1/users/.*"))
+        idamMockService.stubFor(get(urlMatching("/api/v1/users/.*"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(200)
@@ -132,7 +123,7 @@ public abstract class AuthorizationEnabledIntegrationTest {
                                 + "  ]"
                                 + "}")));
 
-        idamService.stubFor(delete(urlMatching("/api/v1/users/.*"))
+        idamMockService.stubFor(delete(urlMatching("/api/v1/users/.*"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(204)
@@ -140,22 +131,22 @@ public abstract class AuthorizationEnabledIntegrationTest {
                                 + "  \"response\": \"User deleted successfully.\""
                                 + "}")));
 
-        idamService.stubFor(get(urlEqualTo("/o/userinfo"))
+        idamMockService.stubFor(get(urlEqualTo("/o/userinfo"))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
                         .withBody("{"
-                                +  "  \"uid\": \"%s\","
-                                +  "  \"name\": \"Super\","
-                                +  "  \"family_name\": \"User\","
-                                +  "  \"given_name\": \"User\","
-                                +  "  \"sub\": \"super.user@hmcts.net\","
-                                +  "  \"accountStatus\": \"active\","
-                                +  "  \"roles\": ["
-                                +  "  \"pui-user-manager\""
-                                +  "  ]"
-                                +  "}")
-                        ));
+                                + "  \"uid\": \"%s\","
+                                + "  \"name\": \"Super\","
+                                + "  \"family_name\": \"User\","
+                                + "  \"given_name\": \"User\","
+                                + "  \"sub\": \"super.user@hmcts.net\","
+                                + "  \"accountStatus\": \"active\","
+                                + "  \"roles\": ["
+                                + "  \"pui-user-manager\""
+                                + "  ]"
+                                + "}")
+                ));
 
         when(featureToggleService.isFlagEnabled(anyString(), anyString())).thenReturn(true);
 
@@ -169,7 +160,7 @@ public abstract class AuthorizationEnabledIntegrationTest {
                     + "\"errorMessage\": \"Not Found\""
                     + "}";
         }
-        idamService.stubFor(patch(urlMatching("/api/v1/users/" + idamId))
+        idamMockService.stubFor(patch(urlMatching("/api/v1/users/" + idamId))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(status)
@@ -186,21 +177,21 @@ public abstract class AuthorizationEnabledIntegrationTest {
                     + "\"Role to be assigned does not exist.\""
                     + "]"
                     + "}";
-        } else  if (status == 409 && !setBodyEmpty) {
+        } else if (status == 409 && !setBodyEmpty) {
             body = "{"
                     + "\"status\": \"409\","
                     + "\"errorMessages\": ["
                     + "\"A user is already registered with this email.\""
                     + "]"
                     + "}";
-        } else  if (status == 404 && !setBodyEmpty) {
+        } else if (status == 404 && !setBodyEmpty) {
             body = "{"
                     + "\"status\": \"404\","
                     + "\"errorMessage\": \"16 Resource not found\","
                     + "\"errorDescription\": \"The role to be assigned does not exist.\""
                     + "}";
         }
-        idamService.stubFor(post(urlEqualTo("/api/v1/users/registration"))
+        idamMockService.stubFor(post(urlEqualTo("/api/v1/users/registration"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withHeader("Location", "/api/v1/users/7f3c076c-e954-4d6f-80f7-6292160bf0bc")
@@ -219,7 +210,7 @@ public abstract class AuthorizationEnabledIntegrationTest {
                     + "]"
                     + "}";
         }
-        idamService.stubFor(get(urlMatching("/api/v1/users/.*"))
+        idamMockService.stubFor(get(urlMatching("/api/v1/users/.*"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(httpStatus.value())
@@ -229,7 +220,7 @@ public abstract class AuthorizationEnabledIntegrationTest {
     }
 
     public void healthEndpointMock() {
-        s2sService.stubFor(get(urlEqualTo("/health"))
+        s2sMockService.stubFor(get(urlEqualTo("/health"))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
@@ -277,8 +268,8 @@ public abstract class AuthorizationEnabledIntegrationTest {
         assertThat(userProfile.getUserCategory()).isEqualTo(UserCategory.PROFESSIONAL);
         assertThat(userProfile.getUserType()).isEqualTo(UserType.EXTERNAL);
         assertThat(userProfile.getStatus()).isEqualTo(IdamStatus.PENDING);
-        assertThat(userProfile.isEmailCommsConsent()).isEqualTo(false);
-        assertThat(userProfile.isPostalCommsConsent()).isEqualTo(false);
+        assertThat(userProfile.isEmailCommsConsent()).isFalse();
+        assertThat(userProfile.isPostalCommsConsent()).isFalse();
         assertThat(userProfile.getEmailCommsConsentTs()).isNull();
         assertThat(userProfile.getPostalCommsConsentTs()).isNull();
         assertThat(userProfile.getCreated()).isNotNull();
@@ -299,7 +290,7 @@ public abstract class AuthorizationEnabledIntegrationTest {
         assertThat(audit.getAuditTs()).isNotNull();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         auditRepository.deleteAll();
         userProfileRepository.deleteAll();

@@ -1,6 +1,20 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
-import static java.util.Arrays.asList;
+import org.assertj.core.api.Assertions;
+import org.assertj.core.util.Lists;
+import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
+import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
+
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -12,34 +26,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 
-import java.util.List;
-
-import org.assertj.core.api.Assertions;
-import org.assertj.core.util.Lists;
-
-import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.transaction.annotation.Transactional;
-import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
-import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
-
 @SpringBootTest(webEnvironment = MOCK)
 @Transactional
-public class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
+class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
     }
 
 
     @Test
-    public void should_return_201_and_create_user_profile_resource() throws Exception {
+    void should_return_201_and_create_user_profile_resource() throws Exception {
 
         UserProfileCreationData data = buildCreateUserProfileData();
 
@@ -57,7 +55,7 @@ public class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegration
 
 
     @Test
-    public void should_return_400_and_not_create_user_profile_when_empty_body() throws Exception {
+    void should_return_400_and_not_create_user_profile_when_empty_body() throws Exception {
 
         MvcResult result =
                 userProfileRequestHandlerTest.sendPost(
@@ -72,7 +70,7 @@ public class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegration
 
 
     @Test
-    public void should_return_400_when_any_mandatory_field_missing() throws Exception {
+    void should_return_400_when_any_mandatory_field_missing() throws Exception {
 
         List<String> mandatoryFieldList =
                 Lists.newArrayList(
@@ -99,8 +97,8 @@ public class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegration
                 jsonObject.remove(s);
 
                 mockMvc.perform(post(APP_BASE_PATH)
-                        .content(jsonObject.toString())
-                        .contentType(APPLICATION_JSON_VALUE))
+                                .content(jsonObject.toString())
+                                .contentType(APPLICATION_JSON_VALUE))
                         .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
                         .andReturn();
 
@@ -113,7 +111,7 @@ public class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegration
     }
 
     @Test
-    public void should_return_400_when_fields_are_blank_or_having_only_whitespaces() throws Exception {
+    void should_return_400_when_fields_are_blank_or_having_only_whitespaces() throws Exception {
 
         List<String> mandatoryFieldList =
                 Lists.newArrayList(
@@ -140,16 +138,16 @@ public class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegration
                 jsonObject.put(s, "");
 
                 mockMvc.perform(post(APP_BASE_PATH)
-                        .content(jsonObject.toString())
-                        .contentType(APPLICATION_JSON_VALUE))
+                                .content(jsonObject.toString())
+                                .contentType(APPLICATION_JSON_VALUE))
                         .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
                         .andReturn();
 
                 jsonObject.put(s, " ");
 
                 mockMvc.perform(post(APP_BASE_PATH)
-                        .content(jsonObject.toString())
-                        .contentType(APPLICATION_JSON_VALUE))
+                                .content(jsonObject.toString())
+                                .contentType(APPLICATION_JSON_VALUE))
                         .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
                         .andReturn();
 
@@ -162,7 +160,7 @@ public class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegration
     }
 
     @Test
-    public void should_return_201_and_create_user_profile_resource_with_allowed_email() throws Exception {
+    void should_return_201_and_create_user_profile_resource_with_allowed_email() throws Exception {
 
         UserProfileCreationData data = buildCreateUserProfileData();
         data.setEmail("a.adison@gmail.com");
@@ -180,9 +178,9 @@ public class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegration
     }
 
     @Test
-    public void should_return_404_when_create_user_profile_with_invalid_roles_passed() throws Exception {
+    void should_return_404_when_create_user_profile_with_invalid_roles_passed() throws Exception {
         UserProfileCreationData data = buildCreateUserProfileData();
-        data.setRoles(asList("puicasemanager"));
+        data.setRoles(List.of("puicasemanager"));
 
         setSidamRegistrationMockWithStatus(NOT_FOUND.value(), true);
 
@@ -193,7 +191,7 @@ public class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegration
     }
 
     @Test
-    public void should_return_400_and_create_user_profile_resource_with_invalid_email() throws Exception {
+    void should_return_400_and_create_user_profile_resource_with_invalid_email() throws Exception {
 
         UserProfileCreationData data = buildCreateUserProfileData();
         data.setEmail("a.adisongmail.com");
@@ -210,7 +208,7 @@ public class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegration
     }
 
     @Test
-    public void should_return_400_and_create_user_profile_resource_with_invalid_email_1() throws Exception {
+    void should_return_400_and_create_user_profile_resource_with_invalid_email_1() throws Exception {
 
         UserProfileCreationData data = buildCreateUserProfileData();
         data.setEmail("a.adison@gmailcom");

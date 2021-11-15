@@ -1,17 +1,17 @@
 package uk.gov.hmcts.reform.userprofileapi.controller.response;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 
-public class UserProfileResponseTest {
+import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
+
+class UserProfileResponseTest {
 
     @Test
-    public void test_UserProfileResponse() {
+    void test_UserProfileResponse() {
         UserProfile userProfile = new UserProfile(buildCreateUserProfileData(), HttpStatus.CREATED);
 
         UserProfileResponse userProfileResponse = new UserProfileResponse(userProfile);
@@ -25,7 +25,7 @@ public class UserProfileResponseTest {
     }
 
     @Test
-    public void test_UserProfileResponseNoArgConstructor() {
+    void test_UserProfileResponseNoArgConstructor() {
         UserProfileResponse userProfileResponse = new UserProfileResponse();
         assertThat(userProfileResponse.getEmail()).isNull();
     }
