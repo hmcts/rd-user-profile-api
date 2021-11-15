@@ -1,18 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
-import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
-
-import java.util.UUID;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,9 +18,21 @@ import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
+
 @SpringBootTest(webEnvironment = MOCK)
 @Transactional
-public class RetrieveUserProfileInternalServerErrorIntTest extends AuthorizationEnabledIntegrationTest {
+class RetrieveUserProfileInternalServerErrorIntTest extends AuthorizationEnabledIntegrationTest {
 
     private static final String APP_BASE_PATH = "/v1/userprofile";
     private static final String SLASH = "/";
@@ -49,13 +50,13 @@ public class RetrieveUserProfileInternalServerErrorIntTest extends Authorization
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
     }
 
     @Test
-    public void should_return_500_and_not_create_user_profile_when_idam_service_throws_exception() throws Exception {
+    void should_return_500_and_not_create_user_profile_when_idam_service_throws_exception() throws Exception {
 
         when(idamService.registerUser(any(IdamRegisterUserRequest.class)))
                 .thenThrow(new RuntimeException("Runtime Exception"));
@@ -74,7 +75,7 @@ public class RetrieveUserProfileInternalServerErrorIntTest extends Authorization
     }
 
     @Test
-    public void should_return_500_when_repository_throws_an_unknown_exception() throws Exception {
+    void should_return_500_when_repository_throws_an_unknown_exception() throws Exception {
 
         IdamRegisterUserRequest request = Mockito.mock(IdamRegisterUserRequest.class);
         IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(ResponseEntity.status(CREATED).build());
@@ -95,18 +96,18 @@ public class RetrieveUserProfileInternalServerErrorIntTest extends Authorization
     }
 
     @Test
-    public void should_return_500_when_email_from_header_and_repository_throws_an_unknown_exception() throws Exception {
+    void should_return_500_when_email_from_header_and_repository_throws_an_unknown_exception() throws Exception {
         when(userProfileRepository.findByEmail(anyString()))
                 .thenThrow(new RuntimeException("This is a test exception"));
 
         MvcResult result = userProfileRequestHandlerTest.sendGetFromHeader(mockMvc, APP_BASE_PATH + "?email="
-                .concat("randomemail@somewhere.com"), INTERNAL_SERVER_ERROR,"randomemail@somewhere.com");
+                .concat("randomemail@somewhere.com"), INTERNAL_SERVER_ERROR, "randomemail@somewhere.com");
 
         assertThat(result.getResponse().getContentAsString()).isNotEmpty();
     }
 
     @Test
-    public void should_return_500_when_query_by_userId_and_repository_throws_an_unknown_exception() throws Exception {
+    void should_return_500_when_query_by_userId_and_repository_throws_an_unknown_exception() throws Exception {
         when(userProfileRepository.findByIdamId(any(String.class)))
                 .thenThrow(new RuntimeException("This is a test exception"));
 

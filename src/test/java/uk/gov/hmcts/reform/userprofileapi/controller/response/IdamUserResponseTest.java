@@ -1,15 +1,15 @@
 package uk.gov.hmcts.reform.userprofileapi.controller.response;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class IdamUserResponseTest {
+class IdamUserResponseTest {
 
     @Test
-    public void test_hold_values_after_creation() {
+    void test_hold_values_after_creation() {
         final boolean expectedActive = true;
         final String expectedEmail = "someemail@abc.com";
         final String expectedForename = "forename";
