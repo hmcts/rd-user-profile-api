@@ -7,9 +7,11 @@ import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.rest.SerenityRest;
 import net.thucydides.core.annotations.WithTag;
 import net.thucydides.core.annotations.WithTags;
-import org.junit.AfterClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
@@ -22,11 +24,11 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRol
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserType;
+import uk.gov.hmcts.reform.userprofileapi.serenity5.SerenityTest;
 import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
-import uk.gov.hmcts.reform.userprofileapi.util.CustomSerenityRunner;
-import uk.gov.hmcts.reform.userprofileapi.util.FeatureConditionEvaluation;
+import uk.gov.hmcts.reform.userprofileapi.util.FeatureToggleConditionExtension;
 import uk.gov.hmcts.reform.userprofileapi.util.ToggleEnable;
 
 import java.util.HashSet;
@@ -38,17 +40,20 @@ import static com.google.common.collect.ImmutableList.of;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.reform.userprofileapi.client.FuncTestRequestHandler.BEARER;
 import static uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus.ACTIVE;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.generateRandomEmail;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.getIdamRolesJson;
+import static uk.gov.hmcts.reform.userprofileapi.util.FeatureToggleConditionExtension.getToggledOffMessage;
 
 @Slf4j
-@RunWith(CustomSerenityRunner.class)
+@SerenityTest
+@SpringBootTest
 @WithTags({@WithTag("testType:Functional")})
 public class UserProfileFunctionalTest extends AbstractFunctional {
 
@@ -64,7 +69,8 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
     private static UserProfileCreationData pendingUserProfileCreationData;
 
     @Test
-    public void testUserProfileScenarios() throws Exception {
+    @DisplayName("User profile test scenarios")
+    void testUserProfileScenarios() throws Exception {
         setUpTestData();
         createUserScenario();
         findUserByEmailScenario();
@@ -135,10 +141,6 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         invalidServiceAuthorisationRequestsShouldReturn401();
         invalidBearerTokenRequestsShouldReturn401();
     }
-
-    /**
-     * Test Methods below.
-     */
 
     public void createUserProfileWithIdamDuplicateShouldReturnRolesAndSuccess() throws Exception {
         log.info("createUserProfileWithIdamDuplicateShouldReturnRolesAndSuccess :: STARTED");
@@ -269,7 +271,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         log.info("addRolesToActiveUserProfileShouldReturnSuccess :: STARTED");
 
         Set<RoleName> rolesName = new HashSet<>();
-        rolesName.add(new RoleName(puiFinanceManager));
+        rolesName.add(new RoleName(testConfigProperties.getPuiFinanceManager()));
         updateUserProfileData.setRolesAdd(rolesName);
 
         UserProfileResponse resource =
@@ -281,31 +283,34 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         testRequestHandler.sendPut(updateUserProfileData, OK,
                 requestUri + "/" + resource.getIdamId(), UserProfileRolesResponse.class);
 
-        UserProfileWithRolesResponse resource2 =
+        UserProfileWithRolesResponse profileWithRolesResponse =
                 testRequestHandler.sendGet(
                         "/v1/userprofile/" + resource.getIdamId() + "/roles",
                         UserProfileWithRolesResponse.class);
 
-        assertThat(resource2.getRoles().size()).isEqualTo(3);
-        assertThat(resource2.getRoles().contains("pui-finance-manager,pui-case-manager,pui-user-manager"));
-
+        assertThat(profileWithRolesResponse.getRoles().size()).isEqualTo(3);
+        assertThat(profileWithRolesResponse.getRoles())
+                .containsExactlyInAnyOrderElementsOf(List.of("pui-finance-manager", "pui-user-manager",
+                        "pui-case-manager"));
         log.info("addRolesToActiveUserProfileShouldReturnSuccess :: ENDED");
     }
 
     public void deleteRolesOfActiveUserProfileShouldReturnSuccess() throws JsonProcessingException {
         log.info("deleteRolesOfActiveUserProfileShouldReturnSuccess :: STARTED");
 
-        UserProfileWithRolesResponse resource2 =
+        UserProfileWithRolesResponse profileWithRolesResponse =
                 testRequestHandler.sendGet(
                         "/v1/userprofile/" + activeUserProfile.getIdamId() + "/roles",
                         UserProfileWithRolesResponse.class);
 
-        assertThat(resource2.getRoles().size()).isNotNull();
-        assertThat(resource2.getRoles().size()).isEqualTo(3);
-        assertThat(resource2.getRoles().contains("pui-finance-manager,pui-case-manager,pui-user-manager"));
+        assertThat(profileWithRolesResponse.getRoles().size()).isNotZero();
+        assertThat(profileWithRolesResponse.getRoles().size()).isEqualTo(3);
+        assertThat(profileWithRolesResponse.getRoles())
+                .containsExactlyInAnyOrderElementsOf(List.of("pui-finance-manager", "pui-user-manager",
+                        "pui-case-manager"));
 
         Set<RoleName> rolesDelete = new HashSet<>();
-        rolesDelete.add(new RoleName(puiOrgManager));
+        rolesDelete.add(new RoleName(testConfigProperties.getPuiOrgManager()));
 
         UpdateUserProfileData userProfileDataDelete = new UpdateUserProfileData();
         userProfileDataDelete.setRolesDelete(rolesDelete);
@@ -319,10 +324,12 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
                         "/v1/userprofile/" + activeUserProfile.getIdamId() + "/roles",
                         UserProfileWithRolesResponse.class);
 
-        assertThat(resourceForDeleteCheck.getRoles().size()).isNotNull();
+        assertThat(resourceForDeleteCheck.getRoles().size()).isNotZero();
         assertThat(resourceForDeleteCheck.getRoles().size()).isEqualTo(3);
-        assertThat(resourceForDeleteCheck.getRoles().contains("pui-finance-manager,pui-case-manager,pui-user-manager"));
-        assertThat(!resourceForDeleteCheck.getRoles().contains(puiOrgManager));
+        assertThat(resourceForDeleteCheck.getRoles())
+                .containsExactlyInAnyOrderElementsOf(List.of("pui-finance-manager", "pui-user-manager",
+                        "pui-case-manager"));
+        assertFalse(resourceForDeleteCheck.getRoles().contains(testConfigProperties.getPuiOrgManager()));
 
         log.info("deleteRolesOfActiveUserProfileShouldReturnSuccess :: ENDED");
     }
@@ -340,7 +347,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
 
         assertThat(errorResponse.getErrorMessage()).isEqualTo(
                 String.format("10 : The request was last made less than %s minutes ago. Please try after some time",
-                        resendInterval));
+                        testConfigProperties.getResendInterval()));
 
         log.info("reinviteUserReturn429WhenReinvitedWithinOneHour :: ENDED");
     }
@@ -368,7 +375,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         endpoints.forEach(callbackEndpoint ->
                 SerenityRest.given()
                         .relaxedHTTPSValidation()
-                        .baseUri(targetInstance)
+                        .baseUri(testConfigProperties.getTargetInstance())
                         .when()
                         .get(callbackEndpoint)
                         .then()
@@ -383,7 +390,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         endpoints.forEach(endpoint ->
                 SerenityRest.given()
                         .relaxedHTTPSValidation()
-                        .baseUri(targetInstance)
+                        .baseUri(testConfigProperties.getTargetInstance())
                         .header("ServiceAuthorization", "invalidServiceToken")
                         .when()
                         .get(endpoint)
@@ -399,7 +406,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         SerenityRest
                 .given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .baseUri(targetInstance)
+                .baseUri(testConfigProperties.getTargetInstance())
                 .header("ServiceAuthorization", BEARER + s2sToken)
                 .header("Authorization", BEARER + "invalidBearerToken")
                 .when()
@@ -412,30 +419,22 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
     }
 
     @Test
+    @ExtendWith(FeatureToggleConditionExtension.class)
     @ToggleEnable(mapKey = DELETE_USER_BY_ID_OR_EMAIL_PATTERN, withFeature = false)
-    public void deleteActiveUserByEmailPatternShouldReturnFailureWhenToggledOff() {
+    @DisplayName("Delete active user by email pattern, should be ignored when feature is toggled off")
+    void deleteActiveUserByEmailPatternShouldReturnFailureWhenToggledOff() {
         log.info("deleteActiveUserByEmailPatternShouldReturnFailureWhenToggledOff :: STARTED");
 
         Response response = testRequestHandler
                 .sendDeleteWithoutBody(requestUri + "/users?emailPattern=@prdfunctestuser.com");
 
         assertThat(HttpStatus.FORBIDDEN.value()).isEqualTo(response.statusCode());
-        assertThat(response.getBody().asString()).contains(CustomSerenityRunner.getFeatureFlagName().concat(" ")
-                .concat(FeatureConditionEvaluation.FORBIDDEN_EXCEPTION_LD));
+        assertThat(response.getBody().asString()).contains(getToggledOffMessage());
 
         log.info("deleteActiveUserByEmailPatternShouldReturnFailureWhenToggledOff :: ENDED");
     }
 
-    @AfterClass
-    public static void cleanUpTestData() {
-        try {
-            deleteActiveUserByIdShouldReturnSuccess();
-            deleteActiveUserByEmailPatternShouldReturnSuccess();
-        } catch (Exception e) {
-            log.error("cleanUpTestData :: threw the following exception: " + e);
-        }
-    }
-
+    @DisplayName("Delete active user by id, should run this test only when feature is toggled on")
     @ToggleEnable(mapKey = DELETE_USER_BY_ID_OR_EMAIL_PATTERN, withFeature = true)
     public static void deleteActiveUserByIdShouldReturnSuccess() throws Exception {
         log.info("deleteActiveUserByIdShouldReturnSuccess :: STARTED");
@@ -463,6 +462,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         log.info("deleteActiveUserByIdShouldReturnSuccess :: ENDED");
     }
 
+    @DisplayName("Delete active user by email pattern, should run this test only when feature is toggled on")
     @ToggleEnable(mapKey = DELETE_USER_BY_ID_OR_EMAIL_PATTERN, withFeature = true)
     public static void deleteActiveUserByEmailPatternShouldReturnSuccess() throws Exception {
         log.info("deleteActiveUsersByEmailPatternShouldReturnSuccess :: STARTED");
@@ -490,4 +490,13 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         log.info("deleteActiveUsersByEmailPatternShouldReturnSuccess :: ENDED");
     }
 
+    @AfterAll
+    public static void cleanUpTestData() {
+        try {
+            deleteActiveUserByIdShouldReturnSuccess();
+            deleteActiveUserByEmailPatternShouldReturnSuccess();
+        } catch (Exception e) {
+            log.error("cleanUpTestData :: threw the following exception: " + e);
+        }
+    }
 }

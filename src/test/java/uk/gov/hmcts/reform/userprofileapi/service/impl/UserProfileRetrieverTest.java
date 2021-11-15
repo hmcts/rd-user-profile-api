@@ -1,30 +1,13 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
-import java.util.UUID;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamUserResponse;
@@ -41,8 +24,25 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileQueryProvider;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
-@RunWith(MockitoJUnitRunner.class)
-public class UserProfileRetrieverTest {
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+import java.util.UUID;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+class UserProfileRetrieverTest {
 
     @Spy
     @InjectMocks
@@ -63,7 +63,7 @@ public class UserProfileRetrieverTest {
     AuditRepository auditRepository = mock(AuditRepository.class);
     Audit audit = mock(Audit.class);
 
-    @Before
+    @BeforeEach
     public void setUp() {
         Boolean active = true;
         String email = "some@hmcts.net";
@@ -79,7 +79,7 @@ public class UserProfileRetrieverTest {
     }
 
     @Test
-    public void test_run_query_and_respond_with_user_profile() {
+    void test_run_query_and_respond_with_user_profile() {
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
 
         Stream.of(IdentifierName.values())
@@ -98,7 +98,7 @@ public class UserProfileRetrieverTest {
     }
 
     @Test
-    public void test_run_query_and_respond_with_user_profile_withFetchRolesTrue() {
+    void test_run_query_and_respond_with_user_profile_withFetchRolesTrue() {
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
 
         UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.EMAIL,
@@ -114,7 +114,7 @@ public class UserProfileRetrieverTest {
     }
 
     @Test
-    public void test_throw_exception_when_query_returns_empty_result() {
+    void test_throw_exception_when_query_returns_empty_result() {
         UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID, UUID.randomUUID().toString());
 
         when(querySupplier.getRetrieveByIdQuery(identifier)).thenReturn(supplier);
@@ -128,7 +128,7 @@ public class UserProfileRetrieverTest {
     }
 
     @Test
-    public void test_throw_exception_when_query_provider_throws_exception() {
+    void test_throw_exception_when_query_provider_throws_exception() {
         UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID, UUID.randomUUID().toString());
 
         when(querySupplier.getRetrieveByIdQuery(identifier)).thenThrow(IllegalStateException.class);
@@ -139,7 +139,7 @@ public class UserProfileRetrieverTest {
     }
 
     @Test
-    public void test_throw_exception_when_query_throws_exception() {
+    void test_throw_exception_when_query_throws_exception() {
         UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID, UUID.randomUUID().toString());
 
         when(querySupplier.getRetrieveByIdQuery(identifier)).thenReturn(supplier);
@@ -151,7 +151,7 @@ public class UserProfileRetrieverTest {
     }
 
     @Test
-    public void test_retrieve_Multiple_Profiles() {
+    void test_retrieve_Multiple_Profiles() {
         idamRolesInfo = new IdamRolesInfo(entity);
 
         List<UserProfile> userProfiles = new ArrayList<>();
@@ -189,7 +189,7 @@ public class UserProfileRetrieverTest {
     }
 
     @Test
-    public void test_retrieve_Multiple_Profiles_RolesRequiredFalse() {
+    void test_retrieve_Multiple_Profiles_RolesRequiredFalse() {
         idamRolesInfo = new IdamRolesInfo(entity);
 
         List<UserProfile> userProfiles = new ArrayList<>();
@@ -223,7 +223,7 @@ public class UserProfileRetrieverTest {
     }
 
     @Test
-    public void test_throw_404_when_no_profiles_found_in_db() {
+    void test_throw_404_when_no_profiles_found_in_db() {
         UserProfileIdentifier identifier = mock(UserProfileIdentifier.class);
 
         when(querySupplier.getProfilesByIds(identifier, true)).thenThrow(ResourceNotFoundException.class);
@@ -235,7 +235,7 @@ public class UserProfileRetrieverTest {
     }
 
     @Test
-    public void test_getRolesFromIdam_should_retrieve_multiple_profiles_without_roles_when_idam_fails() {
+    void test_getRolesFromIdam_should_retrieve_multiple_profiles_without_roles_when_idam_fails() {
         entity = new ResponseEntity<>(idamUserResponse, HttpStatus.NOT_FOUND);
         idamRolesInfo = new IdamRolesInfo(entity);
 
@@ -259,7 +259,7 @@ public class UserProfileRetrieverTest {
     }
 
     @Test
-    public void test_retrieve_user_multiple_profiles_with_roles_when_idam_success() {
+    void test_retrieve_user_multiple_profiles_with_roles_when_idam_success() {
         idamRolesInfo = new IdamRolesInfo(entity);
 
         UserProfile up = UserProfileTestDataBuilder.buildUserProfile();
@@ -291,7 +291,7 @@ public class UserProfileRetrieverTest {
     }
 
     @Test
-    public void should_throw_404_single_user_profile_without_roles_when_idam_fails() {
+    void should_throw_404_single_user_profile_without_roles_when_idam_fails() {
         entity = new ResponseEntity<>(idamUserResponse, HttpStatus.NOT_FOUND);
         idamRolesInfo = new IdamRolesInfo(entity);
 
@@ -308,7 +308,7 @@ public class UserProfileRetrieverTest {
     }
 
     @Test
-    public void test_not_call_idam_when_status_is_pending() {
+    void test_not_call_idam_when_status_is_pending() {
         UserProfile up = UserProfileTestDataBuilder.buildUserProfile();
         UserProfile profile = userProfileRetriever.getRolesFromIdam(up, true);
 

@@ -1,25 +1,11 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
@@ -39,8 +25,22 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceUpdator;
 
-@RunWith(MockitoJUnitRunner.class)
-public class UserProfileServiceTest {
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+class UserProfileServiceTest {
 
     @Mock
     private UserProfileCreator userProfileCreator;
@@ -61,7 +61,7 @@ public class UserProfileServiceTest {
     private UserProfileService<RequestData> userProfileService;
 
     @Test
-    public void test_UpdateRoles() {
+    void test_UpdateRoles() {
         UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData();
 
         Set<RoleName> roles = new HashSet<>();
@@ -81,7 +81,7 @@ public class UserProfileServiceTest {
     }
 
     @Test
-    public void test_Update() {
+    void test_Update() {
         AttributeResponse attributeResponseMock = Mockito.mock(AttributeResponse.class);
         when(resourceUpdatorMock.update(any(), any(), any())).thenReturn(attributeResponseMock);
 
@@ -92,7 +92,7 @@ public class UserProfileServiceTest {
     }
 
     @Test
-    public void test_call_creator_create_method_successfully() {
+    void test_call_creator_create_method_successfully() {
         UserProfileCreationData userProfileData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         UserProfileCreationResponse expected = new UserProfileCreationResponse(userProfile);
@@ -107,7 +107,7 @@ public class UserProfileServiceTest {
     }
 
     @Test
-    public void test_call_retriever_retrieve_method_successfully() {
+    void test_call_retriever_retrieve_method_successfully() {
         UserProfileIdentifier identifier = new UserProfileIdentifier(IdentifierName.UUID, UUID.randomUUID().toString());
 
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
@@ -124,7 +124,7 @@ public class UserProfileServiceTest {
     }
 
     @Test
-    public void test_call_retriever_retrieve_with_roles_method_successfully() {
+    void test_call_retriever_retrieve_with_roles_method_successfully() {
         UserProfileIdentifier identifier = mock(UserProfileIdentifier.class);
 
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
@@ -141,7 +141,7 @@ public class UserProfileServiceTest {
     }
 
     @Test
-    public void test_call_retriever_retrieve_multiple_users_with_roles_method_successfully() {
+    void test_call_retriever_retrieve_multiple_users_with_roles_method_successfully() {
         UserProfileIdentifier identifier = mock(UserProfileIdentifier.class);
 
         List<UserProfile> profileList = new ArrayList<>();
@@ -160,7 +160,7 @@ public class UserProfileServiceTest {
     }
 
     @Test
-    public void test_reInviteUser() {
+    void test_reInviteUser() {
         UserProfileCreationData userProfileData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
 
@@ -174,7 +174,7 @@ public class UserProfileServiceTest {
     }
 
     @Test
-    public void test_deleteUserById() {
+    void test_deleteUserById() {
         UserProfilesDeletionResponse userProfilesDeletionResponse =
                 new UserProfilesDeletionResponse(204, "UserProfiles Successfully Deleted");
 
@@ -187,7 +187,7 @@ public class UserProfileServiceTest {
     }
 
     @Test
-    public void test_deleteUserByEmailPattern() {
+    void test_deleteUserByEmailPattern() {
         UserProfilesDeletionResponse userProfilesDeletionResponse =
                 new UserProfilesDeletionResponse(204, "UserProfiles Successfully Deleted");
 
