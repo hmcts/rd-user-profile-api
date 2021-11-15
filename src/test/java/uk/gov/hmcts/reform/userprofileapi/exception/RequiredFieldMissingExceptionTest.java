@@ -1,17 +1,16 @@
 package uk.gov.hmcts.reform.userprofileapi.exception;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.userprofileapi.exception.RequiredFieldMissingException;
-
-@RunWith(MockitoJUnitRunner.class)
-public class RequiredFieldMissingExceptionTest {
+@ExtendWith(MockitoExtension.class)
+class RequiredFieldMissingExceptionTest {
 
     @Test
-    public void test_create_exception_correctly() {
+    void testCreateExceptionCorrectly() {
         String message = "this-is-a-test-message";
         RequiredFieldMissingException exception = new RequiredFieldMissingException(message);
 

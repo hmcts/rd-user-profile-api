@@ -1,20 +1,12 @@
 package uk.gov.hmcts.reform.userprofileapi;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
-
-import io.restassured.RestAssured;
 import lombok.extern.slf4j.Slf4j;
+import net.serenitybdd.rest.SerenityRest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestContext;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.support.AbstractTestExecutionListener;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import uk.gov.hmcts.reform.userprofileapi.client.FuncTestRequestHandler;
 import uk.gov.hmcts.reform.userprofileapi.client.IdamOpenIdClient;
 import uk.gov.hmcts.reform.userprofileapi.client.S2sClient;
@@ -26,68 +18,51 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
+
+@Slf4j
 @ContextConfiguration(classes = {TestConfigProperties.class})
 @ComponentScan("uk.gov.hmcts.reform.userprofileapi")
 @TestPropertySource("classpath:application-functional.yaml")
-@TestExecutionListeners(listeners = {
-        AbstractFunctional.class,
-        DependencyInjectionTestExecutionListener.class})
-@Slf4j
-public class AbstractFunctional extends AbstractTestExecutionListener {
+public class AbstractFunctional {
 
     @Autowired
-    protected TestConfigProperties configProperties;
+    protected TestConfigProperties testConfigProperties;
 
     protected static String requestUri = "/v1/userprofile";
-    @Value("${targetInstance}")
-    protected String targetInstance;
-    @Value("${s2s.auth.secret}")
-    protected String s2sSecret;
-    @Value("${s2s.auth.url}")
-    protected String s2sBaseUrl;
-    @Value("${s2s.auth.microservice:rd_user_profile_api}")
-    protected String s2sMicroservice;
-    @Value("${exui.role.hmcts-admin}")
-    protected String hmctsAdmin;
-    @Value("${exui.role.pui-user-manager}")
-    protected String puiUserManager;
-    @Value("${exui.role.pui-organisation-manager}")
-    protected String puiOrgManager;
-    @Value("${exui.role.pui-finance-manager}")
-    protected String puiFinanceManager;
-    @Value("${exui.role.pui-case-manager}")
-    protected String puiCaseManager;
-    @Value("${resendInterval}")
-    protected String resendInterval;
-
     public static final String EMAIL = "EMAIL";
     public static final String CREDS = "CREDS";
     protected static FuncTestRequestHandler testRequestHandler;
     protected static IdamOpenIdClient idamOpenIdClient;
+
     protected static String s2sToken;
 
-    @Override
-    public void beforeTestClass(TestContext testContext) {
-        testContext.getApplicationContext()
-                .getAutowireCapableBeanFactory()
-                .autowireBean(this);
+    @PostConstruct
+    public void beforeTestClass() {
 
-        RestAssured.useRelaxedHTTPSValidation();
+        SerenityRest.useRelaxedHTTPSValidation();
 
         if (null == s2sToken) {
             log.info(":::: Generating S2S Token");
-            s2sToken = new S2sClient(s2sBaseUrl, s2sMicroservice, s2sSecret).getS2sToken();
+            s2sToken = new S2sClient(
+                    testConfigProperties.getS2sBaseUrl(),
+                    testConfigProperties.getS2sMicroservice(),
+                    testConfigProperties.getS2sSecret())
+                    .getS2sToken();
         }
 
         if (null == idamOpenIdClient) {
-            idamOpenIdClient = new IdamOpenIdClient(configProperties);
+            idamOpenIdClient = new IdamOpenIdClient(testConfigProperties);
         }
 
-        testRequestHandler = new FuncTestRequestHandler(targetInstance, s2sToken, idamOpenIdClient);
+        testRequestHandler = new FuncTestRequestHandler(testConfigProperties.getTargetInstance(), s2sToken,
+                idamOpenIdClient);
     }
 
     protected static UserProfileCreationResponse createUserProfile(
@@ -105,7 +80,7 @@ public class AbstractFunctional extends AbstractTestExecutionListener {
 
     protected static UserProfileCreationResponse createActiveUserProfileWithGivenFields(
             UserProfileCreationData userProfileCreationData) throws Exception {
-        List<String> xuiuRoles = new ArrayList();
+        List<String> xuiuRoles = new ArrayList<>();
         xuiuRoles.add("pui-user-manager");
         xuiuRoles.add("pui-case-manager");
 
@@ -117,20 +92,20 @@ public class AbstractFunctional extends AbstractTestExecutionListener {
         //create User profile with same email to get 409 scenario
         userProfileCreationData.setRoles(xuiuRoles);
         userProfileCreationData.setEmail(userCreds.get(EMAIL));
-        return createUserProfile(userProfileCreationData,HttpStatus.CREATED);
+        return createUserProfile(userProfileCreationData, HttpStatus.CREATED);
     }
 
 
     protected UserProfileCreationResponse createDuplicateUserProfileWithGivenFields(
             UserProfileCreationData userProfileCreationData, HttpStatus expectedStatusCode) throws Exception {
-        List<String> xuiuRoles = new ArrayList();
+        List<String> xuiuRoles = new ArrayList<>();
         xuiuRoles.add("pui-user-manager");
         xuiuRoles.add("pui-case-manager");
 
         //create User profile with same email to get 409 scenario
         userProfileCreationData.setRoles(xuiuRoles);
         userProfileCreationData.setEmail(userProfileCreationData.getEmail());
-        return createUserProfile(userProfileCreationData,expectedStatusCode);
+        return createUserProfile(userProfileCreationData, expectedStatusCode);
     }
 
     protected void updateUserProfile(UpdateUserProfileData updateUserProfileData, String userId) throws Exception {

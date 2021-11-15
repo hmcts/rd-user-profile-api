@@ -1,14 +1,14 @@
 package uk.gov.hmcts.reform.userprofileapi.controller.advice;
 
+import org.junit.jupiter.api.Test;
+
 import static java.time.LocalTime.now;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
-
-public class ErrorResponseTest {
+class ErrorResponseTest {
 
     @Test
-    public void test_builder() {
+    void test_builder() {
         final String errorMsg = "Some error";
         final String desc = "Some desc";
         final String tmstp = now().toString();

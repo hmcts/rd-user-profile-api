@@ -1,17 +1,8 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
-import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfile;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MvcResult;
@@ -23,21 +14,29 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfile;
+
 @SpringBootTest(webEnvironment = MOCK)
 @Transactional
-public class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabledIntegrationTest {
+class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabledIntegrationTest {
 
     private Map<String, UserProfile> userProfileMap;
 
-    @Before
+    @BeforeEach
     public void setUpWireMock() {
+
+        this.mockMvc = webAppContextSetup(webApplicationContext).build();
 
         setSidamRegistrationMockWithStatus(HttpStatus.CREATED.value(), true);
         mockWithGetFail(NOT_FOUND, false);
-
-
-
-        this.mockMvc = webAppContextSetup(webApplicationContext).build();
 
         Iterable<UserProfile> userProfiles = userProfileRepository.findAll();
         assertThat(userProfiles).isEmpty();
@@ -46,15 +45,14 @@ public class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabl
         user1.setStatus(IdamStatus.ACTIVE);
         user1 = userProfileRepository.save(user1);
 
-
-        assertTrue(userProfileRepository.existsById(user1.getId()));
+        Assertions.assertTrue(userProfileRepository.existsById(user1.getId()));
 
         userProfileMap = new HashMap<>();
         userProfileMap.put("user", user1);
     }
 
     @Test
-    public void should_fail_when_idam_returns_unsuccessfull_response_with_roles_by_id() throws Exception {
+    void should_fail_when_idam_returns_unsuccessfull_response_with_roles_by_id() throws Exception {
         UserProfile userProfile = userProfileMap.get("user");
 
         MvcResult result =
@@ -81,7 +79,7 @@ public class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabl
     }
 
     @Test
-    public void shouldFailWhenIdamReturnsUnSuccessfullResponseResourceWithRolesByEmailFromHeader() throws Exception {
+    void shouldFailWhenIdamReturnsUnSuccessfullResponseResourceWithRolesByEmailFromHeader() throws Exception {
         UserProfile userProfile = userProfileMap.get("user");
         MvcResult result =
                 userProfileRequestHandlerTest.sendGetFromHeader(
@@ -105,7 +103,7 @@ public class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabl
     }
 
     @Test
-    public void should_see_idam_error_message_when_idam_returns_404_response_with_roles_by_id() throws Exception {
+    void should_see_idam_error_message_when_idam_returns_404_response_with_roles_by_id() throws Exception {
 
         mockWithGetFail(NOT_FOUND, true);
         UserProfile userProfile = userProfileMap.get("user");
@@ -125,10 +123,9 @@ public class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabl
     }
 
     @Test
-    public void should_see_idam_error_message_when_idam_returns_404_and_does_not_send_response_with_roles_by_id()
+    void should_see_idam_error_message_when_idam_returns_404_and_does_not_send_response_with_roles_by_id()
             throws Exception {
 
-        mockWithGetFail(NOT_FOUND, false);
         UserProfile userProfile = userProfileMap.get("user");
 
         ErrorResponse errorResponse =

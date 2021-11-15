@@ -1,19 +1,18 @@
 package uk.gov.hmcts.reform.userprofileapi.exception;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.reform.userprofileapi.exception.IdamServiceException;
 
-
-@RunWith(MockitoJUnitRunner.class)
-public class IdamServiceExceptionTest {
+@ExtendWith(MockitoExtension.class)
+class IdamServiceExceptionTest {
 
     @Test
-    public void test_create_exception_correctly() {
+    void testCreateExceptionCorrectly() {
         String message = "this-is-a-test-message";
         IdamServiceException exception = new IdamServiceException(message, HttpStatus.NOT_FOUND);
 

@@ -1,13 +1,13 @@
 package uk.gov.hmcts.reform.userprofileapi.resource;
 
+import org.junit.jupiter.api.Test;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.Test;
-
-public class RoleNameTest {
+class RoleNameTest {
 
     @Test
-    public void test_hold_values_after_creation() {
+    void test_hold_values_after_creation() {
         RoleName roleName = new RoleName("pui-case-manager");
         assertThat(roleName.getName()).isEqualTo("pui-case-manager");
 

@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.userprofileapi.client;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.response.Response;
@@ -11,10 +9,12 @@ import net.serenitybdd.rest.SerenityRest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 @Slf4j
 public class FuncTestRequestHandler {
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     protected String baseUrl;
     protected String s2sToken;
@@ -25,7 +25,7 @@ public class FuncTestRequestHandler {
     public FuncTestRequestHandler(String baseUrl, String s2sToken, IdamOpenIdClient idamOpenIdClient) {
         this.baseUrl = baseUrl;
         this.s2sToken = s2sToken;
-        this.idamOpenIdClient = idamOpenIdClient;
+        FuncTestRequestHandler.idamOpenIdClient = idamOpenIdClient;
     }
 
     public <T> T sendPost(Object data, HttpStatus expectedStatus, String path, Class<T> clazz)
@@ -40,23 +40,21 @@ public class FuncTestRequestHandler {
     public Response sendPost(String jsonBody, HttpStatus expectedStatus, String path) {
         log.info("User object to be created : {}", jsonBody);
         Response response = withAuthenticatedRequest()
-                .log().all(true)
                 .body(jsonBody)
                 .post(path)
                 .andReturn();
 
         response.then()
-                .log().all(true)
                 .assertThat()
                 .statusCode(expectedStatus.value());
 
         return response;
     }
 
-    public <T> T sendPut(Object data, HttpStatus expectedStatus, String path, Class<T> clazz)
+    public <T> void sendPut(Object data, HttpStatus expectedStatus, String path, Class<T> clazz)
             throws JsonProcessingException {
 
-        return sendPut(objectMapper.writeValueAsString(data),
+        sendPut(objectMapper.writeValueAsString(data),
                 expectedStatus,
                 path)
                 .as(clazz);
@@ -71,31 +69,28 @@ public class FuncTestRequestHandler {
     public Response sendPut(String jsonBody, HttpStatus expectedStatus, String path) {
 
         return withAuthenticatedRequest()
-                .log().all(true)
                 .body(jsonBody)
                 .put(path)
                 .then()
-                .log().all(true)
                 .assertThat()
                 .statusCode(expectedStatus.value()).extract().response();
     }
 
-    public <T> T sendDelete(Object data, HttpStatus expectedStatus, String path, Class<T> clazz)
+    public <T> void sendDelete(Object data, HttpStatus expectedStatus, String path, Class<T> clazz)
             throws JsonProcessingException {
 
-        return sendPut(objectMapper.writeValueAsString(data),
+        sendPut(objectMapper.writeValueAsString(data),
                 expectedStatus,
                 path)
                 .as(clazz);
     }
 
-    public Response sendDelete(String jsonBody, HttpStatus expectedStatus, String path) {
+    public void sendDelete(String jsonBody, HttpStatus expectedStatus, String path) {
 
-        return withAuthenticatedRequest()
+        withAuthenticatedRequest()
                 .body(jsonBody)
                 .delete(path)
                 .then()
-                .log().all(true)
                 .statusCode(expectedStatus.value()).extract().response();
     }
 
@@ -121,10 +116,8 @@ public class FuncTestRequestHandler {
                 .header("ServiceAuthorization", BEARER + s2sToken)
                 .header("Authorization", BEARER + bearerToken)
                 .when()
-                .log().all(true)
                 .get(urlPath)
                 .then()
-                .log().all(true)
                 .statusCode(httpStatus.value()).extract().response();
     }
 
@@ -141,10 +134,8 @@ public class FuncTestRequestHandler {
                 .header("Authorization", BEARER + bearerToken)
                 .header("UserEmail", email)
                 .when()
-                .log().all(true)
                 .get(urlPath)
                 .then()
-                .log().all(true)
                 .statusCode(httpStatus.value()).extract().response()
                 .as(clazz);
     }
@@ -168,7 +159,6 @@ public class FuncTestRequestHandler {
                 .when()
                 .get(urlPath)
                 .then()
-                .log().all(true)
                 .statusCode(httpStatus.value()).extract().response();
     }
 

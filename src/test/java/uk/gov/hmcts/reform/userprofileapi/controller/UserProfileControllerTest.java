@@ -1,36 +1,12 @@
 package uk.gov.hmcts.reform.userprofileapi.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.http.ResponseEntity.status;
-import static uk.gov.hmcts.reform.userprofileapi.constants.TestConstants.COMMON_EMAIL_PATTERN;
-import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildUpdateUserProfileData;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.http.HttpStatus;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -39,6 +15,7 @@ import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequ
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfilesDeletionResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
@@ -52,8 +29,32 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
 import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileService;
 
-@RunWith(MockitoJUnitRunner.class)
-public class UserProfileControllerTest {
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.ResponseEntity.status;
+import static uk.gov.hmcts.reform.userprofileapi.constants.TestConstants.COMMON_EMAIL_PATTERN;
+import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildUpdateUserProfileData;
+
+@ExtendWith(MockitoExtension.class)
+class UserProfileControllerTest {
 
     @Mock
     private UserProfileService<RequestData> userProfileServiceMock;
@@ -65,12 +66,13 @@ public class UserProfileControllerTest {
 
     private static final String ORIGIN = "EXUI";
 
-    @Before public void setUp() {
+    @BeforeEach
+    public void setUp() {
         ReflectionTestUtils.setField(sut, "environmentName", "preview");
     }
 
     @Test
-    public void test_CreateUserProfile() {
+    void test_CreateUserProfile() {
 
         UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
@@ -87,7 +89,7 @@ public class UserProfileControllerTest {
     }
 
     @Test
-    public void test_ReInviteUserProfile() {
+    void test_ReInviteUserProfile() {
 
         UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder
                 .buildCreateUserProfileData(true);
@@ -105,7 +107,7 @@ public class UserProfileControllerTest {
     }
 
     @Test
-    public void test_CreateUserProfileThrowsException() {
+    void test_CreateUserProfileThrowsException() {
         UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
         IllegalStateException ex = new IllegalStateException("this is a test exception");
 
@@ -117,7 +119,7 @@ public class UserProfileControllerTest {
     }
 
     @Test
-    public void test_CreateUserProfileWithNullParam() {
+    void test_CreateUserProfileWithNullParam() {
         assertThatThrownBy(() -> sut.createUserProfile(null))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessageContaining("createUserProfileData");
@@ -126,7 +128,7 @@ public class UserProfileControllerTest {
     }
 
     @Test
-    public void test_GetUserProfileWithRolesById() {
+    void test_GetUserProfileWithRolesById() {
         String id = "a833c2e2-2c73-4900-96ca-74b1efb37928";
         UserProfileWithRolesResponse responseMock = Mockito.mock(UserProfileWithRolesResponse.class);
 
@@ -138,19 +140,18 @@ public class UserProfileControllerTest {
     }
 
     @Test
-    public void test_throw_exception_when_get_with_uuid_null_parameters_passed_in() {
+    void test_throw_exception_when_get_with_uuid_null_parameters_passed_in() {
         verifyNoInteractions(userProfileServiceMock);
     }
 
 
     @Test
-    public void test_GetUserProfileWithRolesByEmail() {
+    void test_GetUserProfileWithRolesByEmail() {
 
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(httpRequest));
         when(httpRequest.getHeader(anyString())).thenReturn(" ");
         UserProfileWithRolesResponse responseMock = Mockito.mock(UserProfileWithRolesResponse.class);
         when(userProfileServiceMock.retrieveWithRoles(any(UserProfileIdentifier.class))).thenReturn(responseMock);
-        String email = "test@test.com";
         assertThat(sut.getUserProfileWithRolesByEmail()).isEqualTo(ResponseEntity.ok(responseMock));
         verify(userProfileServiceMock, times(1))
                 .retrieveWithRoles(any(UserProfileIdentifier.class));
@@ -158,13 +159,11 @@ public class UserProfileControllerTest {
     }
 
     @Test
-    public void test_GetUserProfileWithRolesByEmailByHeader() {
-
+    void test_GetUserProfileWithRolesByEmailByHeader() {
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(httpRequest));
         UserProfileWithRolesResponse responseMock = Mockito.mock(UserProfileWithRolesResponse.class);
         when(httpRequest.getHeader(anyString())).thenReturn("test@test.com");
         when(userProfileServiceMock.retrieveWithRoles(any(UserProfileIdentifier.class))).thenReturn(responseMock);
-        String email = " ";
         assertThat(sut.getUserProfileWithRolesByEmail()).isEqualTo(ResponseEntity.ok(responseMock));
         verify(userProfileServiceMock, times(1))
                 .retrieveWithRoles(any(UserProfileIdentifier.class));
@@ -172,44 +171,45 @@ public class UserProfileControllerTest {
     }
 
     @Test
-    public void test_UpdateUserProfile() {
+    void test_UpdateUserProfile() {
         UpdateUserProfileData updateUserProfileData = buildUpdateUserProfileData();
         AttributeResponse attributeResponse = new AttributeResponse(status(OK).build());
 
         when(userProfileServiceMock.update(any(), any(), any())).thenReturn(attributeResponse);
 
-        ResponseEntity actual = sut.updateUserProfile(updateUserProfileData, UUID.randomUUID().toString(), ORIGIN);
+        ResponseEntity<UserProfileRolesResponse> actual = sut.updateUserProfile(updateUserProfileData,
+                UUID.randomUUID().toString(), ORIGIN);
         verify(userProfileServiceMock, times(1)).update(any(), any(), any());
 
-        ResponseEntity expect = status(OK).build();
+        ResponseEntity<Object> expect = status(OK).build();
         assertThat(actual.getStatusCode().value()).isEqualTo(expect.getStatusCode().value());
     }
 
 
     @Test
-    public void test_throw_exception_when_get_with_idamId_null_parameters_passed_in() {
+    void test_throw_exception_when_get_with_idamId_null_parameters_passed_in() {
         verifyNoInteractions(userProfileServiceMock);
     }
 
     @Test
-    public void test_UpdateUserProfileRoles() {
+    void test_UpdateUserProfileRoles() {
         UpdateUserProfileData updateUserProfileData = buildUpdateUserProfileData();
 
         Set<RoleName> roles = new HashSet<>();
         roles.add(new RoleName("pui-case-manager"));
         roles.add(new RoleName("pui-case-organisation"));
         updateUserProfileData.setRolesAdd(roles);
-
-        ResponseEntity actual = sut.updateUserProfile(updateUserProfileData, UUID.randomUUID().toString(), ORIGIN);
+        ResponseEntity<UserProfileRolesResponse> actual = sut.updateUserProfile(updateUserProfileData,
+                UUID.randomUUID().toString(), ORIGIN);
         verify(userProfileServiceMock, times(1)).updateRoles(any(), any());
 
-        ResponseEntity expect = ResponseEntity.status(HttpStatus.OK).build();
+        ResponseEntity<Object> expect = status(OK).build();
         assertThat(actual).isEqualTo(expect);
 
     }
 
     @Test
-    public void test_retrieveUserProfiles() {
+    void test_retrieveUserProfiles() {
         List<String> userIds = Arrays.asList("1", "2");
         UserProfileDataRequest userProfileDataRequest = new UserProfileDataRequest(userIds);
 
@@ -222,7 +222,7 @@ public class UserProfileControllerTest {
     }
 
     @Test
-    public void test_UpdateUserProfileRolesForDelete() {
+    void test_UpdateUserProfileRolesForDelete() {
         UpdateUserProfileData updateUserProfileData = buildUpdateUserProfileData();
 
         Set<RoleName> roles = new HashSet<>();
@@ -230,15 +230,16 @@ public class UserProfileControllerTest {
         roles.add(new RoleName("pui-case-organisation"));
         updateUserProfileData.setRolesDelete(roles);
 
-        ResponseEntity actual = sut.updateUserProfile(updateUserProfileData, UUID.randomUUID().toString(), ORIGIN);
+        ResponseEntity<UserProfileRolesResponse> actual =
+                sut.updateUserProfile(updateUserProfileData, UUID.randomUUID().toString(), ORIGIN);
         verify(userProfileServiceMock, times(1)).updateRoles(any(), any());
 
-        ResponseEntity expect = ResponseEntity.status(HttpStatus.OK).build();
+        ResponseEntity<Object> expect = status(OK).build();
         assertThat(actual).isEqualTo(expect);
     }
 
     @Test
-    public void testDeleteUserProfiles() {
+    void testDeleteUserProfiles() {
 
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         List<String> userIds = new ArrayList<>();
@@ -255,22 +256,26 @@ public class UserProfileControllerTest {
 
         verify(userProfileServiceMock, times(1)).delete(any(UserProfileDataRequest.class));
         assertThat(responseEntityActual.getStatusCodeValue()).isEqualTo(204);
-        assertThat(responseEntityActual.getBody().getMessage()).isEqualTo("UserProfiles Successfully Deleted");
+        assertThat(Objects.requireNonNull(responseEntityActual.getBody())
+                .getMessage())
+                .isEqualTo("UserProfiles Successfully Deleted");
     }
 
-    @Test(expected = RequiredFieldMissingException.class)
-    public void testDeleteUserProfilesWithEmptyUserIdInTheRequest() {
+    @Test
+    void testDeleteUserProfilesWithEmptyUserIdInTheRequest() {
         List<String> userIds = new ArrayList<>();
         userIds.add("");
 
         UserProfileDataRequest userProfileDataRequest = new UserProfileDataRequest(userIds);
-        sut.deleteUserProfiles(userProfileDataRequest);
+
+        assertThrows(RequiredFieldMissingException.class, () ->
+                sut.deleteUserProfiles(userProfileDataRequest));
 
         verify(userProfileServiceMock, times(0)).delete(any(UserProfileDataRequest.class));
     }
 
     @Test
-    public void testDeleteUserById() {
+    void testDeleteUserById() {
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
 
         UserProfilesDeletionResponse userProfilesDeletionResponse =
@@ -284,11 +289,12 @@ public class UserProfileControllerTest {
         assertThat(responseEntityActual).isNotNull();
         verify(userProfileServiceMock, times(1)).deleteByUserId(userProfile.getIdamId());
         assertThat(responseEntityActual.getStatusCodeValue()).isEqualTo(204);
-        assertThat(responseEntityActual.getBody().getMessage()).isEqualTo("UserProfiles Successfully Deleted");
+        assertThat(Objects.requireNonNull(responseEntityActual.getBody()).getMessage())
+                .isEqualTo("UserProfiles Successfully Deleted");
     }
 
     @Test
-    public void testDeleteUserByEmailPattern() {
+    void testDeleteUserByEmailPattern() {
 
         String emailPattern = COMMON_EMAIL_PATTERN;
 
@@ -304,7 +310,8 @@ public class UserProfileControllerTest {
         assertThat(responseEntityActual).isNotNull();
         verify(userProfileServiceMock, times(1)).deleteByEmailPattern(emailPattern);
         assertThat(responseEntityActual.getStatusCodeValue()).isEqualTo(204);
-        assertThat(responseEntityActual.getBody().getMessage()).isEqualTo("UserProfiles Successfully Deleted");
+        assertThat(Objects.requireNonNull(responseEntityActual.getBody()).getMessage())
+                .isEqualTo("UserProfiles Successfully Deleted");
     }
 
 }
