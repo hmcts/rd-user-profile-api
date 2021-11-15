@@ -1,25 +1,23 @@
 package uk.gov.hmcts.reform.userprofileapi.client;
 
+import com.google.common.collect.ImmutableMap;
+import com.warrenstrange.googleauth.GoogleAuthenticator;
+import io.restassured.response.Response;
+import lombok.extern.slf4j.Slf4j;
+import net.serenitybdd.rest.SerenityRest;
+
+import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-import com.google.common.collect.ImmutableMap;
-import com.warrenstrange.googleauth.GoogleAuthenticator;
-
-import io.restassured.RestAssured;
-import io.restassured.response.Response;
-
-import java.util.Map;
-
-import lombok.extern.slf4j.Slf4j;
-
 @Slf4j
 public class S2sClient {
 
-    private final String              s2sUrl;
-    private final String              microserviceName;
-    private final String              microserviceKey;
+    private final String s2sUrl;
+    private final String microserviceName;
+    private final String microserviceKey;
     private final GoogleAuthenticator authenticator = new GoogleAuthenticator();
 
     public S2sClient(String s2sUrl, String microserviceName, String microserviceKey) {
@@ -45,7 +43,7 @@ public class S2sClient {
                 "oneTimePassword",
                 authenticator.getTotpPassword(this.microserviceKey));
 
-        Response response = RestAssured
+        Response response = SerenityRest
                 .given()
                 .relaxedHTTPSValidation()
                 .baseUri(this.s2sUrl)

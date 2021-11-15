@@ -1,17 +1,17 @@
 package uk.gov.hmcts.reform.userprofileapi.controller.request;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class IdamRegisterUserRequestTest {
+class IdamRegisterUserRequestTest {
 
     @Test
-    public void test_populate_fields() {
+    void test_populate_fields() {
         String email = "some@hmcts.com";
         String firstName = "fname";
         String lastName = "lname";

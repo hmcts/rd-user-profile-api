@@ -1,24 +1,11 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
-import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfile;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
@@ -30,16 +17,30 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfile;
+
 @SpringBootTest(webEnvironment = MOCK)
 @Transactional
-public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
+class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
 
     private Map<String, UserProfile> userProfileMap;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
 
@@ -51,7 +52,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
         user1 = userProfileRepository.save(user1);
 
 
-        assertTrue(userProfileRepository.existsById(user1.getId()));
+        Assertions.assertTrue(userProfileRepository.existsById(user1.getId()));
 
         userProfileMap = new HashMap<>();
         userProfileMap.put("user", user1);
@@ -59,7 +60,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
     }
 
     @Test
-    public void should_retrieve_user_profile_resource_with_id() throws Exception {
+    void should_retrieve_user_profile_resource_with_id() throws Exception {
         UserProfile userProfile = userProfileMap.get("user");
 
         UserProfileResponse retrievedResource =
@@ -74,7 +75,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
     }
 
     @Test
-    public void should_retrieve_user_profile_resource_with_tidam_id() throws Exception {
+    void should_retrieve_user_profile_resource_with_tidam_id() throws Exception {
         UserProfile user = buildUserProfile();
         user.setIdamId("1234567");
         user.setStatus(IdamStatus.ACTIVE);
@@ -93,7 +94,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
     }
 
     @Test
-    public void should_retrieve_user_profile_resource_with_roles_by_id() throws Exception {
+    void should_retrieve_user_profile_resource_with_roles_by_id() throws Exception {
         UserProfile userProfile = userProfileMap.get("user");
 
         UserProfileWithRolesResponse retrievedResource =
@@ -106,7 +107,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
 
         assertThat(retrievedResource).isNotNull();
 
-        assertThat(retrievedResource.getRoles().size()).isGreaterThan(0);
+        assertThat(retrievedResource.getRoles().size()).isPositive();
 
         Optional<UserProfile> optionalUserProfile = userProfileRepository.findByIdamId(retrievedResource.getIdamId());
         UserProfile persistedUserProfile = optionalUserProfile.get();
@@ -125,7 +126,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
     }
 
     @Test
-    public void should_retrieve_user_profile_resource_with_roles_by_email() throws Exception {
+    void should_retrieve_user_profile_resource_with_roles_by_email() throws Exception {
         UserProfile userProfile = userProfileMap.get("user");
 
         UserProfileWithRolesResponse retrievedResource =
@@ -138,7 +139,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
                 );
 
         assertThat(retrievedResource).isNotNull();
-        assertThat(retrievedResource.getRoles().size()).isGreaterThan(0);
+        assertThat(retrievedResource.getRoles().size()).isPositive();
 
         Optional<UserProfile> optionalUserProfile = userProfileRepository.findByIdamId(retrievedResource.getIdamId());
         UserProfile persistedUserProfile = optionalUserProfile.get();
@@ -158,7 +159,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
     }
 
     @Test
-    public void should_retrieve_user_profile_resource_with_roles_by_email_fromHeader() throws Exception {
+    void should_retrieve_user_profile_resource_with_roles_by_email_fromHeader() throws Exception {
         UserProfile userProfile = userProfileMap.get("user");
 
         UserProfileWithRolesResponse retrievedResource =
@@ -171,7 +172,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
                 );
 
         assertThat(retrievedResource).isNotNull();
-        assertThat(retrievedResource.getRoles().size()).isGreaterThan(0);
+        assertThat(retrievedResource.getRoles().size()).isPositive();
 
         Optional<UserProfile> optionalUserProfile = userProfileRepository.findByIdamId(retrievedResource.getIdamId());
         UserProfile persistedUserProfile = optionalUserProfile.get();
@@ -191,12 +192,18 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
     }
 
     @Test
-    public void should_return_400_and_not_allow_get_request_on_base_url_with_no_params() throws Exception {
-        userProfileRequestHandlerTest.sendGet(mockMvc, APP_BASE_PATH, BAD_REQUEST);
+    void should_return_400_and_not_allow_get_request_on_base_url_with_no_params() throws Exception {
+        MvcResult mvcResult = userProfileRequestHandlerTest.sendGet(mockMvc, APP_BASE_PATH, BAD_REQUEST);
+        Assertions.assertNotNull(mvcResult);
+
+        MockHttpServletResponse response = mvcResult.getResponse();
+        Assertions.assertNotNull(response);
+
+        assertThat(response.getStatus()).isEqualTo(400);
     }
 
     @Test
-    public void should_retrieve_user_profile_resource_with_email_from_header() throws Exception {
+    void should_retrieve_user_profile_resource_with_email_from_header() throws Exception {
         UserProfile userProfile = userProfileMap.get("user");
 
         UserProfileResponse retrievedResource =
@@ -213,7 +220,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
     }
 
     @Test
-    public void should_not_retrieve_user_profile_resource_with_unknown_email_from_header() throws Exception {
+    void should_not_retrieve_user_profile_resource_with_unknown_email_from_header() throws Exception {
         UserProfile userProfile = userProfileMap.get("user");
 
         UserProfileResponse retrievedResource =
@@ -230,12 +237,12 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
     }
 
     @Test
-    public void should_return_404_when_user_profile_id_not_in_the_db() throws Exception {
+    void should_return_404_when_user_profile_id_not_in_the_db() throws Exception {
 
         MvcResult result =
                 userProfileRequestHandlerTest.sendGet(
                         mockMvc,
-                        APP_BASE_PATH + "?userId=" + UUID.randomUUID().toString(),
+                        APP_BASE_PATH + "?userId=" + UUID.randomUUID(),
                         NOT_FOUND
                 );
 
@@ -245,7 +252,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
     }
 
     @Test
-    public void should_return_404_when_nothing_in_the_db() throws Exception {
+    void should_return_404_when_nothing_in_the_db() throws Exception {
 
         userProfileRepository.delete(userProfileMap.get("user"));
         Iterable<UserProfile> userProfiles = userProfileRepository.findAll();
@@ -254,7 +261,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
         MvcResult result =
                 userProfileRequestHandlerTest.sendGet(
                         mockMvc,
-                        APP_BASE_PATH + "?userId=" + UUID.randomUUID().toString(),
+                        APP_BASE_PATH + "?userId=" + UUID.randomUUID(),
                         NOT_FOUND
                 );
         assertThat(result.getResponse()).isNotNull();
@@ -263,7 +270,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
     }
 
     @Test
-    public void should_return_404_when_user_profile_email_not_in_the_db() throws Exception {
+    void should_return_404_when_user_profile_email_not_in_the_db() throws Exception {
 
         MvcResult result =
                 userProfileRequestHandlerTest.sendGetFromHeader(
@@ -279,7 +286,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
     }
 
     @Test
-    public void should_return_404_when_query_by_email_and_nothing_in_the_db() throws Exception {
+    void should_return_404_when_query_by_email_and_nothing_in_the_db() throws Exception {
 
         userProfileRepository.delete(userProfileMap.get("user"));
         Iterable<UserProfile> userProfiles = userProfileRepository.findAll();
@@ -300,7 +307,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
     }
 
     @Test
-    public void should_return_400_when_query_by_email_header_isEmpty() throws Exception {
+    void should_return_400_when_query_by_email_header_isEmpty() throws Exception {
         MvcResult result =
                 userProfileRequestHandlerTest.sendGetFromHeader(
                         mockMvc,
@@ -315,7 +322,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
     }
 
     @Test
-    public void should_return_404_when_query_by_userId_is_empty() throws Exception {
+    void should_return_404_when_query_by_userId_is_empty() throws Exception {
 
         MvcResult result =
                 userProfileRequestHandlerTest.sendGet(
@@ -330,7 +337,7 @@ public class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationT
     }
 
     @Test
-    public void should_return_badRequest_when_retrieve_userprofile_with_roles_by_no_email() throws Exception {
+    void should_return_badRequest_when_retrieve_userprofile_with_roles_by_no_email() throws Exception {
 
         MvcResult retrievedResource =
                 userProfileRequestHandlerTest.sendGetFromHeader(

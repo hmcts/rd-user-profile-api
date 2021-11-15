@@ -1,7 +1,27 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
+import org.assertj.core.api.Assertions;
+import org.assertj.core.util.Lists;
+import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
+import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
+import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -14,33 +34,13 @@ import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDat
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildUpdateUserProfileData;
 import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfile;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import org.assertj.core.api.Assertions;
-import org.assertj.core.util.Lists;
-import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
-import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
-import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
-import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
-
 @SpringBootTest(webEnvironment = MOCK)
 @Transactional
-public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
+class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
 
     private Map<String, UserProfile> userProfileMap;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
 
@@ -49,14 +49,14 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
 
         UserProfile user = userProfileRepository.save(buildUserProfile());
 
-        assertTrue(userProfileRepository.existsById(user.getId()));
+        org.junit.jupiter.api.Assertions.assertTrue(userProfileRepository.existsById(user.getId()));
 
         userProfileMap = new HashMap<>();
         userProfileMap.put("user", user);
     }
 
     @Test
-    public void should_return_200_and_update_user_profile_resource() throws Exception {
+    void should_return_200_and_update_user_profile_resource() throws Exception {
 
         UserProfile persistedUserProfile = userProfileMap.get("user");
         String idamId = persistedUserProfile.getIdamId();
@@ -74,7 +74,7 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
     }
 
     @Test
-    public void should_return_200_and_when_IdamStatus_is_updated() throws Exception {
+    void should_return_200_and_when_IdamStatus_is_updated() throws Exception {
 
         UserProfile persistedUserProfile = userProfileMap.get("user");
         String idamId = persistedUserProfile.getIdamId();
@@ -90,12 +90,13 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
 
         Optional<UserProfile> optionalUp = userProfileRepository.findByIdamId(persistedUserProfile.getIdamId());
         UserProfile updatedUserProfile = optionalUp.orElse(null);
+        assert updatedUserProfile != null;
         assertThat(updatedUserProfile.getStatus()).isEqualTo(IdamStatus.ACTIVE);
 
     }
 
     @Test
-    public void should_see_idam_error_message_and_when_IdamStatus_is_updated_by_exui_and_idam_fails() throws Exception {
+    void should_see_idam_error_message_and_when_IdamStatus_is_updated_by_exui_and_idam_fails() throws Exception {
 
         UserProfile persistedUserProfile = userProfileMap.get("user");
         setSidamUserUpdateMockWithStatus(NOT_FOUND.value(), false, persistedUserProfile.getIdamId());
@@ -104,7 +105,7 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
     }
 
     @Test
-    public void should_see_idam_err_msg_and_when_IdamStatus_is_updated_by_exui_and_idam_failsand_does_not_give_body()
+    void should_see_idam_err_msg_and_when_IdamStatus_is_updated_by_exui_and_idam_failsand_does_not_give_body()
             throws Exception {
 
         UserProfile persistedUserProfile = userProfileMap.get("user");
@@ -120,7 +121,7 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
         String idamId = persistedUserProfile.getIdamId();
         UpdateUserProfileData data = buildUpdateUserProfileData();
         data.setIdamStatus("Active");
-        UserProfileRolesResponse userProfileRolesResponse =  userProfileRequestHandlerTest.sendPut(
+        UserProfileRolesResponse userProfileRolesResponse = userProfileRequestHandlerTest.sendPut(
                 mockMvc,
                 APP_BASE_PATH + SLASH + idamId + "?origin=EXUI",
                 data,
@@ -132,7 +133,6 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
         assertThat(userProfileRolesResponse.getAttributeResponse().getIdamStatusCode()).isEqualTo(errorCode);
         assertThat(userProfileRolesResponse.getAttributeResponse().getIdamMessage()).isEqualTo(message);
     }
-
 
 
     private void verifyUserProfileCreation(UpdateUserProfileData data, UserProfile persistedUserProfile) {
@@ -173,21 +173,21 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
 
 
     @Test
-    public void should_return_400_while_update_profile_when_empty_body() throws Exception {
+    void should_return_400_while_update_profile_when_empty_body() throws Exception {
 
         UserProfile persistedUserProfile = userProfileMap.get("user");
         String idamId = persistedUserProfile.getIdamId();
 
         userProfileRequestHandlerTest.sendPut(
-            mockMvc,
-            APP_BASE_PATH + SLASH + idamId,
-            "{}",
-            BAD_REQUEST
+                mockMvc,
+                APP_BASE_PATH + SLASH + idamId,
+                "{}",
+                BAD_REQUEST
         );
     }
 
     @Test
-    public void should_return_404_while_create_user_profile_when_userId_invalid() throws Exception {
+    void should_return_404_while_create_user_profile_when_userId_invalid() throws Exception {
 
         userProfileRequestHandlerTest.sendPut(
                 mockMvc,
@@ -198,7 +198,7 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
     }
 
     @Test
-    public void should_return_404_while_create_user_profile_when_userId_not_in_db() throws Exception {
+    void should_return_404_while_create_user_profile_when_userId_not_in_db() throws Exception {
 
         userProfileRequestHandlerTest.sendPut(
                 mockMvc,
@@ -209,22 +209,22 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
     }
 
     @Test
-    public void should_return_400_when_any_mandatory_field_missing() throws Exception {
+    void should_return_400_when_any_mandatory_field_missing() throws Exception {
 
         UserProfile persistedUserProfile = userProfileMap.get("user");
         String idamId = persistedUserProfile.getIdamId();
         List<String> mandatoryFieldList =
-            Lists.newArrayList(
-                "email",
-                "firstName",
-                "lastName",
-                "idamStatus"
-            );
+                Lists.newArrayList(
+                        "email",
+                        "firstName",
+                        "lastName",
+                        "idamStatus"
+                );
 
         new JSONObject(
-            objectMapper.writeValueAsString(
-                    buildCreateUserProfileData()
-            )
+                objectMapper.writeValueAsString(
+                        buildCreateUserProfileData()
+                )
         );
 
         mandatoryFieldList.forEach(s -> {
@@ -232,15 +232,15 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
             try {
 
                 JSONObject jsonObject =
-                    new JSONObject(objectMapper.writeValueAsString(buildCreateUserProfileData()));
+                        new JSONObject(objectMapper.writeValueAsString(buildCreateUserProfileData()));
 
                 jsonObject.remove(s);
 
                 mockMvc.perform(put(APP_BASE_PATH + SLASH + idamId.toString())
-                    .content(jsonObject.toString())
-                    .contentType(APPLICATION_JSON))
-                    .andExpect(status().is(BAD_REQUEST.value()))
-                    .andReturn();
+                                .content(jsonObject.toString())
+                                .contentType(APPLICATION_JSON))
+                        .andExpect(status().is(BAD_REQUEST.value()))
+                        .andReturn();
 
             } catch (Exception e) {
                 Assertions.fail("could not run test correctly", e);
@@ -251,7 +251,7 @@ public class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTes
     }
 
     @Test
-    public void should_return_200_and_update_user_profile_resource_with_valid_email() throws Exception {
+    void should_return_200_and_update_user_profile_resource_with_valid_email() throws Exception {
 
         UserProfile persistedUserProfile = userProfileMap.get("user");
         String idamId = persistedUserProfile.getIdamId();
