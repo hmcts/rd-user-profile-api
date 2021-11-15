@@ -1,30 +1,16 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.put;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
-import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
-import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfile;
-
 import com.github.tomakehurst.wiremock.client.WireMock;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
@@ -34,19 +20,41 @@ import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
-@SpringBootTest(webEnvironment = MOCK)
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Stream;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.put;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
+import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfile;
+
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@SpringBootTest(webEnvironment = RANDOM_PORT)
 @Transactional
-public class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest {
+class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTest {
 
     String id = UUID.randomUUID().toString();
     RoleName role1 = new RoleName("pui-case-manager");
     RoleName role2 = new RoleName("prd-Admin");
 
-    @Before
+    @BeforeEach
     public void setUpWireMock() {
 
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
-        idamService.stubFor(post(urlEqualTo("/api/v1/users/registration"))
+        idamMockService.stubFor(post(urlEqualTo("/api/v1/users/registration"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withHeader("Location", "/api/v1/users/" + id)
@@ -77,7 +85,7 @@ public class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegr
                     + "}";
         }
 
-        idamService.stubFor(get(urlMatching("/api/v1/users/.*"))
+        idamMockService.stubFor(get(urlMatching("/api/v1/users/.*"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(200)
@@ -86,7 +94,7 @@ public class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegr
     }
 
     public void mockWithUpdateSuccess() {
-        idamService.stubFor(put(urlMatching("/api/v1/users/.*"))
+        idamMockService.stubFor(put(urlMatching("/api/v1/users/.*"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(200)
@@ -94,7 +102,7 @@ public class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegr
     }
 
     public void mockWithUpdateRolesSuccess() {
-        idamService.stubFor(post(urlEqualTo("/api/v1/users/" + id + "/roles"))
+        idamMockService.stubFor(post(urlEqualTo("/api/v1/users/" + id + "/roles"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(200)
@@ -110,7 +118,7 @@ public class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegr
                     + "\"errorMessage\": \"One or more of the roles provided does not exist.\""
                     + "}";
         }
-        idamService.stubFor(post(urlEqualTo("/api/v1/users/" + userId + "/roles"))
+        idamMockService.stubFor(post(urlEqualTo("/api/v1/users/" + userId + "/roles"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(httpStatus.value())
@@ -119,7 +127,7 @@ public class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegr
     }
 
     public void mockWithDeleteRoleSuccess() {
-        idamService.stubFor(WireMock.delete(urlMatching("/api/v1/users/.*"))
+        idamMockService.stubFor(WireMock.delete(urlMatching("/api/v1/users/.*"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(200)
@@ -140,7 +148,7 @@ public class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegr
                     + "\"errorMessage\": \"The role provided is not assigned to the user.\""
                     + "}";
         }
-        idamService.stubFor(WireMock.delete(urlMatching("/api/v1/users/.*"))
+        idamMockService.stubFor(WireMock.delete(urlMatching("/api/v1/users/.*"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(httpStatus.value())
@@ -148,9 +156,8 @@ public class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegr
                 ));
     }
 
-
     @Test
-    public void should_return_200_and_add_roles_to_user_profile_resource() throws Exception {
+    void shouldReturn200AndAddRolesToUserProfileResource() throws Exception {
 
         mockWithGetSuccess(true);
         mockWithUpdateSuccess();
@@ -187,24 +194,28 @@ public class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegr
     }
 
     @Test
-    public void should_return_400_and_not_create_user_profile_when_empty_body() throws Exception {
+    void shouldReturn400AndNotCreateUserProfileWhenEmptyBody() throws Exception {
         UpdateUserProfileData userRoles = new UpdateUserProfileData();
         Set<RoleName> roles = new HashSet<>();
         roles.add(role1);
         roles.add(role2);
         String userId = " ";
         userRoles.setRolesAdd(roles);
-        userProfileRequestHandlerTest.sendPut(
-                mockMvc,
-                APP_BASE_PATH + "/" + userId,
-                userRoles,
-                BAD_REQUEST
-        );
+        MvcResult mvcResult =
+                userProfileRequestHandlerTest.sendPut(
+                        mockMvc,
+                        APP_BASE_PATH + "/" + userId,
+                        userRoles,
+                        BAD_REQUEST
+                );
+        final MockHttpServletResponse response = mvcResult.getResponse();
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(400);
 
     }
 
     @Test
-    public void should_return_200_and_add_delete_roles_to_user_profile_resource() throws Exception {
+    void shouldReturn200AndAddDeleteRolesToUserProfileResource() throws Exception {
 
         mockWithGetSuccess(true);
         mockWithUpdateSuccess();
@@ -254,7 +265,7 @@ public class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegr
     }
 
     @Test
-    public void should_return_400_and_not_create_user_profile_when_empty_body_delete_roles() throws Exception {
+    void shouldReturn400AndNotCreateUserProfileWhenEmptyBodyDeleteRoles() throws Exception {
         UpdateUserProfileData userRoles = new UpdateUserProfileData();
 
         Set<RoleName> roles = new HashSet<>();
@@ -262,19 +273,34 @@ public class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegr
         roles.add(role2);
         String userId = " ";
         userRoles.setRolesDelete(roles);
-        userProfileRequestHandlerTest.sendPut(
+
+
+        MockHttpServletResponse response1 =
+                userProfileRequestHandlerTest.sendPut(
+                        mockMvc,
+                        APP_BASE_PATH + "/" + userId,
+                        userRoles,
+                        BAD_REQUEST
+                ).getResponse();
+        assertThat(response1).isNotNull();
+        assertThat(response1.getStatus()).isEqualTo(400);
+
+        final MockHttpServletResponse response2 = userProfileRequestHandlerTest.sendPut(
                 mockMvc,
                 APP_BASE_PATH + "/" + userId,
                 userRoles,
                 BAD_REQUEST
-        );
+        ).getResponse();
 
+        assertThat(response2).isNotNull();
+        assertThat(response2.getStatus()).isEqualTo(400);
     }
 
 
-    @Test
-    public void should_see_error_message_from_idam_when_role_addition_fails_and_sidam_returns_error_response()
-            throws Exception {
+    @ParameterizedTest
+    @MethodSource("updateFailScenarioArguments")
+    void should_see_error_message_from_idam_when_role_addition_fails(boolean isBodyRequired,
+                                                                     String expectedErrorMessage) throws Exception {
 
         UserProfile userProfile = buildUserProfile();
         userProfile.setStatus(IdamStatus.ACTIVE);
@@ -283,7 +309,7 @@ public class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegr
         String userId = persistedUserProfile.getIdamId();
         assertThat(userId).isNotNull();
 
-        mockWithUpdateRolesFailure(HttpStatus.PRECONDITION_FAILED, true, userId);
+        mockWithUpdateRolesFailure(HttpStatus.PRECONDITION_FAILED, isBodyRequired, userId);
 
         UpdateUserProfileData userRoles = new UpdateUserProfileData();
 
@@ -302,13 +328,16 @@ public class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegr
 
         assertThat(userProfileRolesResponse.getRoleAdditionResponse().getIdamStatusCode()).isEqualTo("412");
         assertThat(userProfileRolesResponse.getRoleAdditionResponse().getIdamMessage())
-                .isEqualTo("One or more of the roles provided does not exist.");
+                .isEqualTo(expectedErrorMessage);
 
     }
 
-    @Test
-    public void sld_see_err_msg_from_idam_when_role_addition_fails_and_sidam_does_not_returns_error_response()
-            throws Exception {
+    @ParameterizedTest
+    @MethodSource("deleteFailScenarioArguments")
+    void shouldGetErrorMessageFromIdamWhenRoleDeletionFails(final boolean isBodyRequired,
+                                                            final boolean isUnassignedRole,
+                                                            final String statusCode,
+                                                            final String expectedErrorMessage) throws Exception {
 
         UserProfile userProfile = buildUserProfile();
         userProfile.setStatus(IdamStatus.ACTIVE);
@@ -317,41 +346,7 @@ public class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegr
         String userId = persistedUserProfile.getIdamId();
         assertThat(userId).isNotNull();
 
-        mockWithUpdateRolesFailure(HttpStatus.PRECONDITION_FAILED, false, userId);
-
-        UpdateUserProfileData userRoles = new UpdateUserProfileData();
-
-        Set<RoleName> roles = new HashSet<>();
-        roles.add(role1);
-        roles.add(role2);
-
-        userRoles.setRolesAdd(roles);
-        UserProfileRolesResponse userProfileRolesResponse = userProfileRequestHandlerTest.sendPut(
-                mockMvc,
-                APP_BASE_PATH + "/" + userId,
-                userRoles,
-                OK,
-                UserProfileRolesResponse.class
-        );
-
-        assertThat(userProfileRolesResponse.getRoleAdditionResponse().getIdamStatusCode()).isEqualTo("412");
-        assertThat(userProfileRolesResponse.getRoleAdditionResponse().getIdamMessage())
-                .isEqualTo("Problem while role addition/deletion");
-
-    }
-
-    @Test
-    public void should_see_error_message_from_idam_when_role_deletion_fails_and_sidam_returns_error_response()
-            throws Exception {
-
-        UserProfile userProfile = buildUserProfile();
-        userProfile.setStatus(IdamStatus.ACTIVE);
-        UserProfile persistedUserProfile = userProfileRepository.save(userProfile);
-
-        String userId = persistedUserProfile.getIdamId();
-        assertThat(userId).isNotNull();
-
-        mockWithDeleteRoleFailure(HttpStatus.PRECONDITION_FAILED, true, false);
+        mockWithDeleteRoleFailure(HttpStatus.PRECONDITION_FAILED, isBodyRequired, isUnassignedRole);
 
         UpdateUserProfileData userRoles = new UpdateUserProfileData();
 
@@ -369,81 +364,26 @@ public class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegr
         );
 
         userProfileRolesResponse.getRoleDeletionResponse().forEach(roleDeletionResponse -> {
-            assertThat(roleDeletionResponse.getIdamStatusCode()).isEqualTo("412");
+            assertThat(roleDeletionResponse.getIdamStatusCode()).isEqualTo(statusCode);
             assertThat(roleDeletionResponse.getIdamMessage())
-                    .isEqualTo("One or more of the roles provided does not exist.");
+                    .isEqualTo(expectedErrorMessage);
         });
 
     }
 
-    @Test
-    public void should_see_error_when_role_deletion_of_unassigned_role()
-            throws Exception {
-
-        UserProfile userProfile = buildUserProfile();
-        userProfile.setStatus(IdamStatus.ACTIVE);
-        UserProfile persistedUserProfile = userProfileRepository.save(userProfile);
-
-        String userId = persistedUserProfile.getIdamId();
-        assertThat(userId).isNotNull();
-
-        mockWithDeleteRoleFailure(HttpStatus.PRECONDITION_FAILED, true, true);
-
-        UpdateUserProfileData userRoles = new UpdateUserProfileData();
-
-        Set<RoleName> roles = new HashSet<>();
-        roles.add(role1);
-        roles.add(role2);
-
-        userRoles.setRolesDelete(roles);
-        UserProfileRolesResponse userProfileRolesResponse = userProfileRequestHandlerTest.sendPut(
-                mockMvc,
-                APP_BASE_PATH + "/" + userId,
-                userRoles,
-                OK,
-                UserProfileRolesResponse.class
-        );
-
-        userProfileRolesResponse.getRoleDeletionResponse().forEach(roleDeletionResponse -> {
-            assertThat(roleDeletionResponse.getIdamStatusCode()).isEqualTo("412");
-            assertThat(roleDeletionResponse.getIdamMessage())
-                    .isEqualTo("The role provided is not assigned to the user.");
-        });
+    private static Stream<Arguments> updateFailScenarioArguments() {
+        return Stream.of(arguments(
+                true, "One or more of the roles provided does not exist.",
+                false, "Problem while role addition/deletion"
+        ));
     }
 
-    @Test
-    public void should_see_error_message_from_idam_when_role_deletion_fails_and_sidam_does_not_returns_error_response()
-            throws Exception {
-
-        UserProfile userProfile = buildUserProfile();
-        userProfile.setStatus(IdamStatus.ACTIVE);
-        UserProfile persistedUserProfile = userProfileRepository.save(userProfile);
-
-        String userId = persistedUserProfile.getIdamId();
-        assertThat(userId).isNotNull();
-
-        mockWithDeleteRoleFailure(HttpStatus.PRECONDITION_FAILED, false, false);
-
-        UpdateUserProfileData userRoles = new UpdateUserProfileData();
-
-        Set<RoleName> roles = new HashSet<>();
-        roles.add(role1);
-        roles.add(role2);
-
-        userRoles.setRolesDelete(roles);
-        UserProfileRolesResponse userProfileRolesResponse = userProfileRequestHandlerTest.sendPut(
-                mockMvc,
-                APP_BASE_PATH + "/" + userId,
-                userRoles,
-                OK,
-                UserProfileRolesResponse.class
-        );
-
-        userProfileRolesResponse.getRoleDeletionResponse().forEach(roleDeletionResponse -> {
-            assertThat(roleDeletionResponse.getIdamStatusCode()).isEqualTo("412");
-            assertThat(roleDeletionResponse.getIdamMessage()).isEqualTo("Problem while role addition/deletion");
-        });
-
+    private static Stream<Arguments> deleteFailScenarioArguments() {
+        return Stream.of(arguments(
+                true, false, "412", "One or more of the roles provided does not exist.",
+                true, true, "412", "The role provided is not assigned to the user.",
+                false, false, "412", "Problem while role addition/deletion"
+        ));
     }
 
 }

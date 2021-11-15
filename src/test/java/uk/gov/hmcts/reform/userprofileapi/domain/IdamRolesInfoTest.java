@@ -1,21 +1,21 @@
 package uk.gov.hmcts.reform.userprofileapi.domain;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamUserResponse;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.junit.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamUserResponse;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
-public class IdamRolesInfoTest {
+class IdamRolesInfoTest {
 
     @Test
-    public void test_populate_all_fields() {
+    void test_populate_all_fields() {
         Boolean active = true;
         String email = "some@hmcts.net";
         String foreName = "firstName";
@@ -42,7 +42,7 @@ public class IdamRolesInfoTest {
     }
 
     @Test
-    public void test_isSuccessFromIdam_ReturnsFalseWhenStatusIs400() {
+    void test_isSuccessFromIdam_ReturnsFalseWhenStatusIs400() {
         IdamUserResponse idamUserResponse = mock(IdamUserResponse.class);
         ResponseEntity<Object> entity = new ResponseEntity<>(idamUserResponse, HttpStatus.BAD_REQUEST);
 
@@ -55,7 +55,7 @@ public class IdamRolesInfoTest {
     }
 
     @Test
-    public void idamResponseNullWhenStatusIs400() {
+    void idamResponseNullWhenStatusIs400() {
         IdamUserResponse idamUserResponse = null;
         ResponseEntity<Object> entity = new ResponseEntity<>(idamUserResponse, HttpStatus.BAD_REQUEST);
 

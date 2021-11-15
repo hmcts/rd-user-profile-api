@@ -1,18 +1,18 @@
 package uk.gov.hmcts.reform.userprofileapi.resource;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Test;
-import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class UpdateUserProfileDataTest {
+class UpdateUserProfileDataTest {
 
     @Test
-    public void test_add_roles_add_when_updated() {
+    void test_add_roles_add_when_updated() {
         UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData();
 
         Set<RoleName> roles = new HashSet<>();
@@ -27,7 +27,7 @@ public class UpdateUserProfileDataTest {
     }
 
     @Test
-    public void test_isSameAsUserProfile() {
+    void test_isSameAsUserProfile() {
         UserProfile userProfile = new UserProfile();
         userProfile.setStatus(IdamStatus.ACTIVE);
         userProfile.setFirstName("fname");

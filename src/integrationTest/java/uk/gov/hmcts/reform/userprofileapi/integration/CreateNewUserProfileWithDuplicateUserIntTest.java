@@ -1,23 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
-import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
-
-import java.util.List;
-import java.util.Optional;
-
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,16 +16,32 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserType;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
+import java.util.List;
+import java.util.Optional;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
+import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
+
 @SpringBootTest(webEnvironment = MOCK)
 @Transactional
-public class CreateNewUserProfileWithDuplicateUserIntTest extends AuthorizationEnabledIntegrationTest {
+class CreateNewUserProfileWithDuplicateUserIntTest extends AuthorizationEnabledIntegrationTest {
 
 
-    @Before
+    @BeforeEach
     public void setUpWireMock() {
 
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
-        idamService.stubFor(post(urlEqualTo("/api/v1/users/registration"))
+        idamMockService.stubFor(post(urlEqualTo("/api/v1/users/registration"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withHeader("Location", "/api/v1/users/" + "7feb739c-1ae1-4ef4-9f46-86716d84fd72")
@@ -72,7 +72,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest extends AuthorizationE
                     + "}";
         }
 
-        idamService.stubFor(get(urlMatching("/api/v1/users/.*"))
+        idamMockService.stubFor(get(urlMatching("/api/v1/users/.*"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(200)
@@ -81,7 +81,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest extends AuthorizationE
     }
 
     public void mockWithUpdateSuccess() {
-        idamService.stubFor(post(urlMatching("/api/v1/users/7feb739c-1ae1-4ef4-9f46-86716d84fd72/roles"))
+        idamMockService.stubFor(post(urlMatching("/api/v1/users/7feb739c-1ae1-4ef4-9f46-86716d84fd72/roles"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(200)
@@ -89,7 +89,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest extends AuthorizationE
     }
 
     public void mockWithGetFail() {
-        idamService.stubFor(get(urlMatching("/api/v1/users/.*"))
+        idamMockService.stubFor(get(urlMatching("/api/v1/users/.*"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(404)
@@ -98,7 +98,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest extends AuthorizationE
     }
 
     public void mockWithUpdateFail() {
-        idamService.stubFor(post(urlMatching("/api/v1/users/7feb739c-1ae1-4ef4-9f46-86716d84fd72/roles"))
+        idamMockService.stubFor(post(urlMatching("/api/v1/users/7feb739c-1ae1-4ef4-9f46-86716d84fd72/roles"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(400)
@@ -106,7 +106,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest extends AuthorizationE
     }
 
     @Test
-    public void should_return_201_and_create_user_profile_when_duplicate_in_sidam() throws Exception {
+    void should_return_201_and_create_user_profile_when_duplicate_in_sidam() throws Exception {
 
         mockWithGetSuccess(false);
         mockWithUpdateSuccess();
@@ -121,12 +121,12 @@ public class CreateNewUserProfileWithDuplicateUserIntTest extends AuthorizationE
                         UserProfileCreationResponse.class
                 );
 
-        verifyUserProfileCreation(createdResource, CREATED, data, IdamStatus.ACTIVE);
+        verifyUserProfileCreation(createdResource, CREATED, IdamStatus.ACTIVE);
 
     }
 
     @Test
-    public void should_return_201_and_create_user_profile_when_status_not_properly_returned_by_sidam()
+    void should_return_201_and_create_user_profile_when_status_not_properly_returned_by_sidam()
             throws Exception {
 
         mockWithGetSuccess(false);
@@ -142,12 +142,12 @@ public class CreateNewUserProfileWithDuplicateUserIntTest extends AuthorizationE
                         UserProfileCreationResponse.class
                 );
 
-        verifyUserProfileCreation(createdResource, CREATED, data, IdamStatus.ACTIVE);
+        verifyUserProfileCreation(createdResource, CREATED, IdamStatus.ACTIVE);
 
     }
 
     @Test
-    public void should_return_404_and_not_create_user_profile_when_duplicate_in_sidam_and_get_failed()
+    void should_return_404_and_not_create_user_profile_when_duplicate_in_sidam_and_get_failed()
             throws Exception {
 
         mockWithGetFail();
@@ -170,7 +170,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest extends AuthorizationE
     }
 
     @Test
-    public void should_return_400_and_not_create_user_profile_when_duplicate_in_sidam_and_update_failed()
+    void should_return_400_and_not_create_user_profile_when_duplicate_in_sidam_and_update_failed()
             throws Exception {
 
         mockWithGetSuccess(true);
@@ -193,7 +193,7 @@ public class CreateNewUserProfileWithDuplicateUserIntTest extends AuthorizationE
     }
 
     private void verifyUserProfileCreation(UserProfileCreationResponse createdResource, HttpStatus idamStatus,
-                                           UserProfileCreationData data, IdamStatus expectedIdamStatus) {
+                                           IdamStatus expectedIdamStatus) {
 
         assertThat(createdResource.getIdamId()).isNotNull();
         assertThat(createdResource.getIdamId()).isInstanceOf(String.class);
@@ -207,8 +207,8 @@ public class CreateNewUserProfileWithDuplicateUserIntTest extends AuthorizationE
         assertThat(userProfile.getUserCategory()).isEqualTo(UserCategory.PROFESSIONAL);
         assertThat(userProfile.getUserType()).isEqualTo(UserType.EXTERNAL);
         assertThat(userProfile.getStatus()).isEqualTo(expectedIdamStatus);
-        assertThat(userProfile.isEmailCommsConsent()).isEqualTo(false);
-        assertThat(userProfile.isPostalCommsConsent()).isEqualTo(false);
+        assertThat(userProfile.isEmailCommsConsent()).isFalse();
+        assertThat(userProfile.isPostalCommsConsent()).isFalse();
         assertThat(userProfile.getEmailCommsConsentTs()).isNull();
         assertThat(userProfile.getPostalCommsConsentTs()).isNull();
         assertThat(userProfile.getCreated()).isNotNull();
