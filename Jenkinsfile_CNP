@@ -118,8 +118,7 @@ withPipeline(type, product, component) {
             publishHTML target: [
                 reportDir            : "target/site/serenity/",
                 reportFiles          : "index.html",
-                reportName           : "Functional Tests Report",
-                alwaysLinkToLastBuild: true
+                reportName           : "Functional Tests Report"
             ]
 
         }
@@ -129,8 +128,7 @@ withPipeline(type, product, component) {
         publishHTML target: [
             reportDir            : "target/site/serenity/",
             reportFiles          : "index.html",
-            reportName           : "Functional Tests Report",
-            alwaysLinkToLastBuild: true
+            reportName           : "Functional Tests Report"
         ]
     }
 
