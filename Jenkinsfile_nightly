@@ -92,4 +92,15 @@ def deleteFunctionalDbData() {
                         ${FUNC_DATABASE_HOST} \
                         ${FUNC_DATABASE_PORT}"
     }
+
+    after('mutationTest') {
+        publishHTML target: [
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "build/reports/pitest",
+                reportFiles          : "index.html",
+                reportName           : "Mutation Test Report"
+        ]
+    }
 }
