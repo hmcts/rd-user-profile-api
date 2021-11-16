@@ -116,9 +116,6 @@ withPipeline(type, product, component) {
     after('functionalTest:aat') {
             steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
             publishHTML target: [
-                allowMissing         : true,
-                alwaysLinkToLastBuild: true,
-                keepAll              : true,
                 reportDir            : "target/site/serenity/",
                 reportFiles          : "index.html",
                 reportName           : "Functional Tests Report",
@@ -130,9 +127,6 @@ withPipeline(type, product, component) {
     after('functionalTest:preview') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
         publishHTML target: [
-            allowMissing         : true,
-            alwaysLinkToLastBuild: true,
-            keepAll              : true,
             reportDir            : "target/site/serenity/",
             reportFiles          : "index.html",
             reportName           : "Functional Tests Report",
@@ -145,7 +139,7 @@ withPipeline(type, product, component) {
              allowMissing         : true,
              alwaysLinkToLastBuild: true,
              keepAll              : true,
-            reportDir            : "build/reports/tests/contractTest",
+            reportDir            : "build/reports/tests/runProviderPactVerification",
             reportFiles          : "index.html",
             reportName           : "Contract Tests Report",
             alwaysLinkToLastBuild: true
