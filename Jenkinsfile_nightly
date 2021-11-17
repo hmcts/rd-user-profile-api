@@ -93,7 +93,7 @@ withNightlyPipeline(type, product, component) {
         ]
     }
 
-    after('functionalTest:aat') {
+    after('fullFunctionalTest:aat') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/**/*'
         publishHTML target: [
@@ -107,7 +107,7 @@ withNightlyPipeline(type, product, component) {
 
     }
 
-    after('functionalTest:preview') {
+    after('fullFunctionalTest:preview') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/**/*'
         publishHTML target: [
