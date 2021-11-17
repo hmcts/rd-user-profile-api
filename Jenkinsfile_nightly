@@ -81,17 +81,6 @@ withNightlyPipeline(type, product, component) {
     after('fortify-scan') {
       steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
     }
-}
-
-def deleteFunctionalDbData() {
-    withDocker('jbergknoff/postgresql-client', "--entrypoint='' -e PGPASSWORD=${FUNC_DATABASE_PASS} -v ${WORKSPACE}/deletescript/:/deletescript") {
-        sh "chmod +x /deletescript/delete-functional-data.sh"
-        sh "/deletescript/delete-functional-data.sh \
-                        ${FUNC_DATABASE_USER} \
-                        ${FUNC_DATABASE_NAME} \
-                        ${FUNC_DATABASE_HOST} \
-                        ${FUNC_DATABASE_PORT}"
-    }
 
     after('mutationTest') {
         publishHTML target: [
@@ -102,5 +91,43 @@ def deleteFunctionalDbData() {
                 reportFiles          : "index.html",
                 reportName           : "Mutation Test Report"
         ]
+    }
+
+    after('functionalTest:aat') {
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/**/*'
+        publishHTML target: [
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "target/site/serenity/",
+                reportFiles          : "index.html",
+                reportName           : "Functional Tests Report"
+        ]
+
+    }
+
+    after('functionalTest:preview') {
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/**/*'
+        publishHTML target: [
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "target/site/serenity/",
+                reportFiles          : "index.html",
+                reportName           : "Functional Tests Report"
+        ]
+    }
+}
+
+def deleteFunctionalDbData() {
+    withDocker('jbergknoff/postgresql-client', "--entrypoint='' -e PGPASSWORD=${FUNC_DATABASE_PASS} -v ${WORKSPACE}/deletescript/:/deletescript") {
+        sh "chmod +x /deletescript/delete-functional-data.sh"
+        sh "/deletescript/delete-functional-data.sh \
+                        ${FUNC_DATABASE_USER} \
+                        ${FUNC_DATABASE_NAME} \
+                        ${FUNC_DATABASE_HOST} \
+                        ${FUNC_DATABASE_PORT}"
     }
 }
