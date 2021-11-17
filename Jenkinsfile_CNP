@@ -65,12 +65,12 @@ withPipeline(type, product, component) {
     after('sonarscan') {
 
         publishHTML target: [
-                    allowMissing         : true,
-                    alwaysLinkToLastBuild: true,
-                    keepAll              : true,
-                    reportDir            : "build/reports/tests/test",
-                    reportFiles          : "index.html",
-                    reportName           : "Unit Tests Report"
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : "build/reports/tests/test",
+            reportFiles          : "index.html",
+            reportName           : "Unit Tests Report"
         ]
 
         publishHTML target: [
@@ -106,17 +106,16 @@ withPipeline(type, product, component) {
     }
 
     after('functionalTest:aat') {
-            steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
-            publishHTML target: [
-                allowMissing         : true,
-                alwaysLinkToLastBuild: true,
-                keepAll              : true,
-                reportDir            : "target/site/serenity/",
-                reportFiles          : "index.html",
-                reportName           : "Functional Tests Report"
-            ]
-
-        }
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+        publishHTML target: [
+            allowMissing         : true,
+            alwaysLinkToLastBuild: true,
+            keepAll              : true,
+            reportDir            : "target/site/serenity/",
+            reportFiles          : "index.html",
+            reportName           : "Functional Tests Report"
+        ]
+    }
 
     after('functionalTest:preview') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
@@ -137,8 +136,7 @@ withPipeline(type, product, component) {
              keepAll              : true,
             reportDir            : "build/reports/tests/runProviderPactVerification",
             reportFiles          : "index.html",
-            reportName           : "Contract Tests Report",
-            alwaysLinkToLastBuild: true
+            reportName           : "Contract Tests Report"
         ]
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/**/*'
     }
