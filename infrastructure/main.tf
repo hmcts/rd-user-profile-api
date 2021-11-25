@@ -68,21 +68,7 @@ resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
   value         = module.db-user-profile-v11.postgresql_database
   key_vault_id  = data.azurerm_key_vault.rd_key_vault.id
 }
-
-module "db-user-profile" {
-  source            = "git@github.com:hmcts/cnp-module-postgres?ref=master"
-  product           = var.product
-  component         = var.component
-  name              = join("-", [var.product, var.component, "postgres-db"])
-  location          = var.location
-  subscription      = var.subscription
-  env               = var.env
-  postgresql_user   = "dbuserprofile"
-  database_name     = "dbuserprofile"
-  common_tags       = var.common_tags
-  postgresql_version = "9.6"
-}
-
+\
 module "db-user-profile-v11" {
   source             = "git@github.com:hmcts/cnp-module-postgres?ref=master"
   product            = var.product
@@ -95,10 +81,4 @@ module "db-user-profile-v11" {
   database_name      = "dbuserprofile"
   common_tags        = var.common_tags
   postgresql_version = "11"
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES-PASS-v11" {
-  name          = join("-", [var.component, "POSTGRES-PASS-v11"])
-  value         = module.db-user-profile-v11.postgresql_password
-  key_vault_id  = data.azurerm_key_vault.rd_key_vault.id
 }
