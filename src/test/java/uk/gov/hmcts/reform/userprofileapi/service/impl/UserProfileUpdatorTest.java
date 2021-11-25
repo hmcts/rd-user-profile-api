@@ -92,7 +92,9 @@ class UserProfileUpdatorTest {
             idamRegistrationInfo.getIdamRegistrationResponse());
 
     private final IdamFeignClient idamFeignClientMock = mock(IdamFeignClient.class);
-
+    //static, memory leak?
+    //private final String EXUI = "EXUI";?
+    //private final String SYNC = "sync";?
     private static final String EXUI = "EXUI";
 
     private static final String SYNC = "sync";

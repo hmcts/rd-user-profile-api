@@ -63,6 +63,7 @@ class ValidationHelperServiceTest {
 
     @Spy
     @InjectMocks
+    //may be final
     private ValidationHelperService sut = new ValidationHelperServiceImpl();
 
     @Test

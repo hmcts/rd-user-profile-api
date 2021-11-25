@@ -27,7 +27,7 @@ import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 @Service
 @AllArgsConstructor
 public class UserProfileRetriever implements ResourceRetriever<UserProfileIdentifier> {
-
+    //may be final?
     @Autowired
     private AuditService auditService;
     @Autowired

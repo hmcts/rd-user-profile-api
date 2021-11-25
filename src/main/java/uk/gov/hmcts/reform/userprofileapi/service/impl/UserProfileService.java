@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.userprofileapi.service.ResourceUpdator;
 @Service
 @AllArgsConstructor
 public class UserProfileService<T extends RequestData> {
-
+    //may be final?
     @Autowired
     private ResourceCreator<T> resourceCreator;
 

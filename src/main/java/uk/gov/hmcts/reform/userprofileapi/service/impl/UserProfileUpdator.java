@@ -44,24 +44,24 @@ import uk.gov.hmcts.reform.userprofileapi.util.UserProfileMapper;
 @Slf4j
 @AllArgsConstructor
 public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData> {
+    //may be final?
+    @Autowired
+    private final UserProfileRepository userProfileRepository;
 
     @Autowired
-    private UserProfileRepository userProfileRepository;
+    private final IdamFeignClient idamClient;
 
     @Autowired
-    private IdamFeignClient idamClient;
+    private final IdamService idamService;
 
     @Autowired
-    private IdamService idamService;
-
-    @Autowired
-    private ValidationService validationService;
+    private final ValidationService validationService;
 
     @Autowired
     ValidationHelperService validationHelperService;
 
     @Autowired
-    private AuditService auditService;
+    private final AuditService auditService;
 
     @Override
     public AttributeResponse update(UpdateUserProfileData updateUserProfileData, String userId, String origin) {
