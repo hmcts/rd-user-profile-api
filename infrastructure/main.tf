@@ -68,7 +68,7 @@ resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
   value         = module.db-user-profile-v11.postgresql_database
   key_vault_id  = data.azurerm_key_vault.rd_key_vault.id
 }
-\
+
 module "db-user-profile-v11" {
   source             = "git@github.com:hmcts/cnp-module-postgres?ref=master"
   product            = var.product
