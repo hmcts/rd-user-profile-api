@@ -4,8 +4,7 @@ import java.util.List;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdentifierName;
 
 public class UserProfileIdentifier implements RequestData {
-    //may be final?
-    private IdentifierName name;
+    private final IdentifierName name;
     private String value;
     private List<String> values;
 
