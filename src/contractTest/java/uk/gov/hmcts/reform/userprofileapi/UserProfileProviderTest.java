@@ -49,7 +49,8 @@ import java.util.function.Supplier;
 
 @ExtendWith(SpringExtension.class)
 @Provider("rd_user_profile_api_service")
-@PactBroker(url = "${PACT_BROKER_SCHEME:http:}${PACT_BROKER_URL://localhost}${PACT_BROKER_PORT:9292}")
+@PactBroker(scheme = "${PACT_BROKER_SCHEME:http}", host = "${PACT_BROKER_URL:localhost}",
+        port = "${PACT_BROKER_PORT:9292}")
 @Import(UserProfileProviderTestConfiguration.class)
 public class UserProfileProviderTest {
 
