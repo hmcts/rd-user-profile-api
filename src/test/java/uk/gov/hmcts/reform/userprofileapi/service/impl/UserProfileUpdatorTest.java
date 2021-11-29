@@ -92,12 +92,8 @@ class UserProfileUpdatorTest {
             idamRegistrationInfo.getIdamRegistrationResponse());
 
     private final IdamFeignClient idamFeignClientMock = mock(IdamFeignClient.class);
-    //static, memory leak?
-    //private final String EXUI = "EXUI";?
-    //private final String SYNC = "sync";?
-    private static final String EXUI = "EXUI";
 
-    private static final String SYNC = "sync";
+    private final String EXUI = "EXUI";
 
     @InjectMocks
     private UserProfileUpdator sut;
@@ -331,6 +327,7 @@ class UserProfileUpdatorTest {
         when(validationServiceMock.validateUpdate(any(), any(), any())).thenReturn(userProfile);
         when(validationHelperServiceMock.validateUserPersisted(any())).thenReturn(true);
 
+        String SYNC = "sync";
         AttributeResponse response = sut.update(updateUserProfileData, userProfile.getIdamId(), SYNC);
 
         assertThat(response).isNotNull();

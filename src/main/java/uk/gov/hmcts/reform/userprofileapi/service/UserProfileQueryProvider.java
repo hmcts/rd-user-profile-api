@@ -13,8 +13,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
 
 @Service
 public class UserProfileQueryProvider {
-    //may be final?
-    private UserProfileRepository userProfileRepository;
+    private final UserProfileRepository userProfileRepository;
 
     public UserProfileQueryProvider(UserProfileRepository userProfileRepository) {
         this.userProfileRepository = userProfileRepository;

@@ -130,7 +130,6 @@ public class UserProfileControllerAdvice {
         return new SimpleDateFormat("dd-MM-yyyy HH:mm:ss.SSS", Locale.ENGLISH).format(new Date());
     }
 
-    //memory leak?
     public static Throwable getRootException(Throwable exception) {
         Throwable rootException = exception;
         while (rootException.getCause() != null) {
@@ -164,7 +163,6 @@ public class UserProfileControllerAdvice {
             errorDesc = getRootException(ex).getLocalizedMessage();
         }
 
-        //should have a finally block?
 
         log.error("{}:: {}", loggingComponentName, LOG_STRING, ex);
         ErrorResponse errorDetails = ErrorResponse.builder()

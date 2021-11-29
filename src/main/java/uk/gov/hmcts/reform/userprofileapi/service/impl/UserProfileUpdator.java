@@ -44,7 +44,6 @@ import uk.gov.hmcts.reform.userprofileapi.util.UserProfileMapper;
 @Slf4j
 @AllArgsConstructor
 public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData> {
-    //may be final?
     @Autowired
     private final UserProfileRepository userProfileRepository;
 

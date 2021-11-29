@@ -63,8 +63,7 @@ class ValidationHelperServiceTest {
 
     @Spy
     @InjectMocks
-    //may be final
-    private ValidationHelperService sut = new ValidationHelperServiceImpl();
+    private final ValidationHelperService sut = new ValidationHelperServiceImpl();
 
     @Test
     void test_ValidateUserIdHappyPath() {

@@ -54,8 +54,7 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
     }
 
     public void validateUserIsPresent(Optional<UserProfile> userProfile) {
-        //replace with isEmpty()?
-        if (!userProfile.isPresent()) {
+        if (userProfile.isEmpty()) {
             auditService.persistAudit(NOT_FOUND, SYNC);
             final String exceptionMsg = String.format("%s - could not find user profile", RESOURCENOTFOUNDEXCEPTION);
             exceptionService.throwCustomRuntimeException(RESOURCENOTFOUNDEXCEPTION, exceptionMsg);
@@ -117,9 +116,9 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
     public UserProfile validateReInvitedUser(Optional<UserProfile> userProfileOpt) {
         validateUserIsPresent(userProfileOpt);
         UserProfile userProfile = userProfileOpt.orElse(null);
-        //null pointer?
+        assert userProfile != null;
         validateUserStatus(userProfile, IdamStatus.PENDING);
-        validateUserLastUpdatedWithinSpecifiedTime(userProfile, Long.valueOf(resendInterval));
+        validateUserLastUpdatedWithinSpecifiedTime(userProfile, Long.parseLong(resendInterval));
         return userProfile;
     }
 }

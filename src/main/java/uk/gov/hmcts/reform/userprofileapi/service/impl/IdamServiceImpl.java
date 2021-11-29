@@ -46,7 +46,6 @@ public class IdamServiceImpl implements IdamService {
         } catch (FeignException ex) {
             result = new IdamRegistrationInfo(ResponseEntity.status(gethttpStatusFromFeignException(ex)).build());
         }
-        //needs a finally?
         return result;
     }
 
@@ -60,7 +59,6 @@ public class IdamServiceImpl implements IdamService {
         } catch (FeignException ex) {
             result = buildIdamResponseFromFeignException(ex);
         }
-        //needs a finally?
         return result;
     }
 
@@ -76,7 +74,6 @@ public class IdamServiceImpl implements IdamService {
         } catch (FeignException ex) {
             responseEntity = ResponseEntity.status(gethttpStatusFromFeignException(ex)).build();
         }
-        //needs a finally?
 
         return new IdamRolesInfo(responseEntity);
     }
@@ -93,7 +90,6 @@ public class IdamServiceImpl implements IdamService {
         } catch (FeignException ex) {
             responseEntity = ResponseEntity.status(gethttpStatusFromFeignException(ex)).build();
         }
-        //needs a finally?
 
         return new IdamRolesInfo(responseEntity);
     }
@@ -110,7 +106,6 @@ public class IdamServiceImpl implements IdamService {
             log.error("{}:: {} {}", loggingComponentName, "SIDAM call failed:", ex);
             responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        //needs a finally?
         return new AttributeResponse(responseEntity);
     }
 

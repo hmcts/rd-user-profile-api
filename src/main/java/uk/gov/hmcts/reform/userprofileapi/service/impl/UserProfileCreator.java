@@ -147,7 +147,6 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
             persistAudit(ErrorConstants.UNKNOWN_EXCEPTION.toString(), HttpStatus.INTERNAL_SERVER_ERROR, null);
             throw ex;
         }
-        //needs a finally?
     }
 
     private UserProfile handleDuplicateUser(UserProfileCreationData profileData,

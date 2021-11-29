@@ -12,10 +12,9 @@ import org.springframework.http.ResponseEntity;
 @AllArgsConstructor
 public class IdamRegistrationInfo {
 
-    //objects may be final?
-    private HttpStatus idamRegistrationResponse;
-    private String statusMessage;
-    private ResponseEntity<Object> response;
+    private final HttpStatus idamRegistrationResponse;
+    private final String statusMessage;
+    private final ResponseEntity<Object> response;
 
     public IdamRegistrationInfo(ResponseEntity<Object> response) {
         this.response = response;
