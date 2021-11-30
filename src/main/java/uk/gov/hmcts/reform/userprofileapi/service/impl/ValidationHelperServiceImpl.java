@@ -116,9 +116,8 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
     public UserProfile validateReInvitedUser(Optional<UserProfile> userProfileOpt) {
         validateUserIsPresent(userProfileOpt);
         UserProfile userProfile = userProfileOpt.orElse(null);
-        assert userProfile != null;
         validateUserStatus(userProfile, IdamStatus.PENDING);
-        validateUserLastUpdatedWithinSpecifiedTime(userProfile, Long.parseLong(resendInterval));
+        validateUserLastUpdatedWithinSpecifiedTime(userProfile, Long.valueOf(resendInterval));
         return userProfile;
     }
 }
