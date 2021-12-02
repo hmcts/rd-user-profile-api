@@ -27,15 +27,14 @@ import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 @Service
 @AllArgsConstructor
 public class UserProfileRetriever implements ResourceRetriever<UserProfileIdentifier> {
-
     @Autowired
-    private AuditService auditService;
+    private final AuditService auditService;
     @Autowired
-    private UserProfileQueryProvider querySupplier;
+    private final UserProfileQueryProvider querySupplier;
     @Autowired
-    private IdamService idamService;
+    private final IdamService idamService;
     @Autowired
-    private AuditRepository auditRepository;
+    private final AuditRepository auditRepository;
 
     @Override
     public UserProfile retrieve(UserProfileIdentifier identifier, boolean fetchRoles) {

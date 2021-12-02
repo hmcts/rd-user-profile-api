@@ -163,6 +163,7 @@ public class UserProfileControllerAdvice {
             errorDesc = getRootException(ex).getLocalizedMessage();
         }
 
+
         log.error("{}:: {}", loggingComponentName, LOG_STRING, ex);
         ErrorResponse errorDetails = ErrorResponse.builder()
                 .errorMessage(errorMsg)

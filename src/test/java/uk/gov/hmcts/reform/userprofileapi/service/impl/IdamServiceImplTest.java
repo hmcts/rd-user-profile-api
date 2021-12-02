@@ -45,7 +45,7 @@ class IdamServiceImplTest {
     private final IdamFeignClient idamFeignClientMock = Mockito.mock(IdamFeignClient.class);
 
     @InjectMocks
-    private IdamService sut = new IdamServiceImpl();
+    private final IdamService sut = new IdamServiceImpl();
 
     Map<String, Collection<String>> header = new HashMap<>();
     Request request = mock(Request.class);
