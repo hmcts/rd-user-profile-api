@@ -131,7 +131,7 @@ public class UserProfileController {
     public ResponseEntity<UserProfileCreationResponse> createUserProfile(
             @Valid @RequestBody UserProfileCreationData userProfileCreationData) {
 
-        UserProfileCreationResponse resource = null;
+        UserProfileCreationResponse resource;
         validateCreateUserProfileRequest(userProfileCreationData);
 
         if (userProfileCreationData.isResendInvite()) {

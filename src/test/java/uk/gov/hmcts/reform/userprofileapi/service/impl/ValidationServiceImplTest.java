@@ -52,7 +52,7 @@ class ValidationServiceImplTest {
 
 
     @InjectMocks
-    private ValidationService sut = new ValidationServiceImpl();
+    private final ValidationService sut = new ValidationServiceImpl();
 
     @Test
     void test_ValidateUpdateWithoutId() {
