@@ -20,21 +20,20 @@ import uk.gov.hmcts.reform.userprofileapi.service.ResourceUpdator;
 @Service
 @AllArgsConstructor
 public class UserProfileService<T extends RequestData> {
+    @Autowired
+    private final ResourceCreator<T> resourceCreator;
 
     @Autowired
-    private ResourceCreator<T> resourceCreator;
+    private final ResourceRetriever<T> resourceRetriever;
 
     @Autowired
-    private ResourceRetriever<T> resourceRetriever;
+    private final ResourceUpdator<T> resourceUpdator;
 
     @Autowired
-    private ResourceUpdator<T> resourceUpdator;
+    private final DeleteResourceService<T> resourceDeleter;
 
     @Autowired
-    private DeleteResourceService<T> resourceDeleter;
-
-    @Autowired
-    private UserProfileRepository userProfileRepository;
+    private final UserProfileRepository userProfileRepository;
 
     public UserProfileCreationResponse create(T requestData) {
         return new UserProfileCreationResponse(resourceCreator.create(requestData));

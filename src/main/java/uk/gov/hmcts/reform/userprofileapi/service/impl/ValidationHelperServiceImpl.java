@@ -54,7 +54,7 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
     }
 
     public void validateUserIsPresent(Optional<UserProfile> userProfile) {
-        if (!userProfile.isPresent()) {
+        if (userProfile.isEmpty()) {
             auditService.persistAudit(NOT_FOUND, SYNC);
             final String exceptionMsg = String.format("%s - could not find user profile", RESOURCENOTFOUNDEXCEPTION);
             exceptionService.throwCustomRuntimeException(RESOURCENOTFOUNDEXCEPTION, exceptionMsg);
