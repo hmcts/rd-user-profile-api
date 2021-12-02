@@ -94,7 +94,6 @@ class UserProfileUpdatorTest {
     private final IdamFeignClient idamFeignClientMock = mock(IdamFeignClient.class);
 
     private static final String EXUI = "EXUI";
-
     private static final String SYNC = "sync";
 
     @InjectMocks

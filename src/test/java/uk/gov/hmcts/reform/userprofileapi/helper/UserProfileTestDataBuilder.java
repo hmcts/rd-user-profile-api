@@ -70,7 +70,7 @@ public class UserProfileTestDataBuilder {
 
     }
 
-    public static UserProfile buildUserProfileWithAnIdamId() {
+    public UserProfile buildUserProfileWithAnIdamId() {
         UserProfile userProfile = new UserProfile(buildCreateUserProfileData(), HttpStatus.CREATED);
 
         Field idamIdField;
