@@ -92,8 +92,9 @@ public class UserProfileProviderTest {
     public void getUserProfile() {
         Supplier<Optional<UserProfile>> up = () -> Optional.of(genUserProfile());
         doReturn(up).when(querySupplier).getRetrieveByIdQuery(any());
-        IdamRolesInfo idamRolesInfo = new IdamRolesInfo("007", "james.bond@justice.gov.uk", "James", "Bond",
-                Collections.singletonList("Secret-Agent"), true, false,HttpStatus.OK,"11 OK");
+        IdamRolesInfo idamRolesInfo = new IdamRolesInfo("007", "test@test.com", "testFN",
+                "testSN", Collections.singletonList("Secret-Agent"), true, false,
+                HttpStatus.OK,"11 OK");
         doReturn(idamRolesInfo).when(idamService).fetchUserById(any());
     }
 
@@ -125,7 +126,7 @@ public class UserProfileProviderTest {
     }
 
     private UserProfile genUserProfile() {
-        return new UserProfile(007L,"007","james.bond@justice.gov.uk", "james", "bond",
+        return new UserProfile(007L,"007","test@test.com", "testFN", "testSN",
                 LanguagePreference.EN,true, LocalDateTime.now(),true,
                 LocalDateTime.now(), UserCategory.PROFESSIONAL, UserType.INTERNAL,
                 IdamStatus.ACTIVE, 1, LocalDateTime.now(),LocalDateTime.now(),null,

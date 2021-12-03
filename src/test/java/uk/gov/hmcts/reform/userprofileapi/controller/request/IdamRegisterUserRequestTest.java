@@ -12,7 +12,7 @@ class IdamRegisterUserRequestTest {
 
     @Test
     void test_populate_fields() {
-        String email = "some@hmcts.com";
+        String email = "test@test.com";
         String firstName = "fname";
         String lastName = "lname";
         String id = UUID.randomUUID().toString();
