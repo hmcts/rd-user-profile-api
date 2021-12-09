@@ -46,7 +46,7 @@ class ValidationServiceImplTest {
     private final UserProfile userProfile = new UserProfile(userProfileCreationData, idamRegistrationInfo
             .getIdamRegistrationResponse());
 
-    private final UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("email@net.com",
+    private final UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("test@test.com",
             "firstName", "lastName", "ACTIVE", new HashSet<>(),
             new HashSet<>());
 

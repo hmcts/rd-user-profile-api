@@ -31,7 +31,7 @@ class UserProfileMapperTest {
     private final IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(status(CREATED).build());
     private final UserProfile userProfile = new UserProfile(userProfileCreationData,
             idamRegistrationInfo.getIdamRegistrationResponse());
-    private final UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("email@net.com",
+    private final UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("test@test.com",
             "firstName", "lastName", "ACTIVE", new HashSet<RoleName>(),
             new HashSet<RoleName>());
 
@@ -39,7 +39,7 @@ class UserProfileMapperTest {
     void test_mapUpdatableFields() {
         UserProfileMapper.mapUpdatableFields(updateUserProfileData, userProfile, false);
 
-        assertThat(userProfile.getEmail()).isEqualTo("email@net.com");
+        assertThat(userProfile.getEmail()).isEqualTo("test@test.com");
         assertThat(userProfile.getFirstName()).isEqualTo("firstName");
         assertThat(userProfile.getLastName()).isEqualTo("lastName");
         assertThat(userProfile.getStatus().name()).isEqualTo("ACTIVE");

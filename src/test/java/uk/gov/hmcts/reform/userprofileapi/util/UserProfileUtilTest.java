@@ -20,10 +20,10 @@ class UserProfileUtilTest {
     @Test
     void testGetUserEmailFromHeader() {
         HttpServletRequest httpRequest = mock(HttpServletRequest.class);
-        String email = "adil@praveen.com";
+        String email = "test@test.com";
 
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(httpRequest));
-        when(httpRequest.getHeader(anyString())).thenReturn("adil@praveen.com");
+        when(httpRequest.getHeader(anyString())).thenReturn("test@test.com");
 
         assertThat(email).isEqualTo(UserProfileUtil.getUserEmailFromHeader());
 
