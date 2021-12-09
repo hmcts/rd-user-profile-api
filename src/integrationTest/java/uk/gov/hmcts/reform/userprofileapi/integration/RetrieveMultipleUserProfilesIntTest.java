@@ -52,7 +52,7 @@ class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledIntegratio
                                 + "  \"active\": \"true\","
                                 + "  \"forename\": \"fname\","
                                 + "  \"surname\": \"lname\","
-                                + "  \"email\": \"user@hmcts.net\","
+                                + "  \"email\": \"test@test.com\","
                                 + "  \"roles\": ["
                                 + "    \"pui-case-manager\""
                                 + "  ]"
