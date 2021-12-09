@@ -277,7 +277,7 @@ class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
                         mockMvc,
                         APP_BASE_PATH,
                         NOT_FOUND,
-                        "randomemail@somewhere.com"
+                        "test@test.com"
                 );
 
         assertThat(result.getResponse()).isNotNull();
@@ -297,7 +297,7 @@ class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
                         mockMvc,
                         APP_BASE_PATH,
                         NOT_FOUND,
-                        "randomemail@somewhere.com"
+                        "test@test.com"
                 );
 
 

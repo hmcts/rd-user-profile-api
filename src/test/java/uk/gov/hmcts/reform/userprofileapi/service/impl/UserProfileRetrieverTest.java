@@ -66,7 +66,7 @@ class UserProfileRetrieverTest {
     @BeforeEach
     public void setUp() {
         Boolean active = true;
-        String email = "some@hmcts.net";
+        String email = "test@test.com";
         String foreName = "firstName";
         String userId = UUID.randomUUID().toString();
         List<String> roles = new ArrayList<>();
