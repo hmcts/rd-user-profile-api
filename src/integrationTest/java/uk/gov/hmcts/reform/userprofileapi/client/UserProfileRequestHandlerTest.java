@@ -25,10 +25,9 @@ public class UserProfileRequestHandlerTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private static final String IDAM_TOKEN = "authorization-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9";
+    private static final String IDAM_TOKEN = "";
 
-    private static final String JWT_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZS"
-            .concat("I6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c");
+    private static final String JWT_TOKEN = "";
 
     public static final String COMMON_EMAIL_PATTERN = "@prdfunctestuser.com";
 

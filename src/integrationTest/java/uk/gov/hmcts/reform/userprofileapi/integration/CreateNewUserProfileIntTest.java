@@ -163,7 +163,7 @@ class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
     void should_return_201_and_create_user_profile_resource_with_allowed_email() throws Exception {
 
         UserProfileCreationData data = buildCreateUserProfileData();
-        data.setEmail("a.adison@gmail.com");
+        data.setEmail("test@test.com");
 
         UserProfileCreationResponse createdResource =
                 userProfileRequestHandlerTest.sendPost(

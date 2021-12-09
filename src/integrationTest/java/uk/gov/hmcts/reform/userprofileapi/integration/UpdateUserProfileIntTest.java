@@ -256,7 +256,7 @@ class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
         UserProfile persistedUserProfile = userProfileMap.get("user");
         String idamId = persistedUserProfile.getIdamId();
         UpdateUserProfileData data = buildUpdateUserProfileData();
-        data.setEmail("a.adison@gmail.com");
+        data.setEmail("test@test.com");
 
         userProfileRequestHandlerTest.sendPut(
                 mockMvc,
