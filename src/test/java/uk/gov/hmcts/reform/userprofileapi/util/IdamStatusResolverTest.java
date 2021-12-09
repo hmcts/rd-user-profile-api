@@ -106,7 +106,7 @@ class IdamStatusResolverTest {
 
 
     public IdamRolesInfo createIdamRoleInfo(Boolean active, Boolean pending) {
-        String email = "some@hmcts.net";
+        String email = "test@test.com";
         String foreName = "firstName";
         String userId = UUID.randomUUID().toString();
         List<String> roles = Collections.singletonList("pui-case-manger");
