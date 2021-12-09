@@ -17,7 +17,7 @@ class IdamRolesInfoTest {
     @Test
     void test_populate_all_fields() {
         Boolean active = true;
-        String email = "some@hmcts.net";
+        String email = "test@test.com";
         String foreName = "firstName";
         String userId = UUID.randomUUID().toString();
         List<String> roles = new ArrayList<>();

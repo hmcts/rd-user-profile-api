@@ -58,7 +58,7 @@ class CreateNewUserProfileWithDuplicateUserIntTest extends AuthorizationEnabledI
                     + "  \"active\": \"true\","
                     + "  \"forename\": \"fname\","
                     + "  \"surname\": \"lname\","
-                    + "  \"email\": \"user@hmcts.net\","
+                    + "  \"email\": \"test@test.com\","
                     + "  \"roles\": ["
                     + "    \"pui-organisation-manager\","
                     + "    \"pui-user-manager\""
