@@ -8,10 +8,10 @@ class UpdatedUserDetailsTest {
 
     @Test
     void test_Update() {
-        final String forename = "April";
-        final String surname = "O'Neil";
+        final String forename = "testFn";
+        final String surname = "testSn";
         final boolean active = true;
-        UpdatedUserDetails sut = new UpdatedUserDetails(forename, "O'Neil", active);
+        UpdatedUserDetails sut = new UpdatedUserDetails(forename, surname, active);
 
         assertThat(sut.getForename()).isEqualTo(forename);
         assertThat(sut.getSurname()).isEqualTo(surname);
