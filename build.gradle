@@ -40,7 +40,8 @@ def versions = [
         springHystrix      : '2.2.8.RELEASE',
         springfoxSwagger   : '2.9.2',
         pact_version       : '3.5.24',
-        launchDarklySdk    : "5.2.2"
+        launchDarklySdk    : "5.2.2",
+        log4j              : '2.15.0'
 ]
 
 mainClassName = 'uk.gov.hmcts.reform.userprofileapi.Application'
@@ -326,9 +327,6 @@ dependencies {
     implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
     implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
 
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.13.3'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.13.3'
-
     implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
     implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
     implementation (group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.1.0'){
@@ -367,6 +365,11 @@ dependencies {
         exclude group: "com.sun.xml.bind", module: "jaxb-osgi"
         exclude group: "org.apache.sling"
     }
+    
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: versions.log4j
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: versions.log4j
+    implementation group: 'org.apache.logging.log4j', name: 'log4j', version: versions.log4j
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: versions.log4j
 
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit
     testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit
