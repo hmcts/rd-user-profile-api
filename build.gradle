@@ -350,7 +350,7 @@ dependencies {
         exclude group: 'org.glassfish', module: 'jakarta.el'
     }
     //Fix for CVE-2021-29425
-    implementation 'commons-io:commons-io:2.8.0'
+    implementation 'commons-io:commons-io:2.11.0'
 
     implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.10.0'
 
