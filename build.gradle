@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath("net.serenity-bdd:serenity-gradle-plugin:2.3.6")
+        classpath("net.serenity-bdd:serenity-gradle-plugin:2.4.34")
     }
 }
 
@@ -12,12 +12,12 @@ plugins {
     id 'uk.gov.hmcts.java' version '0.12.2'
     id 'jacoco'
     id 'pmd'
-    id 'com.github.ben-manes.versions' version '0.33.0'
+    id 'com.github.ben-manes.versions' version '0.39.0'
     id "info.solidsoft.pitest" version '1.7.0'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'org.sonarqube' version '3.1.1'
     id 'org.springframework.boot' version '2.4.12'
-    id "org.flywaydb.flyway" version "7.0.2"
+    id "org.flywaydb.flyway" version "7.10.0"
     id 'au.com.dius.pact' version '4.1.7'// do not change, otherwise serenity report fails
 }
 
@@ -337,7 +337,7 @@ dependencies {
 
     implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: versions.launchDarklySdk
 
-    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.11.3'
+    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.12.3'
     implementation group: 'io.jsonwebtoken', name: 'jjwt', version:'0.9.1'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.11.3'
     implementation group: 'javax.inject', name: 'javax.inject', version: '1'
@@ -352,7 +352,7 @@ dependencies {
     //Fix for CVE-2021-29425
     implementation 'commons-io:commons-io:2.8.0'
 
-    implementation group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
+    implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.10.0'
 
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.14'
 
