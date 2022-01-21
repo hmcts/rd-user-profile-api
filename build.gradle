@@ -1,9 +1,4 @@
 buildscript {
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        maven { url 'https://jitpack.io' }
-    }
     dependencies {
         classpath("net.serenity-bdd:serenity-gradle-plugin:2.4.34")
     }
@@ -14,7 +9,7 @@ plugins {
     id 'uk.gov.hmcts.java' version '0.12.2'
     id 'jacoco'
     id 'pmd'
-    id 'com.github.ben-manes.versions' version '0.38.0'
+    id 'com.github.ben-manes.versions' version '0.39.0'
     id "info.solidsoft.pitest" version '1.7.0'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'org.sonarqube' version '3.3'
@@ -291,13 +286,9 @@ project.tasks['sonarqube'].dependsOn test, integration, jacocoTestReport
 project.tasks['sonarqube'].group = "Verification"
 
 repositories {
-
-    maven {
-        url "https://jitpack.io/"
-    }
-
-    jcenter() //Builds will no longer be able to resolve artifacts from JCenter after February 1st, 2022
+    mavenLocal()
     mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
