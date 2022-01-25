@@ -34,6 +34,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -97,12 +98,12 @@ class UserProfileServiceTest {
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         UserProfileCreationResponse expected = new UserProfileCreationResponse(userProfile);
 
-        when(userProfileCreator.create(userProfileData)).thenReturn(userProfile);
+        when(userProfileCreator.create(userProfileData, "SRD")).thenReturn(userProfile);
 
-        UserProfileCreationResponse resource = userProfileService.create(userProfileData);
+        UserProfileCreationResponse resource = userProfileService.create(userProfileData, "SRD");
 
         assertThat(resource).usingRecursiveComparison().isEqualTo(expected);
-        verify(userProfileCreator).create(any(UserProfileCreationData.class));
+        verify(userProfileCreator).create(any(UserProfileCreationData.class), eq("SRD"));
 
     }
 

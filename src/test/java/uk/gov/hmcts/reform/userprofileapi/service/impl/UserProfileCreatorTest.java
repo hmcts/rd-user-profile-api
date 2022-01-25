@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.IdamRegisterUserRequest;
+import uk.gov.hmcts.reform.userprofileapi.controller.request.UpdateUserDetails;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
@@ -83,7 +84,7 @@ class UserProfileCreatorTest {
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.empty());
         when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);
 
-        UserProfile response = userProfileCreator.create(userProfileCreationData);
+        UserProfile response = userProfileCreator.create(userProfileCreationData, "SRD");
 
         assertThat(response.getEmail()).isEqualTo(userProfile.getEmail());
         assertThat(response.getFirstName()).isEqualTo(userProfile.getFirstName());
@@ -108,7 +109,7 @@ class UserProfileCreatorTest {
         when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);
 
         userProfileCreationData.setStatus(IdamStatus.PENDING);
-        UserProfile response = userProfileCreator.create(userProfileCreationData);
+        UserProfile response = userProfileCreator.create(userProfileCreationData, "SRD");
 
         assertThat(response.getEmail()).isEqualTo(userProfile.getEmail());
         assertThat(response.getFirstName()).isEqualTo(userProfile.getFirstName());
@@ -134,7 +135,7 @@ class UserProfileCreatorTest {
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.empty());
         when(userProfileRepository.save(any(UserProfile.class))).thenThrow(new RuntimeException());
 
-        assertThrows(RuntimeException.class, () -> userProfileCreator.create(userProfileCreationData));
+        assertThrows(RuntimeException.class, () -> userProfileCreator.create(userProfileCreationData, "SRD"));
 
         InOrder inOrder = inOrder(idamService, userProfileRepository);
         inOrder.verify(idamService, times(1)).registerUser(any(IdamRegisterUserRequest.class));
@@ -148,7 +149,7 @@ class UserProfileCreatorTest {
     void test_throw_409_status_code_when_user_already_exist() {
 
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
-        UserProfile userProfile = userProfileCreator.create(userProfileCreationData);
+        UserProfile userProfile = userProfileCreator.create(userProfileCreationData, "SRD");
         assertThat(userProfile).isNotNull();
         assertThat(userProfile.getIdamRegistrationResponse()).isEqualTo(409);
         verify(userProfileRepository, times(0)).save(any(UserProfile.class));
@@ -161,7 +162,7 @@ class UserProfileCreatorTest {
         idamRegistrationInfo = new IdamRegistrationInfo(status(BAD_REQUEST).build());
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.empty());
         when(idamService.registerUser(any(IdamRegisterUserRequest.class))).thenReturn(idamRegistrationInfo);
-        assertThatThrownBy(() -> userProfileCreator.create(userProfileCreationData))
+        assertThatThrownBy(() -> userProfileCreator.create(userProfileCreationData, "SRD"))
                 .isExactlyInstanceOf(IdamServiceException.class);
         verify(userProfileRepository, times(0)).save(any(UserProfile.class));
         verify(idamService, times(1)).registerUser(any(IdamRegisterUserRequest.class));
@@ -191,7 +192,7 @@ class UserProfileCreatorTest {
 
         ReflectionTestUtils.setField(userProfileCreator, "sidamGetUri", "/api/v1/users/");
 
-        UserProfile responseUserProfile = userProfileCreator.create(userProfileCreationData);
+        UserProfile responseUserProfile = userProfileCreator.create(userProfileCreationData, null);
         verify(userProfileRepository, times(1)).findByEmail(any());
         verify(userProfileRepository, times(1)).save(any(UserProfile.class));
         verify(auditRepository, times(1)).save(any(Audit.class));
@@ -227,7 +228,7 @@ class UserProfileCreatorTest {
 
         ReflectionTestUtils.setField(userProfileCreator, "sidamGetUri", "/api/v1/users/");
 
-        UserProfile responseUserProfile = userProfileCreator.create(userProfileCreationData);
+        UserProfile responseUserProfile = userProfileCreator.create(userProfileCreationData, null);
         verify(userProfileRepository, times(1)).findByEmail(any());
         verify(userProfileRepository, times(1)).save(any(UserProfile.class));
         verify(auditRepository, times(1)).save(any(Audit.class));
@@ -239,6 +240,39 @@ class UserProfileCreatorTest {
         verify(idamRolesInfo, times(2)).getForename();
         verify(idamRolesInfo, times(2)).getSurname();
         assertThat(responseUserProfile).isNotNull();
+    }
+
+    @Test
+    void test_register_when_idam_registration_conflicts_and_roles_null_with_origin() {
+
+        idamRegistrationInfo = new IdamRegistrationInfo(status(CONFLICT).build());
+
+        when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);
+        when(idamService.registerUser(any(IdamRegisterUserRequest.class))).thenReturn(idamRegistrationInfo);
+        when(idamRolesInfo.getRoles()).thenReturn(null);
+        when(idamRolesInfo.getResponseStatusCode()).thenReturn(HttpStatus.OK);
+        when(idamRolesInfo.getStatusMessage()).thenReturn("test error message");
+        when(idamRolesInfo.isSuccessFromIdam()).thenReturn(true);
+        when(idamRolesInfo.getEmail()).thenReturn("any@emai");
+        String firstName = userProfile.getFirstName();
+        when(idamRolesInfo.getForename()).thenReturn(firstName);
+        when(idamRolesInfo.getSurname()).thenReturn("lastName");
+
+        when(idamService.fetchUserById(any())).thenReturn(idamRolesInfo);
+        when(idamService.addUserRoles(any(), any())).thenReturn(idamRolesInfo);
+
+        ReflectionTestUtils.setField(userProfileCreator, "sidamGetUri", "/api/v1/users/");
+
+        UserProfile responseUserProfile = userProfileCreator.create(userProfileCreationData, "SRD");
+        verify(userProfileRepository, times(1)).save(any(UserProfile.class));
+        verify(auditRepository, times(1)).save(any(Audit.class));
+        verify(idamRolesInfo, times(1)).getRoles();
+        verify(idamRolesInfo, times(2)).getResponseStatusCode();
+        verify(idamRolesInfo, times(2)).getStatusMessage();
+        verify(idamRolesInfo, times(2)).isSuccessFromIdam();
+        verify(idamRolesInfo, times(1)).getForename();
+        verify(idamRolesInfo, times(1)).getSurname();
+        verify(idamService, times(1)).updateUserDetails(any(UpdateUserDetails.class), any());
     }
 
     @Test

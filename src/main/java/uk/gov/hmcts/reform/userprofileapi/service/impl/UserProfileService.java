@@ -35,8 +35,8 @@ public class UserProfileService<T extends RequestData> {
     @Autowired
     private final UserProfileRepository userProfileRepository;
 
-    public UserProfileCreationResponse create(T requestData) {
-        return new UserProfileCreationResponse(resourceCreator.create(requestData));
+    public UserProfileCreationResponse create(T requestData, String origin) {
+        return new UserProfileCreationResponse(resourceCreator.create(requestData, origin));
     }
 
     public UserProfileCreationResponse reInviteUser(T requestData) {

@@ -129,15 +129,16 @@ public class UserProfileController {
     @ResponseStatus(value = HttpStatus.CREATED)
     @ResponseBody
     public ResponseEntity<UserProfileCreationResponse> createUserProfile(
-            @Valid @RequestBody UserProfileCreationData userProfileCreationData) {
-
+            @Valid @RequestBody UserProfileCreationData userProfileCreationData,
+        @RequestParam(value = "origin", required = false)
+        @ApiParam(name = "origin", value = "Any Valid String is allowed") String origin) {
         UserProfileCreationResponse resource;
         validateCreateUserProfileRequest(userProfileCreationData);
 
         if (userProfileCreationData.isResendInvite()) {
             resource = userProfileService.reInviteUser(userProfileCreationData);
         } else {
-            resource = userProfileService.create(userProfileCreationData);
+            resource = userProfileService.create(userProfileCreationData, origin);
         }
 
         return ResponseEntity.status(resource.getIdamRegistrationResponse()).body(resource);

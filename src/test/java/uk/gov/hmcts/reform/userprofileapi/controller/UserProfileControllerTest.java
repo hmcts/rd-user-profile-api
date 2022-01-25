@@ -42,6 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -78,12 +79,12 @@ class UserProfileControllerTest {
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         UserProfileCreationResponse expectedBody = new UserProfileCreationResponse(userProfile);
 
-        when(userProfileServiceMock.create(userProfileCreationData)).thenReturn(expectedBody);
+        when(userProfileServiceMock.create(userProfileCreationData,"SRD")).thenReturn(expectedBody);
 
-        ResponseEntity<UserProfileCreationResponse> resource = sut.createUserProfile(userProfileCreationData);
+        ResponseEntity<UserProfileCreationResponse> resource = sut.createUserProfile(userProfileCreationData,"SRD");
         assertThat(resource.getBody()).usingRecursiveComparison().isEqualTo(expectedBody);
 
-        verify(userProfileServiceMock, times(1)).create(any(UserProfileCreationData.class));
+        verify(userProfileServiceMock, times(1)).create(any(UserProfileCreationData.class), eq("SRD"));
         verify(userProfileServiceMock, times(0))
                 .reInviteUser(any(UserProfileCreationData.class));
     }
@@ -98,10 +99,10 @@ class UserProfileControllerTest {
 
         when(userProfileServiceMock.reInviteUser(userProfileCreationData)).thenReturn(expectedBody);
 
-        ResponseEntity<UserProfileCreationResponse> resource = sut.createUserProfile(userProfileCreationData);
+        ResponseEntity<UserProfileCreationResponse> resource = sut.createUserProfile(userProfileCreationData, "SRD");
         assertThat(resource.getBody()).usingRecursiveComparison().isEqualTo(expectedBody);
 
-        verify(userProfileServiceMock, times(0)).create(any(UserProfileCreationData.class));
+        verify(userProfileServiceMock, times(0)).create(any(UserProfileCreationData.class), eq("SRD"));
         verify(userProfileServiceMock, times(1))
                 .reInviteUser(any(UserProfileCreationData.class));
     }
@@ -111,16 +112,16 @@ class UserProfileControllerTest {
         UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
         IllegalStateException ex = new IllegalStateException("this is a test exception");
 
-        when(userProfileServiceMock.create(userProfileCreationData)).thenThrow(ex);
+        when(userProfileServiceMock.create(userProfileCreationData, "SRD")).thenThrow(ex);
 
-        assertThatThrownBy(() -> sut.createUserProfile(userProfileCreationData)).isEqualTo(ex);
+        assertThatThrownBy(() -> sut.createUserProfile(userProfileCreationData, "SRD")).isEqualTo(ex);
 
-        verify(userProfileServiceMock, times(1)).create(any(UserProfileCreationData.class));
+        verify(userProfileServiceMock, times(1)).create(any(UserProfileCreationData.class), eq("SRD"));
     }
 
     @Test
     void test_CreateUserProfileWithNullParam() {
-        assertThatThrownBy(() -> sut.createUserProfile(null))
+        assertThatThrownBy(() -> sut.createUserProfile(null, "SRD"))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessageContaining("createUserProfileData");
 
