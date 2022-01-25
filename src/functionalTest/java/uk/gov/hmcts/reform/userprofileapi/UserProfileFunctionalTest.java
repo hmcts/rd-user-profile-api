@@ -33,6 +33,7 @@ import uk.gov.hmcts.reform.userprofileapi.util.ToggleEnable;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -102,6 +103,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
 
     public void createUserScenario() throws Exception {
         createUserProfileWithIdamDuplicateShouldReturnRolesAndSuccess();
+        createUserProfileWithIdamDuplicateShouldReturnNamesAndSuccess();
         createDuplicateUserProfileShouldReturnConflict();
     }
 
@@ -159,6 +161,27 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         log.info("createUserProfileWithIdamDuplicateShouldReturnRolesAndSuccess :: ENDED");
     }
 
+    public void createUserProfileWithIdamDuplicateShouldReturnNamesAndSuccess() throws Exception {
+        log.info("createUserProfileWithIdamDuplicateShouldReturnNamesAndSuccess :: STARTED");
+
+        activeUserProfile = createActiveUserProfileWithGivenNames(activeUserProfileCreationData);
+        verifyCreateUserProfile(activeUserProfile);
+
+        Map<String, String> idamResponse = getIdamResponse(activeUserProfile.getIdamId());
+
+        UserProfileWithRolesResponse resource =
+                testRequestHandler.sendGet(
+                        requestUri + "/" + activeUserProfile.getIdamId() + "/roles",
+                        UserProfileWithRolesResponse.class);
+
+        assertThat(resource.getFirstName()).contains(activeUserProfileCreationData.getFirstName());
+        assertThat(resource.getLastName()).contains(activeUserProfileCreationData.getLastName());
+        assertThat(idamResponse.get("forename")).isEqualTo(activeUserProfileCreationData.getFirstName());
+        assertThat(idamResponse.get("surname")).isEqualTo(activeUserProfileCreationData.getLastName());
+        log.info("createUserProfileWithIdamDuplicateShouldReturnRolesAndSuccess :: ENDED");
+    }
+
+
     public void createDuplicateUserProfileShouldReturnConflict() throws Exception {
         log.info("createDuplicateUserProfileShouldReturnConflict :: STARTED");
 
@@ -179,7 +202,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
 
         updateUserProfileData.setFirstName(randomAlphabetic(20));
         updateUserProfileData.setLastName(randomAlphabetic(20));
-
+        updateUserProfileData.setEmail(activeUserProfileCreationData.getEmail());
         updateUserProfile(updateUserProfileData, activeUserProfile.getIdamId());
 
         UserProfileResponse resource = testRequestHandler.sendGet(
