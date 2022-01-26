@@ -62,6 +62,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
     @Value("${loggingComponentName}")
     private String loggingComponentName;
 
+    private static final String ORIGIN_SRD = "SRD";
 
     public UserProfile create(UserProfileCreationData profileData, String origin) {
 
@@ -173,7 +174,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
 
             if (idamRolesInfo.isSuccessFromIdam()) {
 
-                if ("SRD".equals(origin)) {
+                if (ORIGIN_SRD.equals(origin)) {
                     updateSidamUserInfoWithUserProfileDetails(profileData, idamRolesInfo);
 
                 } else {
