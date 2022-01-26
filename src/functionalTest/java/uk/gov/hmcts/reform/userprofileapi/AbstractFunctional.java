@@ -71,7 +71,7 @@ public class AbstractFunctional {
         UserProfileCreationResponse resource = testRequestHandler.sendPost(
                 userProfileCreationData,
                 httpStatus,
-                requestUri + params,
+                requestUri.concat(params),
                 UserProfileCreationResponse.class
         );
         verifyCreateUserProfile(resource);
