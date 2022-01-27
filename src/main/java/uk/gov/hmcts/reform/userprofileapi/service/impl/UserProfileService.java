@@ -77,5 +77,9 @@ public class UserProfileService<T extends RequestData> {
         return resourceDeleter.deleteByEmailPattern(emailPattern);
     }
 
+    public UserProfileRolesResponse updateUserProfileData(T updateData, String userId, String origin) {
+        return resourceUpdator.updateUserProfileData(updateData, userId, origin);
+    }
+
 
 }
