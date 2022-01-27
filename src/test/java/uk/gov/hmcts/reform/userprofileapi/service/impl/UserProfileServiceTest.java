@@ -199,4 +199,22 @@ class UserProfileServiceTest {
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(204);
     }
+
+    @Test
+    void test_UpdateUserProfileData() {
+        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData();
+
+        Set<RoleName> roles = new HashSet<>();
+        roles.add(new RoleName("pui-case-manager"));
+        roles.add(new RoleName("pui-case-organisation"));
+        updateUserProfileData.setRolesAdd(roles);
+
+        UserProfileRolesResponse userProfileResponse = mock(UserProfileRolesResponse.class);
+        when(resourceUpdatorMock.updateUserProfileData(updateUserProfileData, "1234", "EXUI"))
+                .thenReturn(userProfileResponse);
+
+        userProfileService.updateUserProfileData(updateUserProfileData, "1234", "EXUI");
+        verify(resourceUpdatorMock, times(1))
+                .updateUserProfileData(updateUserProfileData, "1234", "EXUI");
+    }
 }

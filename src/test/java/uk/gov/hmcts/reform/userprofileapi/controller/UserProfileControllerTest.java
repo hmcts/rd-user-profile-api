@@ -200,6 +200,10 @@ class UserProfileControllerTest {
         roles.add(new RoleName("pui-case-manager"));
         roles.add(new RoleName("pui-case-organisation"));
         updateUserProfileData.setRolesAdd(roles);
+        updateUserProfileData.setFirstName(null);
+        updateUserProfileData.setLastName(null);
+        updateUserProfileData.setIdamStatus(null);
+        updateUserProfileData.setEmail(null);
         ResponseEntity<UserProfileRolesResponse> actual = sut.updateUserProfile(updateUserProfileData,
                 UUID.randomUUID().toString(), ORIGIN);
         verify(userProfileServiceMock, times(1)).updateRoles(any(), any());
@@ -230,7 +234,10 @@ class UserProfileControllerTest {
         roles.add(new RoleName("pui-case-manager"));
         roles.add(new RoleName("pui-case-organisation"));
         updateUserProfileData.setRolesDelete(roles);
-
+        updateUserProfileData.setFirstName(null);
+        updateUserProfileData.setLastName(null);
+        updateUserProfileData.setIdamStatus(null);
+        updateUserProfileData.setEmail(null);
         ResponseEntity<UserProfileRolesResponse> actual =
                 sut.updateUserProfile(updateUserProfileData, UUID.randomUUID().toString(), ORIGIN);
         verify(userProfileServiceMock, times(1)).updateRoles(any(), any());
@@ -313,6 +320,22 @@ class UserProfileControllerTest {
         assertThat(responseEntityActual.getStatusCodeValue()).isEqualTo(204);
         assertThat(Objects.requireNonNull(responseEntityActual.getBody()).getMessage())
                 .isEqualTo("UserProfiles Successfully Deleted");
+    }
+
+    @Test
+    void test_UpdateUserProfileData() {
+        UpdateUserProfileData updateUserProfileData = buildUpdateUserProfileData();
+        Set<RoleName> roles = new HashSet<>();
+        roles.add(new RoleName("pui-case-manager"));
+        roles.add(new RoleName("pui-case-organisation"));
+        updateUserProfileData.setRolesAdd(roles);
+        ResponseEntity<UserProfileRolesResponse> actual = sut.updateUserProfile(updateUserProfileData,
+                UUID.randomUUID().toString(), ORIGIN);
+        verify(userProfileServiceMock, times(1)).updateUserProfileData(any(), any(), any());
+
+        ResponseEntity<Object> expect = status(OK).build();
+        assertThat(actual).isEqualTo(expect);
+
     }
 
 }
