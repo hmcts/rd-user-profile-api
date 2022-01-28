@@ -552,7 +552,6 @@ public class UserProfileController {
     private boolean isEachAttributeNull(UpdateUserProfileData updateUserProfileData) {
         return !StringUtils.hasLength(updateUserProfileData.getFirstName())
                 || !StringUtils.hasLength(updateUserProfileData.getLastName())
-                || !StringUtils.hasLength(updateUserProfileData.getEmail())
                 || !StringUtils.hasLength(updateUserProfileData.getIdamStatus());
     }
 }
