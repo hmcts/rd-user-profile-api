@@ -105,9 +105,10 @@ public class AbstractFunctional {
 
         //create user with Names in SIDAM
         List<String> sidamRoles = new ArrayList<>();
-        sidamRoles.add("role1");
-        sidamRoles.add("role2");
+        sidamRoles.add("pui-user-manager");
+        sidamRoles.add("pui-case-manager");
         Map<String, String> userCreds = idamOpenIdClient.createUser(sidamRoles);
+        userProfileCreationData.setRoles(sidamRoles);
         userProfileCreationData.setEmail(userCreds.get(EMAIL));
         return createUserProfile(userProfileCreationData, HttpStatus.CREATED, "?origin=SRD");
     }

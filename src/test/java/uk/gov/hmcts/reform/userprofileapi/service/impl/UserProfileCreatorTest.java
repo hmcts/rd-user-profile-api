@@ -12,6 +12,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.IdamRegisterUserRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UpdateUserDetails;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
@@ -76,6 +77,7 @@ class UserProfileCreatorTest {
             idamRegistrationInfo.getIdamRegistrationResponse());
 
     private final IdamRolesInfo idamRolesInfo = mock(IdamRolesInfo.class);
+    private final AttributeResponse attributeResponse = mock(AttributeResponse.class);
 
     @Test
     void testCreateUserProfileSuccessfully() {
@@ -257,10 +259,11 @@ class UserProfileCreatorTest {
         String firstName = userProfile.getFirstName();
         when(idamRolesInfo.getForename()).thenReturn(firstName);
         when(idamRolesInfo.getSurname()).thenReturn("lastName");
-
+        when(idamRolesInfo.getId()).thenReturn("122334444");
+        when(idamService.updateUserDetails(any(), any())).thenReturn(attributeResponse);
         when(idamService.fetchUserById(any())).thenReturn(idamRolesInfo);
         when(idamService.addUserRoles(any(), any())).thenReturn(idamRolesInfo);
-
+        when(attributeResponse.getIdamStatusCode()).thenReturn(200);
         ReflectionTestUtils.setField(userProfileCreator, "sidamGetUri", "/api/v1/users/");
 
         UserProfile responseUserProfile = userProfileCreator.create(userProfileCreationData, "SRD");
@@ -274,6 +277,41 @@ class UserProfileCreatorTest {
         verify(idamRolesInfo, times(1)).getSurname();
         verify(idamService, times(1)).updateUserDetails(any(UpdateUserDetails.class), any());
     }
+
+    @Test
+    void test_register_when_idam_registration_conflicts_and_idamstatuscode_400_with_origin() {
+
+        idamRegistrationInfo = new IdamRegistrationInfo(status(CONFLICT).build());
+
+        when(idamService.registerUser(any(IdamRegisterUserRequest.class))).thenReturn(idamRegistrationInfo);
+        when(idamRolesInfo.getRoles()).thenReturn(null);
+        when(idamRolesInfo.getResponseStatusCode()).thenReturn(HttpStatus.OK);
+        when(idamRolesInfo.getStatusMessage()).thenReturn("test error message");
+        when(idamRolesInfo.isSuccessFromIdam()).thenReturn(true);
+        when(idamRolesInfo.getEmail()).thenReturn("any@emai");
+        String firstName = userProfile.getFirstName();
+        when(idamRolesInfo.getForename()).thenReturn(firstName);
+        when(idamRolesInfo.getSurname()).thenReturn("lastName");
+        when(idamRolesInfo.getId()).thenReturn("122334444");
+        when(idamService.updateUserDetails(any(), any())).thenReturn(attributeResponse);
+        when(idamService.fetchUserById(any())).thenReturn(idamRolesInfo);
+        when(attributeResponse.getIdamStatusCode()).thenReturn(400);
+        when(attributeResponse.getIdamMessage()).thenReturn("UpdateUserDetailsinSidamfailed");
+
+        ReflectionTestUtils.setField(userProfileCreator, "sidamGetUri", "/api/v1/users/");
+        final Throwable raisedException = catchThrowable(() -> userProfileCreator
+                .create(userProfileCreationData, "SRD"));
+
+        assertThat(raisedException).isInstanceOf(IdamServiceException.class)
+                .hasMessageContaining("UpdateUserDetailsinSidamfailed");
+
+
+        verify(auditRepository, times(1)).save(any(Audit.class));
+        verify(idamRolesInfo, times(1)).getResponseStatusCode();
+        verify(idamService, times(1)).updateUserDetails(any(UpdateUserDetails.class), any());
+    }
+
+
 
     @Test
     void test_set_CreateUserProfileData_fields() {
@@ -343,8 +381,7 @@ class UserProfileCreatorTest {
         Set<String> rolesToUpdate = userProfileCreator.consolidateRolesFromXuiAndIdam(userProfileCreationDataMock,
                 idamRolesInfoMock);
 
-        assertThat(rolesToUpdate.size()).isEqualTo(1);
-        assertThat(rolesToUpdate).contains("prd-admin");
+        assertThat(rolesToUpdate).hasSize(1).contains("prd-admin");
         verify(userProfileCreationDataMock, times(1)).getRoles();
         verify(idamRolesInfoMock, times(1)).getRoles();
 
@@ -370,8 +407,7 @@ class UserProfileCreatorTest {
         Set<String> rolesToUpdate = userProfileCreator.consolidateRolesFromXuiAndIdam(userProfileCreationDataMock,
                 idamRolesInfoMock);
 
-        assertThat(rolesToUpdate.size()).isEqualTo(2);
-        assertThat(rolesToUpdate).contains("pui-case-manager", "pui-user-manager");
+        assertThat(rolesToUpdate).hasSize(2).contains("pui-case-manager", "pui-user-manager");
         verify(userProfileCreationDataMock, times(1)).getRoles();
         verify(idamRolesInfoMock, times(1)).getRoles();
 
@@ -397,7 +433,7 @@ class UserProfileCreatorTest {
         Set<String> rolesToUpdate = userProfileCreator.consolidateRolesFromXuiAndIdam(userProfileCreationDataMock,
                 idamRolesInfoMock);
 
-        assertThat(rolesToUpdate.size()).isZero();
+        assertThat(rolesToUpdate).isEmpty();
         verify(userProfileCreationDataMock, times(1)).getRoles();
         verify(idamRolesInfoMock, times(1)).getRoles();
 

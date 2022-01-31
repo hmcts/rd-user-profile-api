@@ -25,6 +25,7 @@ import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.IdamRegisterUserRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UpdateUserDetails;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
@@ -174,13 +175,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
 
             if (idamRolesInfo.isSuccessFromIdam()) {
 
-                if (ORIGIN_SRD.equals(origin)) {
-                    updateSidamUserInfoWithUserProfileDetails(profileData, idamRolesInfo);
-
-                } else {
-                    // set updated user info
-                    updateInputRequestWithLatestSidamUserInfo(profileData, idamRolesInfo);
-                }
+                updateNamesInSidam(profileData,idamRolesInfo,origin);
                 //consolidate XUI + SIDAM roles having unique roles
 
                 Set<String> rolesToUpdate = consolidateRolesFromXuiAndIdam(profileData, idamRolesInfo);
@@ -235,14 +230,31 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
         }
     }
 
-    public void updateSidamUserInfoWithUserProfileDetails(UserProfileCreationData profileData,
+    private void updateNamesInSidam(UserProfileCreationData profileData, IdamRolesInfo idamRolesInfo, String origin) {
+        if (ORIGIN_SRD.equals(origin)) {
+            updateSidamUserInfoWithUserProfileDetails(profileData, idamRolesInfo);
+
+        } else {
+            // set updated user info
+            updateInputRequestWithLatestSidamUserInfo(profileData, idamRolesInfo);
+        }
+    }
+
+    private void updateSidamUserInfoWithUserProfileDetails(UserProfileCreationData profileData,
                                                           IdamRolesInfo idamRolesInfo) {
         profileData.setStatus(IdamStatusResolver.resolveIdamStatus(idamRolesInfo));
         if (!(profileData.getFirstName().equals(idamRolesInfo.getForename()) && profileData.getLastName()
                 .equals(idamRolesInfo.getSurname()))) {
             UpdateUserDetails updateUserDetails = new UpdateUserDetails(profileData.getFirstName(),
                     profileData.getLastName(), "ACTIVE".equals(profileData.getStatus().toString()));
-            idamService.updateUserDetails(updateUserDetails, idamRolesInfo.getId());
+            AttributeResponse attributeResponse = idamService
+                    .updateUserDetails(updateUserDetails, idamRolesInfo.getId());
+            HttpStatus status = HttpStatus.valueOf(attributeResponse.getIdamStatusCode());
+            if (!status.is2xxSuccessful()) {
+                log.error("{}:: failed sidam update names as per userprofile POST call for the given origin",
+                        loggingComponentName);
+                persistAuditAndThrowIdamException(attributeResponse.getIdamMessage(), status, null);
+            }
 
         }
     }
