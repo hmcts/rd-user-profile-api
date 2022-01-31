@@ -381,8 +381,7 @@ class UserProfileCreatorTest {
         Set<String> rolesToUpdate = userProfileCreator.consolidateRolesFromXuiAndIdam(userProfileCreationDataMock,
                 idamRolesInfoMock);
 
-        assertThat(rolesToUpdate).hasSize(1);
-        assertThat(rolesToUpdate).contains("prd-admin");
+        assertThat(rolesToUpdate).hasSize(1).contains("prd-admin");
         verify(userProfileCreationDataMock, times(1)).getRoles();
         verify(idamRolesInfoMock, times(1)).getRoles();
 
@@ -408,8 +407,7 @@ class UserProfileCreatorTest {
         Set<String> rolesToUpdate = userProfileCreator.consolidateRolesFromXuiAndIdam(userProfileCreationDataMock,
                 idamRolesInfoMock);
 
-        assertThat(rolesToUpdate).hasSize(2);
-        assertThat(rolesToUpdate).contains("pui-case-manager", "pui-user-manager");
+        assertThat(rolesToUpdate).hasSize(2).contains("pui-case-manager", "pui-user-manager");
         verify(userProfileCreationDataMock, times(1)).getRoles();
         verify(idamRolesInfoMock, times(1)).getRoles();
 

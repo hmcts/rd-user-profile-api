@@ -242,10 +242,11 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
 
     private void updateSidamUserInfoWithUserProfileDetails(UserProfileCreationData profileData,
                                                           IdamRolesInfo idamRolesInfo) {
+        profileData.setStatus(IdamStatusResolver.resolveIdamStatus(idamRolesInfo));
         if (!(profileData.getFirstName().equals(idamRolesInfo.getForename()) && profileData.getLastName()
                 .equals(idamRolesInfo.getSurname()))) {
             UpdateUserDetails updateUserDetails = new UpdateUserDetails(profileData.getFirstName(),
-                    profileData.getLastName(), true);
+                    profileData.getLastName(), "ACTIVE".equals(profileData.getStatus().toString()));
             AttributeResponse attributeResponse = idamService
                     .updateUserDetails(updateUserDetails, idamRolesInfo.getId());
             HttpStatus status = HttpStatus.valueOf(attributeResponse.getIdamStatusCode());
