@@ -41,6 +41,7 @@ import static com.google.common.collect.ImmutableList.of;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -109,6 +110,42 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
 
     public void updateUserScenario() throws Exception {
         updateUserProfileShouldReturnSuccess();
+        updateUserRolesAndProfileShouldReturnSuccess();
+    }
+
+    public void updateUserRolesAndProfileShouldReturnSuccess() throws Exception {
+        log.info("updateUserRolesAndProfileShouldReturnSuccess :: STARTED");
+
+        updateUserProfileData.setFirstName("testFn");
+        updateUserProfileData.setLastName("testLn");
+        updateUserProfileData.setEmail(activeUserProfileCreationData.getEmail());
+        Set<RoleName> rolesName = new HashSet<>();
+        rolesName.add(new RoleName(testConfigProperties.getPuiFinanceManager()));
+        updateUserProfileData.setRolesAdd(rolesName);
+
+        updateUserProfile(updateUserProfileData, activeUserProfile.getIdamId());
+        var urlPath =
+                new StringBuilder(requestUri);
+        urlPath.append("/")
+                .append(activeUserProfile.getIdamId())
+                .append("/")
+                .append("roles");
+        UserProfileWithRolesResponse resource = testRequestHandler.sendGet(
+                urlPath.toString(), UserProfileWithRolesResponse.class);
+        //verify the profile
+        assertThat(resource).isNotNull();
+        assertEquals("200", resource.getIdamStatusCode());
+        assertEquals(activeUserProfile.getIdamId(), resource.getIdamId());
+        assertEquals("testFn", resource.getFirstName());
+        assertEquals("testLn", resource.getLastName());
+
+        //verify the roles
+        assertThat(resource.getRoles().size()).isEqualTo(3);
+        assertThat(resource.getRoles())
+                .containsExactlyInAnyOrderElementsOf(List.of("pui-finance-manager", "pui-user-manager",
+                        "pui-case-manager"));
+
+        log.info("updateUserRolesAndProfileShouldReturnSuccess :: ENDED");
     }
 
     public void findUserByEmailScenario() {
