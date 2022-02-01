@@ -251,8 +251,8 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
                     .updateUserDetails(updateUserDetails, idamRolesInfo.getId());
             HttpStatus status = HttpStatus.valueOf(attributeResponse.getIdamStatusCode());
             if (!status.is2xxSuccessful()) {
-                log.error("{}:: failed sidam update names as per userprofile POST call for the given origin",
-                        loggingComponentName);
+                log.error("{}:: failed to update attributes in sidam. Reason {}", loggingComponentName,
+                        attributeResponse.getIdamMessage());
                 persistAuditAndThrowIdamException(attributeResponse.getIdamMessage(), status, null);
             }
 
