@@ -1,23 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
-<!--    <suppress>-->
-<!--        <notes><![CDATA[-->
-<!--         https://nvd.nist.gov/vuln/detail/CVE-2018-1258-->
-<!--         False positive &#45;&#45; we do not use Spring Framework 5.0.5.RELEASE (5.0.8.RELEASE at the time of writing)-->
-<!--         Additionally, we do not use Spring method security annotations which are the specific vulnerability-->
-<!--        ]]></notes>-->
-<!--        <cve>CVE-2018-1258</cve>-->
-<!--    </suppress>-->
-<!--    <suppress>-->
-<!--        <notes><![CDATA[-->
-<!--   file name: lang-tag-1.4.4.jar-->
-<!--   ]]></notes>-->
-<!--        <packageUrl regex="true">^pkg:maven/com\.nimbusds/lang\-tag@.*$</packageUrl>-->
-<!--        <cve>CVE-2020-29242</cve>-->
-<!--        <cve>CVE-2020-29243</cve>-->
-<!--        <cve>CVE-2020-29244</cve>-->
-<!--        <cve>CVE-2020-29245</cve>-->
-<!--        <cve>CVE-2020-23171</cve>-->
-<!--        &lt;!&ndash; dummy change to trigger pipeline &ndash;&gt;-->
-<!--    </suppress>-->
+    <suppress>
+        <notes><![CDATA[
+   file name: lang-tag-1.4.4.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.nimbusds/lang\-tag@.*$</packageUrl>
+        <cve>CVE-2020-29242</cve>
+        <cve>CVE-2020-29243</cve>
+        <cve>CVE-2020-29244</cve>
+        <cve>CVE-2020-29245</cve>
+        <cve>CVE-2020-23171</cve>
+        <!-- dummy change to trigger pipeline -->
+    </suppress>
 </suppressions>
