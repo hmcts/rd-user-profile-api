@@ -309,7 +309,7 @@ class UserProfileCreatorTest {
         Set<String> rolesToUpdate = userProfileCreator.consolidateRolesFromXuiAndIdam(userProfileCreationDataMock,
                 idamRolesInfoMock);
 
-        assertThat(rolesToUpdate.size()).isEqualTo(1);
+        assertThat(rolesToUpdate).hasSize(1);
         assertThat(rolesToUpdate).contains("prd-admin");
         verify(userProfileCreationDataMock, times(1)).getRoles();
         verify(idamRolesInfoMock, times(1)).getRoles();
@@ -336,7 +336,7 @@ class UserProfileCreatorTest {
         Set<String> rolesToUpdate = userProfileCreator.consolidateRolesFromXuiAndIdam(userProfileCreationDataMock,
                 idamRolesInfoMock);
 
-        assertThat(rolesToUpdate.size()).isEqualTo(2);
+        assertThat(rolesToUpdate).hasSize(2);
         assertThat(rolesToUpdate).contains("pui-case-manager", "pui-user-manager");
         verify(userProfileCreationDataMock, times(1)).getRoles();
         verify(idamRolesInfoMock, times(1)).getRoles();
@@ -363,7 +363,7 @@ class UserProfileCreatorTest {
         Set<String> rolesToUpdate = userProfileCreator.consolidateRolesFromXuiAndIdam(userProfileCreationDataMock,
                 idamRolesInfoMock);
 
-        assertThat(rolesToUpdate.size()).isZero();
+        assertThat(rolesToUpdate).isEmpty();
         verify(userProfileCreationDataMock, times(1)).getRoles();
         verify(idamRolesInfoMock, times(1)).getRoles();
 
