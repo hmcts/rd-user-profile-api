@@ -22,8 +22,8 @@ class UpdateUserProfileDataTest {
         updateUserProfileData.setRolesAdd(roles);
         updateUserProfileData.setRolesDelete(roles);
 
-        assertThat(updateUserProfileData.getRolesAdd().size()).isEqualTo(2);
-        assertThat(updateUserProfileData.getRolesDelete().size()).isEqualTo(2);
+        assertThat(updateUserProfileData.getRolesAdd()).hasSize(2);
+        assertThat(updateUserProfileData.getRolesDelete()).hasSize(2);
     }
 
     @Test
@@ -35,7 +35,7 @@ class UpdateUserProfileDataTest {
         userProfile.setEmail("email");
 
         UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("email", "fname",
-                "lname", "ACTIVE", new HashSet<RoleName>(), new HashSet<>());
+                "lname", "ACTIVE", new HashSet<>(), new HashSet<>());
 
         assertThat(updateUserProfileData.isSameAsUserProfile(userProfile)).isTrue();
     }
