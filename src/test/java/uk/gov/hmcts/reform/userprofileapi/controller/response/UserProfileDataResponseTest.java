@@ -18,7 +18,7 @@ class UserProfileDataResponseTest {
         UserProfileDataResponse sut = new UserProfileDataResponse(Arrays.asList(userProfile, userProfile), false);
 
         assertThat(sut.getUserProfiles()).isNotNull();
-        assertThat(sut.getUserProfiles().size()).isEqualTo(2);
+        assertThat(sut.getUserProfiles()).hasSize(2);
     }
 
     @Test
