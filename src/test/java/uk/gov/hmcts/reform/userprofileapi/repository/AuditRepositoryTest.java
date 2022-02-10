@@ -38,7 +38,7 @@ class AuditRepositoryTest {
     void testFindAll() {
         List<Audit> audits = auditRepository.findAll();
 
-        assertThat(audits.size()).isEqualTo(1);
+        assertThat(audits).hasSize(1);
         assertThat(audits.get(0).getUserProfile()).isEqualTo(userProfile);
         assertThat(audits.get(0).getIdamRegistrationResponse()).isEqualTo(1);
         assertThat(audits.get(0).getStatusMessage()).isEqualTo("test");
