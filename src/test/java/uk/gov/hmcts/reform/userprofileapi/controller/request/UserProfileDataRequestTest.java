@@ -23,7 +23,7 @@ class UserProfileDataRequestTest {
         userIds.add(UUID.randomUUID().toString());
         UserProfileDataRequest getUserProfileRequest = new UserProfileDataRequest(userIds);
 
-        assertThat(getUserProfileRequest.getUserIds().size()).isEqualTo(1);
+        assertThat(getUserProfileRequest.getUserIds()).hasSize(1);
     }
 
     @Test
@@ -36,7 +36,7 @@ class UserProfileDataRequestTest {
         getUserProfileRequest.setUserIds(userIds);
 
         assertThat(getUserProfileRequest.getUserIds()).isNotNull();
-        assertThat(getUserProfileRequest.getUserIds().size()).isEqualTo(1);
+        assertThat(getUserProfileRequest.getUserIds()).hasSize(1);
 
         getUserProfileRequest.setUserIds(null);
 
