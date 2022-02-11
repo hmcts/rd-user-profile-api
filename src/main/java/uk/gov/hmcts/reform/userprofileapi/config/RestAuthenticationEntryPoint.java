@@ -27,7 +27,9 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
                 .timeStamp(LocalDateTime.now().toString())
                 .build();
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        log.error(mapper.writeValueAsString(errorResponse));
+        String errorMessage = mapper.writeValueAsString(errorResponse);
+        response.setHeader("UnAuthorized-Token-Error", errorMessage);
+        log.error(errorMessage);
 
     }
 }
