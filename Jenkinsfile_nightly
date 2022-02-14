@@ -64,7 +64,7 @@ withNightlyPipeline(type, product, component) {
     enableMutationTest()
     enableFullFunctionalTest()
     enableSecurityScan()
-    enableFortifyScan()
+    //enableFortifyScan()
 
     after('fullFunctionalTest') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
@@ -78,9 +78,9 @@ withNightlyPipeline(type, product, component) {
         print "done delete script for nightly"
     }
 
-     after('fortify-scan') {
-       steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
-     }
+//     after('fortify-scan') {
+//       steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
+//     }
 
     after('mutationTest') {
         publishHTML target: [
