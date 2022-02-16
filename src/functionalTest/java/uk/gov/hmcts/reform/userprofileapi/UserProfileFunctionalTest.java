@@ -473,8 +473,9 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
                 .get(requestUri + "?userId=" + UUID.randomUUID())
                 .then()
                 .log().all(true)
-                .statusCode(HttpStatus.UNAUTHORIZED.value()).extract().response();
-
+                .statusCode(HttpStatus.UNAUTHORIZED.value())
+                .extract()
+                .header("UnAuthorized-Token-Error").contains("Authentication Exception");
         log.info("invalidBearerTokenRequestsShouldReturn401 :: ENDED");
     }
 

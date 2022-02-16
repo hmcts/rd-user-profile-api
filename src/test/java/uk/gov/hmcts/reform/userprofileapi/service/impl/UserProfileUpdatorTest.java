@@ -128,7 +128,7 @@ class UserProfileUpdatorTest {
         response = deleteRoles();
 
         assertThat(response).isNotNull();
-        assertThat(response.getRoleDeletionResponse().size()).isEqualTo(1);
+        assertThat(response.getRoleDeletionResponse()).hasSize(1);
         assertThat(response.getRoleDeletionResponse().get(0).getRoleName()).isEqualTo("pui-case-manager");
         assertThat(response.getRoleDeletionResponse().get(0).getIdamStatusCode()).isEqualTo("200");
 
@@ -141,7 +141,7 @@ class UserProfileUpdatorTest {
         UserProfileRolesResponse response1 = deleteRoles();
 
         assertThat(response1).isNotNull();
-        assertThat(response1.getRoleDeletionResponse().size()).isEqualTo(1);
+        assertThat(response1.getRoleDeletionResponse()).hasSize(1);
         assertThat(response1.getRoleDeletionResponse().get(0).getRoleName()).isEqualTo("pui-case-manager");
         assertThat(response1.getRoleDeletionResponse().get(0).getIdamStatusCode()).isEqualTo("200");
 

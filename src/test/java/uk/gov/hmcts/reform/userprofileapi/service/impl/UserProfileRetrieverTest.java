@@ -173,7 +173,7 @@ class UserProfileRetrieverTest {
 
         List<UserProfile> userProfilesWithRoles = userProfileRetriever.retrieveMultipleProfiles(identifier,
                 true, true);
-        assertThat(userProfilesWithRoles.size()).isEqualTo(2);
+        assertThat(userProfilesWithRoles).hasSize(2);
 
         UserProfile getUserProfile1 = userProfilesWithRoles.get(0);
 
@@ -209,7 +209,7 @@ class UserProfileRetrieverTest {
 
         List<UserProfile> userProfilesWithRoles = userProfileRetriever.retrieveMultipleProfiles(identifier,
                 true, false);
-        assertThat(userProfilesWithRoles.size()).isEqualTo(2);
+        assertThat(userProfilesWithRoles).hasSize(2);
 
         UserProfile getUserProfile1 = userProfilesWithRoles.get(0);
 
@@ -251,7 +251,7 @@ class UserProfileRetrieverTest {
         assertThat(profile.getEmail()).isEqualTo(up.getEmail());
         assertThat(profile.getFirstName()).isEqualTo(up.getFirstName());
         assertThat(profile.getLastName()).isEqualTo(up.getLastName());
-        assertThat(profile.getRoles().size()).isZero();
+        assertThat(profile.getRoles()).isEmpty();
         assertThat(profile.getErrorMessage()).isNotEmpty();
         assertThat(profile.getErrorStatusCode()).isEqualTo("404");
 
@@ -280,7 +280,7 @@ class UserProfileRetrieverTest {
         assertThat(profile.getEmail()).isEqualTo(up.getEmail());
         assertThat(profile.getFirstName()).isEqualTo(up.getFirstName());
         assertThat(profile.getLastName()).isEqualTo(up.getLastName());
-        assertThat(profile.getRoles().size()).isZero();
+        assertThat(profile.getRoles()).isEmpty();
         assertThat(profile.getErrorMessage()).isNull();
         assertThat(profile.getErrorStatusCode()).isNull();
 
@@ -316,7 +316,7 @@ class UserProfileRetrieverTest {
         assertThat(profile.getEmail()).isEqualTo(up.getEmail());
         assertThat(profile.getFirstName()).isEqualTo(up.getFirstName());
         assertThat(profile.getLastName()).isEqualTo(up.getLastName());
-        assertThat(profile.getRoles().size()).isZero();
+        assertThat(profile.getRoles()).isEmpty();
         assertThat(profile.getErrorMessage()).isEqualTo(IdamStatusResolver.NO_IDAM_CALL);
         assertThat(profile.getErrorStatusCode()).isEqualTo(" ");
     }
