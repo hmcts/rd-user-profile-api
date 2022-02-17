@@ -66,16 +66,21 @@ public class AbstractFunctional {
     }
 
     protected static UserProfileCreationResponse createUserProfile(
-            UserProfileCreationData userProfileCreationData, HttpStatus httpStatus) throws Exception {
+            UserProfileCreationData userProfileCreationData, HttpStatus httpStatus, String params) throws Exception {
 
         UserProfileCreationResponse resource = testRequestHandler.sendPost(
                 userProfileCreationData,
                 httpStatus,
-                requestUri,
+                requestUri.concat(params),
                 UserProfileCreationResponse.class
         );
         verifyCreateUserProfile(resource);
         return resource;
+    }
+
+    protected static UserProfileCreationResponse createUserProfile(
+            UserProfileCreationData userProfileCreationData, HttpStatus httpStatus) throws Exception {
+        return createUserProfile(userProfileCreationData, httpStatus, "");
     }
 
     protected static UserProfileCreationResponse createActiveUserProfileWithGivenFields(
@@ -95,6 +100,22 @@ public class AbstractFunctional {
         return createUserProfile(userProfileCreationData, HttpStatus.CREATED);
     }
 
+    protected static UserProfileCreationResponse createActiveUserProfileWithGivenNames(
+            UserProfileCreationData userProfileCreationData) throws Exception {
+
+        //create user with Names in SIDAM
+        List<String> sidamRoles = new ArrayList<>();
+        sidamRoles.add("pui-user-manager");
+        sidamRoles.add("pui-case-manager");
+        Map<String, String> userCreds = idamOpenIdClient.createUser(sidamRoles);
+        userProfileCreationData.setRoles(sidamRoles);
+        userProfileCreationData.setEmail(userCreds.get(EMAIL));
+        return createUserProfile(userProfileCreationData, HttpStatus.CREATED, "?origin=SRD");
+    }
+
+    protected static Map<String, String> getIdamResponse(String idamId) {
+        return idamOpenIdClient.getUser(idamId);
+    }
 
     protected UserProfileCreationResponse createDuplicateUserProfileWithGivenFields(
             UserProfileCreationData userProfileCreationData, HttpStatus expectedStatusCode) throws Exception {
