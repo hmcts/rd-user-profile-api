@@ -425,27 +425,7 @@ class UserProfileUpdatorTest {
     }
 
     private UserProfileRolesResponse addRoles() throws Exception {
-        Set<RoleName> roles = new HashSet<>();
-        roles.add(new RoleName("pui-case-manager"));
-        roles.add(new RoleName("pui-case-organisation"));
-        updateUserProfileData.setRolesAdd(roles);
-
-        UserProfileResponse userProfileResponse = new UserProfileResponse();
-        RoleAdditionResponse roleAdditionResponse = new RoleAdditionResponse();
-
-        roleAdditionResponse.setIdamStatusCode(HttpStatus.OK.toString());
-        roleAdditionResponse.setIdamMessage("Success");
-
-        userProfileResponse.setRoleAdditionResponse(roleAdditionResponse);
-
-        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
-                false);
-        String body = mapper.writeValueAsString(userProfileResponse);
-
-        when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.of(userProfile));
-        when(idamFeignClientMock.addUserRoles(updateUserProfileData.getRolesAdd(), "1234"))
-                .thenReturn(Response.builder().request(mock(Request.class)).body(body, Charset.defaultCharset())
-                        .status(200).build());
+        mockRolesData();
 
         return sut.updateRoles(updateUserProfileData, userProfile.getIdamId());
     }
@@ -509,4 +489,47 @@ class UserProfileUpdatorTest {
         verify(feignExceptionMock, times(1)).status();
     }
 
+    @Test
+    void test_updateUserProfileData() throws Exception {
+        mockRolesData();
+        when(userProfileRepositoryMock.save(any(UserProfile.class))).thenReturn(userProfile);
+
+        when(validationServiceMock.validateUpdate(any(), any(), any())).thenReturn(userProfile);
+
+        when(validationHelperServiceMock.validateUserPersisted(any())).thenReturn(true);
+
+        UserProfileRolesResponse response = sut.updateUserProfileData(updateUserProfileData, "1234", EXUI);
+
+        assertThat(response).isNotNull();
+
+        verify(userProfileRepositoryMock, times(1)).save(any(UserProfile.class));
+        verify(auditServiceMock, times(1)).persistAudit(eq(HttpStatus.OK),
+                any(UserProfile.class), any());
+
+        verify(idamFeignClientMock, times(1)).addUserRoles(any(), any(String.class));
+    }
+
+    private void mockRolesData() throws Exception {
+        Set<RoleName> roles = new HashSet<>();
+        roles.add(new RoleName("pui-case-manager"));
+        roles.add(new RoleName("pui-case-organisation"));
+        updateUserProfileData.setRolesAdd(roles);
+
+        UserProfileResponse userProfileResponse = new UserProfileResponse();
+        RoleAdditionResponse roleAdditionResponse = new RoleAdditionResponse();
+
+        roleAdditionResponse.setIdamStatusCode(HttpStatus.OK.toString());
+        roleAdditionResponse.setIdamMessage("Success");
+
+        userProfileResponse.setRoleAdditionResponse(roleAdditionResponse);
+
+        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
+                false);
+        String body = mapper.writeValueAsString(userProfileResponse);
+
+        when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.of(userProfile));
+        when(idamFeignClientMock.addUserRoles(updateUserProfileData.getRolesAdd(), "1234"))
+                .thenReturn(Response.builder().request(mock(Request.class)).body(body, Charset.defaultCharset())
+                        .status(200).build());
+    }
 }

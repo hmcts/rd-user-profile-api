@@ -139,6 +139,16 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         return userProfileResponse;
     }
 
+    @Override
+    public UserProfileRolesResponse updateUserProfileData(UpdateUserProfileData profileData,
+                                                          String userId,
+                                                          String origin) {
+        AttributeResponse attributeResponse = update(profileData, userId, origin);
+        UserProfileRolesResponse userProfileRolesResponse = updateRoles(profileData, userId);
+        userProfileRolesResponse.setAttributeResponse(attributeResponse);
+        return userProfileRolesResponse;
+    }
+
     @SuppressWarnings("unchecked")
     private RoleDeletionResponse deleteRolesInIdam(String userId, String roleName, UserProfile userProfile) {
         ResponseEntity<Object> responseEntity;
