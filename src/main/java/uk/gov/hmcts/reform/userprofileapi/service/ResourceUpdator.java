@@ -10,4 +10,6 @@ public interface ResourceUpdator<T extends RequestData> {
 
     UserProfileRolesResponse updateRoles(T profileData, String userId);
 
+    UserProfileRolesResponse updateUserProfileData(T profileData, String userId, String origin);
+
 }
