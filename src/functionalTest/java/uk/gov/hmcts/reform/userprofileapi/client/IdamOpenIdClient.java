@@ -86,6 +86,20 @@ public class IdamOpenIdClient {
         return userCreds;
     }
 
+    public Map<String, String> getUser(String idamId) {
+        log.info(":::: Get a User");
+
+        Response generatedUserResponse = SerenityRest.given().relaxedHTTPSValidation()
+                .baseUri(testConfigProperties.getIdamApiUrl())
+                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .get("/testing-support/accounts/" + idamId)
+                .andReturn();
+        if (generatedUserResponse.getStatusCode() == 404) {
+            log.info("SIDAM getUser response 404");
+        }
+        return generatedUserResponse.getBody().as(Map.class);
+    }
+
     public Map<String, String> createUserWithGivenFields(List<String> roles,
                                                          UserProfileCreationData userProfileCreationData) {
 
