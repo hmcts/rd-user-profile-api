@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.userprofileapi.controller.UserProfileController;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
@@ -101,7 +102,8 @@ public class UserProfileProviderTest {
     @State({"A user profile update request is submitted for roles"})
     public void updateUserProfile() {
         Optional<UserProfile> userProfileOptional = Optional.of(genUserProfile());
-
+        AttributeResponse attributeResponse = new AttributeResponse(ResponseEntity.status(200).build());
+        doReturn(attributeResponse).when(idamService).updateUserDetails(any(), any());
         doReturn(userProfileOptional).when(userProfileRepository).findByIdamId(any());
 
         doReturn(Response.builder().status(200).body("Success", Charset.defaultCharset())
