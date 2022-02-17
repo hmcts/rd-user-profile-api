@@ -33,6 +33,7 @@ import uk.gov.hmcts.reform.userprofileapi.util.ToggleEnable;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -40,6 +41,7 @@ import static com.google.common.collect.ImmutableList.of;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -102,11 +104,48 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
 
     public void createUserScenario() throws Exception {
         createUserProfileWithIdamDuplicateShouldReturnRolesAndSuccess();
+        createUserProfileWithIdamDuplicateShouldReturnNamesAndSuccess();
         createDuplicateUserProfileShouldReturnConflict();
     }
 
     public void updateUserScenario() throws Exception {
         updateUserProfileShouldReturnSuccess();
+        updateUserRolesAndProfileShouldReturnSuccess();
+    }
+
+    public void updateUserRolesAndProfileShouldReturnSuccess() throws Exception {
+        log.info("updateUserRolesAndProfileShouldReturnSuccess :: STARTED");
+
+        updateUserProfileData.setFirstName("testFn");
+        updateUserProfileData.setLastName("testLn");
+        updateUserProfileData.setEmail(activeUserProfileCreationData.getEmail());
+        Set<RoleName> rolesName = new HashSet<>();
+        rolesName.add(new RoleName(testConfigProperties.getPuiFinanceManager()));
+        updateUserProfileData.setRolesAdd(rolesName);
+
+        updateUserProfile(updateUserProfileData, activeUserProfile.getIdamId());
+        var urlPath =
+                new StringBuilder(requestUri);
+        urlPath.append("/")
+                .append(activeUserProfile.getIdamId())
+                .append("/")
+                .append("roles");
+        UserProfileWithRolesResponse resource = testRequestHandler.sendGet(
+                urlPath.toString(), UserProfileWithRolesResponse.class);
+        //verify the profile
+        assertThat(resource).isNotNull();
+        assertEquals("200", resource.getIdamStatusCode());
+        assertEquals(activeUserProfile.getIdamId(), resource.getIdamId());
+        assertEquals("testFn", resource.getFirstName());
+        assertEquals("testLn", resource.getLastName());
+
+        //verify the roles
+        assertThat(resource.getRoles().size()).isEqualTo(3);
+        assertThat(resource.getRoles())
+                .containsExactlyInAnyOrderElementsOf(List.of("pui-finance-manager", "pui-user-manager",
+                        "pui-case-manager"));
+
+        log.info("updateUserRolesAndProfileShouldReturnSuccess :: ENDED");
     }
 
     public void findUserByEmailScenario() {
@@ -159,6 +198,27 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         log.info("createUserProfileWithIdamDuplicateShouldReturnRolesAndSuccess :: ENDED");
     }
 
+    public void createUserProfileWithIdamDuplicateShouldReturnNamesAndSuccess() throws Exception {
+        log.info("createUserProfileWithIdamDuplicateShouldReturnNamesAndSuccess :: STARTED");
+
+        activeUserProfile = createActiveUserProfileWithGivenNames(activeUserProfileCreationData);
+        verifyCreateUserProfile(activeUserProfile);
+
+        Map<String, String> idamResponse = getIdamResponse(activeUserProfile.getIdamId());
+
+        UserProfileWithRolesResponse resource =
+                testRequestHandler.sendGet(
+                        requestUri + "/" + activeUserProfile.getIdamId() + "/roles",
+                        UserProfileWithRolesResponse.class);
+
+        assertThat(resource.getFirstName()).contains(activeUserProfileCreationData.getFirstName());
+        assertThat(resource.getLastName()).contains(activeUserProfileCreationData.getLastName());
+        assertThat(idamResponse.get("forename")).isEqualTo(activeUserProfileCreationData.getFirstName());
+        assertThat(idamResponse.get("surname")).isEqualTo(activeUserProfileCreationData.getLastName());
+        log.info("createUserProfileWithIdamDuplicateShouldReturnRolesAndSuccess :: ENDED");
+    }
+
+
     public void createDuplicateUserProfileShouldReturnConflict() throws Exception {
         log.info("createDuplicateUserProfileShouldReturnConflict :: STARTED");
 
@@ -179,7 +239,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
 
         updateUserProfileData.setFirstName(randomAlphabetic(20));
         updateUserProfileData.setLastName(randomAlphabetic(20));
-
+        updateUserProfileData.setEmail(activeUserProfileCreationData.getEmail());
         updateUserProfile(updateUserProfileData, activeUserProfile.getIdamId());
 
         UserProfileResponse resource = testRequestHandler.sendGet(

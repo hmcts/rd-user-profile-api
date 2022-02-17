@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileCreator;
 import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileRetriever;
 import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileService;
 import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileUpdator;
+import uk.gov.hmcts.reform.userprofileapi.service.impl.ValidationServiceImpl;
 
 @TestConfiguration
 public class UserProfileProviderTestConfiguration {
@@ -53,7 +54,6 @@ public class UserProfileProviderTestConfiguration {
     @MockBean
     private ValidationHelperService validationHelperService;
 
-    @MockBean
     private ValidationService validationService;
 
     @MockBean
@@ -84,6 +84,12 @@ public class UserProfileProviderTestConfiguration {
     public UserProfileUpdator getResourceUpdater() {
         return new UserProfileUpdator(userProfileRepository,idamClient,idamService,validationService,
                 validationHelperService,auditService);
+    }
+
+    @Bean
+    @Primary
+    public ValidationService getValidationService() {
+        return new ValidationServiceImpl();
     }
 
 }

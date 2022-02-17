@@ -24,6 +24,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.IdamRegisterUserRequest;
+import uk.gov.hmcts.reform.userprofileapi.controller.request.UpdateUserDetails;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
@@ -60,9 +62,10 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
 
     @Value("${loggingComponentName}")
     private String loggingComponentName;
-  
 
-    public UserProfile create(UserProfileCreationData profileData) {
+    private static final String ORIGIN_SRD = "SRD";
+
+    public UserProfile create(UserProfileCreationData profileData, String origin) {
 
         // check if user already in UP then
         Optional<UserProfile>  optionalExistingUserProfile = userProfileRepository.findByEmail(profileData.getEmail()
@@ -86,7 +89,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
                     idamRegistrationInfo.getIdamRegistrationResponse());
         } else if (idamRegistrationInfo.isDuplicateUser()) {
             //User already exist in sidam for given email
-            return handleDuplicateUser(profileData, idamRegistrationInfo);
+            return handleDuplicateUser(profileData, idamRegistrationInfo, origin);
         } else {
             persistAudit(idamRegistrationInfo.getStatusMessage(), idamStatus, null);
             throw new IdamServiceException(idamRegistrationInfo.getStatusMessage(), idamStatus);
@@ -150,7 +153,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
     }
 
     private UserProfile handleDuplicateUser(UserProfileCreationData profileData,
-                                            IdamRegistrationInfo idamRegistrationInfo) {
+                                            IdamRegistrationInfo idamRegistrationInfo, String origin) {
 
         HttpStatus idamStatus;
         String idamStatusMessage;
@@ -171,9 +174,8 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
             idamStatusMessage = idamRolesInfo.getStatusMessage();
 
             if (idamRolesInfo.isSuccessFromIdam()) {
-                // set updated user info
-                updateInputRequestWithLatestSidamUserInfo(profileData, idamRolesInfo);
 
+                updateNamesInSidam(profileData,idamRolesInfo,origin);
                 //consolidate XUI + SIDAM roles having unique roles
 
                 Set<String> rolesToUpdate = consolidateRolesFromXuiAndIdam(profileData, idamRolesInfo);
@@ -225,6 +227,35 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
         }
         if (idamRolesInfo.getSurname() != null) {
             profileData.setLastName(idamRolesInfo.getSurname());
+        }
+    }
+
+    private void updateNamesInSidam(UserProfileCreationData profileData, IdamRolesInfo idamRolesInfo, String origin) {
+        if (ORIGIN_SRD.equals(origin)) {
+            updateSidamUserInfoWithUserProfileDetails(profileData, idamRolesInfo);
+
+        } else {
+            // set updated user info
+            updateInputRequestWithLatestSidamUserInfo(profileData, idamRolesInfo);
+        }
+    }
+
+    private void updateSidamUserInfoWithUserProfileDetails(UserProfileCreationData profileData,
+                                                          IdamRolesInfo idamRolesInfo) {
+        profileData.setStatus(IdamStatusResolver.resolveIdamStatus(idamRolesInfo));
+        if (!(profileData.getFirstName().equals(idamRolesInfo.getForename()) && profileData.getLastName()
+                .equals(idamRolesInfo.getSurname()))) {
+            UpdateUserDetails updateUserDetails = new UpdateUserDetails(profileData.getFirstName(),
+                    profileData.getLastName(), "ACTIVE".equals(profileData.getStatus().toString()));
+            AttributeResponse attributeResponse = idamService
+                    .updateUserDetails(updateUserDetails, idamRolesInfo.getId());
+            HttpStatus status = HttpStatus.valueOf(attributeResponse.getIdamStatusCode());
+            if (!status.is2xxSuccessful()) {
+                log.error("{}:: failed sidam update names as per userprofile POST call for the given origin",
+                        loggingComponentName);
+                persistAuditAndThrowIdamException(attributeResponse.getIdamMessage(), status, null);
+            }
+
         }
     }
 
