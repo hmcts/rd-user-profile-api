@@ -74,5 +74,10 @@
   "10054_Cookie without SameSite Attribute_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile/id/roles_GET" : "ignore",
   "90033_Loosely Scoped Cookie_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile/users?emailPattern=emailPattern&userId=userId_DELETE" : "ignore",
   "10054_Cookie without SameSite Attribute_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile/userId?origin=origin_PUT" : "ignore",
-  "10096_Timestamp Disclosure - Unix_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile/userId?origin=origin_PUT" : "ignore"
+  "10096_Timestamp Disclosure - Unix_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile/userId?origin=origin_PUT" : "ignore",
+  "10010_Cookie No HttpOnly Flag_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile?origin=origin_POST" : "ignore",
+  "10054_Cookie without SameSite Attribute_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile?origin=origin_POST" : "ignore",
+  "10096_Timestamp Disclosure - Unix_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile?origin=origin_POST" : "ignore",
+  "100000_A Client Error response code was returned by the server_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile?origin=origin_POST" : "ignore",
+  "90033_Loosely Scoped Cookie_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile?origin=origin_POST" : "ignore"
 }
