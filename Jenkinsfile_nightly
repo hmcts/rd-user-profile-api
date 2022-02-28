@@ -27,6 +27,9 @@ def secrets = [
                 secret('user-profile-api-POSTGRES-USER', 'FUNC_DATABASE_USER'),
                 secret('user-profile-api-POSTGRES-DATABASE', 'FUNC_DATABASE_NAME'),
                 secret('user-profile-api-POSTGRES-PORT', 'FUNC_DATABASE_PORT'),
+                secret('OAUTH2-CLIENT-SECRET', 'OAUTH2_CLIENT_SECRET'),
+                secret('OAUTH2-CLIENT-AUTH', 'OAUTH2_CLIENT_AUTH'),
+                secret('OAUTH2-CLIENT-ID', 'OAUTH2_CLIENT_ID'),
                 secret('LD-SDK-KEY', 'LD_SDK_KEY')
         ]
 ]
