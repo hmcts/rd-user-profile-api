@@ -122,6 +122,7 @@ public class UserProfileRequestHandlerTest {
                 .andExpect(status().is(expectedHttpStatus.value()))
                 .andReturn();
     }
+
     public <T> T sendGetNoServiceAuth(MockMvc mockMvc,
                          String path,
                          HttpStatus expectedHttpStatus,
