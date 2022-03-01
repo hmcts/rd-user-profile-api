@@ -354,4 +354,14 @@ public abstract class AuthorizationEnabledIntegrationTest {
                 UserProfilesDeletionResponse.class);
 
     }
+    public void deleteUserProfilesNoServiceAuth(List<String> userIds, HttpStatus status) throws Exception {
+
+        UserProfileDataRequest deletionRequest = buildUserProfileDataRequest(userIds);
+        userProfileRequestHandlerTest.sendDeleteNoServiceAuth(mockMvc,
+                APP_BASE_PATH,
+                deletionRequest,
+                status,
+                UserProfilesDeletionResponse.class);
+
+    }
 }

@@ -21,6 +21,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.userprofileapi.client.UserProfileRequestHandlerTest.COMMON_EMAIL_PATTERN;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
@@ -99,27 +100,23 @@ class DeleteUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
         List<UserProfile> userProfiles = (List<UserProfile>) userProfileRepository.findAll();
         assertThat(userProfiles.size()).isZero();
     }
-//
-//    @Test
-//    void should_return_401_and_not_delete_user() throws Exception {
-//
-//        UserProfileCreationData data = buildCreateUserProfileData();
-//
-//        //user profile create and  delete
-//        UserProfileCreationResponse createdResource =
-//                userProfileRequestHandlerTest.sendPost(mockMvc, APP_BASE_PATH,
-//                        data, CREATED, UserProfileCreationResponse.class);
-//
-//        verifyUserProfileCreation(createdResource, CREATED, data);
-//
-//        userProfileRequestHandlerTest.sendDeleteWithoutBodyWithoutServiceAuth(mockMvc,
-//                APP_BASE_PATH + "/users?userId=" + createdResource.getIdamId(),
-//                NO_CONTENT,
-//                UserProfilesDeletionResponse.class);
-//
-//        verifyUserProfileDeletion(1, 2);
-//
-//    }
+
+    @Test
+    void return401WhenNoServiceAuthHeaderProvided() throws Exception {
+
+        UserProfileCreationResponse response1 = createUserProfile(buildCreateUserProfileData());
+        //user profile two created
+        List<String> userIds = new ArrayList<String>();
+        userIds.add(response1.getIdamId());
+        userIds.add("12345");
+        //user profile to delete
+        deleteUserProfilesNoServiceAuth(userIds, UNAUTHORIZED);
+        List<UserProfile> userProfiles = (List<UserProfile>) userProfileRepository.findAll();
+        assertThat(userProfiles.size()).isEqualTo(1);
+
+        List<Audit> matchedAuditRecords = auditRepository.findAll();
+        assertThat(matchedAuditRecords.size()).isEqualTo(1);
+    }
 
     @Test
     void return404WhenUnableToFindProfileForOneOfUserIdInTheDeleteRequestForMulUserProfiles() throws Exception {
