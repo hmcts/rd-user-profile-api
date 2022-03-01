@@ -28,7 +28,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfile;
 
@@ -201,17 +200,6 @@ class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
         Assertions.assertNotNull(response);
 
         assertThat(response.getStatus()).isEqualTo(400);
-    }
-
-    @Test
-    void should_return_401_and_not_allow_get_request_on_base_url_with_no_service_auth() throws Exception {
-        MvcResult mvcResult = userProfileRequestHandlerTest.sendGetNoServiceAuth(mockMvc, APP_BASE_PATH, UNAUTHORIZED);
-        Assertions.assertNotNull(mvcResult);
-
-        MockHttpServletResponse response = mvcResult.getResponse();
-        Assertions.assertNotNull(response);
-
-        assertThat(response.getStatus()).isEqualTo(401);
     }
 
     @Test

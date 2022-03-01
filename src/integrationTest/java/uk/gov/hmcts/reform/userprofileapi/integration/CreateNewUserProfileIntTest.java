@@ -20,7 +20,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -67,22 +66,6 @@ class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
                 );
 
         assertThat(result.getResponse().getContentAsString()).isNotEmpty();
-    }
-
-    @Test
-    void should_return_401_and_not_create_user_profile_when_no_service_authorisation() throws Exception {
-
-        UserProfileCreationData data = buildCreateUserProfileData();
-
-        MvcResult result =
-                userProfileRequestHandlerTest.sendPostNoServiceAuth(
-                        mockMvc,
-                        APP_BASE_PATH,
-                        data,
-                        UNAUTHORIZED
-                );
-
-        assertThat(result.getResponse().getStatus()).isEqualTo(401);
     }
 
     @Test

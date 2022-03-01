@@ -26,7 +26,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -184,21 +183,6 @@ class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
                 APP_BASE_PATH + SLASH + idamId,
                 "{}",
                 BAD_REQUEST
-        );
-    }
-
-    @Test
-    void should_return_401_while_update_profile_when_no_service_auth() throws Exception {
-
-        UserProfile persistedUserProfile = userProfileMap.get("user");
-        String idamId = persistedUserProfile.getIdamId();
-        UpdateUserProfileData data = buildUpdateUserProfileData();
-
-        userProfileRequestHandlerTest.sendPutNoServiceAuth(
-                mockMvc,
-                APP_BASE_PATH + SLASH + idamId,
-                data,
-                UNAUTHORIZED
         );
     }
 

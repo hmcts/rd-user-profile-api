@@ -66,28 +66,6 @@ public class UserProfileRequestHandlerTest {
         return objectMapper.readValue(result.getResponse().getContentAsString(), clazz);
     }
 
-    public MvcResult sendPostNoServiceAuth(MockMvc mockMvc,
-                                           String path,
-                                           String jsonBody,
-                                           HttpStatus expectedHttpStatus) throws Exception {
-
-        return mockMvc.perform(post(path)
-                .headers(getMultipleAuthHeadersWithoutServiceAuthorisation())
-                .content(jsonBody)
-                .contentType(APPLICATION_JSON))
-                .andExpect(status().is(expectedHttpStatus.value())).andReturn();
-    }
-
-
-    public MvcResult sendPostNoServiceAuth(MockMvc mockMvc,
-                              String path,
-                              Object body,
-                              HttpStatus expectedHttpStatus) throws Exception {
-
-        return sendPostNoServiceAuth(mockMvc, path, objectMapper.writeValueAsString(body), expectedHttpStatus);
-
-    }
-
     public MvcResult sendGet(MockMvc mockMvc,
                              String path,
                              HttpStatus expectedHttpStatus) throws Exception {
@@ -105,30 +83,6 @@ public class UserProfileRequestHandlerTest {
                          Class<T> clazz) throws Exception {
 
         MvcResult result = sendGet(mockMvc, path, expectedHttpStatus);
-        assertThat(result.getResponse().getContentAsString())
-                .as("Expected json content was empty")
-                .isNotEmpty();
-
-        return objectMapper.readValue(result.getResponse().getContentAsString(), clazz);
-    }
-
-    public MvcResult sendGetNoServiceAuth(MockMvc mockMvc,
-                                          String path,
-                                          HttpStatus expectedHttpStatus) throws Exception {
-
-        return mockMvc.perform(get(path)
-                .headers(getMultipleAuthHeadersWithoutServiceAuthorisation())
-                .contentType(APPLICATION_JSON))
-                .andExpect(status().is(expectedHttpStatus.value()))
-                .andReturn();
-    }
-
-    public <T> T sendGetNoServiceAuth(MockMvc mockMvc,
-                         String path,
-                         HttpStatus expectedHttpStatus,
-                         Class<T> clazz) throws Exception {
-
-        MvcResult result = sendGetNoServiceAuth(mockMvc, path, expectedHttpStatus);
         assertThat(result.getResponse().getContentAsString())
                 .as("Expected json content was empty")
                 .isNotEmpty();
@@ -197,18 +151,6 @@ public class UserProfileRequestHandlerTest {
 
     public MvcResult sendPutNoServiceAuth(MockMvc mockMvc,
                              String path,
-                             String jsonBody,
-                             HttpStatus expectedHttpStatus) throws Exception {
-
-        return mockMvc.perform(put(path)
-                .headers(getMultipleAuthHeadersWithoutServiceAuthorisation())
-                .content(jsonBody)
-                .contentType(APPLICATION_JSON))
-                .andExpect(status().is(expectedHttpStatus.value())).andReturn();
-    }
-
-    public MvcResult sendPutNoServiceAuth(MockMvc mockMvc,
-                             String path,
                              Object body,
                              HttpStatus expectedHttpStatus) throws Exception {
 
@@ -251,42 +193,6 @@ public class UserProfileRequestHandlerTest {
         return objectMapper.readValue(result.getResponse().getContentAsString(), clazz);
     }
 
-    public <T> T sendDeleteNoServiceAuth(MockMvc mockMvc,
-                                         String path,
-                                         Object body,
-                                         HttpStatus expectedHttpStatus,
-                                         Class<T> clazz) throws Exception {
-
-        MvcResult result = mockMvc.perform(delete(path)
-                .headers(getMultipleAuthHeadersWithoutServiceAuthorisation())
-                .content(objectMapper.writeValueAsString(body))
-                .contentType(APPLICATION_JSON))
-                .andExpect(status().is(expectedHttpStatus.value())).andReturn();
-
-        assertThat(result.getResponse().getContentAsString())
-                .as("Expected json content was empty")
-                .isNotEmpty();
-
-        return objectMapper.readValue(result.getResponse().getContentAsString(), clazz);
-    }
-
-    public <T> T sendDeleteWithoutBodyWithoutServiceAuth(MockMvc mockMvc,
-                                       String path,
-                                       HttpStatus expectedHttpStatus,
-                                       Class<T> clazz) throws Exception {
-
-        MvcResult result = mockMvc.perform(delete(path)
-                .headers(getMultipleAuthHeadersWithoutServiceAuthorisation())
-                .contentType(APPLICATION_JSON))
-                .andExpect(status().is(expectedHttpStatus.value())).andReturn();
-
-        assertThat(result.getResponse().getContentAsString())
-                .as("Expected json content was empty")
-                .isNotEmpty();
-
-        return objectMapper.readValue(result.getResponse().getContentAsString(), clazz);
-    }
-
     private HttpHeaders getMultipleAuthHeaders() {
 
         log.info("JWT TOKEN::" + JWT_TOKEN);
@@ -300,16 +206,5 @@ public class UserProfileRequestHandlerTest {
         return headers;
     }
 
-    private HttpHeaders getMultipleAuthHeadersWithoutServiceAuthorisation() {
-
-        log.info("JWT TOKEN::" + JWT_TOKEN);
-        log.info("IDAM_TOKEN::" + IDAM_TOKEN);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(APPLICATION_JSON);
-
-        headers.add("Authorization", IDAM_TOKEN);
-
-        return headers;
-    }
 
 }
