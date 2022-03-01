@@ -68,6 +68,7 @@ class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
         assertThat(result.getResponse().getContentAsString()).isNotEmpty();
     }
 
+
     @Test
     void should_return_400_when_any_mandatory_field_missing() throws Exception {
 

@@ -149,14 +149,6 @@ public class UserProfileRequestHandlerTest {
                 .andExpect(status().is(expectedHttpStatus.value())).andReturn();
     }
 
-    public MvcResult sendPutNoServiceAuth(MockMvc mockMvc,
-                             String path,
-                             Object body,
-                             HttpStatus expectedHttpStatus) throws Exception {
-
-        return sendPutNoServiceAuth(mockMvc, path, objectMapper.writeValueAsString(body), expectedHttpStatus);
-    }
-
     public <T> T sendDelete(MockMvc mockMvc,
                             String path,
                             Object body,
@@ -205,6 +197,5 @@ public class UserProfileRequestHandlerTest {
 
         return headers;
     }
-
 
 }
