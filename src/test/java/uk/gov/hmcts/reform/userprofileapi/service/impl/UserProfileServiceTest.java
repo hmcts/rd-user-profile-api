@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
@@ -175,6 +176,21 @@ class UserProfileServiceTest {
     }
 
     @Test
+    void test_DeleteUserProfileData() {
+        UserProfileDataRequest identifier = mock(UserProfileDataRequest.class);
+
+        UserProfilesDeletionResponse userProfilesDeletionResponse =
+                new UserProfilesDeletionResponse(204, "UserProfiles Successfully Deleted");
+
+        when(deleteUserProfileService.delete(identifier)).thenReturn(userProfilesDeletionResponse);
+
+        UserProfilesDeletionResponse response = userProfileService.delete(identifier);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(204);
+    }
+
+    @Test
     void test_deleteUserById() {
         UserProfilesDeletionResponse userProfilesDeletionResponse =
                 new UserProfilesDeletionResponse(204, "UserProfiles Successfully Deleted");
@@ -213,7 +229,8 @@ class UserProfileServiceTest {
         when(resourceUpdatorMock.updateUserProfileData(updateUserProfileData, "1234", "EXUI"))
                 .thenReturn(userProfileResponse);
 
-        userProfileService.updateUserProfileData(updateUserProfileData, "1234", "EXUI");
+        assertThat(userProfileService.updateUserProfileData(updateUserProfileData, "1234", "EXUI"))
+                .isNotNull();
         verify(resourceUpdatorMock, times(1))
                 .updateUserProfileData(updateUserProfileData, "1234", "EXUI");
     }
