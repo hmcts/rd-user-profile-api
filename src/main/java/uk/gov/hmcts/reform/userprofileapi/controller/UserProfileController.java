@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -129,15 +130,16 @@ public class UserProfileController {
     @ResponseStatus(value = HttpStatus.CREATED)
     @ResponseBody
     public ResponseEntity<UserProfileCreationResponse> createUserProfile(
-            @Valid @RequestBody UserProfileCreationData userProfileCreationData) {
-
+            @Valid @RequestBody UserProfileCreationData userProfileCreationData,
+        @RequestParam(value = "origin", required = false)
+        @ApiParam(name = "origin", value = "Any Valid String is allowed") String origin) {
         UserProfileCreationResponse resource;
         validateCreateUserProfileRequest(userProfileCreationData);
 
         if (userProfileCreationData.isResendInvite()) {
             resource = userProfileService.reInviteUser(userProfileCreationData);
         } else {
-            resource = userProfileService.create(userProfileCreationData);
+            resource = userProfileService.create(userProfileCreationData, origin);
         }
 
         return ResponseEntity.status(resource.getIdamRegistrationResponse()).body(resource);
@@ -359,11 +361,15 @@ public class UserProfileController {
             userProfileResponse.setAttributeResponse(attributeResponse);
             return ResponseEntity.status(attributeResponse.getIdamStatusCode()).body(userProfileResponse);
 
-        } else { // New update roles behavior
+        } else if (isEachAttributeNull(updateUserProfileData)) { // New update roles behavior
             //Updating user roles
             UserProfileValidator.validateUserProfileDataAndUserId(updateUserProfileData, userId);
             userProfileResponse = userProfileService.updateRoles(updateUserProfileData, userId);
             return ResponseEntity.ok().body(userProfileResponse);
+        } else {
+            UserProfileRolesResponse userProfileRolesResponse
+                    = userProfileService.updateUserProfileData(updateUserProfileData, userId, origin);
+            return ResponseEntity.ok().body(userProfileRolesResponse);
         }
 
     }
@@ -543,4 +549,9 @@ public class UserProfileController {
         return ResponseEntity.status(resource.getStatusCode()).body(resource);
     }
 
+    private boolean isEachAttributeNull(UpdateUserProfileData updateUserProfileData) {
+        return !StringUtils.hasLength(updateUserProfileData.getFirstName())
+                || !StringUtils.hasLength(updateUserProfileData.getLastName())
+                || !StringUtils.hasLength(updateUserProfileData.getIdamStatus());
+    }
 }
