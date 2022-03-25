@@ -15,7 +15,7 @@ plugins {
     id 'jacoco'
     id 'pmd'
     id 'com.github.ben-manes.versions' version '0.38.0'
-    id "info.solidsoft.pitest" version '1.7.0'
+    id "info.solidsoft.pitest" version '1.7.4'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'org.sonarqube' version '3.3'
     id 'org.springframework.boot' version '2.4.12'
@@ -321,7 +321,7 @@ dependencies {
     implementation group: 'io.github.openfeign.form', name: 'feign-form', version: '3.8.0'
     implementation group: 'io.github.openfeign.form', name: 'feign-form-spring', version: '3.8.0'
     implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '11.7'
-    implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '11.0'
+    implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '11.8'
 
     implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '3.0.2'
 
@@ -330,7 +330,7 @@ dependencies {
 
     implementation "com.github.hmcts.java-logging:logging:${versions.reformLogging}"
     implementation "com.github.hmcts.java-logging:logging-appinsights:${versions.reformLogging}"
-    implementation ('com.github.hmcts:properties-volume-spring-boot-starter:0.1.0'){
+    implementation ('com.github.hmcts:properties-volume-spring-boot-starter:0.1.1'){
         exclude group: 'org.glassfish', module: 'jakarta.el'
     }
     implementation 'com.github.hmcts:service-auth-provider-java-client:4.0.3'
@@ -351,13 +351,13 @@ dependencies {
     //Fix for CVE-2021-29425
     implementation 'commons-io:commons-io:2.11.0'
 
-    implementation group: 'org.flywaydb', name: 'flyway-core', version: '7.10.0'
+    implementation group: 'org.flywaydb', name: 'flyway-core', version: '8.5.2'
 
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.14'
 
     implementation group: 'javax.el', name: 'javax.el-api', version: '3.0.1-b06'
 
-    implementation group: 'com.google.guava', name: 'guava', version: '30.1-jre'
+    implementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
 
     implementation group:"org.yaml", name: "snakeyaml", version:"1.27"
     implementation (group: 'io.rest-assured', name: 'rest-assured', version: '3.3.0') {
@@ -380,7 +380,7 @@ dependencies {
     testRuntimeOnly group: 'org.junit.platform', name: 'junit-platform-engine', version: versions.junitPlatform
 
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.4.6'
-    testImplementation group: 'org.mockito', name: 'mockito-inline', version: '4.2.0'
+    testImplementation group: 'org.mockito', name: 'mockito-inline', version: '4.3.1'
     testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.3.3'
     testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.9'
 
@@ -474,7 +474,7 @@ dependencies {
     smokeTestImplementation sourceSets.main.runtimeClasspath
     smokeTestImplementation sourceSets.test.runtimeClasspath
 
-    contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: '4.2.14'
+    contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: '4.3.5'
     contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5spring', version: '4.2.14'
 
     contractTestImplementation sourceSets.main.runtimeClasspath
