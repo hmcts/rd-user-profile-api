@@ -339,6 +339,8 @@ dependencies {
     implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: versions.launchDarklySdk
 
     implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.13.2'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.2.1'
+    implementation group: 'com.fasterxml.jackson', name: 'jackson-bom', version: '2.13.2.20220324', ext: 'pom'
     implementation group: 'io.jsonwebtoken', name: 'jjwt', version:'0.9.1'
     implementation group: 'javax.inject', name: 'javax.inject', version: '1'
     implementation 'com.github.hmcts:idam-java-client:2.0.1'
@@ -496,7 +498,6 @@ dependencyManagement {
         }
 
         dependencySet(group: 'com.fasterxml.jackson.core', version: '2.13.2') {
-            entry 'jackson-databind'
             entry 'jackson-core'
             entry 'jackson-annotations'
         }
