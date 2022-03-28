@@ -320,7 +320,7 @@ dependencies {
 
     implementation group: 'io.github.openfeign.form', name: 'feign-form', version: '3.8.0'
     implementation group: 'io.github.openfeign.form', name: 'feign-form-spring', version: '3.8.0'
-    implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '11.7'
+    implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '11.8'
     implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '11.8'
 
     implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '3.0.2'
