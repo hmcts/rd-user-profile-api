@@ -15,7 +15,7 @@ plugins {
     id 'jacoco'
     id 'pmd'
     id 'com.github.ben-manes.versions' version '0.38.0'
-    id "info.solidsoft.pitest" version '1.7.0'
+    id "info.solidsoft.pitest" version '1.7.4'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'org.sonarqube' version '3.3'
     id 'org.springframework.boot' version '2.4.12'
@@ -33,7 +33,7 @@ def versions = [
         junitPlatform   : '1.8.1',
         lombok             : '1.18.22',
         gradlePitest       : '1.5.1',
-        pitest             : '1.5.2',
+        pitest             : '1.7.4',
         reformLogging      : '5.1.9',
         serenity           : '2.0.76',
         sonarPitest        : '0.5',
