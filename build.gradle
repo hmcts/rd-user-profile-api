@@ -75,6 +75,10 @@ compileTestJava {
     options.compilerArgs << '-Xlint:deprecation' << "-Xlint:unchecked" << "-Werror"
 }
 
+tasks.withType(JavaExec).configureEach {
+  javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
+}
+
 tasks.withType(Test) {
     useJUnitPlatform()
 
