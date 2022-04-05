@@ -35,7 +35,6 @@ def versions = [
         pitest             : '1.7.3',
         reformLogging      : '5.1.9',
         serenity           : '2.0.76',
-        sonarPitest        : '0.5',
         springBoot         : '2.4.12',
         springHystrix      : '2.2.8.RELEASE',
         springfoxSwagger   : '2.9.2',
@@ -427,7 +426,7 @@ dependencies {
     }
 
     testImplementation group: 'org.pitest', name: 'pitest', version: versions.pitest
-    testImplementation 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.7.4'
+    testImplementation 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.7.0'
     testImplementation group: 'org.pitest', name: 'pitest-junit5-plugin', version: '0.15'
 
 
