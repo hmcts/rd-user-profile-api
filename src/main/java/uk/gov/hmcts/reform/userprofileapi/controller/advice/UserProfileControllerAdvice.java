@@ -17,13 +17,16 @@ import java.util.Date;
 import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConversionException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -60,6 +63,30 @@ public class UserProfileControllerAdvice {
         return errorDetailsResponseEntity(ex, BAD_REQUEST, INVALID_REQUEST.getErrorMessage());
     }
 
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<Object> handleMissingRequestParameter(
+        MissingServletRequestParameterException ex) {
+        return errorDetailsResponseEntity(ex, BAD_REQUEST, INVALID_REQUEST.getErrorMessage());
+    }
+
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Object> customSerializationError(
+        HttpMessageNotReadableException ex) {
+
+        String field = "";
+        if (ex.getCause() != null) {
+            JsonMappingException jme = (JsonMappingException) ex.getCause();
+            field = jme.getPath().get(0).getFieldName();
+        }
+        ErrorResponse errorDetails = ErrorResponse.builder()
+            .errorMessage(BAD_REQUEST.getReasonPhrase())
+            .errorDescription(field + " in invalid format")
+            .timeStamp(getTimeStamp())
+            .build();
+
+        return new ResponseEntity<>(errorDetails, BAD_REQUEST);
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     protected ResponseEntity<Object> handleMethodArgumentNotValidException(
