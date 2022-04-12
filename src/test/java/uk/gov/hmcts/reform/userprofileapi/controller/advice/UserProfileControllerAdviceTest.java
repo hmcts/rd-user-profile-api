@@ -1,13 +1,17 @@
 package uk.gov.hmcts.reform.userprofileapi.controller.advice;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConversionException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.hmcts.reform.userprofileapi.exception.ForbiddenException;
 import uk.gov.hmcts.reform.userprofileapi.exception.IdamServiceException;
@@ -16,12 +20,23 @@ import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.util.Collections;
+import java.util.LinkedList;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserProfileControllerAdviceTest {
+
+
+    @Mock
+    HttpMessageNotReadableException httpMessageNotReadableException;
+
+    @Mock
+    LinkedList<JsonMappingException.Reference> path = new LinkedList<>();
 
     private final UserProfileControllerAdvice advice = new UserProfileControllerAdvice();
 
@@ -43,6 +58,36 @@ class UserProfileControllerAdviceTest {
         ResponseEntity<Object> response = advice.customValidationError(exception);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
+
+    @Test
+    void test_handle_invalid_serialization_exception() {
+
+        JsonMappingException jm = mock(JsonMappingException.class);
+        JsonMappingException.Reference rf = mock(JsonMappingException.Reference.class);
+        when(httpMessageNotReadableException.getCause()).thenReturn(jm);
+        when(jm.getPath()).thenReturn(Collections.unmodifiableList(path));
+        when(jm.getPath().get(0)).thenReturn(rf);
+        when(jm.getPath().get(0).getFieldName()).thenReturn("field");
+        ResponseEntity<Object> responseEntity = advice
+            .customSerializationError(httpMessageNotReadableException);
+
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+
+    }
+
+    @Test
+    void test_handle_missing_request_exception() {
+        MissingServletRequestParameterException
+            exception = new MissingServletRequestParameterException("Invalid Request","Missing Parameter");
+
+        ResponseEntity<Object> responseEntity = advice.handleMissingRequestParameter(exception);
+
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        assertEquals(exception.getMessage(), ((ErrorResponse) responseEntity.getBody())
+            .getErrorDescription());
+
+    }
+
 
     @Test
     void test_return_404_when_resource_not_found_exception() {
