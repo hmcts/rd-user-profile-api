@@ -52,7 +52,9 @@ public class JwtGrantedAuthoritiesConverter implements Converter<Jwt, Collection
         return authorities;
     }
 
-    @SuppressWarnings("java:S6204") //causes breaking issue with type of list being returned "Required type: List <GrantedAuthority>, Provided: List <SimpleGrantedAuthority>"
+    @SuppressWarnings("java:S6204")
+    // Causes breaking issue with type of list being returned
+    // "Required type: List <GrantedAuthority>, Provided: List <SimpleGrantedAuthority>"
     private List<GrantedAuthority> extractAuthorityFromClaims(List<String> roles) {
         return roles.stream()
                 .map(SimpleGrantedAuthority::new)
