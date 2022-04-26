@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,7 +89,7 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
         //get roles from sidam for each user
         if (rolesRequired) {
             return userProfiles.stream().map(profile -> getRolesFromIdam(profile, true))
-                    .collect(Collectors.toList());
+                    .toList();
         } else {
             return userProfiles;
         }
