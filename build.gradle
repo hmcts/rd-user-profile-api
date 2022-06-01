@@ -15,7 +15,7 @@ plugins {
     id 'jacoco'
     id 'pmd'
     id 'com.github.ben-manes.versions' version '0.38.0'
-    id "info.solidsoft.pitest" version '1.7.0'
+    id "info.solidsoft.pitest" version '1.7.4'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'org.sonarqube' version '3.3'
     id 'org.springframework.boot' version '2.4.12'
@@ -374,7 +374,7 @@ dependencies {
 
     implementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
 
-    implementation group:"org.yaml", name: "snakeyaml", version:"1.27"
+    implementation group:"org.yaml", name: "snakeyaml", version:"1.30"
     implementation (group: 'io.rest-assured', name: 'rest-assured', version: '3.3.0') {
         exclude group: "com.sun.xml.bind", module: "jaxb-osgi"
         exclude group: "org.apache.sling"
@@ -443,7 +443,7 @@ dependencies {
     }
 
     testImplementation group: 'org.pitest', name: 'pitest', version: versions.pitest
-    testImplementation 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.7.0'
+    testImplementation 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.7.4'
     testImplementation group: 'org.pitest', name: 'pitest-junit5-plugin', version: '0.15'
 
 
@@ -499,7 +499,7 @@ dependencies {
     smokeTestImplementation sourceSets.main.runtimeClasspath
     smokeTestImplementation sourceSets.test.runtimeClasspath
 
-    contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: '4.3.5'
+    contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: '4.3.6'
     contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5spring', version: '4.2.14'
 
     contractTestImplementation sourceSets.main.runtimeClasspath
