@@ -435,7 +435,7 @@ dependencies {
 
     testImplementation group: 'com.h2database', name: 'h2'
 
-    testImplementation('com.github.tomakehurst:wiremock:2.27.2') {
+    testImplementation('com.github.tomakehurst:wiremock:2.32.0') {
         exclude group: 'com.github.jknack'
     }
 
