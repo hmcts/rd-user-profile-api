@@ -375,7 +375,7 @@ dependencies {
 
     implementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
 
-    implementation group:"org.yaml", name: "snakeyaml", version:"1.27"
+    implementation group:"org.yaml", name: "snakeyaml", version:"1.30"
     implementation (group: 'io.rest-assured', name: 'rest-assured', version: '3.3.0') {
         exclude group: "com.sun.xml.bind", module: "jaxb-osgi"
         exclude group: "org.apache.sling"
