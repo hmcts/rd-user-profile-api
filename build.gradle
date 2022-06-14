@@ -407,7 +407,7 @@ dependencies {
 
     implementation group: 'io.github.openfeign.form', name: 'feign-form', version: '3.8.0'
     implementation group: 'io.github.openfeign.form', name: 'feign-form-spring', version: '3.8.0'
-    implementation "io.github.openfeign:feign-httpclient:11.0"
+    implementation "io.github.openfeign:feign-httpclient:11.8"
     implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: versions.log4j
     implementation "com.github.hmcts.java-logging:logging:${versions.reformLogging}"
     implementation "com.github.hmcts.java-logging:logging-appinsights:${versions.reformLogging}"
