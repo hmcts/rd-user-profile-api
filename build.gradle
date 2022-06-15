@@ -343,7 +343,7 @@ dependencies {
 
     implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '11.8'
 
-    implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '3.0.2'
+    implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '4.0.0'
 
     implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
     implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
