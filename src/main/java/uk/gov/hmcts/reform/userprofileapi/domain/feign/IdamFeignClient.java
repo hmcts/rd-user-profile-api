@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.userprofileapi.domain.feign;
 import feign.Headers;
 import feign.RequestLine;
 import feign.Response;
-import javax.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import uk.gov.hmcts.reform.userprofileapi.config.FeignInterceptorConfiguration;
+
+import javax.validation.Valid;
 
 @FeignClient(name = "IdamFeignClient", url = "${idam.api.url}", configuration = FeignInterceptorConfiguration.class)
 public interface IdamFeignClient {

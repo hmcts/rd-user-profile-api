@@ -1,10 +1,5 @@
 package uk.gov.hmcts.reform.userprofileapi.config;
 
-import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
-
-import java.util.List;
-import javax.inject.Inject;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -28,6 +23,11 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationFilter;
 import uk.gov.hmcts.reform.authorisation.filters.ServiceAuthFilter;
 import uk.gov.hmcts.reform.userprofileapi.oidc.JwtGrantedAuthoritiesConverter;
+
+import java.util.List;
+import javax.inject.Inject;
+
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
 @ConfigurationProperties(prefix = "security")
