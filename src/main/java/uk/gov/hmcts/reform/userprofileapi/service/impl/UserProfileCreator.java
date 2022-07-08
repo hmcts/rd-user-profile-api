@@ -39,6 +39,7 @@ import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceCreator;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationHelperService;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
+import uk.gov.hmcts.reform.userprofileapi.util.UserProfileUtil;
 
 @Service
 @Slf4j
@@ -92,6 +93,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
             return handleDuplicateUser(profileData, idamRegistrationInfo, origin);
         } else {
             persistAudit(idamRegistrationInfo.getStatusMessage(), idamStatus, null);
+            UserProfileUtil.idam5xxxErrorResponse(idamRegistrationInfo.getStatusMessage(), idamStatus);
             throw new IdamServiceException(idamRegistrationInfo.getStatusMessage(), idamStatus);
         }
     }
@@ -213,6 +215,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
 
     private void persistAuditAndThrowIdamException(String message, HttpStatus idamStatus, UserProfile userProfile) {
         persistAudit(message, idamStatus, userProfile);
+        UserProfileUtil.idam5xxxErrorResponse(message, idamStatus);
         throw new  IdamServiceException(message,idamStatus);
     }
 
@@ -286,5 +289,6 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
         });
         return roles;
     }
+
 
 }
