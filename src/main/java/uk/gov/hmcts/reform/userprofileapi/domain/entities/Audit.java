@@ -1,5 +1,10 @@
 package uk.gov.hmcts.reform.userprofileapi.domain.entities;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
+
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -11,10 +16,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 
 
 
