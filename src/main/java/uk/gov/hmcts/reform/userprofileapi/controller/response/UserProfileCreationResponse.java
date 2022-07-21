@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.userprofileapi.controller.response;
 
-import static java.util.Objects.requireNonNull;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+
+import static java.util.Objects.requireNonNull;
 
 @Getter
 @Setter

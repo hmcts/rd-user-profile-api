@@ -1,10 +1,11 @@
 package uk.gov.hmcts.reform.userprofileapi.controller.request;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
+
+import java.util.List;
 
 @Getter
 @Setter
