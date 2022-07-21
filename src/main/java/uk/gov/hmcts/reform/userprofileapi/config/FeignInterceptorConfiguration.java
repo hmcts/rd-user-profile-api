@@ -3,8 +3,6 @@ package uk.gov.hmcts.reform.userprofileapi.config;
 import feign.Feign;
 import feign.RequestInterceptor;
 import feign.Retryer;
-import java.util.Enumeration;
-import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -12,6 +10,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
+import java.util.Enumeration;
+import javax.servlet.http.HttpServletRequest;
 
 @Slf4j
 public class FeignInterceptorConfiguration {
