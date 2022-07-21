@@ -11,10 +11,10 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import uk.gov.hmcts.reform.userprofileapi.exception.ForbiddenException;
 import uk.gov.hmcts.reform.userprofileapi.service.FeatureToggleService;
 
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
-import java.util.Map;
 
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang.BooleanUtils.isNotTrue;
