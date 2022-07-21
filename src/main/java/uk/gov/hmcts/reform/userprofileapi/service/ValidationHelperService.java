@@ -1,12 +1,12 @@
 package uk.gov.hmcts.reform.userprofileapi.service;
 
-import java.util.Optional;
-
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
+
+import java.util.Optional;
 
 public interface ValidationHelperService {
 
