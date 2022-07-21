@@ -1,12 +1,13 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
-import java.time.LocalDateTime;
 import org.apache.commons.lang.StringUtils;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UpdateUserDetails;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
+
+import java.time.LocalDateTime;
 
 public interface UserProfileMapper {
 

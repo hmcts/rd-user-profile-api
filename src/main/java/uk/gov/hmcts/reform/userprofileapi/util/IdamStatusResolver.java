@@ -1,17 +1,17 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamErrorResponse;
+import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
+
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.ResponseEntity.status;
 import static org.springframework.util.CollectionUtils.isEmpty;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamErrorResponse;
-import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 
 
 @SuppressWarnings("HideUtilityClassConstructor")
