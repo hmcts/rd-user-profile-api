@@ -1,10 +1,16 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
-import static java.util.Objects.nonNull;
-
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Response;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamErrorResponse;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -15,14 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.zip.GZIPInputStream;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamErrorResponse;
+import static java.util.Objects.nonNull;
 
 @Component
 @Slf4j
