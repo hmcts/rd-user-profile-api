@@ -1,8 +1,9 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
-import java.time.LocalDate;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.userprofileapi.domain.DateProvider;
+
+import java.time.LocalDate;
 
 @Service
 public class SystemDateProvider implements DateProvider {
