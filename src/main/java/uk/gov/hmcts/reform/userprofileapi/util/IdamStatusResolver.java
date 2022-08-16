@@ -10,6 +10,7 @@ import static java.util.Objects.nonNull;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.ResponseEntity.status;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -87,7 +88,7 @@ public final class IdamStatusResolver {
     }
 
     public static Integer getStatusCodeValueFromResponseEntity(ResponseEntity<Object> responseEntity) {
-        return nonNull(responseEntity) ? responseEntity.getStatusCodeValue() : INTERNAL_SERVER_ERROR.value();
+        return nonNull(responseEntity) ? responseEntity.getStatusCodeValue() : UNAUTHORIZED.value();
     }
 
     public static IdamStatus resolveIdamStatus(IdamRolesInfo idamRolesInfo) {

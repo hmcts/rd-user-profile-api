@@ -104,14 +104,14 @@ public class IdamServiceImpl implements IdamService {
                     null));
         } catch (FeignException ex) {
             log.error("{}:: {} {}", loggingComponentName, "SIDAM call failed:", ex);
-            responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            responseEntity = ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         return new AttributeResponse(responseEntity);
     }
 
     public HttpStatus gethttpStatusFromFeignException(FeignException ex) {
         return (ex instanceof RetryableException)
-                ? HttpStatus.INTERNAL_SERVER_ERROR
+                ? HttpStatus.UNAUTHORIZED
                 : HttpStatus.valueOf(ex.status());
     }
 

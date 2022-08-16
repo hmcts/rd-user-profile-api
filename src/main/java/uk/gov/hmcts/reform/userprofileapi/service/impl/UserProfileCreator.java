@@ -201,7 +201,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
             }
         } else {
             log.error("{}:: Did not get location header", loggingComponentName);
-            idamStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+            idamStatus = HttpStatus.UNAUTHORIZED;
             persistAuditAndThrowIdamException(IdamStatusResolver.resolveStatusAndReturnMessage(idamStatus),
                     idamStatus, null);
         }

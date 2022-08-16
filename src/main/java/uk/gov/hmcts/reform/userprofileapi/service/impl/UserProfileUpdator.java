@@ -163,7 +163,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
 
     public HttpStatus getHttpStatusFromFeignException(FeignException ex) {
         return (ex instanceof RetryableException)
-                ? HttpStatus.INTERNAL_SERVER_ERROR
+                ? HttpStatus.UNAUTHORIZED
                 : HttpStatus.valueOf(ex.status());
     }
 
