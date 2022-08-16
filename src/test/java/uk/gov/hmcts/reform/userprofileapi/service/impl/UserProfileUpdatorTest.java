@@ -476,7 +476,7 @@ class UserProfileUpdatorTest {
                 Request.create(Request.HttpMethod.DELETE, "", new HashMap<>(), Request.Body.empty(),
                         null));
         HttpStatus httpStatus = sut.getHttpStatusFromFeignException(feignException);
-        assertThat(httpStatus).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(httpStatus).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test

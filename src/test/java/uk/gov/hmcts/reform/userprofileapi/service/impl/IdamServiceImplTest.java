@@ -113,7 +113,7 @@ class IdamServiceImplTest {
         RetryableException retryableExceptionMock = mock(RetryableException.class);
 
         HttpStatus status = idamService.gethttpStatusFromFeignException(retryableExceptionMock);
-        assertThat(status).isNotNull().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(status).isNotNull().isEqualTo(HttpStatus.UNAUTHORIZED);
 
         FeignException feignException = mock(FeignException.class);
         when(feignException.status()).thenReturn(400);

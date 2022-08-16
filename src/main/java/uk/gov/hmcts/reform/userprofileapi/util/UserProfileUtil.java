@@ -6,9 +6,8 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.hmcts.reform.userprofileapi.exception.IdamServiceException;
 
-import javax.servlet.http.HttpServletRequest;
-
 import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
 
 import static java.util.Objects.nonNull;
 
