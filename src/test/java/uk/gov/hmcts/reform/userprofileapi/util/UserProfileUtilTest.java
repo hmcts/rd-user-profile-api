@@ -37,7 +37,7 @@ class UserProfileUtilTest {
     @Test
     void testIdam5xxxErrorResponse() {
         Throwable exception = assertThrows(IdamServiceException.class, () -> {
-            UserProfileUtil.idam5xxxErrorResponse(
+            UserProfileUtil.idam5xxErrorResponse(
                     "18 Unknown error from Idam", HttpStatus.BAD_GATEWAY);
         });
         assertEquals("18 Unknown error from Idam", exception.getMessage());

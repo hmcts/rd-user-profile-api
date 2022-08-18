@@ -63,7 +63,7 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
                 persistAudit(idamRolesInfo, userProfile);
                 // for multiple users get request , do not throw exception and continue flow
                 if (!isMultiUserGet) {
-                    UserProfileUtil.idam5xxxErrorResponse(idamRolesInfo.getStatusMessage(),
+                    UserProfileUtil.idam5xxErrorResponse(idamRolesInfo.getStatusMessage(),
                             idamRolesInfo.getResponseStatusCode());
                     throw new IdamServiceException(idamRolesInfo.getStatusMessage(),
                             idamRolesInfo.getResponseStatusCode());

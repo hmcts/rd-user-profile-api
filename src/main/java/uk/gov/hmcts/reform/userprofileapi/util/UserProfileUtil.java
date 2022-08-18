@@ -36,7 +36,7 @@ public class UserProfileUtil {
         return userEmail;
     }
 
-    public static void idam5xxxErrorResponse(String message, HttpStatus idamStatus) {
+    public static void idam5xxErrorResponse(String message, HttpStatus idamStatus) {
         Optional<HttpStatus> idapStatusOptional = Optional.ofNullable(idamStatus);
         if (idapStatusOptional.isPresent() && idapStatusOptional.get().is5xxServerError()) {
             throw new IdamServiceException(message, HttpStatus.UNAUTHORIZED);

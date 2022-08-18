@@ -93,7 +93,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
             return handleDuplicateUser(profileData, idamRegistrationInfo, origin);
         } else {
             persistAudit(idamRegistrationInfo.getStatusMessage(), idamStatus, null);
-            UserProfileUtil.idam5xxxErrorResponse(idamRegistrationInfo.getStatusMessage(), idamStatus);
+            UserProfileUtil.idam5xxErrorResponse(idamRegistrationInfo.getStatusMessage(), idamStatus);
             throw new IdamServiceException(idamRegistrationInfo.getStatusMessage(), idamStatus);
         }
     }
@@ -215,7 +215,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
 
     private void persistAuditAndThrowIdamException(String message, HttpStatus idamStatus, UserProfile userProfile) {
         persistAudit(message, idamStatus, userProfile);
-        UserProfileUtil.idam5xxxErrorResponse(message, idamStatus);
+        UserProfileUtil.idam5xxErrorResponse(message, idamStatus);
         throw new  IdamServiceException(message,idamStatus);
     }
 
