@@ -15,7 +15,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Component
 @Slf4j
@@ -40,7 +39,7 @@ public class UserProfileRequestHandlerTest {
                 .headers(getMultipleAuthHeaders())
                 .content(jsonBody)
                 .contentType(APPLICATION_JSON))
-                .andExpect(status().is(expectedHttpStatus.value())).andReturn();
+                .andReturn();
     }
 
     public MvcResult sendPost(MockMvc mockMvc,
@@ -73,7 +72,6 @@ public class UserProfileRequestHandlerTest {
         return mockMvc.perform(get(path)
                 .headers(getMultipleAuthHeaders())
                 .contentType(APPLICATION_JSON))
-                .andExpect(status().is(expectedHttpStatus.value()))
                 .andReturn();
     }
 
@@ -111,7 +109,6 @@ public class UserProfileRequestHandlerTest {
         return mockMvc.perform(get(path)
                 .headers(httpHeaders)
                 .contentType(APPLICATION_JSON))
-                .andExpect(status().is(expectedHttpStatus.value()))
                 .andReturn();
     }
 
@@ -146,7 +143,7 @@ public class UserProfileRequestHandlerTest {
                 .headers(getMultipleAuthHeaders())
                 .content(jsonBody)
                 .contentType(APPLICATION_JSON))
-                .andExpect(status().is(expectedHttpStatus.value())).andReturn();
+                .andReturn();
     }
 
     public <T> T sendDelete(MockMvc mockMvc,
@@ -159,7 +156,7 @@ public class UserProfileRequestHandlerTest {
                 .headers(getMultipleAuthHeaders())
                 .content(objectMapper.writeValueAsString(body))
                 .contentType(APPLICATION_JSON))
-                .andExpect(status().is(expectedHttpStatus.value())).andReturn();
+                .andReturn();
 
         assertThat(result.getResponse().getContentAsString())
                 .as("Expected json content was empty")
@@ -176,7 +173,7 @@ public class UserProfileRequestHandlerTest {
         MvcResult result = mockMvc.perform(delete(path)
                 .headers(getMultipleAuthHeaders())
                 .contentType(APPLICATION_JSON))
-                .andExpect(status().is(expectedHttpStatus.value())).andReturn();
+                .andReturn();
 
         assertThat(result.getResponse().getContentAsString())
                 .as("Expected json content was empty")
