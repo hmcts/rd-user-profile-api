@@ -1,8 +1,12 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -103,56 +107,20 @@ class CreateNewUserProfileWithIdamErrorsIntTest extends AuthorizationEnabledInte
                 .isEqualTo("13 Required parameters or one of request field is missing or invalid");
     }
 
-    @Test
-    void should_return_401_when_idam_server_throws_500_error() throws Exception {
+    @DisplayName("Should return unAuthorized error response for all Idam 5xx Server errors")
+    @ParameterizedTest
+    @EnumSource(value = HttpStatus.class, names = {"INTERNAL_SERVER_ERROR","BAD_GATEWAY",
+            "SERVICE_UNAVAILABLE","GATEWAY_TIMEOUT"})
+    void should_return_401_when_idam_server_throws_5xx_error(HttpStatus httpStatus) throws Exception {
 
         UserProfileCreationData data = buildCreateUserProfileData();
 
-        setSidamRegistrationMockWithStatus(INTERNAL_SERVER_ERROR.value(), true);
+        setSidamRegistrationMockWithStatus(httpStatus.value(), true);
 
         ErrorResponse errorResponse =
                 userProfileRequestHandlerTest.sendPost(mockMvc, APP_BASE_PATH, data, UNAUTHORIZED, ErrorResponse.class);
 
-        assertThat(errorResponse.getErrorDescription()).isEqualTo("18 Unknown error from Idam");
-
-    }
-
-    @Test
-    void should_return_401_when_idam_server_throws_502_error() throws Exception {
-
-        UserProfileCreationData data = buildCreateUserProfileData();
-
-        setSidamRegistrationMockWithStatus(BAD_GATEWAY.value(), true);
-        ErrorResponse errorResponse =
-                userProfileRequestHandlerTest.sendPost(mockMvc, APP_BASE_PATH, data, UNAUTHORIZED, ErrorResponse.class);
-
-        assertThat(errorResponse.getErrorDescription()).isEqualTo("18 Unknown error from Idam");
-
-    }
-
-
-    @Test
-    void should_return_401_when_idam_server_throws_503_error() throws Exception {
-
-        UserProfileCreationData data = buildCreateUserProfileData();
-
-        setSidamRegistrationMockWithStatus(SERVICE_UNAVAILABLE.value(), true);
-        ErrorResponse errorResponse =
-                userProfileRequestHandlerTest.sendPost(mockMvc, APP_BASE_PATH, data, UNAUTHORIZED, ErrorResponse.class);
-
-        assertThat(errorResponse.getErrorDescription()).isEqualTo("18 Unknown error from Idam");
-
-    }
-
-    @Test
-    void should_return_401_when_idam_server_throws_504_error() throws Exception {
-
-        UserProfileCreationData data = buildCreateUserProfileData();
-
-        setSidamRegistrationMockWithStatus(GATEWAY_TIMEOUT.value(), true);
-        ErrorResponse errorResponse =
-                userProfileRequestHandlerTest.sendPost(mockMvc, APP_BASE_PATH, data, UNAUTHORIZED, ErrorResponse.class);
-
+        assertThat(errorResponse.getStatus()).isEqualTo(UNAUTHORIZED.value());
         assertThat(errorResponse.getErrorDescription()).isEqualTo("18 Unknown error from Idam");
 
     }
