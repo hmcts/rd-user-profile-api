@@ -63,8 +63,9 @@ public class UserProfileRequestHandlerTest {
         assertThat(result.getResponse().getContentAsString())
                 .as("Expected json content was empty")
                 .isNotEmpty();
-        if(clazz.getName().contains("ErrorResponse")  ){
-            ErrorResponse response = objectMapper.readValue(result.getResponse().getContentAsString(), ErrorResponse.class);
+        if (clazz.getName().contains("ErrorResponse")) {
+            ErrorResponse response = objectMapper.readValue(result.getResponse()
+                    .getContentAsString(), ErrorResponse.class);
             response.setStatus(result.getResponse().getStatus());
             return (T) response;
         }
