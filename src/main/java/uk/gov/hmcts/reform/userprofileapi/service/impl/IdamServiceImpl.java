@@ -56,6 +56,7 @@ public class IdamServiceImpl implements IdamService {
         try {
             Response response = idamClient.getUserById(id);
             result = buildIdamResponseResult(response);
+            log.info("Inside Fetch User by ID " + result.getResponseStatusCode() + result.getStatusMessage());
         } catch (FeignException ex) {
             result = buildIdamResponseFromFeignException(ex);
         }

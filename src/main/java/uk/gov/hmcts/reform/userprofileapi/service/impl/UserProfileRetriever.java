@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class UserProfileRetriever implements ResourceRetriever<UserProfileIdentifier> {
@@ -45,6 +47,8 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
                         "Could not find resource from database with given identifier"));
         if (fetchRoles) {
             userProfile = getRolesFromIdam(userProfile, false);
+            log.info("get Roles from Idam" + userProfile.getStatus() + userProfile.getIdamId() +
+                    userProfile.getRoles() + userProfile.getErrorMessage());
         }
         return userProfile;
     }
@@ -53,6 +57,8 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
 
         if (IdamStatus.ACTIVE == userProfile.getStatus()) {
             IdamRolesInfo idamRolesInfo = idamService.fetchUserById(userProfile.getIdamId());
+            log.info("fetch user By Id" + idamRolesInfo.getId() + idamRolesInfo.getStatusMessage()
+                    + idamRolesInfo.getRoles() + idamRolesInfo.getResponseStatusCode());
             if (idamRolesInfo.getResponseStatusCode().is2xxSuccessful()) {
                 persistAudit(idamRolesInfo, userProfile);
                 userProfile.setRoles(idamRolesInfo);
@@ -68,6 +74,8 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
                     // if SIDAM fails then send errorMessage and status code in response
                     userProfile.setErrorMessage(idamRolesInfo.getStatusMessage());
                     userProfile.setErrorStatusCode(String.valueOf(idamRolesInfo.getResponseStatusCode().value()));
+                    log.info("inside else method where idam status is not success" +
+                            idamRolesInfo.getResponseStatusCode());
                 }
             }
         } else {
