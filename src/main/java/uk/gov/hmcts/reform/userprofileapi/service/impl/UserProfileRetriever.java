@@ -47,8 +47,8 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
                         "Could not find resource from database with given identifier"));
         if (fetchRoles) {
             userProfile = getRolesFromIdam(userProfile, false);
-            log.info("get Roles from Idam" + userProfile.getStatus() + userProfile.getIdamId() +
-                    userProfile.getRoles() + userProfile.getErrorMessage());
+            log.info("get Roles from Idam" + userProfile.getStatus() + userProfile.getIdamId()
+                    + userProfile.getRoles() + userProfile.getErrorMessage());
         }
         return userProfile;
     }
@@ -74,8 +74,8 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
                     // if SIDAM fails then send errorMessage and status code in response
                     userProfile.setErrorMessage(idamRolesInfo.getStatusMessage());
                     userProfile.setErrorStatusCode(String.valueOf(idamRolesInfo.getResponseStatusCode().value()));
-                    log.info("inside else method where idam status is not success" +
-                            idamRolesInfo.getResponseStatusCode());
+                    log.info("inside else method where idam status is not success"
+                            + idamRolesInfo.getResponseStatusCode());
                 }
             }
         } else {
