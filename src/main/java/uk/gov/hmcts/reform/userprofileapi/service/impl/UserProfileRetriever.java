@@ -50,11 +50,14 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
             log.info("get Roles from Idam" + userProfile.getStatus() + userProfile.getIdamId()
                     + userProfile.getRoles() + userProfile.getErrorMessage());
         }
+        log.info("Inside retrieve method return userProfile" + userProfile.getErrorMessage()
+                + userProfile.getErrorStatusCode() + userProfile.getStatus());
         return userProfile;
     }
 
     public UserProfile getRolesFromIdam(UserProfile userProfile, boolean isMultiUserGet) {
 
+        log.info("Inside getRolesFromIdam" + userProfile.getStatus());
         if (IdamStatus.ACTIVE == userProfile.getStatus()) {
             IdamRolesInfo idamRolesInfo = idamService.fetchUserById(userProfile.getIdamId());
             log.info("fetch user By Id" + idamRolesInfo.getId() + idamRolesInfo.getStatusMessage()
@@ -81,7 +84,10 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
         } else {
             userProfile.setErrorMessage(IdamStatusResolver.NO_IDAM_CALL);
             userProfile.setErrorStatusCode(" ");
+            log.info("Inside Else Block" + userProfile.getErrorMessage() + userProfile.getErrorStatusCode());
         }
+        log.info("In the end of the method getRolesFromIdam" + userProfile.getErrorStatusCode()
+                + userProfile.getErrorMessage() + userProfile.getStatus());
         return userProfile;
     }
 

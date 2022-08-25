@@ -60,6 +60,8 @@ public class IdamServiceImpl implements IdamService {
         } catch (FeignException ex) {
             result = buildIdamResponseFromFeignException(ex);
         }
+        log.info("At the end of the block fetchUserById repeated log" + result.getResponseStatusCode()
+                + result.getId());
         return result;
     }
 
