@@ -185,10 +185,10 @@ public class UserProfileController {
     public ResponseEntity<UserProfileWithRolesResponse> getUserProfileWithRolesById(@PathVariable String id) {
         //Getting user profile by id
         isUserIdValid(id, true);
-        log.info("Inside getUserProfileWithRolesById Controller" + id);
+        log.debug("Inside getUserProfileWithRolesById Controller" + id);
         UserProfileWithRolesResponse response = userProfileService
                 .retrieveWithRoles(new UserProfileIdentifier(IdentifierName.UUID, id));
-        log.info("Response retuned to the controller" + response.getIdamMessage() + response.getIdamStatusCode()
+        log.debug("Response retuned to the controller" + response.getIdamMessage() + response.getIdamStatusCode()
                 + response.getIdamStatus());
         return ResponseEntity.ok(response);
     }
