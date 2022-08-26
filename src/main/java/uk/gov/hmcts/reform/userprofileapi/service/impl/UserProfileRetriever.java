@@ -47,20 +47,20 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
                         "Could not find resource from database with given identifier"));
         if (fetchRoles) {
             userProfile = getRolesFromIdam(userProfile, false);
-            log.info("get Roles from Idam" + userProfile.getStatus() + userProfile.getIdamId()
+            log.debug("get Roles from Idam" + userProfile.getStatus() + userProfile.getIdamId()
                     + userProfile.getRoles() + userProfile.getErrorMessage());
         }
-        log.info("Inside retrieve method return userProfile" + userProfile.getErrorMessage()
+        log.debug("Inside retrieve method return userProfile" + userProfile.getErrorMessage()
                 + userProfile.getErrorStatusCode() + userProfile.getStatus());
         return userProfile;
     }
 
     public UserProfile getRolesFromIdam(UserProfile userProfile, boolean isMultiUserGet) {
 
-        log.info("Inside getRolesFromIdam" + userProfile.getStatus());
+        log.debug("Inside getRolesFromIdam" + userProfile.getStatus());
         if (IdamStatus.ACTIVE == userProfile.getStatus()) {
             IdamRolesInfo idamRolesInfo = idamService.fetchUserById(userProfile.getIdamId());
-            log.info("fetch user By Id" + idamRolesInfo.getId() + idamRolesInfo.getStatusMessage()
+            log.debug("fetch user By Id" + idamRolesInfo.getId() + idamRolesInfo.getStatusMessage()
                     + idamRolesInfo.getRoles() + idamRolesInfo.getResponseStatusCode());
             if (idamRolesInfo.getResponseStatusCode().is2xxSuccessful()) {
                 persistAudit(idamRolesInfo, userProfile);
@@ -77,16 +77,16 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
                     // if SIDAM fails then send errorMessage and status code in response
                     userProfile.setErrorMessage(idamRolesInfo.getStatusMessage());
                     userProfile.setErrorStatusCode(String.valueOf(idamRolesInfo.getResponseStatusCode().value()));
-                    log.info("inside else method where idam status is not success"
+                    log.debug("inside else method where idam status is not success"
                             + idamRolesInfo.getResponseStatusCode());
                 }
             }
         } else {
             userProfile.setErrorMessage(IdamStatusResolver.NO_IDAM_CALL);
             userProfile.setErrorStatusCode(" ");
-            log.info("Inside Else Block" + userProfile.getErrorMessage() + userProfile.getErrorStatusCode());
+            log.debug("Inside Else Block" + userProfile.getErrorMessage() + userProfile.getErrorStatusCode());
         }
-        log.info("In the end of the method getRolesFromIdam" + userProfile.getErrorStatusCode()
+        log.debug("In the end of the method getRolesFromIdam" + userProfile.getErrorStatusCode()
                 + userProfile.getErrorMessage() + userProfile.getStatus());
         return userProfile;
     }
