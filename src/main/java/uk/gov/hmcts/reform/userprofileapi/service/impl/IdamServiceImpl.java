@@ -56,11 +56,11 @@ public class IdamServiceImpl implements IdamService {
         try {
             Response response = idamClient.getUserById(id);
             result = buildIdamResponseResult(response);
-            log.info("Inside Fetch User by ID " + result.getResponseStatusCode() + result.getStatusMessage());
+            log.debug("Inside Fetch User by ID " + result.getResponseStatusCode() + result.getStatusMessage());
         } catch (FeignException ex) {
             result = buildIdamResponseFromFeignException(ex);
         }
-        log.info("At the end of the block fetchUserById repeated log" + result.getResponseStatusCode()
+        log.debug("At the end of the block fetchUserById repeated log" + result.getResponseStatusCode()
                 + result.getId());
         return result;
     }
