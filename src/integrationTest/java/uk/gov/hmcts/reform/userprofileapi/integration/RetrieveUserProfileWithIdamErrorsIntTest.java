@@ -159,7 +159,7 @@ class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabledInteg
                 );
 
         assertThat(errorResponse).isNotNull();
-        assertThat(errorResponse.getErrorDescription()).isEqualTo("18 Unknown error from Idam");
+        assertThat(errorResponse.getErrorDescription()).isEqualTo("Access Denied");
     }
 
     @Test
@@ -179,7 +179,7 @@ class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabledInteg
                 );
 
         assertThat(errorResponse).isNotNull();
-        assertThat(errorResponse.getErrorDescription()).isEqualTo("18 Unknown error from Idam");
+        assertThat(errorResponse.getErrorDescription()).isEqualTo("Access Denied");
     }
 
 }

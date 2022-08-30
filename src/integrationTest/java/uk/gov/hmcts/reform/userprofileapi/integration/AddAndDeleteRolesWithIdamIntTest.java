@@ -118,6 +118,13 @@ class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTe
                     + "\"errorMessage\": \"One or more of the roles provided does not exist.\""
                     + "}";
         }
+        if (httpStatus.is5xxServerError()) {
+            httpStatus = HttpStatus.UNAUTHORIZED;
+            body = "{"
+                    + "\"status\": \"401\","
+                    + "\"errorMessage\": \"Access Denied\""
+                    + "}";
+        }
         idamMockService.stubFor(post(urlEqualTo("/api/v1/users/" + userId + "/roles"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
@@ -146,6 +153,13 @@ class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTe
             body = "{"
                     + "\"status\": \"412\","
                     + "\"errorMessage\": \"The role provided is not assigned to the user.\""
+                    + "}";
+        }
+        if (httpStatus.is5xxServerError()) {
+            httpStatus = HttpStatus.UNAUTHORIZED;
+            body = "{"
+                    + "\"status\": \"401\","
+                    + "\"errorMessage\": \"Access Denied\""
                     + "}";
         }
         idamMockService.stubFor(WireMock.delete(urlMatching("/api/v1/users/.*"))
@@ -370,6 +384,82 @@ class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTe
         });
 
     }
+
+
+    @Test
+    void shouldGetErrorMessageFromIdamWhenRoleDeletionFails5xx() throws Exception {
+        final boolean isBodyRequired = false;
+        final boolean isUnassignedRole = false;
+        final String statusCode = "500";
+        final String expectedErrorMessage = "Access Denied";
+        UserProfile userProfile = buildUserProfile();
+        userProfile.setStatus(IdamStatus.ACTIVE);
+        UserProfile persistedUserProfile = userProfileRepository.save(userProfile);
+
+        String userId = persistedUserProfile.getIdamId();
+        assertThat(userId).isNotNull();
+
+        mockWithDeleteRoleFailure(HttpStatus.INTERNAL_SERVER_ERROR, isBodyRequired, isUnassignedRole);
+
+        UpdateUserProfileData userRoles = new UpdateUserProfileData();
+
+        Set<RoleName> roles = new HashSet<>();
+        roles.add(role1);
+        roles.add(role2);
+
+        userRoles.setRolesDelete(roles);
+        UserProfileRolesResponse userProfileRolesResponse = userProfileRequestHandlerTest.sendPut(
+                mockMvc,
+                APP_BASE_PATH + "/" + userId,
+                userRoles,
+                OK,
+                UserProfileRolesResponse.class
+        );
+        String expectedStatusCode = "401";
+        userProfileRolesResponse.getRoleDeletionResponse().forEach(roleDeletionResponse -> {
+            assertThat(roleDeletionResponse.getIdamStatusCode()).isEqualTo(expectedStatusCode);
+            assertThat(roleDeletionResponse.getIdamMessage())
+                    .isEqualTo(expectedErrorMessage);
+        });
+
+    }
+
+    @Test
+    void should_see_error_message_from_idam_when_role_addition_fails_5xx() throws Exception {
+        final boolean isBodyRequired = false;
+        final String statusCode = "500";
+        final String expectedErrorMessage = "Access Denied";
+        UserProfile userProfile = buildUserProfile();
+        userProfile.setStatus(IdamStatus.ACTIVE);
+        UserProfile persistedUserProfile = userProfileRepository.save(userProfile);
+
+        String userId = persistedUserProfile.getIdamId();
+        assertThat(userId).isNotNull();
+
+        mockWithUpdateRolesFailure(HttpStatus.INTERNAL_SERVER_ERROR, isBodyRequired, userId);
+
+        UpdateUserProfileData userRoles = new UpdateUserProfileData();
+
+        Set<RoleName> roles = new HashSet<>();
+        roles.add(role1);
+        roles.add(role2);
+
+        userRoles.setRolesAdd(roles);
+        UserProfileRolesResponse userProfileRolesResponse = userProfileRequestHandlerTest.sendPut(
+                mockMvc,
+                APP_BASE_PATH + "/" + userId,
+                userRoles,
+                OK,
+                UserProfileRolesResponse.class
+        );
+        String expectedStatusCode = "401";
+        assertThat(userProfileRolesResponse.getRoleAdditionResponse().getIdamStatusCode())
+                .isEqualTo(expectedStatusCode);
+        assertThat(userProfileRolesResponse.getRoleAdditionResponse().getIdamMessage())
+                .isEqualTo(expectedErrorMessage);
+
+    }
+
 
     private static Stream<Arguments> updateFailScenarioArguments() {
         return Stream.of(arguments(
