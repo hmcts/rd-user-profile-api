@@ -5,3 +5,5 @@ java:
   environment:
     POSTGRES_HOST: rd-user-profile-api-postgres-db-v11-{{ .Values.global.environment }}.postgres.database.azure.com
     POSTGRES_USERNAME: dbuserprofile@rd-user-profile-api-postgres-db-v11-{{ .Values.global.environment }}
+    SPRING_JPA_OPEN-IN-VIEW: false
+    APPLICATION_LOGGING_LEVEL: DEBUG
