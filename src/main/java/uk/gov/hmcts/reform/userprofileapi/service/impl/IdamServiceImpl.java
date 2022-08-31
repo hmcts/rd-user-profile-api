@@ -147,12 +147,9 @@ public class IdamServiceImpl implements IdamService {
 
     @SuppressWarnings("unchecked")
     private IdamRolesInfo buildIdamResponseResult(Response response) {
-
         ResponseEntity<Object> entity = JsonFeignResponseHelper.toResponseEntity(response,
                 getResponseMapperClass(response, IdamUserResponse.class));
-        IdamRolesInfo idamRolesInfo = new IdamRolesInfo(entity);
-
-        return idamRolesInfo;
+        return new IdamRolesInfo(entity);
     }
 
     private IdamRolesInfo buildIdamResponseFromFeignException(FeignException ex) {
