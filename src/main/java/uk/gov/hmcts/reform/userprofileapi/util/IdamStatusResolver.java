@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.ResponseEntity.status;
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -70,7 +69,7 @@ public final class IdamStatusResolver {
                 errorMessage = getErrorMessageFromSidamResponse(responseBody);
             }
         } else {
-            responseEntity = status(INTERNAL_SERVER_ERROR).build();
+            responseEntity = status(UNAUTHORIZED).build();
         }
         return isNotBlank(errorMessage) ? errorMessage :
                 resolveStatusAndReturnMessage(responseEntity.getStatusCode());

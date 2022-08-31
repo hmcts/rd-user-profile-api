@@ -160,13 +160,6 @@ public abstract class AuthorizationEnabledIntegrationTest {
                     + "\"errorMessage\": \"Not Found\""
                     + "}";
         }
-        if (HttpStatus.valueOf(status).is5xxServerError()) {
-            status = HttpStatus.UNAUTHORIZED.value();
-            body = "{"
-                    + "\"status\": \"401\","
-                    + "\"errorMessage\": \"Access Denied\""
-                    + "}";
-        }
         idamMockService.stubFor(patch(urlMatching("/api/v1/users/" + idamId))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
@@ -198,13 +191,6 @@ public abstract class AuthorizationEnabledIntegrationTest {
                     + "\"errorDescription\": \"The role to be assigned does not exist.\""
                     + "}";
         }
-        if (HttpStatus.valueOf(status).is5xxServerError()) {
-            status = HttpStatus.UNAUTHORIZED.value();
-            body = "{"
-                    + "\"status\": \"401\","
-                    + "\"errorMessage\": \"Access Denied\""
-                    + "}";
-        }
         idamMockService.stubFor(post(urlEqualTo("/api/v1/users/registration"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
@@ -221,15 +207,6 @@ public abstract class AuthorizationEnabledIntegrationTest {
                     + "\"status\": \"404\","
                     + "\"errorMessages\": ["
                     + "\"The user could not be found: c5d631f-af11-4816-abbe-ac6fd9b99ee9\""
-                    + "]"
-                    + "}";
-        }
-        if (httpStatus.is5xxServerError()) {
-            httpStatus = HttpStatus.valueOf(HttpStatus.UNAUTHORIZED.value());
-            body = "{"
-                    + "\"status\": \"401\","
-                    + "\"errorMessages\": ["
-                    + "\"Access Denied\""
                     + "]"
                     + "}";
         }

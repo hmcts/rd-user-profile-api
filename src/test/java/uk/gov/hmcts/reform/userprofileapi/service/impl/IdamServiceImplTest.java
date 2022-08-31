@@ -141,7 +141,7 @@ class IdamServiceImplTest {
 
         verify(idamFeignClientMock, times(1)).updateUserRoles(roleRequest, userId);
         verify(responseMock, times(2)).headers();
-        verify(responseMock, times(3)).status();
+        verify(responseMock, times(4)).status();
 
         assertThat(result).isNotNull();
     }

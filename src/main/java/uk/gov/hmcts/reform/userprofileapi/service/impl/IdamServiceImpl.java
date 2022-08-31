@@ -17,9 +17,11 @@ import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
+import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 import uk.gov.hmcts.reform.userprofileapi.util.JsonFeignResponseHelper;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static uk.gov.hmcts.reform.userprofileapi.util.JsonFeignResponseHelper.getResponseMapperClass;
@@ -43,6 +45,11 @@ public class IdamServiceImpl implements IdamService {
             ResponseEntity<Object> entity = JsonFeignResponseHelper.toResponseEntity(response,
                     getResponseMapperClass(response, null));
             result = new IdamRegistrationInfo(entity);
+            HttpStatus httpStatus = HttpStatus.valueOf(response.status());
+            if (httpStatus.is5xxServerError()) {
+                result.setIdamRegistrationResponse(HttpStatus.UNAUTHORIZED);
+                result.setStatusMessage(IdamStatusResolver.MISSING_TOKEN);
+            }
         } catch (FeignException ex) {
             result = new IdamRegistrationInfo(ResponseEntity.status(gethttpStatusFromFeignException(ex)).build());
         }
@@ -56,6 +63,11 @@ public class IdamServiceImpl implements IdamService {
         try {
             Response response = idamClient.getUserById(id);
             result = buildIdamResponseResult(response);
+            HttpStatus httpStatus = HttpStatus.valueOf(response.status());
+            if (httpStatus.is5xxServerError()) {
+                result.setResponseStatusCode(HttpStatus.UNAUTHORIZED);
+                result.setStatusMessage(IdamStatusResolver.MISSING_TOKEN);
+            }
             log.debug("Inside Fetch User by ID " + result.getResponseStatusCode() + result.getStatusMessage());
         } catch (FeignException ex) {
             result = buildIdamResponseFromFeignException(ex);
@@ -69,7 +81,7 @@ public class IdamServiceImpl implements IdamService {
     public IdamRolesInfo updateUserRoles(List roleRequest, String userId) {
 
         ResponseEntity<Object> responseEntity;
-        Response response;
+        Response response = null;
         try {
             response = idamClient.updateUserRoles(roleRequest, userId);
             responseEntity = JsonFeignResponseHelper.toResponseEntity(response, getResponseMapperClass(response,
@@ -77,15 +89,15 @@ public class IdamServiceImpl implements IdamService {
         } catch (FeignException ex) {
             responseEntity = ResponseEntity.status(gethttpStatusFromFeignException(ex)).build();
         }
-
-        return new IdamRolesInfo(responseEntity);
+        IdamRolesInfo result = getIdamRolesInfo(responseEntity, response);
+        return result;
     }
 
     @Override
     public IdamRolesInfo addUserRoles(Set roleRequest, String userId) {
 
         ResponseEntity<Object> responseEntity;
-        Response response;
+        Response response = null;
         try {
             response = idamClient.addUserRoles(roleRequest, userId);
             responseEntity = JsonFeignResponseHelper.toResponseEntity(response, getResponseMapperClass(response,
@@ -93,8 +105,23 @@ public class IdamServiceImpl implements IdamService {
         } catch (FeignException ex) {
             responseEntity = ResponseEntity.status(gethttpStatusFromFeignException(ex)).build();
         }
+        IdamRolesInfo result = getIdamRolesInfo(responseEntity, response);
+        return result;
+    }
 
-        return new IdamRolesInfo(responseEntity);
+    IdamRolesInfo getIdamRolesInfo(ResponseEntity<Object> responseEntity, Response response) {
+        IdamRolesInfo result = new IdamRolesInfo(responseEntity);
+
+        Optional<Response> respOptional = Optional.ofNullable(response);
+        if (respOptional.isPresent()) {
+            HttpStatus httpStatus = HttpStatus.valueOf(response.status());
+            if (httpStatus.is5xxServerError()) {
+                result.setResponseStatusCode(HttpStatus.UNAUTHORIZED);
+                result.setStatusMessage(IdamStatusResolver.MISSING_TOKEN);
+            }
+        }
+
+        return result;
     }
 
     @Override
@@ -120,9 +147,12 @@ public class IdamServiceImpl implements IdamService {
 
     @SuppressWarnings("unchecked")
     private IdamRolesInfo buildIdamResponseResult(Response response) {
+
         ResponseEntity<Object> entity = JsonFeignResponseHelper.toResponseEntity(response,
                 getResponseMapperClass(response, IdamUserResponse.class));
-        return new IdamRolesInfo(entity);
+        IdamRolesInfo idamRolesInfo = new IdamRolesInfo(entity);
+
+        return idamRolesInfo;
     }
 
     private IdamRolesInfo buildIdamResponseFromFeignException(FeignException ex) {

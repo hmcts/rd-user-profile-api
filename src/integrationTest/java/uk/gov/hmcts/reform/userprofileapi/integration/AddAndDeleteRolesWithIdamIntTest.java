@@ -118,13 +118,6 @@ class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTe
                     + "\"errorMessage\": \"One or more of the roles provided does not exist.\""
                     + "}";
         }
-        if (httpStatus.is5xxServerError()) {
-            httpStatus = HttpStatus.UNAUTHORIZED;
-            body = "{"
-                    + "\"status\": \"401\","
-                    + "\"errorMessage\": \"Access Denied\""
-                    + "}";
-        }
         idamMockService.stubFor(post(urlEqualTo("/api/v1/users/" + userId + "/roles"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
@@ -153,13 +146,6 @@ class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTe
             body = "{"
                     + "\"status\": \"412\","
                     + "\"errorMessage\": \"The role provided is not assigned to the user.\""
-                    + "}";
-        }
-        if (httpStatus.is5xxServerError()) {
-            httpStatus = HttpStatus.UNAUTHORIZED;
-            body = "{"
-                    + "\"status\": \"401\","
-                    + "\"errorMessage\": \"Access Denied\""
                     + "}";
         }
         idamMockService.stubFor(WireMock.delete(urlMatching("/api/v1/users/.*"))
@@ -391,7 +377,7 @@ class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTe
         final boolean isBodyRequired = false;
         final boolean isUnassignedRole = false;
         final String statusCode = "500";
-        final String expectedErrorMessage = "Access Denied";
+        final String expectedErrorMessage = "14 Missing Bearer Token";
         UserProfile userProfile = buildUserProfile();
         userProfile.setStatus(IdamStatus.ACTIVE);
         UserProfile persistedUserProfile = userProfileRepository.save(userProfile);
@@ -428,7 +414,7 @@ class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTe
     void should_see_error_message_from_idam_when_role_addition_fails_5xx() throws Exception {
         final boolean isBodyRequired = false;
         final String statusCode = "500";
-        final String expectedErrorMessage = "Access Denied";
+        final String expectedErrorMessage = "14 Missing Bearer Token";
         UserProfile userProfile = buildUserProfile();
         userProfile.setStatus(IdamStatus.ACTIVE);
         UserProfile persistedUserProfile = userProfileRepository.save(userProfile);
