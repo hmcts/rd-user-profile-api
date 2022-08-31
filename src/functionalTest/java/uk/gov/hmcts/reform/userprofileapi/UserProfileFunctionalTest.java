@@ -554,8 +554,8 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
     @AfterAll
     public static void cleanUpTestData() {
         try {
-            deleteActiveUserByIdShouldReturnSuccess();
-            deleteActiveUserByEmailPatternShouldReturnSuccess();
+            //deleteActiveUserByIdShouldReturnSuccess();
+            //deleteActiveUserByEmailPatternShouldReturnSuccess();
         } catch (Exception e) {
             log.error("cleanUpTestData :: threw the following exception: " + e);
         }
