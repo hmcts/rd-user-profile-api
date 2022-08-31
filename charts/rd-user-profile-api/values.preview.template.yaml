@@ -9,7 +9,6 @@ java:
     LAUNCH_DARKLY_ENV: "preview"
     ENVIRONMENT_NAME: "preview"
 
-
   postgresql:
     enabled: true
     auth:
