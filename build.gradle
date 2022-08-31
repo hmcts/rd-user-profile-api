@@ -41,7 +41,9 @@ def versions = [
         pact_version       : '3.5.24',
         launchDarklySdk    : "5.10.0",
         log4j              : '2.17.1',
-        springVersion      : '5.3.20'
+        springVersion      : '5.3.20',
+        jackson            : '2.13.3',
+        feign              : '3.8.0'
 ]
 
 mainClassName = 'uk.gov.hmcts.reform.userprofileapi.Application'
@@ -352,9 +354,9 @@ dependencies {
 
     implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: versions.launchDarklySdk
 
-    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.13.2'
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.13.2.1'
-    implementation group: 'com.fasterxml.jackson', name: 'jackson-bom', version: '2.13.3', ext: 'pom'
+    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: versions.jackson
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
+    implementation group: 'com.fasterxml.jackson', name: 'jackson-bom', version: versions.jackson, ext: 'pom'
     implementation group: 'io.jsonwebtoken', name: 'jjwt', version:'0.9.1'
     implementation group: 'javax.inject', name: 'javax.inject', version: '1'
     implementation 'com.github.hmcts:idam-java-client:2.0.1'
@@ -405,9 +407,11 @@ dependencies {
 
     testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.9'
 
-    implementation group: 'io.github.openfeign.form', name: 'feign-form', version: '3.8.0'
-    implementation group: 'io.github.openfeign.form', name: 'feign-form-spring', version: '3.8.0'
+
+    implementation group: 'io.github.openfeign.form', name: 'feign-form', version: versions.feign
+    implementation group: 'io.github.openfeign.form', name: 'feign-form-spring', version: versions.feign
     implementation "io.github.openfeign:feign-httpclient:11.9.1"
+
     implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: versions.log4j
     implementation "com.github.hmcts.java-logging:logging:${versions.reformLogging}"
 
