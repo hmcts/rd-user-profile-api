@@ -131,6 +131,7 @@ public class UserProfileController {
             @Valid @RequestBody UserProfileCreationData userProfileCreationData,
         @RequestParam(value = "origin", required = false)
         @ApiParam(name = "origin", value = "Any Valid String is allowed") String origin) {
+        log.debug("Inside createUserProfile Controller" + origin);
         UserProfileCreationResponse resource;
         validateCreateUserProfileRequest(userProfileCreationData);
 
@@ -139,9 +140,8 @@ public class UserProfileController {
         } else {
             resource = userProfileService.create(userProfileCreationData, origin);
         }
-
+        log.debug("Response createUserProfile from controller" + resource.getIdamRegistrationResponse());
         return ResponseEntity.status(resource.getIdamRegistrationResponse()).body(resource);
-
     }
 
     @ApiOperation(value = "Retrieves a User Profile and their Roles with the given ID",
