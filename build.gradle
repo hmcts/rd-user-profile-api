@@ -11,14 +11,14 @@ buildscript {
 
 plugins {
     id 'application'
-    id 'uk.gov.hmcts.java' version '0.12.12'
+    id 'uk.gov.hmcts.java' version '0.12.29'
     id 'jacoco'
     id 'pmd'
     id 'com.github.ben-manes.versions' version '0.38.0'
     id "info.solidsoft.pitest" version '1.7.4'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.13.RELEASE'
     id 'org.sonarqube' version '3.3'
-    id 'org.springframework.boot' version '2.4.12'
+    id 'org.springframework.boot' version '2.7.3'
     id "org.flywaydb.flyway" version "8.3.0"
     id 'au.com.dius.pact' version '4.1.7'// do not change, otherwise serenity report fails
 }
@@ -35,13 +35,12 @@ def versions = [
         pitest             : '1.7.3',
         reformLogging      : '5.1.9',
         serenity           : '2.0.76',
-        springBoot         : '2.6.6',
-        springHystrix      : '2.2.8.RELEASE',
+        springBoot         : '2.7.3',
         springfoxSwagger   : '2.9.2',
         pact_version       : '3.5.24',
         launchDarklySdk    : "5.10.0",
         log4j              : '2.17.1',
-        springVersion      : '5.3.20',
+        springVersion      : '5.3.22',
         jackson            : '2.13.3',
         feign              : '3.8.0'
 ]
@@ -371,7 +370,7 @@ dependencies {
 
     implementation group: 'org.flywaydb', name: 'flyway-core', version: '8.5.2'
 
-    implementation group: 'org.postgresql', name: 'postgresql', version: '42.4.1'
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.4.2'
 
     implementation group: 'javax.el', name: 'javax.el-api', version: '3.0.1-b06'
 
@@ -519,7 +518,7 @@ dependencyManagement {
     dependencies {
         // CVE-2021-33037
         // CVE-2021-42340
-        dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.63') {
+        dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.65') {
             entry 'tomcat-embed-core'
             entry 'tomcat-embed-el'
             entry 'tomcat-embed-websocket'
