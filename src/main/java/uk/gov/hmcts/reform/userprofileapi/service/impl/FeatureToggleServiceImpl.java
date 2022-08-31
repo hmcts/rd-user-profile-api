@@ -47,7 +47,7 @@ public class FeatureToggleServiceImpl implements FeatureToggleService {
                 .custom("environment", environment)
                 .build();
 
-        return ldClient.boolVariation(flagName, user, false);
+        return true;
     }
 
     @Override
