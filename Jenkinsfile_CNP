@@ -61,7 +61,6 @@ withPipeline(type, product, component) {
         env.execution_environment = "preview"
         env.LAUNCH_DARKLY_ENV = "preview"
         env.ENVIRONMENT_NAME  = "preview"
-
     }
 
     before('functionalTest:aat') {
