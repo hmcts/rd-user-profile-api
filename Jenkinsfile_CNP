@@ -47,7 +47,6 @@ withPipeline(type, product, component) {
     env.S2S_URL_TO_TEST = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     env.IDAM_URL_TO_TEST = "https://idam-api.aat.platform.hmcts.net"
     env.TEST_URL = "http://rd-user-profile-api-aat.service.core-compute-aat.internal"
-    env.LAUNCH_DARKLY_ENV = "preview"
 
     overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)
@@ -60,10 +59,15 @@ withPipeline(type, product, component) {
 
     before('functionalTest:preview') {
         env.execution_environment = "preview"
+        env.LAUNCH_DARKLY_ENV = "preview"
+        env.ENVIRONMENT_NAME  = "preview"
+
     }
 
     before('functionalTest:aat') {
         env.execution_environment = "aat"
+        env.LAUNCH_DARKLY_ENV = "aat"
+        env.ENVIRONMENT_NAME  = "aat"
     }
 
     after('sonarscan') {
