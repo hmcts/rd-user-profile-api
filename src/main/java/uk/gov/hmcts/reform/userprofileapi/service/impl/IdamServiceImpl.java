@@ -48,7 +48,7 @@ public class IdamServiceImpl implements IdamService {
             HttpStatus httpStatus = HttpStatus.valueOf(response.status());
             if (httpStatus.is5xxServerError()) {
                 result.setIdamRegistrationResponse(HttpStatus.UNAUTHORIZED);
-                result.setStatusMessage(IdamStatusResolver.MISSING_TOKEN);
+                result.setStatusMessage(IdamStatusResolver.IDAM_CALL_RESPONSE_5xx);
             }
         } catch (FeignException ex) {
             result = new IdamRegistrationInfo(ResponseEntity.status(gethttpStatusFromFeignException(ex)).build());
@@ -66,7 +66,7 @@ public class IdamServiceImpl implements IdamService {
             HttpStatus httpStatus = HttpStatus.valueOf(response.status());
             if (httpStatus.is5xxServerError()) {
                 result.setResponseStatusCode(HttpStatus.UNAUTHORIZED);
-                result.setStatusMessage(IdamStatusResolver.MISSING_TOKEN);
+                result.setStatusMessage(IdamStatusResolver.IDAM_CALL_RESPONSE_5xx);
             }
             log.debug("Inside Fetch User by ID " + result.getResponseStatusCode() + result.getStatusMessage());
         } catch (FeignException ex) {
@@ -117,7 +117,7 @@ public class IdamServiceImpl implements IdamService {
             HttpStatus httpStatus = HttpStatus.valueOf(response.status());
             if (httpStatus.is5xxServerError()) {
                 result.setResponseStatusCode(HttpStatus.UNAUTHORIZED);
-                result.setStatusMessage(IdamStatusResolver.MISSING_TOKEN);
+                result.setStatusMessage(IdamStatusResolver.IDAM_CALL_RESPONSE_5xx);
             }
         }
 
@@ -128,15 +128,25 @@ public class IdamServiceImpl implements IdamService {
     public AttributeResponse updateUserDetails(UpdateUserDetails updateUserDetails, String userId) {
         //Update user details
         ResponseEntity<Object> responseEntity = null;
+        Response response = null;
         try {
-            Response response = idamClient.updateUserDetails(updateUserDetails, userId);
+            response = idamClient.updateUserDetails(updateUserDetails, userId);
             responseEntity = JsonFeignResponseHelper.toResponseEntity(response, getResponseMapperClass(response,
                     null));
         } catch (FeignException ex) {
             log.error("{}:: {} {}", loggingComponentName, "SIDAM call failed:", ex);
             responseEntity = ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        return new AttributeResponse(responseEntity);
+        AttributeResponse result = new AttributeResponse(responseEntity);
+        Optional<Response> respOptional = Optional.ofNullable(response);
+        if (respOptional.isPresent()) {
+            HttpStatus httpStatus = HttpStatus.valueOf(response.status());
+            if (httpStatus.is5xxServerError()) {
+                result.setIdamStatusCode(HttpStatus.UNAUTHORIZED.value());
+                result.setIdamMessage(IdamStatusResolver.IDAM_CALL_RESPONSE_5xx);
+            }
+        }
+        return result;
     }
 
     public HttpStatus gethttpStatusFromFeignException(FeignException ex) {

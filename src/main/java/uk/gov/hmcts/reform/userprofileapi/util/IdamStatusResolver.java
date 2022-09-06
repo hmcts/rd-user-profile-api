@@ -35,6 +35,7 @@ public final class IdamStatusResolver {
 
     public static final String ACTIVE = "ACTIVE";
     public static final String PENDING = "PENDING";
+    public static final String IDAM_CALL_RESPONSE_5xx = "The identity server cannot process the request due to high load. Please try again later";
 
     public static String resolveStatusAndReturnMessage(HttpStatus httpStatus) {
         switch (httpStatus) {

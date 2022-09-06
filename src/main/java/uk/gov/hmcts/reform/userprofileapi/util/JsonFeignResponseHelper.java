@@ -39,9 +39,6 @@ public class JsonFeignResponseHelper {
         Optional<U> payload = decode(response, classOpt);
         MultiValueMap<String, String> headers = convertHeaders(response.headers());
         HttpStatus httpStatus = HttpStatus.valueOf(response.status());
-        if (httpStatus.is5xxServerError()) {
-            httpStatus = HttpStatus.UNAUTHORIZED;
-        }
         return (payload.isPresent())
                 ? new ResponseEntity<>(payload.orElse(null), headers, httpStatus)
                 : new ResponseEntity<>(headers, httpStatus);
