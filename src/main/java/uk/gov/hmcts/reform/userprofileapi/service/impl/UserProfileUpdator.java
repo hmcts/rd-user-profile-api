@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceUpdator;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationHelperService;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
+import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 import uk.gov.hmcts.reform.userprofileapi.util.JsonFeignResponseHelper;
 import uk.gov.hmcts.reform.userprofileapi.util.UserProfileMapper;
 
@@ -115,15 +116,25 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
             //Add idam roles for the given userId
             RoleAdditionResponse roleAdditionResponse;
             HttpStatus httpStatus;
+            ResponseEntity<Object> responseEntity=null;
+            Response response = null;
             try  {
-                Response response = idamClient.addUserRoles(profileData.getRolesAdd(), userId);
-                ResponseEntity<Object> responseEntity = JsonFeignResponseHelper.toResponseEntity(response,
+                response = idamClient.addUserRoles(profileData.getRolesAdd(), userId);
+                responseEntity = JsonFeignResponseHelper.toResponseEntity(response,
                         getResponseMapperClass(response, null));
                 roleAdditionResponse = new RoleAdditionResponse(responseEntity);
             } catch (FeignException ex) {
                 httpStatus = getHttpStatusFromFeignException(ex);
                 auditService.persistAudit(httpStatus, userProfile, ResponseSource.API);
                 roleAdditionResponse = new RoleAdditionResponse(status(httpStatus).build());
+            }
+            Optional<Response> respOptional = Optional.ofNullable(response);
+            if (respOptional.isPresent()) {
+                HttpStatus idamHttpStatus = HttpStatus.valueOf(response.status());
+                if (idamHttpStatus.is5xxServerError()) {
+                    roleAdditionResponse.setIdamStatusCode(HttpStatus.UNAUTHORIZED.toString());
+                    roleAdditionResponse.setIdamMessage(IdamStatusResolver.IDAM_5XX_ERROR_RESPONSE);
+                }
             }
             userProfileResponse.setRoleAdditionResponse(roleAdditionResponse);
         }
@@ -151,14 +162,24 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
     @SuppressWarnings("unchecked")
     private RoleDeletionResponse deleteRolesInIdam(String userId, String roleName, UserProfile userProfile) {
         ResponseEntity<Object> responseEntity;
+        Response response = null;
         try  {
-            Response response = idamClient.deleteUserRole(userId, roleName);
+             response = idamClient.deleteUserRole(userId, roleName);
             responseEntity = JsonFeignResponseHelper.toResponseEntity(response, getResponseMapperClass(response, null));
         } catch (FeignException ex) {
             responseEntity = status(getHttpStatusFromFeignException(ex).value()).build();
             auditService.persistAudit(responseEntity.getStatusCode(), userProfile, ResponseSource.API);
         }
-        return new RoleDeletionResponse(roleName, responseEntity);
+        RoleDeletionResponse result = new RoleDeletionResponse(roleName, responseEntity);
+        Optional<Response> respOptional = Optional.ofNullable(response);
+        if (respOptional.isPresent()) {
+            HttpStatus httpStatus = HttpStatus.valueOf(response.status());
+            if (httpStatus.is5xxServerError()) {
+                result.setIdamStatusCode(HttpStatus.UNAUTHORIZED.toString());
+                result.setIdamMessage(IdamStatusResolver.IDAM_5XX_ERROR_RESPONSE);
+            }
+        }
+        return result;
     }
 
     public HttpStatus getHttpStatusFromFeignException(FeignException ex) {
