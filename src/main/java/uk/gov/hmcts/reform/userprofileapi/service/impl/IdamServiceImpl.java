@@ -48,7 +48,7 @@ public class IdamServiceImpl implements IdamService {
             HttpStatus httpStatus = HttpStatus.valueOf(response.status());
             if (httpStatus.is5xxServerError()) {
                 result.setIdamRegistrationResponse(HttpStatus.UNAUTHORIZED);
-                result.setStatusMessage(IdamStatusResolver.IDAM_CALL_RESPONSE_5xx);
+                result.setStatusMessage(IdamStatusResolver.IDAM_5XX_ERROR_RESPONSE);
             }
         } catch (FeignException ex) {
             result = new IdamRegistrationInfo(ResponseEntity.status(gethttpStatusFromFeignException(ex)).build());
@@ -66,7 +66,7 @@ public class IdamServiceImpl implements IdamService {
             HttpStatus httpStatus = HttpStatus.valueOf(response.status());
             if (httpStatus.is5xxServerError()) {
                 result.setResponseStatusCode(HttpStatus.UNAUTHORIZED);
-                result.setStatusMessage(IdamStatusResolver.IDAM_CALL_RESPONSE_5xx);
+                result.setStatusMessage(IdamStatusResolver.IDAM_5XX_ERROR_RESPONSE);
             }
             log.debug("Inside Fetch User by ID " + result.getResponseStatusCode() + result.getStatusMessage());
         } catch (FeignException ex) {
@@ -117,7 +117,7 @@ public class IdamServiceImpl implements IdamService {
             HttpStatus httpStatus = HttpStatus.valueOf(response.status());
             if (httpStatus.is5xxServerError()) {
                 result.setResponseStatusCode(HttpStatus.UNAUTHORIZED);
-                result.setStatusMessage(IdamStatusResolver.IDAM_CALL_RESPONSE_5xx);
+                result.setStatusMessage(IdamStatusResolver.IDAM_5XX_ERROR_RESPONSE);
             }
         }
 
@@ -143,7 +143,7 @@ public class IdamServiceImpl implements IdamService {
             HttpStatus httpStatus = HttpStatus.valueOf(response.status());
             if (httpStatus.is5xxServerError()) {
                 result.setIdamStatusCode(HttpStatus.UNAUTHORIZED.value());
-                result.setIdamMessage(IdamStatusResolver.IDAM_CALL_RESPONSE_5xx);
+                result.setIdamMessage(IdamStatusResolver.IDAM_5XX_ERROR_RESPONSE);
             }
         }
         return result;
