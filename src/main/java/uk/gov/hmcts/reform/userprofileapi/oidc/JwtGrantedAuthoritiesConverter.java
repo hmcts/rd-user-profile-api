@@ -45,7 +45,7 @@ public class JwtGrantedAuthoritiesConverter implements Converter<Jwt, Collection
     @Override
     public Collection<GrantedAuthority> convert(Jwt jwt) {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        log.debug("Inside JWT Granted Authorities Converter" + jwt.getClaim(TOKEN_NAME));
+        log.debug("Inside JWT Granted Authorities Converter");
         if (TRUE.equals(jwt.containsClaim(TOKEN_NAME)) && jwt.getClaim(TOKEN_NAME).equals(ACCESS_TOKEN)) {
             userInfo = idamRepository.getUserInfo(jwt.getTokenValue());
             log.debug("After fetching User Information from idam" + userInfo.getUid() + userInfo.getRoles());
