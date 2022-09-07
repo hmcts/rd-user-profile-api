@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.oidc;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.GrantedAuthority;
@@ -23,6 +24,7 @@ import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterN
  * otherwise it displays unauthorised error message .
  *
  */
+@Slf4j
 @Component
 public class JwtGrantedAuthoritiesConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
 
@@ -43,8 +45,10 @@ public class JwtGrantedAuthoritiesConverter implements Converter<Jwt, Collection
     @Override
     public Collection<GrantedAuthority> convert(Jwt jwt) {
         List<GrantedAuthority> authorities = new ArrayList<>();
+        log.debug("Inside JWT Granted Authorities Converter");
         if (TRUE.equals(jwt.containsClaim(TOKEN_NAME)) && jwt.getClaim(TOKEN_NAME).equals(ACCESS_TOKEN)) {
             userInfo = idamRepository.getUserInfo(jwt.getTokenValue());
+            log.debug("After fetching User Information from idam");
             authorities = extractAuthorityFromClaims(userInfo.getRoles());
 
 
