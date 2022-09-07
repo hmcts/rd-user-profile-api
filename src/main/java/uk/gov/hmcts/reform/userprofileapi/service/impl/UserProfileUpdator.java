@@ -116,7 +116,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
             //Add idam roles for the given userId
             RoleAdditionResponse roleAdditionResponse;
             HttpStatus httpStatus;
-            ResponseEntity<Object> responseEntity=null;
+            ResponseEntity<Object> responseEntity = null;
             Response response = null;
             try  {
                 response = idamClient.addUserRoles(profileData.getRolesAdd(), userId);
@@ -164,7 +164,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         ResponseEntity<Object> responseEntity;
         Response response = null;
         try  {
-             response = idamClient.deleteUserRole(userId, roleName);
+            response = idamClient.deleteUserRole(userId, roleName);
             responseEntity = JsonFeignResponseHelper.toResponseEntity(response, getResponseMapperClass(response, null));
         } catch (FeignException ex) {
             responseEntity = status(getHttpStatusFromFeignException(ex).value()).build();

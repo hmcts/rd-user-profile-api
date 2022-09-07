@@ -190,7 +190,7 @@ class IdamServiceImplTest {
 
         verify(idamFeignClientMock, times(1)).updateUserDetails(updateUserDetailsMock, userId);
         verify(responseMock, times(1)).headers();
-        verify(responseMock, times(3)).status();
+        verify(responseMock, times(4)).status();
 
         assertThat(result).isNotNull();
         assertThat(result.getIdamStatusCode()).isEqualTo(200);
