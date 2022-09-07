@@ -29,7 +29,7 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         String errorMessage = mapper.writeValueAsString(errorResponse);
         response.setHeader("UnAuthorized-Token-Error", errorMessage);
-        log.error(errorMessage);
+        log.error("RD TEAM" + errorMessage);
 
     }
 }
