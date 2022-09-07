@@ -30,6 +30,6 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
         String errorMessage = mapper.writeValueAsString(errorResponse);
         response.setHeader("UnAuthorized-Token-Error", errorMessage);
         log.error(errorMessage);
-
+        log.debug("Inside RestAuthenticationEntryPoint" + errorMessage);
     }
 }
