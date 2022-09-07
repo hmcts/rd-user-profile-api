@@ -27,7 +27,7 @@ public class SecurityEndpointFilter extends OncePerRequestFilter {
             log.debug("After Security EndPoint Filter" + response);
         } catch (Exception e) {
             Throwable throwable = e.getCause();
-            log.error("caught an exception in filter"
+            log.debug("caught an exception in filter"
                     + throwable);
             if (e instanceof UnauthorizedException) {
                 log.error("Authorisation exception", e);
