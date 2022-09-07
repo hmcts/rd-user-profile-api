@@ -117,7 +117,7 @@ class CreateNewUserProfileWithIdamErrorsIntTest extends AuthorizationEnabledInte
                 userProfileRequestHandlerTest.sendPost(mockMvc, APP_BASE_PATH, data, UNAUTHORIZED, ErrorResponse.class);
 
         assertThat(errorResponse.getStatus()).isEqualTo(UNAUTHORIZED.value());
-        assertThat(errorResponse.getErrorDescription()).isEqualTo("14 Missing Bearer Token");
+        assertThat(errorResponse.getErrorDescription()).isEqualTo(IdamStatusResolver.IDAM_5XX_ERROR_RESPONSE);
 
     }
 

@@ -111,7 +111,7 @@ class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
 
         UserProfile persistedUserProfile = userProfileMap.get("user");
         setSidamUserUpdateMockWithStatus(INTERNAL_SERVER_ERROR.value(), false, persistedUserProfile.getIdamId());
-        updateUserStatusAndVerify5xx(persistedUserProfile, "14 Missing Bearer Token", 401);
+        updateUserStatusAndVerify5xx(persistedUserProfile, IdamStatusResolver.IDAM_5XX_ERROR_RESPONSE, 401);
 
     }
 
@@ -131,7 +131,7 @@ class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
 
         UserProfile persistedUserProfile = userProfileMap.get("user");
         setSidamUserUpdateMockWithStatus(INTERNAL_SERVER_ERROR.value(), true, persistedUserProfile.getIdamId());
-        updateUserStatusAndVerify5xx(persistedUserProfile, "14 Missing Bearer Token", 401);
+        updateUserStatusAndVerify5xx(persistedUserProfile, IdamStatusResolver.IDAM_5XX_ERROR_RESPONSE, 401);
 
     }
 

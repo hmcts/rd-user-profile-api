@@ -132,7 +132,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
             if (respOptional.isPresent()) {
                 HttpStatus idamHttpStatus = HttpStatus.valueOf(response.status());
                 if (idamHttpStatus.is5xxServerError()) {
-                    roleAdditionResponse.setIdamStatusCode(HttpStatus.UNAUTHORIZED.toString());
+                    roleAdditionResponse.setIdamStatusCode(String.valueOf(HttpStatus.UNAUTHORIZED.value()));
                     roleAdditionResponse.setIdamMessage(IdamStatusResolver.IDAM_5XX_ERROR_RESPONSE);
                 }
             }
@@ -175,7 +175,7 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         if (respOptional.isPresent()) {
             HttpStatus httpStatus = HttpStatus.valueOf(response.status());
             if (httpStatus.is5xxServerError()) {
-                result.setIdamStatusCode(HttpStatus.UNAUTHORIZED.toString());
+                result.setIdamStatusCode(String.valueOf(HttpStatus.UNAUTHORIZED.value()));
                 result.setIdamMessage(IdamStatusResolver.IDAM_5XX_ERROR_RESPONSE);
             }
         }

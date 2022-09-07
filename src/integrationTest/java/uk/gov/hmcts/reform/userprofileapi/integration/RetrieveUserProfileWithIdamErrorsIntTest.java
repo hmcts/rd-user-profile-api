@@ -159,7 +159,7 @@ class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabledInteg
                 );
 
         assertThat(errorResponse).isNotNull();
-        assertThat(errorResponse.getErrorDescription()).isEqualTo(IdamStatusResolver.MISSING_TOKEN);
+        assertThat(errorResponse.getErrorDescription()).isEqualTo(IdamStatusResolver.IDAM_5XX_ERROR_RESPONSE);
     }
 
     @Test
@@ -179,7 +179,7 @@ class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabledInteg
                 );
 
         assertThat(errorResponse).isNotNull();
-        assertThat(errorResponse.getErrorDescription()).isEqualTo(IdamStatusResolver.MISSING_TOKEN);
+        assertThat(errorResponse.getErrorDescription()).isEqualTo(IdamStatusResolver.IDAM_5XX_ERROR_RESPONSE);
     }
 
 }

@@ -195,7 +195,7 @@ class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledIntegratio
         request.getUserIds().add(UUID.randomUUID().toString());
 
         UserProfileDataResponse response = getMultipleUsers(request, OK, "true", "true");
-        verifyMultipleUser5xxResponse(response, IdamStatusResolver.MISSING_TOKEN);
+        verifyMultipleUser5xxResponse(response, IdamStatusResolver.IDAM_5XX_ERROR_RESPONSE);
 
     }
 
@@ -269,7 +269,7 @@ class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledIntegratio
         request.getUserIds().add(UUID.randomUUID().toString());
 
         UserProfileDataResponse response = getMultipleUsers(request, OK, "true", "true");
-        verifyMultipleUser5xxResponse(response, IdamStatusResolver.MISSING_TOKEN);
+        verifyMultipleUser5xxResponse(response, IdamStatusResolver.IDAM_5XX_ERROR_RESPONSE);
     }
 
     @Test
@@ -300,7 +300,7 @@ class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledIntegratio
 
         assertThat(response.getUserProfiles().size()).isEqualTo(5);
         verifyMultipleUser5xxResponse(response,
-                IdamStatusResolver.MISSING_TOKEN);
+                IdamStatusResolver.IDAM_5XX_ERROR_RESPONSE);
 
     }
 
