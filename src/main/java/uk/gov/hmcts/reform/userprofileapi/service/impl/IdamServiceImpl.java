@@ -41,15 +41,20 @@ public class IdamServiceImpl implements IdamService {
     public IdamRegistrationInfo registerUser(IdamRegisterUserRequest requestData) {
         IdamRegistrationInfo result;
         try  {
+            log.debug("in Idam to create user profile");
             Response response = idamClient.createUserProfile(requestData);
             ResponseEntity<Object> entity = JsonFeignResponseHelper.toResponseEntity(response,
                     getResponseMapperClass(response, null));
             result = new IdamRegistrationInfo(entity);
+
             HttpStatus httpStatus = HttpStatus.valueOf(response.status());
             if (httpStatus.is5xxServerError()) {
                 result.setIdamRegistrationResponse(HttpStatus.UNAUTHORIZED);
                 result.setStatusMessage(IdamStatusResolver.IDAM_5XX_ERROR_RESPONSE);
             }
+
+            log.debug("after idam response" + result.getStatusMessage() + result.getIdamRegistrationResponse());
+
         } catch (FeignException ex) {
             result = new IdamRegistrationInfo(ResponseEntity.status(gethttpStatusFromFeignException(ex)).build());
         }

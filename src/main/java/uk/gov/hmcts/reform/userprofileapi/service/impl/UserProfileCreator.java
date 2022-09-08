@@ -68,6 +68,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
 
     public UserProfile create(UserProfileCreationData profileData, String origin) {
 
+        log.debug("Before userProfileRepository");
         // check if user already in UP then
         Optional<UserProfile>  optionalExistingUserProfile = userProfileRepository.findByEmail(profileData.getEmail()
                 .toLowerCase());
@@ -80,18 +81,21 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
             userProfile.setIdamRegistrationResponse(HttpStatus.CONFLICT.value());
             return userProfile;
         }
-
+        log.debug("There is no email exist with this already");
         String  userId = UUID.randomUUID().toString();
         final IdamRegistrationInfo idamRegistrationInfo
                 = idamService.registerUser(createIdamRegistrationRequest(profileData, userId));
         HttpStatus idamStatus = idamRegistrationInfo.getIdamRegistrationResponse();
         if (idamRegistrationInfo.isSuccessFromIdam()) {
+            log.debug("success");
             return persistUserProfileWithAudit(profileData, userId, idamRegistrationInfo.getStatusMessage(),
                     idamRegistrationInfo.getIdamRegistrationResponse());
         } else if (idamRegistrationInfo.isDuplicateUser()) {
             //User already exist in sidam for given email
+            log.debug("duplicate user in idam");
             return handleDuplicateUser(profileData, idamRegistrationInfo, origin);
         } else {
+            log.debug("exception from idam");
             persistAudit(idamRegistrationInfo.getStatusMessage(), idamStatus, null);
             UserProfileUtil.idam5xxErrorResponse(idamRegistrationInfo.getStatusMessage(), idamStatus);
             throw new IdamServiceException(idamRegistrationInfo.getStatusMessage(), idamStatus);
