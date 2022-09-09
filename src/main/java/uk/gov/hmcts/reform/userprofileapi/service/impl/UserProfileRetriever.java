@@ -60,6 +60,7 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
 
         log.debug("Inside getRolesFromIdam" + userProfile.getStatus());
         if (IdamStatus.ACTIVE == userProfile.getStatus()) {
+            log.debug("IdamService fetchUserById");
             IdamRolesInfo idamRolesInfo = idamService.fetchUserById(userProfile.getIdamId());
             log.debug("fetch user By Id" + idamRolesInfo.getId() + idamRolesInfo.getStatusMessage()
                     + idamRolesInfo.getRoles() + idamRolesInfo.getResponseStatusCode());

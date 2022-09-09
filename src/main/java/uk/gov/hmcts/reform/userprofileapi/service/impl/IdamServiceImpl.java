@@ -66,7 +66,9 @@ public class IdamServiceImpl implements IdamService {
 
         IdamRolesInfo result;
         try {
+            log.debug("In Before calling IdamFeignClient" + "," + id);
             Response response = idamClient.getUserById(id);
+            log.debug("After calling IdamFeignClient");
             result = buildIdamResponseResult(response);
             HttpStatus httpStatus = HttpStatus.valueOf(response.status());
             if (httpStatus.is5xxServerError()) {
