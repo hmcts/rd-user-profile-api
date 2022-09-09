@@ -128,8 +128,8 @@ launchdarkly:
     environment: ${LAUNCH_DARKLY_ENV:local}
     user: rd
 
-logging.level.uk.gov.hmcts: ${APPLICATION_LOGGING_LEVEL:DEBUG}
+logging.level.uk.gov.hmcts: ${APPLICATION_LOGGING_LEVEL:INFO}
 
-logging.level.org.apache: ${APPLICATION_LOGGING_LEVEL:DEBUG}
+logging.level.org.apache: ${APPLICATION_LOGGING_LEVEL:INFO}
 
-server.tomcat.accesslog.enabled : true
+server.tomcat.accesslog.enabled : ${TOMCAT_LOGGING_LEVEL:false}
