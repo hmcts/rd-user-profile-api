@@ -129,3 +129,7 @@ launchdarkly:
     user: rd
 
 logging.level.uk.gov.hmcts: ${APPLICATION_LOGGING_LEVEL:INFO}
+
+logging.level.org.apache: ${APPLICATION_LOGGING_LEVEL:INFO}
+
+server.tomcat.access-log-enabled:  '#{ "${APPLICATION_LOGGING_LEVEL:INFO}".equals("DEBUG") ? "true" : "false" }'
