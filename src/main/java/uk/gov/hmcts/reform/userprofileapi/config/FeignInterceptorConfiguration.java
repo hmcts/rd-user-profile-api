@@ -1,13 +1,10 @@
 package uk.gov.hmcts.reform.userprofileapi.config;
 
-import feign.Feign;
 import feign.RequestInterceptor;
-import feign.Retryer;
+import feign.okhttp.OkHttpClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Scope;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -48,11 +45,8 @@ public class FeignInterceptorConfiguration {
     }
 
     @Bean
-    @Scope("prototype")
-    @ConditionalOnMissingBean
-    public Feign.Builder feignBuilder(Retryer r) {
-        return Feign.builder().retryer(r)
-                .client(new feign.okhttp.OkHttpClient());
+    public OkHttpClient client() {
+        return new feign.okhttp.OkHttpClient();
     }
 
 }
