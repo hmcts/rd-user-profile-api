@@ -513,6 +513,9 @@ dependencies {
     pactTestImplementation sourceSets.main.runtimeClasspath
     pactTestImplementation sourceSets.test.runtimeClasspath
 }
+configurations.all {
+    exclude group: "org.apache.httpcomponents", module: "httpclient"
+}
 
 dependencyManagement {
 
