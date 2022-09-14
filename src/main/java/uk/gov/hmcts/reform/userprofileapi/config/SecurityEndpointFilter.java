@@ -21,9 +21,14 @@ public class SecurityEndpointFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         try {
+            log.debug("Inside Security EndPoint Filter" + request.getContextPath() + request.getPathInfo()
+                    + request.getRequestURI() + request.getQueryString() + request.getRequestedSessionId());
             filterChain.doFilter(request, response);
+            log.debug("After Security EndPoint Filter" + response);
         } catch (Exception e) {
             Throwable throwable = e.getCause();
+            log.debug("caught an exception in filter"
+                    + throwable);
             if (e instanceof UnauthorizedException) {
                 log.error("Authorisation exception", e);
                 response.sendError(HttpStatus.FORBIDDEN.value(), "Access Denied");

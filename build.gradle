@@ -359,7 +359,7 @@ dependencies {
     implementation group: 'com.fasterxml.jackson', name: 'jackson-bom', version: versions.jackson, ext: 'pom'
     implementation group: 'io.jsonwebtoken', name: 'jjwt', version:'0.9.1'
     implementation group: 'javax.inject', name: 'javax.inject', version: '1'
-    implementation 'com.github.hmcts:idam-java-client:2.0.1'
+    implementation 'com.github.hmcts:idam-java-client:2.1.1'
     implementation "org.springframework.boot:spring-boot-starter-oauth2-client"
     implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
     implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '8.20'
@@ -377,7 +377,7 @@ dependencies {
 
     implementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
 
-    implementation group:"org.yaml", name: "snakeyaml", version:"1.30"
+    implementation group:"org.yaml", name: "snakeyaml", version:"1.31"
     implementation (group: 'io.rest-assured', name: 'rest-assured', version: '3.3.0') {
         exclude group: "com.sun.xml.bind", module: "jaxb-osgi"
         exclude group: "org.apache.sling"
