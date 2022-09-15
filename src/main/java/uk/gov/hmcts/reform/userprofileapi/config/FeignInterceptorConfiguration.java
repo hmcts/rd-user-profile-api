@@ -46,11 +46,4 @@ public class FeignInterceptorConfiguration {
         };
     }
 
-    @Bean
-    @ConditionalOnMissingBean
-    public Feign.Builder feignBuilder(Retryer r) {
-        return Feign.builder().retryer(r)
-                .client(new feign.okhttp.OkHttpClient());
-    }
-
 }
