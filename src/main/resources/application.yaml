@@ -35,14 +35,6 @@ spring:
     cache-names: token
     caffeine:
       spec: maximumSize=50,expireAfterWrite=1m
-  cloud:
-    openfeign:
-      httpclient:
-        enabled: false
-      okhttp:
-        enabled: true
-
-
 
 ### database configuration
   datasource:
@@ -118,6 +110,8 @@ environment_name: ${ENVIRONMENT_NAME:prod}
 
 
 feign:
+  httpclient.enabled: false
+  okhttp.enabled: true
   allow:
     headers:
       - authorization
