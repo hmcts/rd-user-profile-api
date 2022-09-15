@@ -110,8 +110,10 @@ environment_name: ${ENVIRONMENT_NAME:prod}
 
 
 feign:
-  httpclient.enabled: false
-  okhttp.enabled: true
+  httpclient:
+    enabled: false
+  okhttp:
+    enabled: true
   allow:
     headers:
       - authorization
