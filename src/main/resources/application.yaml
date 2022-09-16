@@ -101,6 +101,8 @@ idam:
   api:
     url: ${idam_url:https://idam-api.aat.platform.hmcts.net}
     timeout: ${IDAM_API_TIMEOUT:30000}
+  apachehttpclient:
+    enable: false
 
 oidc.issuer: ${OIDC_ISSUER_URL:https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts}
 
@@ -108,6 +110,10 @@ environment_name: ${ENVIRONMENT_NAME:prod}
 
 
 feign:
+  httpclient:
+    enabled: false
+  okhttp:
+    enabled: true
   allow:
     headers:
       - authorization
@@ -132,6 +138,4 @@ launchdarkly:
 
 logging.level.uk.gov.hmcts: ${APPLICATION_LOGGING_LEVEL:INFO}
 
-logging.level.org.apache: ${APPLICATION_LOGGING_LEVEL:INFO}
 
-server.tomcat.access-log-enabled:  '#{ "${APPLICATION_LOGGING_LEVEL:INFO}".equals("DEBUG") ? "true" : "false" }'
