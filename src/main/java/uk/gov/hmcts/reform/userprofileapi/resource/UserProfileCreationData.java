@@ -18,7 +18,7 @@ import javax.validation.constraints.NotEmpty;
 @NoArgsConstructor
 public class UserProfileCreationData implements RequestData {
 
-    @Email(regexp = "^.*[@].*[.].*$")
+    @Email(regexp = "^.*@.*[.].*$")
     @NotBlank (message = "email must not be null or blank")
     private String email;
 
