@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -62,7 +63,12 @@ public class UserProfileRequestHandlerTest {
         assertThat(result.getResponse().getContentAsString())
                 .as("Expected json content was empty")
                 .isNotEmpty();
-
+        if (clazz.getName().contains("ErrorResponse")) {
+            ErrorResponse response = objectMapper.readValue(result.getResponse()
+                    .getContentAsString(), ErrorResponse.class);
+            response.setStatus(result.getResponse().getStatus());
+            return (T) response;
+        }
         return objectMapper.readValue(result.getResponse().getContentAsString(), clazz);
     }
 
