@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.userprofileapi.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamUserResponse;
@@ -14,6 +15,7 @@ import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.resolve
 
 @Getter
 @AllArgsConstructor
+@Setter
 public class IdamRolesInfo {
 
     private String id;
