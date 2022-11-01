@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
+import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -370,6 +371,82 @@ class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTe
         });
 
     }
+
+
+    @Test
+    void shouldGetErrorMessageFromIdamWhenRoleDeletionFails5xx() throws Exception {
+        final boolean isBodyRequired = false;
+        final boolean isUnassignedRole = false;
+        final String statusCode = "500";
+        final String expectedErrorMessage = IdamStatusResolver.IDAM_5XX_ERROR_RESPONSE;
+        UserProfile userProfile = buildUserProfile();
+        userProfile.setStatus(IdamStatus.ACTIVE);
+        UserProfile persistedUserProfile = userProfileRepository.save(userProfile);
+
+        String userId = persistedUserProfile.getIdamId();
+        assertThat(userId).isNotNull();
+
+        mockWithDeleteRoleFailure(HttpStatus.INTERNAL_SERVER_ERROR, isBodyRequired, isUnassignedRole);
+
+        UpdateUserProfileData userRoles = new UpdateUserProfileData();
+
+        Set<RoleName> roles = new HashSet<>();
+        roles.add(role1);
+        roles.add(role2);
+
+        userRoles.setRolesDelete(roles);
+        UserProfileRolesResponse userProfileRolesResponse = userProfileRequestHandlerTest.sendPut(
+                mockMvc,
+                APP_BASE_PATH + "/" + userId,
+                userRoles,
+                OK,
+                UserProfileRolesResponse.class
+        );
+        String expectedStatusCode = "401";
+        userProfileRolesResponse.getRoleDeletionResponse().forEach(roleDeletionResponse -> {
+            assertThat(roleDeletionResponse.getIdamStatusCode()).isEqualTo(expectedStatusCode);
+            assertThat(roleDeletionResponse.getIdamMessage())
+                    .isEqualTo(expectedErrorMessage);
+        });
+
+    }
+
+    @Test
+    void should_see_error_message_from_idam_when_role_addition_fails_5xx() throws Exception {
+        final boolean isBodyRequired = false;
+        final String statusCode = "500";
+        final String expectedErrorMessage = IdamStatusResolver.IDAM_5XX_ERROR_RESPONSE;
+        UserProfile userProfile = buildUserProfile();
+        userProfile.setStatus(IdamStatus.ACTIVE);
+        UserProfile persistedUserProfile = userProfileRepository.save(userProfile);
+
+        String userId = persistedUserProfile.getIdamId();
+        assertThat(userId).isNotNull();
+
+        mockWithUpdateRolesFailure(HttpStatus.INTERNAL_SERVER_ERROR, isBodyRequired, userId);
+
+        UpdateUserProfileData userRoles = new UpdateUserProfileData();
+
+        Set<RoleName> roles = new HashSet<>();
+        roles.add(role1);
+        roles.add(role2);
+
+        userRoles.setRolesAdd(roles);
+        UserProfileRolesResponse userProfileRolesResponse = userProfileRequestHandlerTest.sendPut(
+                mockMvc,
+                APP_BASE_PATH + "/" + userId,
+                userRoles,
+                OK,
+                UserProfileRolesResponse.class
+        );
+        String expectedStatusCode = "401";
+        assertThat(userProfileRolesResponse.getRoleAdditionResponse().getIdamStatusCode())
+                .isEqualTo(expectedStatusCode);
+        assertThat(userProfileRolesResponse.getRoleAdditionResponse().getIdamMessage())
+                .isEqualTo(expectedErrorMessage);
+
+    }
+
 
     private static Stream<Arguments> updateFailScenarioArguments() {
         return Stream.of(arguments(

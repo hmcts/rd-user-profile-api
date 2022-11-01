@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceRetriever;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileQueryProvider;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
+import uk.gov.hmcts.reform.userprofileapi.util.UserProfileUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,6 +73,8 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
                 persistAudit(idamRolesInfo, userProfile);
                 // for multiple users get request , do not throw exception and continue flow
                 if (!isMultiUserGet) {
+                    UserProfileUtil.idam5xxErrorResponse(idamRolesInfo.getStatusMessage(),
+                            idamRolesInfo.getResponseStatusCode());
                     throw new IdamServiceException(idamRolesInfo.getStatusMessage(),
                             idamRolesInfo.getResponseStatusCode());
                 } else {
