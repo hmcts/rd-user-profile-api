@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.controller.advice;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
 import static java.time.LocalTime.now;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,10 +17,12 @@ class ErrorResponseTest {
                 .errorMessage(errorMsg)
                 .errorDescription(desc)
                 .timeStamp(tmstp)
+                .status(HttpStatus.UNAUTHORIZED.value())
                 .build();
 
         assertThat(sut.getErrorMessage()).isEqualTo(errorMsg);
         assertThat(sut.getErrorDescription()).isEqualTo(desc);
         assertThat(sut.getTimeStamp()).isEqualTo(tmstp);
+        assertThat(sut.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 }
