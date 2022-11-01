@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceCreator;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationHelperService;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
+import uk.gov.hmcts.reform.userprofileapi.util.UserProfileUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -96,6 +97,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
         } else {
             log.debug("exception from idam");
             persistAudit(idamRegistrationInfo.getStatusMessage(), idamStatus, null);
+            UserProfileUtil.idam5xxErrorResponse(idamRegistrationInfo.getStatusMessage(), idamStatus);
             throw new IdamServiceException(idamRegistrationInfo.getStatusMessage(), idamStatus);
         }
     }
@@ -203,7 +205,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
             }
         } else {
             log.error("{}:: Did not get location header", loggingComponentName);
-            idamStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+            idamStatus = HttpStatus.UNAUTHORIZED;
             persistAuditAndThrowIdamException(IdamStatusResolver.resolveStatusAndReturnMessage(idamStatus),
                     idamStatus, null);
         }
@@ -217,6 +219,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
 
     private void persistAuditAndThrowIdamException(String message, HttpStatus idamStatus, UserProfile userProfile) {
         persistAudit(message, idamStatus, userProfile);
+        UserProfileUtil.idam5xxErrorResponse(message, idamStatus);
         throw new  IdamServiceException(message,idamStatus);
     }
 
@@ -290,5 +293,6 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
         });
         return roles;
     }
+
 
 }

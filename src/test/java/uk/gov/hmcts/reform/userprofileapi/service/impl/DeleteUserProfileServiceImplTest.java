@@ -168,7 +168,7 @@ class DeleteUserProfileServiceImplTest {
         assertThat(deletionResp.getStatusCode()).isEqualTo(deletionResponse.getStatusCode());
         assertThat(deletionResp.getMessage()).contains("IDAM Delete request failed for userId");
 
-        verify(responseMock, times(3)).status();
+        verify(responseMock, times(4)).status();
     }
 
     @Test
