@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.userprofileapi.controller.response;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.http.ResponseEntity;
 
 import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.getStatusCodeValueFromResponseEntity;
@@ -9,6 +10,7 @@ import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.resolve
 
 
 @Getter
+@Setter
 @NoArgsConstructor
 public class AttributeResponse {
 
