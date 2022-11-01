@@ -113,7 +113,7 @@ class IdamServiceImplTest {
         RetryableException retryableExceptionMock = mock(RetryableException.class);
 
         HttpStatus status = idamService.gethttpStatusFromFeignException(retryableExceptionMock);
-        assertThat(status).isNotNull().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(status).isNotNull().isEqualTo(HttpStatus.UNAUTHORIZED);
 
         FeignException feignException = mock(FeignException.class);
         when(feignException.status()).thenReturn(400);
@@ -141,7 +141,7 @@ class IdamServiceImplTest {
 
         verify(idamFeignClientMock, times(1)).updateUserRoles(roleRequest, userId);
         verify(responseMock, times(2)).headers();
-        verify(responseMock, times(3)).status();
+        verify(responseMock, times(4)).status();
 
         assertThat(result).isNotNull();
     }
@@ -190,7 +190,7 @@ class IdamServiceImplTest {
 
         verify(idamFeignClientMock, times(1)).updateUserDetails(updateUserDetailsMock, userId);
         verify(responseMock, times(1)).headers();
-        verify(responseMock, times(3)).status();
+        verify(responseMock, times(4)).status();
 
         assertThat(result).isNotNull();
         assertThat(result.getIdamStatusCode()).isEqualTo(200);
