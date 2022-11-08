@@ -1,12 +1,16 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
+import net.thucydides.core.annotations.WithTag;
+import net.thucydides.core.annotations.WithTags;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.util.Lists;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
@@ -26,8 +30,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 
-@SpringBootTest(webEnvironment = MOCK)
-@Transactional
+@ExtendWith(SpringExtension.class)
+@WithTags({@WithTag("testType:Integration")})
 class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
 
     @BeforeEach

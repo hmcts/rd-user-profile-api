@@ -9,6 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRequestHandlerTest;
@@ -49,8 +50,9 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @Configuration
+@TestPropertySource(properties = {"S2S_URL=http://127.0.0.1:8990", "IDAM_URL:http://127.0.0.1:5000"})
 @DirtiesContext
-public abstract class AuthorizationEnabledIntegrationTest {
+public abstract class AuthorizationEnabledIntegrationTest extends SpringBootIntegrationTest {
 
     protected static final String APP_BASE_PATH = "/v1/userprofile";
     protected static final String SLASH = "/";
