@@ -35,7 +35,7 @@ def versions = [
         pitest             : '1.7.3',
         reformLogging      : '5.1.9',
         serenity           : '2.0.76',
-        springBoot         : '2.6.6',
+        springBoot         : '2.7.5',
         springHystrix      : '2.2.8.RELEASE',
         springfoxSwagger   : '2.9.2',
         pact_version       : '3.5.24',
