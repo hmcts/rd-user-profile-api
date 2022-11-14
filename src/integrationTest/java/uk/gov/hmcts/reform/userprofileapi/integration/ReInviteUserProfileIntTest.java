@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
@@ -20,7 +19,6 @@ import java.util.Optional;
 import javax.sql.DataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -47,7 +45,8 @@ class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
 
     void updateLastUpdatedTimestamp(String givenIdamId) throws SQLException {
 
-        String query = "update user_profile set last_updated = (CURRENT_DATE - 1) where idam_id = '" + givenIdamId + "'";
+        String query = "update user_profile set last_updated = (CURRENT_DATE - 1) where idam_id = '"
+                + givenIdamId + "'";
         try (Connection connection = dataSource.getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 statement.executeUpdate(query);
