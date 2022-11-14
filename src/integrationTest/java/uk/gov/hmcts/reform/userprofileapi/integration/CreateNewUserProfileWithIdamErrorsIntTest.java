@@ -30,7 +30,6 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 
-@SpringBootTest(webEnvironment = MOCK)
 @Transactional
 class CreateNewUserProfileWithIdamErrorsIntTest extends AuthorizationEnabledIntegrationTest {
 

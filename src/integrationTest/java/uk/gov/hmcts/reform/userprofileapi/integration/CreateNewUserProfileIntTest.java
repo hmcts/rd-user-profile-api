@@ -30,8 +30,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 
-@ExtendWith(SpringExtension.class)
-@WithTags({@WithTag("testType:Integration")})
 class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
 
     @BeforeEach

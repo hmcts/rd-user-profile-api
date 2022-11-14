@@ -73,3 +73,13 @@ launchdarkly:
     user: rd
 
 logging.level.uk.gov.hmcts: ${APPLICATION_LOGGING_LEVEL:INFO}
+management:
+  endpoints:
+    jmx:
+      exposure:
+        include: 'health'
+    web:
+      base-path: "/"
+  endpoint:
+    health:
+      show-details: "always"

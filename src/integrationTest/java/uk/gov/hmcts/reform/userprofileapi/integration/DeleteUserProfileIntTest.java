@@ -25,7 +25,6 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 import static uk.gov.hmcts.reform.userprofileapi.client.UserProfileRequestHandlerTest.COMMON_EMAIL_PATTERN;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 
-@SpringBootTest(webEnvironment = MOCK)
 @Transactional
 class DeleteUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
 

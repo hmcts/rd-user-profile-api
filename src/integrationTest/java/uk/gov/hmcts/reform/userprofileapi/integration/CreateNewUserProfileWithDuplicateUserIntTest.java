@@ -36,8 +36,6 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 
-@ExtendWith(SpringExtension.class)
-@WithTags({@WithTag("testType:Integration")})
 class CreateNewUserProfileWithDuplicateUserIntTest extends AuthorizationEnabledIntegrationTest {
 
 
@@ -206,7 +204,7 @@ class CreateNewUserProfileWithDuplicateUserIntTest extends AuthorizationEnabledI
         Optional<UserProfile> persistedUserProfile = userProfileRepository.findByIdamId(createdResource.getIdamId());
         UserProfile userProfile = persistedUserProfile.get();
         assertThat(userProfile.getId()).isNotNull().isExactlyInstanceOf(Long.class);
-        assertThat(userProfile.getIdamRegistrationResponse()).isEqualTo(201);
+        assertThat(userProfile.getIdamRegistrationResponse()).isNull();
         assertThat(userProfile.getLanguagePreference()).isEqualTo(LanguagePreference.EN);
         assertThat(userProfile.getUserCategory()).isEqualTo(UserCategory.PROFESSIONAL);
         assertThat(userProfile.getUserType()).isEqualTo(UserType.EXTERNAL);

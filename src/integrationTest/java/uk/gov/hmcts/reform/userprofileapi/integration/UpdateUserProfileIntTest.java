@@ -36,7 +36,6 @@ import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDat
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildUpdateUserProfileData;
 import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfile;
 
-@SpringBootTest(webEnvironment = MOCK)
 @Transactional
 class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
 

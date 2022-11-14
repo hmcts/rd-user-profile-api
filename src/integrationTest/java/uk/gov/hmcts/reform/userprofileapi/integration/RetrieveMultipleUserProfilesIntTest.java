@@ -31,7 +31,6 @@ import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuild
 import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfileWithDeletedStatus;
 import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfileWithSuspendedStatus;
 
-@SpringBootTest(webEnvironment = MOCK)
 @Transactional
 class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledIntegrationTest {
 

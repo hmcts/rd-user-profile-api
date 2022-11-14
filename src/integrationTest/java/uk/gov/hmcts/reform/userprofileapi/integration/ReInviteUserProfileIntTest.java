@@ -28,7 +28,6 @@ import static org.springframework.http.HttpStatus.TOO_MANY_REQUESTS;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 
-@SpringBootTest(webEnvironment = MOCK)
 @Slf4j
 class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
 
@@ -48,7 +47,7 @@ class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
 
     void updateLastUpdatedTimestamp(String givenIdamId) throws SQLException {
 
-        String query = "update user_profile set last_updated = (sysdate - 1) where idam_id = '" + givenIdamId + "'";
+        String query = "update user_profile set last_updated = (CURRENT_DATE - 1) where idam_id = '" + givenIdamId + "'";
         try (Connection connection = dataSource.getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 statement.executeUpdate(query);
