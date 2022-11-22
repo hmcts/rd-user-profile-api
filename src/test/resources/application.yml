@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
+    url: ${DB_URL:jdbc:tc:postgresql:11.1:///dbuserprofile}
+    username: ${DB_USERNAME:dbuserprofile}
+    password: ${DB_PASSWORD:dbuserprofile}
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: false
