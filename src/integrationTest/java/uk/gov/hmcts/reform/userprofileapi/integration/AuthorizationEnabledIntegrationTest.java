@@ -1,16 +1,24 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.thucydides.core.annotations.WithTag;
+import net.thucydides.core.annotations.WithTags;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
+import uk.gov.hmcts.reform.lib.util.serenity5.SerenityTest;
 import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRequestHandlerTest;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
@@ -45,12 +53,19 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@SerenityTest
+@ExtendWith(SpringExtension.class)
+@WithTags({@WithTag("testType:Integration")})
+@SpringBootTest(webEnvironment = RANDOM_PORT)
 @Configuration
+@TestPropertySource(properties = {"S2S_URL=http://127.0.0.1:8990", "IDAM_URL:http://127.0.0.1:5000"})
 @DirtiesContext
-public abstract class AuthorizationEnabledIntegrationTest {
+public abstract class AuthorizationEnabledIntegrationTest extends SpringBootIntegrationTest {
 
     protected static final String APP_BASE_PATH = "/v1/userprofile";
     protected static final String SLASH = "/";
