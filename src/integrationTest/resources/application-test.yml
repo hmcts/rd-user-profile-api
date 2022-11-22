@@ -1,15 +1,21 @@
 spring:
   datasource:
-    driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:dbuserprofile;IGNORE_UNKNOWN_SETTINGS=TRUE;INIT=create domain if not exists json as text;
-    platform: h2
-    username: ${POSTGRES_USERNAME:dbuserprofile}
-    password: ${POSTGRES_PASSWORD:dbuserprofile}
+    url: ${DB_URL:jdbc:tc:postgresql:11.1:///dbuserprofile}
+    username: ${DB_USERNAME:dbuserprofile}
+    password: ${DB_PASSWORD:dbuserprofile}
+  flyway:
+    enabled: true
+    locations: classpath:db/testmigration
   jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: false
+    properties:
+      hibernate:
+        enable_lazy_load_no_trans: true
+        hbm2ddl.auto: none
   main:
     allow-bean-definition-overriding: true
-    security:
+  security:
       oauth2:
         client:
           provider:
@@ -49,4 +55,31 @@ oidc.issuer: ${OIDC_ISSUER_URL:https://forgerock-am.service.core-compute-idam-aa
 
 environment_name: ${ENVIRONMENT_NAME:preview}
 
+# resent user invite interval in minutes
+resendInterval: 60
+
+# sync time interval in minutes
+syncInterval: 60
+
 loggingComponentName: RD_User_Profile_API
+
+logging.level.com.zaxxer.hikari.HikariConfig: INFO
+logging.level.com.zaxxer.hikari: INFO
+
+launchdarkly:
+  sdk:
+    key: ${LD_SDK_KEY:}
+    environment: ${LAUNCH_DARKLY_ENV:local}
+    user: rd
+
+logging.level.uk.gov.hmcts: ${APPLICATION_LOGGING_LEVEL:INFO}
+management:
+  endpoints:
+    jmx:
+      exposure:
+        include: 'health'
+    web:
+      base-path: "/"
+  endpoint:
+    health:
+      show-details: "always"
