@@ -124,7 +124,7 @@ withPipeline(type, product, component) {
         ]
     }
 
-    after('functionalTest:preview') {
+    afterSuccess('functionalTest:preview') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
         publishHTML target: [
             allowMissing         : true,
@@ -136,7 +136,7 @@ withPipeline(type, product, component) {
         ]
     }
 
-    after('pact-provider-verification') {
+    afterSuccess('pact-provider-verification') {
         publishHTML target: [
              allowMissing         : true,
              alwaysLinkToLastBuild: true,
