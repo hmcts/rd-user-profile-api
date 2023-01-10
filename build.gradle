@@ -318,7 +318,7 @@ dependencies {
         exclude group: 'org.glassfish', module: 'jakarta.el'
     }
 
-    implementation group: 'org.springframework.retry', name: 'spring-retry', version: '1.3.2'
+    implementation group: 'org.springframework.retry', name: 'spring-retry', version: '1.3.4'
 
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache', version: versions.springBoot
 
