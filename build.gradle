@@ -21,6 +21,7 @@ plugins {
     id 'org.springframework.boot' version '2.4.12'
     id "org.flywaydb.flyway" version "8.5.4"
     id 'au.com.dius.pact' version '4.1.7'// do not change, otherwise serenity report fails
+    id 'org.owasp.dependencycheck' version '8.0.1'
 }
 
 apply plugin: 'java'
@@ -340,6 +341,9 @@ dependencies {
     implementation group: 'org.springframework', name: 'spring-tx', version: versions.springVersion
     implementation group: 'org.springframework', name: 'spring-web', version: versions.springVersion
     implementation group: 'org.springframework', name: 'spring-webmvc', version: versions.springVersion
+    implementation group: 'org.springframework.security', name: 'spring-security-core', version: '5.7.5'
+
+    implementation group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.70'
 
     implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '2.9.3'
 
