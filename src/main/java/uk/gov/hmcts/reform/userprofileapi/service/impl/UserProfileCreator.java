@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import feign.Response;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +20,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
+import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.exception.IdamServiceException;
 import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
@@ -26,6 +29,7 @@ import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceCreator;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationHelperService;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
+import uk.gov.hmcts.reform.userprofileapi.util.JsonFeignResponseUtil;
 import uk.gov.hmcts.reform.userprofileapi.util.UserProfileUtil;
 
 import java.util.ArrayList;
@@ -63,6 +67,9 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
 
     @Value("${loggingComponentName}")
     private String loggingComponentName;
+
+    @Autowired
+    private IdamFeignClient idamFeignClient;
 
     private static final String ORIGIN_SRD = "SRD";
 
@@ -110,22 +117,50 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
         return registerReInvitedUserInSidam(profileData, userProfile);
     }
 
+    @SuppressWarnings("unchecked")
     private UserProfile registerReInvitedUserInSidam(UserProfileCreationData profileData, UserProfile userProfile) {
-
-        final IdamRegistrationInfo idamRegistrationInfo
-                = idamService.registerUser(createIdamRegistrationRequest(profileData, userProfile.getIdamId()));
-        if (idamRegistrationInfo.isSuccessFromIdam()) {
-            mapUpdatableFieldsForReInvite(profileData, userProfile);
-            userProfile.setIdamRegistrationResponse(idamRegistrationInfo.getIdamRegistrationResponse().value());
-            saveUserProfile(userProfile);
-            persistAudit(idamRegistrationInfo.getStatusMessage(), idamRegistrationInfo.getIdamRegistrationResponse(),
-                    userProfile);
-        } else {
-            String errorMessage = idamRegistrationInfo.isDuplicateUser() ? String.format(USER_ALREADY_ACTIVE
-                    .getErrorMessage(), syncInterval) : idamRegistrationInfo.getStatusMessage();
-            persistAuditAndThrowIdamException(errorMessage, idamRegistrationInfo.getIdamRegistrationResponse(), null);
+        String emailKey = "email::";
+        String email = profileData.getEmail();
+        String emailSearchQuery = emailKey + email;
+        Map<String, String> formParams = new HashMap<>();
+        formParams.put("query", emailSearchQuery);
+        Response response  = idamFeignClient.getUserFeed(formParams);
+        logIdamResponse(response);
+        if (response.status() == 200) {
+            ResponseEntity<Object> responseEntity = JsonFeignResponseUtil.toResponseEntity(response,
+                    new TypeReference<Set<IdamFeignClient.User>>() {
+                    });
+            Set<IdamFeignClient.User> users = (Set<IdamFeignClient.User>) responseEntity.getBody();
+            if(!users.isEmpty() && !users.stream().findFirst().get().getId().equals(userProfile.getIdamId())) {
+               log.info("Do Update Idam Id in Next Sprint");
+            }
+        }
+        else {
+            final IdamRegistrationInfo idamRegistrationInfo
+                    = idamService.registerUser(createIdamRegistrationRequest(profileData, userProfile.getIdamId()));
+            if (idamRegistrationInfo.isSuccessFromIdam()) {
+                mapUpdatableFieldsForReInvite(profileData, userProfile);
+                userProfile.setIdamRegistrationResponse(idamRegistrationInfo.getIdamRegistrationResponse().value());
+                saveUserProfile(userProfile);
+                persistAudit(idamRegistrationInfo.getStatusMessage(), idamRegistrationInfo.getIdamRegistrationResponse(),
+                        userProfile);
+            } else {
+                String errorMessage = idamRegistrationInfo.isDuplicateUser() ? String.format(USER_ALREADY_ACTIVE
+                        .getErrorMessage(), syncInterval) : idamRegistrationInfo.getStatusMessage();
+                persistAuditAndThrowIdamException(errorMessage, idamRegistrationInfo.getIdamRegistrationResponse(), null);
+            }
         }
         return userProfile;
+    }
+
+    private void logIdamResponse(Response response) {
+        log.info("Logging Response from IDAM");
+        if (response != null) {
+            log.info("Response code from idamClient.getUserFeed {}", response.status());
+            if (response.status() != 200 && response.body() != null) {
+                log.info("Response body from Idam Client ::{}", response.status());
+            }
+        }
     }
 
     private IdamRegisterUserRequest createIdamRegistrationRequest(UserProfileCreationData profileData, String id) {
