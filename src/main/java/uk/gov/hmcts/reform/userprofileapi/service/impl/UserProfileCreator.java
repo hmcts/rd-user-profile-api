@@ -131,23 +131,23 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
                     new TypeReference<Set<IdamFeignClient.User>>() {
                     });
             Set<IdamFeignClient.User> users = (Set<IdamFeignClient.User>) responseEntity.getBody();
-            if(!users.isEmpty() && !users.stream().findFirst().get().getId().equals(userProfile.getIdamId())) {
-               log.info("Do Update Idam Id in Next Sprint");
+            if (!users.isEmpty() && !users.stream().findFirst().get().getId().equals(userProfile.getIdamId())) {
+                log.info("Do Update Idam Id in Next Sprint");
             }
-        }
-        else {
+        } else {
             final IdamRegistrationInfo idamRegistrationInfo
                     = idamService.registerUser(createIdamRegistrationRequest(profileData, userProfile.getIdamId()));
             if (idamRegistrationInfo.isSuccessFromIdam()) {
                 mapUpdatableFieldsForReInvite(profileData, userProfile);
                 userProfile.setIdamRegistrationResponse(idamRegistrationInfo.getIdamRegistrationResponse().value());
                 saveUserProfile(userProfile);
-                persistAudit(idamRegistrationInfo.getStatusMessage(), idamRegistrationInfo.getIdamRegistrationResponse(),
-                        userProfile);
+                persistAudit(idamRegistrationInfo.getStatusMessage(),
+                        idamRegistrationInfo.getIdamRegistrationResponse(), userProfile);
             } else {
                 String errorMessage = idamRegistrationInfo.isDuplicateUser() ? String.format(USER_ALREADY_ACTIVE
                         .getErrorMessage(), syncInterval) : idamRegistrationInfo.getStatusMessage();
-                persistAuditAndThrowIdamException(errorMessage, idamRegistrationInfo.getIdamRegistrationResponse(), null);
+                persistAuditAndThrowIdamException(errorMessage, idamRegistrationInfo.getIdamRegistrationResponse(),
+                        null);
             }
         }
         return userProfile;
