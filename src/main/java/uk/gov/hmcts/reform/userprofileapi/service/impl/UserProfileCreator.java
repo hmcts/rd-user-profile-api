@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.exception.IdamServiceException;
@@ -119,7 +120,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
 
     @SuppressWarnings("unchecked")
     private UserProfile registerReInvitedUserInSidam(UserProfileCreationData profileData, UserProfile userProfile) {
-        String emailKey = "email::";
+        String emailKey = "email:";
         String email = profileData.getEmail();
         String emailSearchQuery = emailKey + email;
         Map<String, String> formParams = new HashMap<>();
@@ -133,6 +134,10 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
             Set<IdamFeignClient.User> users = (Set<IdamFeignClient.User>) responseEntity.getBody();
             if (!users.isEmpty() && !users.stream().findFirst().get().getId().equals(userProfile.getIdamId())) {
                 log.info("Do Update Idam Id in Next Sprint");
+                userProfile.setIdamId(users.stream().findFirst().get().getId());
+                userProfile.setIdamRegistrationResponse(HttpStatus.OK.value());
+                userProfile.setStatus(IdamStatus.ACTIVE);
+                saveUserProfile(userProfile);
             }
         } else {
             final IdamRegistrationInfo idamRegistrationInfo
