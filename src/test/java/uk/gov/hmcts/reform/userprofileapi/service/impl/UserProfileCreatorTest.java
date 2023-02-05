@@ -54,6 +54,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.ResponseEntity.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -574,5 +575,36 @@ class UserProfileCreatorTest {
         Set<Map<String, String>> roles = userProfileCreator.createIdamRolesRequest(rolesToUpdate);
 
         assertThat(roles).isNotEmpty();
+    }
+
+    @Test
+    void test_reInvite_user_successfully_with_diff_idamId() throws JsonProcessingException {
+        when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+        when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);
+        when(validationHelperService.validateReInvitedUser(any())).thenReturn(userProfile);
+        IdamFeignClient.User userResponse = new IdamFeignClient.User();
+        userResponse.setId("1234");
+        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
+                false);
+        String body = mapper.writeValueAsString(Set.of(userResponse));
+
+        Response userProResponse = Response.builder().request(mock(Request.class)).body(body,
+                Charset.defaultCharset()).status(200).build();
+
+        when(idamFeignClient.getUserFeed(any())).thenReturn(userProResponse);
+
+        UserProfile response = userProfileCreator.reInviteUser(userProfileCreationData);
+
+        assertThat(response).usingRecursiveComparison().isEqualTo(userProfile);
+        assertThat(response.getIdamRegistrationResponse()).isEqualTo(OK.value());
+
+        InOrder inOrder = inOrder(idamService, userProfileRepository);
+        inOrder.verify(userProfileRepository, times(1)).findByEmail(any(String.class));
+        inOrder.verify(userProfileRepository, times(1)).save(any(UserProfile.class));
+
+        verify(validationHelperService, times(1)).validateReInvitedUser(any());
+        verify(idamFeignClient, times(1)).getUserFeed(any());
+
+        verify(userProfile, times(1)).setIdamRegistrationResponse(anyInt());
     }
 }
