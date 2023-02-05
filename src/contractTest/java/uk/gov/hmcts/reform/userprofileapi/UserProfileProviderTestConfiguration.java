@@ -59,6 +59,9 @@ public class UserProfileProviderTestConfiguration {
     @MockBean
     private UserProfileQueryProvider querySupplier;
 
+    @MockBean
+    private IdamFeignClient idamFeignClient;
+
     @Bean
     @Primary
     public UserProfileService<RequestData> userProfileService() {
@@ -70,7 +73,8 @@ public class UserProfileProviderTestConfiguration {
     @Primary
     public UserProfileCreator getResourceCreator() {
         return new UserProfileCreator("secretUri",idamService,userProfileRepository,
-                auditRepository,validationHelperService,"1","RD_User_Profile_API");
+                auditRepository,validationHelperService,"1","RD_User_Profile_API",
+                idamFeignClient);
     }
 
     @Bean

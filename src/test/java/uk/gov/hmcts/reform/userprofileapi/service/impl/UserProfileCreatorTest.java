@@ -1,5 +1,10 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.Request;
+import feign.Response;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
@@ -18,6 +23,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
+import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.exception.IdamServiceException;
 import uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
@@ -26,6 +32,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationHelperService;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -66,6 +73,9 @@ class UserProfileCreatorTest {
 
     @Mock
     private ValidationHelperService validationHelperService;
+
+    @Mock
+    private IdamFeignClient idamFeignClient;
 
     private IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(status(CREATED).build());
 
@@ -442,11 +452,21 @@ class UserProfileCreatorTest {
     }
 
     @Test
-    void test_reInvite_user_successfully() {
+    void test_reInvite_user_successfully() throws JsonProcessingException {
         when(idamService.registerUser(any())).thenReturn(idamRegistrationInfo);
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
         when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);
         when(validationHelperService.validateReInvitedUser(any())).thenReturn(userProfile);
+        IdamFeignClient.User userResponse = new IdamFeignClient.User();
+        userResponse.setId("1234");
+        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
+                false);
+        String body = mapper.writeValueAsString(Set.of(userResponse));
+
+        Response userProResponse = Response.builder().request(mock(Request.class)).body(body,
+                Charset.defaultCharset()).status(400).build();
+
+        when(idamFeignClient.getUserFeed(any())).thenReturn(userProResponse);
 
         UserProfile response = userProfileCreator.reInviteUser(userProfileCreationData);
 
@@ -465,14 +485,23 @@ class UserProfileCreatorTest {
     }
 
     @Test
-    void test_not_reinvite_user_when_sidam_returns_409() {
+    void test_not_reinvite_user_when_sidam_returns_409() throws JsonProcessingException {
 
         ReflectionTestUtils.setField(userProfileCreator, "syncInterval", "60");
         IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(status(CONFLICT).build());
         when(idamService.registerUser(any())).thenReturn(idamRegistrationInfo);
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
         when(validationHelperService.validateReInvitedUser(any())).thenReturn(userProfile);
+        IdamFeignClient.User userResponse = new IdamFeignClient.User();
+        userResponse.setId("1234");
+        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
+                false);
+        String body = mapper.writeValueAsString(Set.of(userResponse));
 
+        Response userProResponse = Response.builder().request(mock(Request.class)).body(body,
+                Charset.defaultCharset()).status(400).build();
+
+        when(idamFeignClient.getUserFeed(any())).thenReturn(userProResponse);
 
         final Throwable raisedException = catchThrowable(() -> userProfileCreator
                 .reInviteUser(userProfileCreationData));
@@ -490,13 +519,22 @@ class UserProfileCreatorTest {
     }
 
     @Test
-    void test_not_reinvite_user_when_sidam_returns_400() {
+    void test_not_reinvite_user_when_sidam_returns_400() throws JsonProcessingException {
 
         IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(status(BAD_REQUEST).build());
         when(idamService.registerUser(any())).thenReturn(idamRegistrationInfo);
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
         when(validationHelperService.validateReInvitedUser(any())).thenReturn(userProfile);
+        IdamFeignClient.User userResponse = new IdamFeignClient.User();
+        userResponse.setId("1234");
+        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
+                false);
+        String body = mapper.writeValueAsString(Set.of(userResponse));
 
+        Response response = Response.builder().request(mock(Request.class)).body(body,
+                Charset.defaultCharset()).status(500).build();
+
+        when(idamFeignClient.getUserFeed(any())).thenReturn(response);
 
         final Throwable raisedException = catchThrowable(() -> userProfileCreator
                 .reInviteUser(userProfileCreationData));
