@@ -135,7 +135,9 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
             if (users != null && !users.isEmpty() && !users.stream().findFirst().get().getId()
                     .equals(userProfile.getIdamId())) {
                 log.info("Do Update Idam Id in Next Sprint");
-                userProfile.setIdamId(users.stream().findFirst().get().getId());
+                if (users != null) {
+                    userProfile.setIdamId(users.stream().findFirst().get().getId());
+                }
                 userProfile.setIdamRegistrationResponse(HttpStatus.OK.value());
                 userProfile.setStatus(IdamStatus.ACTIVE);
                 saveUserProfile(userProfile);
