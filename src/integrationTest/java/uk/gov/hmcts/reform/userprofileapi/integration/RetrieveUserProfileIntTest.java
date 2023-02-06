@@ -18,10 +18,17 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfile;
 
@@ -375,7 +382,8 @@ class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
     }
 
     @Test
-    void should_return_invalidRequest_when_retrieve_user_profile_IdamStatusWithEmail_with_invalid_query_param() throws Exception {
+    void should_return_invalidRequest_when_retrieve_user_profile_IdamStatusWithEmail_with_invalid_query_param()
+            throws Exception {
 
         MvcResult retrievedResource = userProfileRequestHandlerTest.sendGet(
                         mockMvc,

@@ -26,7 +26,13 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileQueryProvider;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Random;
+import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -338,8 +344,9 @@ class UserProfileRetrieverTest {
     void test_retrieveMultipleProfilesByCategory_excpetionThrown() {
         when(querySupplier.getProfilesByUserCategory(any())).thenReturn(null);
         assertThatThrownBy(() ->  userProfileRetriever.retrieveMultipleProfilesByCategory("caseworker"))
-                .hasMessage("Could not find resource");
+                .hasMessage("Could not find any profiles");
     }
+
     @NotNull
     private static UserProfileIdamStatus buildIdamStatus() {
         UserProfileIdamStatus status = new UserProfileIdamStatus() {

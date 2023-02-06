@@ -28,7 +28,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.*;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserIdamStatusWithEmailResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfilesDeletionResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdentifierName;
 import uk.gov.hmcts.reform.userprofileapi.exception.ForbiddenException;
 import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
@@ -42,13 +49,12 @@ import uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator;
 
 import javax.validation.Valid;
 
-import java.util.List;
-import java.util.Optional;
-
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.*;
+import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.API_IS_NOT_AVAILABLE_IN_PROD_ENV;
+import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.INVALID_REQUEST;
+import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.NO_USER_ID_OR_EMAIL_PATTERN_PROVIDED_TO_DELETE;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileUtil.getUserEmailFromHeader;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateCreateUserProfileRequest;
@@ -592,14 +598,13 @@ public class UserProfileController {
     )
     @ResponseBody
     public ResponseEntity<UserIdamStatusWithEmailResponse> getUserProfileIdamStatus(@RequestParam  String category) {
-        if (StringUtils.hasText(category) && category.equalsIgnoreCase("caseworker")){
+        if (StringUtils.hasText(category) && category.equalsIgnoreCase("caseworker")) {
             log.debug("Inside getUserProfileIdamStatus Controller" + category);
-        UserIdamStatusWithEmailResponse response = userProfileService
-                .retrieveIdamStatus(category);
-        log.debug("Response returned to the controller");
+            UserIdamStatusWithEmailResponse response = userProfileService
+                    .retrieveIdamStatus(category);
+            log.debug("Response returned to the controller");
             return ResponseEntity.ok(response);
-        }
-        else{
+        } else {
             throw new InvalidRequest(INVALID_REQUEST.getErrorMessage());
         }
 
