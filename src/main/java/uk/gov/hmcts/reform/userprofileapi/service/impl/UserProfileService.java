@@ -3,15 +3,20 @@ package uk.gov.hmcts.reform.userprofileapi.service.impl;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.*;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserIdamStatusWithEmailResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfilesDeletionResponse;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.service.DeleteResourceService;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceCreator;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceRetriever;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceUpdator;
-
-import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -44,13 +49,14 @@ public class UserProfileService<T extends RequestData> {
                 true);
     }
 
-    public UserIdamStatusWithEmailResponse retrieveIdamStatus(String category) {
-        return new UserIdamStatusWithEmailResponse(resourceRetriever.retrieveMultipleProfilesByCategory(category));
-    }
 
     public UserProfileDataResponse retrieveWithRoles(T requestData, boolean showDeleted, boolean rolesRequired) {
         return new UserProfileDataResponse(resourceRetriever.retrieveMultipleProfiles(requestData, showDeleted,
                 rolesRequired), rolesRequired);
+    }
+
+    public UserIdamStatusWithEmailResponse retrieveIdamStatus(String category) {
+        return new UserIdamStatusWithEmailResponse(resourceRetriever.retrieveMultipleProfilesByCategory(category));
     }
 
     public UserProfileResponse retrieve(T requestData) {
