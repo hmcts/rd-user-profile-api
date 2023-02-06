@@ -132,12 +132,12 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
                     new TypeReference<Set<IdamFeignClient.User>>() {
                     });
             Set<IdamFeignClient.User> users = (Set<IdamFeignClient.User>) responseEntity.getBody();
-            if (users != null && !users.isEmpty() && !users.stream().findFirst().get().getId()
-                    .equals(userProfile.getIdamId())) {
-                log.info("Do Update Idam Id in Next Sprint");
-                if (users != null) {
-                    userProfile.setIdamId(users.stream().findFirst().get().getId());
-                }
+            Optional<String> opt = Optional.ofNullable(users.stream().findFirst().get().getId());
+            if (opt.isEmpty()) {
+                return null;
+            }
+            if (users != null && !users.isEmpty() && !opt.get().equals(userProfile.getIdamId())) {
+                userProfile.setIdamId(opt.get());
                 userProfile.setIdamRegistrationResponse(HttpStatus.OK.value());
                 userProfile.setStatus(IdamStatus.ACTIVE);
                 saveUserProfile(userProfile);
