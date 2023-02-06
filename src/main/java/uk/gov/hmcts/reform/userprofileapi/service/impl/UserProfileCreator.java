@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import feign.FeignException;
 import feign.Response;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -136,11 +135,11 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
                     });
             Set<IdamFeignClient.User> users = (Set<IdamFeignClient.User>) responseEntity.getBody();
             Optional<Set<IdamFeignClient.User>> opt = Optional.ofNullable(users);
-            if(opt.isEmpty()) {
+            if (opt.isEmpty()) {
                 throw new InvalidRequest("INVALID EMAIL");
-            } else if(StringUtils.isBlank(users.stream().findFirst().get().getId())) {
+            } else if (StringUtils.isBlank(users.stream().findFirst().get().getId())) {
                 throw new InvalidRequest("Id cannot be empty");
-            } else if(!opt.isPresent()) {
+            } else if (!opt.isPresent()) {
                 throw new InvalidRequest("Invalid users");
             }
             if (users != null && !users.isEmpty() && !users.stream().findFirst().get().getId()
