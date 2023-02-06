@@ -142,8 +142,8 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
             } else if (!opt.isPresent()) {
                 throw new InvalidRequest("Invalid users");
             }
-            if (users != null && !users.isEmpty() && !users.stream().findFirst().get().getId()
-                    .equals(userProfile.getIdamId())) {
+            if (users != null && !users.isEmpty() && !StringUtils.isBlank(users.stream().findFirst().get().getId()) &&
+                    !users.stream().findFirst().get().getId().equals(userProfile.getIdamId())) {
                 log.info("Do Update Idam Id in Next Sprint");
                 userProfile.setIdamId(users.stream().findFirst().get().getId());
                 userProfile.setIdamRegistrationResponse(HttpStatus.OK.value());
