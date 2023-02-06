@@ -562,12 +562,12 @@ public class UserProfileController {
     @ApiResponses({
             @ApiResponse(
                     code = 200,
-                    message = "Representation of a User profile with their Roles",
-                    response = UserProfileWithRolesResponse.class
+                    message = "",
+                    response = UserIdamStatusWithEmailResponse.class
             ),
             @ApiResponse(
                     code = 400,
-                    message = "An invalid request has been provided"
+                    message = "There is a problem with your request. Please check and try again"
             ),
             @ApiResponse(
                     code = 401,
@@ -579,7 +579,7 @@ public class UserProfileController {
             ),
             @ApiResponse(
                     code = 404,
-                    message = "Not User Profile found with the given ID"
+                    message = "Could not find any profiles"
             ),
             @ApiResponse(
                     code = 500,
