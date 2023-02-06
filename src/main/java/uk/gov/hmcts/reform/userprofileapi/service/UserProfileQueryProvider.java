@@ -2,8 +2,10 @@ package uk.gov.hmcts.reform.userprofileapi.service;
 
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfileIdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdentifierName;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
 
@@ -40,6 +42,15 @@ public class UserProfileQueryProvider {
         } else {
             return userProfileRepository.findByIdamIdInAndStatusNot(userIds, IdamStatus.DELETED);
         }
+    }
+
+    public List<UserProfileIdamStatus> getProfilesByUserCategory(String userCategory) {
+
+        if (Optional.of(userCategory).isPresent() && UserCategory.CASEWORKER.toString().equals(userCategory)) {
+            return userProfileRepository.findByUserCategory(UserCategory.CASEWORKER);
+        }
+        throw new IllegalStateException("Invalid userCategory supplied.");
+
     }
 
 }

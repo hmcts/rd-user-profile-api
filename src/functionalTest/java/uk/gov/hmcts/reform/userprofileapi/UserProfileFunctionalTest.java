@@ -17,11 +17,7 @@ import org.springframework.http.MediaType;
 import uk.gov.hmcts.reform.lib.util.serenity5.SerenityTest;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.*;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserType;
@@ -83,6 +79,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         reinviteUserScenario();
         deleteUserScenarios();
         endpointSecurityScenarios();
+        getUserProfileIdamStatus();
     }
 
     public void setUpTestData() {
@@ -550,6 +547,27 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
 
         log.info("deleteActiveUsersByEmailPatternShouldReturnSuccess :: ENDED");
     }
+
+
+    public void getUserProfileIdamStatus() throws Exception {
+        log.info("getUserProfileIdamStatus :: STARTED");
+        activeUserProfileCreationData.setUserCategory("CASEWORKER");
+        createUserProfile(activeUserProfileCreationData, HttpStatus.CREATED);
+        var urlPath =
+                new StringBuilder(requestUri);
+        urlPath.append("/")
+                .append("idamStatus")
+                .append("/?category=caseworker");
+        UserIdamStatusWithEmailResponse resource = testRequestHandler.sendGet(
+                urlPath.toString(), UserIdamStatusWithEmailResponse.class);
+        assertThat(resource).isNotNull();
+        assertThat(resource.getUserProfiles().get(0)).isNotNull();
+        assertThat(resource.getUserProfiles().get(0).getEmail()).isNotNull();
+        assertThat(resource.getUserProfiles().get(0).getIdamStatus()).isNotNull();
+
+        log.info("getUserProfileIdamStatus :: ENDED");
+    }
+
 
     @AfterAll
     public static void cleanUpTestData() {
