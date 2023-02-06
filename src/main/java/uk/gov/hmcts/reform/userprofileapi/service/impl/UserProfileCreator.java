@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import feign.FeignException;
 import feign.Response;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -12,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants;
+import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.IdamRegisterUserRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UpdateUserDetails;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
@@ -132,12 +135,18 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
                     new TypeReference<Set<IdamFeignClient.User>>() {
                     });
             Set<IdamFeignClient.User> users = (Set<IdamFeignClient.User>) responseEntity.getBody();
-            Optional<String> opt = Optional.ofNullable(users.stream().findFirst().get().getId());
-            if (opt.isEmpty()) {
-                return null;
+            Optional<Set<IdamFeignClient.User>> opt = Optional.ofNullable(users);
+            if(opt.isEmpty()) {
+                throw new InvalidRequest("INVALID EMAIL");
+            } else if(StringUtils.isBlank(users.stream().findFirst().get().getId())) {
+                throw new InvalidRequest("Id cannot be empty");
+            } else if(!opt.isPresent()) {
+                throw new InvalidRequest("Invalid users");
             }
-            if (users != null && !users.isEmpty() && !opt.get().equals(userProfile.getIdamId())) {
-                userProfile.setIdamId(opt.get());
+            if (users != null && !users.isEmpty() && !users.stream().findFirst().get().getId()
+                    .equals(userProfile.getIdamId())) {
+                log.info("Do Update Idam Id in Next Sprint");
+                userProfile.setIdamId(users.stream().findFirst().get().getId());
                 userProfile.setIdamRegistrationResponse(HttpStatus.OK.value());
                 userProfile.setStatus(IdamStatus.ACTIVE);
                 saveUserProfile(userProfile);
