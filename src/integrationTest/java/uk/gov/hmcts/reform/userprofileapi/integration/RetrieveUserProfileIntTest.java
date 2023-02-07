@@ -361,11 +361,10 @@ class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
     @Test
     void should_retrieve_user_profile_IdamStatusWithEmailResponse() throws Exception {
         UserProfile user1 = buildUserProfile();
-        String email = user1.getEmail();
         user1.setUserCategory(UserCategory.CASEWORKER);
         user1.setStatus(IdamStatus.ACTIVE);
         userProfileRepository.save(user1);
-
+        String email = user1.getEmail();
         UserIdamStatusWithEmailResponse retrievedResource =
                 userProfileRequestHandlerTest.sendGet(
                         mockMvc,
