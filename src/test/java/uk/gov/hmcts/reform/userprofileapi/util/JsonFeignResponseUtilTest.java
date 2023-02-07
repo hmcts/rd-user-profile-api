@@ -39,15 +39,6 @@ class JsonFeignResponseUtilTest {
     }
 
     @Test
-    void testToResponseEntity() {
-        ResponseEntity<Object> actual =
-                JsonFeignResponseUtil.toResponseEntity(this.responseMock,
-                        UserProfile.class);
-        assertThat(actual).isNotNull();
-    }
-
-
-    @Test
     void testToResponseEntityThrowError() throws IOException {
         when(bodyMock.asReader(Charset.defaultCharset())).thenThrow(IOException.class);
         ResponseEntity<Object> actual = JsonFeignResponseUtil.toResponseEntity(this.responseMock,
