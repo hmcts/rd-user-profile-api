@@ -131,7 +131,8 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
         if (response.status() == 200) {
             ResponseEntity<Object> responseEntity = JsonFeignResponseUtil.toResponseEntity(response,
                     new TypeReference<Set<IdamFeignClient.User>>() {});
-            Set<IdamFeignClient.User> users = (Set<IdamFeignClient.User>) Objects.requireNonNull(responseEntity.getBody());
+            Set<IdamFeignClient.User> users = (Set<IdamFeignClient.User>) Objects.requireNonNull(
+                    responseEntity.getBody());
             if (!CollectionUtils.isEmpty(users)) {
                 IdamFeignClient.User user;
                 if ((user = users.stream().findFirst().orElse(null)) != null
