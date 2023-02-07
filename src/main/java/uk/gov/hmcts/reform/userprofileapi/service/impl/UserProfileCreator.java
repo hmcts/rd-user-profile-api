@@ -136,7 +136,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
             if (!CollectionUtils.isEmpty(users)) {
                 IdamFeignClient.User user;
                 if ((user = users.stream().findFirst().orElse(null)) != null
-                        && userProfile.getIdamId().equals(user.getId())) {
+                        && !userProfile.getIdamId().equals(user.getId())) {
                     log.info("Updating Idam Id in user profile");
                     userProfile.setIdamId(user.getId());
                     userProfile.setIdamRegistrationResponse(HttpStatus.OK.value());

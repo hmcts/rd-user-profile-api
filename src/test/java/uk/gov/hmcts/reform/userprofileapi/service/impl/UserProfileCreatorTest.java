@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.userprofileapi.service.ValidationHelperService;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -526,16 +527,10 @@ class UserProfileCreatorTest {
         when(idamService.registerUser(any())).thenReturn(idamRegistrationInfo);
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
         when(validationHelperService.validateReInvitedUser(any())).thenReturn(userProfile);
-        IdamFeignClient.User userResponse = new IdamFeignClient.User();
-        userResponse.setId("1234");
-        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
-                false);
-        String body = mapper.writeValueAsString(Set.of(userResponse));
+        Response userProResponse = Response.builder().request(mock(Request.class)).body(
+                String.valueOf(Collections.emptyList()), Charset.defaultCharset()).status(500).build();
 
-        Response response = Response.builder().request(mock(Request.class)).body(body,
-                Charset.defaultCharset()).status(500).build();
-
-        when(idamFeignClient.getUserFeed(any())).thenReturn(response);
+        when(idamFeignClient.getUserFeed(any())).thenReturn(userProResponse);
 
         final Throwable raisedException = catchThrowable(() -> userProfileCreator
                 .reInviteUser(userProfileCreationData));
@@ -595,7 +590,6 @@ class UserProfileCreatorTest {
         when(idamFeignClient.getUserFeed(any())).thenReturn(userProResponse);
         userProfile.setIdamId("1234");
         UserProfile response = userProfileCreator.reInviteUser(userProfileCreationData);
-
         assertThat(response).usingRecursiveComparison().isEqualTo(userProfile);
         assertThat(response.getIdamRegistrationResponse()).isEqualTo(OK.value());
 
@@ -607,5 +601,26 @@ class UserProfileCreatorTest {
         verify(idamFeignClient, times(1)).getUserFeed(any());
 
         verify(userProfile, times(1)).setIdamRegistrationResponse(anyInt());
+    }
+
+    @Test
+    void test_reInvite_user_failure_with_diff_idamId() throws JsonProcessingException {
+        when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+        when(validationHelperService.validateReInvitedUser(any())).thenReturn(userProfile);
+
+        Response userProResponse = Response.builder().request(mock(Request.class)).body(
+                String.valueOf(Collections.emptyList()), Charset.defaultCharset()).status(200).build();
+        when(idamFeignClient.getUserFeed(any())).thenReturn(userProResponse);
+        userProfile.setIdamId("1234");
+        UserProfile response = userProfileCreator.reInviteUser(userProfileCreationData);
+        assertThat(response).usingRecursiveComparison().isEqualTo(userProfile);
+        assertThat(response.getIdamRegistrationResponse()).isEqualTo(CREATED.value());
+
+        InOrder inOrder = inOrder(idamService, userProfileRepository);
+        inOrder.verify(userProfileRepository, times(1)).findByEmail(any(String.class));
+
+        verify(validationHelperService, times(1)).validateReInvitedUser(any());
+        verify(idamFeignClient, times(1)).getUserFeed(any());
+
     }
 }
