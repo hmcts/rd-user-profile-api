@@ -580,6 +580,7 @@ class UserProfileCreatorTest {
     @Test
     void test_reInvite_user_successfully_with_diff_idamId() throws JsonProcessingException {
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+
         when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);
         when(validationHelperService.validateReInvitedUser(any())).thenReturn(userProfile);
         IdamFeignClient.User userResponse = new IdamFeignClient.User();
@@ -592,7 +593,7 @@ class UserProfileCreatorTest {
                 Charset.defaultCharset()).status(200).build();
 
         when(idamFeignClient.getUserFeed(any())).thenReturn(userProResponse);
-
+        userProfile.setIdamId("1234");
         UserProfile response = userProfileCreator.reInviteUser(userProfileCreationData);
 
         assertThat(response).usingRecursiveComparison().isEqualTo(userProfile);
