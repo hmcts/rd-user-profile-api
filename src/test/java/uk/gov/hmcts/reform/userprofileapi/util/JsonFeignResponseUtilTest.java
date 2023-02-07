@@ -5,6 +5,7 @@ import feign.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
+import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 
 import java.io.IOException;
@@ -41,7 +42,7 @@ class JsonFeignResponseUtilTest {
     void testToResponseEntity() {
         ResponseEntity<Object> actual =
                 JsonFeignResponseUtil.toResponseEntity(this.responseMock,
-                        new TypeReference<List<IdamFeignClient.User>>() { });
+                        UserProfile.class);
         assertThat(actual).isNotNull();
     }
 
