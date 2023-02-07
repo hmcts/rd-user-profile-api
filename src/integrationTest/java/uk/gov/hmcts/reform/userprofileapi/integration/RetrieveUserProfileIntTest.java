@@ -360,8 +360,11 @@ class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
 
     @Test
     void should_retrieve_user_profile_IdamStatusWithEmailResponse() throws Exception {
-        UserProfile userProfile = userProfileMap.get("user");
-        userProfile.setUserCategory(UserCategory.CASEWORKER);
+        UserProfile user1 = buildUserProfile();
+        String email = user1.getEmail();
+        user1.setUserCategory(UserCategory.CASEWORKER);
+        user1.setStatus(IdamStatus.ACTIVE);
+        userProfileRepository.save(user1);
 
         UserIdamStatusWithEmailResponse retrievedResource =
                 userProfileRequestHandlerTest.sendGet(
@@ -373,10 +376,10 @@ class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
         assertThat(retrievedResource).isNotNull();
         assertThat(Objects.requireNonNull(retrievedResource)
                 .getUserProfiles().get(0).getEmail())
-                .isNotNull();
+                .isEqualToIgnoringCase(email);
         assertThat(Objects.requireNonNull(retrievedResource)
                 .getUserProfiles().get(0).getIdamStatus())
-                .isNotNull();
+                .isEqualToIgnoringCase(IdamStatus.ACTIVE.name());
 
 
     }
