@@ -5,7 +5,6 @@ import feign.Response;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -13,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants;
-import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.IdamRegisterUserRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UpdateUserDetails;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
@@ -40,6 +38,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -131,24 +130,18 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
         logIdamResponse(response);
         if (response.status() == 200) {
             ResponseEntity<Object> responseEntity = JsonFeignResponseUtil.toResponseEntity(response,
-                    new TypeReference<Set<IdamFeignClient.User>>() {
-                    });
-            Set<IdamFeignClient.User> users = (Set<IdamFeignClient.User>) responseEntity.getBody();
-            Optional<Set<IdamFeignClient.User>> opt = Optional.ofNullable(users);
-            if (opt.isEmpty()) {
-                throw new InvalidRequest("INVALID EMAIL");
-            } else if (StringUtils.isBlank(users.stream().findFirst().get().getId())) {
-                throw new InvalidRequest("Id cannot be empty");
-            } else if (!opt.isPresent()) {
-                throw new InvalidRequest("Invalid users");
-            }
-            if (users != null && !users.isEmpty() && !StringUtils.isBlank(users.stream().findFirst().get().getId())
-                    && !users.stream().findFirst().get().getId().equals(userProfile.getIdamId())) {
-                log.info("Do Update Idam Id in Next Sprint");
-                userProfile.setIdamId(users.stream().findFirst().get().getId());
-                userProfile.setIdamRegistrationResponse(HttpStatus.OK.value());
-                userProfile.setStatus(IdamStatus.ACTIVE);
-                saveUserProfile(userProfile);
+                    new TypeReference<Set<IdamFeignClient.User>>() {});
+            Set<IdamFeignClient.User> users = (Set<IdamFeignClient.User>) Objects.requireNonNull(responseEntity.getBody());
+            if (!CollectionUtils.isEmpty(users)) {
+                IdamFeignClient.User user;
+                if ((user = users.stream().findFirst().orElse(null)) != null
+                        && userProfile.getIdamId().equals(user.getId())) {
+                    log.info("Updating Idam Id in user profile");
+                    userProfile.setIdamId(user.getId());
+                    userProfile.setIdamRegistrationResponse(HttpStatus.OK.value());
+                    userProfile.setStatus(IdamStatus.ACTIVE);
+                    saveUserProfile(userProfile);
+                }
             }
         } else {
             final IdamRegistrationInfo idamRegistrationInfo
