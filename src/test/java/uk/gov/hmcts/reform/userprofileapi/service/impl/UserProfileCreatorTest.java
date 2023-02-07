@@ -572,7 +572,7 @@ class UserProfileCreatorTest {
     }
 
     @Test
-    void test_reInvite_user_successfully_with_diff_idamId() throws JsonProcessingException {
+    void test_reInvite_user_successfully_with_same_idamId() throws JsonProcessingException {
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
         when(validationHelperService.validateReInvitedUser(any())).thenReturn(userProfile);
         IdamFeignClient.User userResponse = new IdamFeignClient.User();
@@ -616,6 +616,32 @@ class UserProfileCreatorTest {
 
         verify(validationHelperService, times(1)).validateReInvitedUser(any());
         verify(idamFeignClient, times(1)).getUserFeed(any());
+    }
 
+    @Test
+    void test_reInvite_user_successfully_with_diff_idamId() throws JsonProcessingException {
+        when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+        when(validationHelperService.validateReInvitedUser(any())).thenReturn(userProfile);
+        IdamFeignClient.User userResponse = new IdamFeignClient.User();
+        userResponse.setId("12345");
+        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
+                false);
+        String body = mapper.writeValueAsString(Set.of(userResponse));
+
+        Response userProResponse = Response.builder().request(mock(Request.class)).body(body,
+                Charset.defaultCharset()).status(200).build();
+
+        when(idamFeignClient.getUserFeed(any())).thenReturn(userProResponse);
+        userProfile.setIdamId("1234");
+        UserProfile response = userProfileCreator.reInviteUser(userProfileCreationData);
+        assertThat(response).usingRecursiveComparison().isEqualTo(userProfile);
+        assertThat(response.getIdamRegistrationResponse()).isEqualTo(200);
+
+        InOrder inOrder = inOrder(idamService, userProfileRepository);
+        inOrder.verify(userProfileRepository, times(1)).findByEmail(any(String.class));
+        //inOrder.verify(userProfileRepository, times(1)).save(any(UserProfile.class));
+
+        verify(validationHelperService, times(1)).validateReInvitedUser(any());
+        verify(idamFeignClient, times(1)).getUserFeed(any());
     }
 }
