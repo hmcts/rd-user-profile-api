@@ -482,7 +482,7 @@ class UserProfileCreatorTest {
         verify(auditRepository, times(1)).save(any(Audit.class));
         verify(validationHelperService, times(1)).validateReInvitedUser(any());
 
-        verify(userProfile, times(1)).setIdamRegistrationResponse(anyInt());
+        verify(userProfile, times(2)).setIdamRegistrationResponse(anyInt());
     }
 
     @Test
@@ -586,6 +586,7 @@ class UserProfileCreatorTest {
 
         when(idamFeignClient.getUserFeed(any())).thenReturn(userProResponse);
         userProfile.setIdamId("1234");
+        when(idamService.registerUser(any(IdamRegisterUserRequest.class))).thenReturn(idamRegistrationInfo);
         UserProfile response = userProfileCreator.reInviteUser(userProfileCreationData);
         assertThat(response).usingRecursiveComparison().isEqualTo(userProfile);
         assertThat(response.getIdamRegistrationResponse()).isEqualTo(201);
@@ -607,6 +608,7 @@ class UserProfileCreatorTest {
                 String.valueOf(Collections.emptyList()), Charset.defaultCharset()).status(200).build();
         when(idamFeignClient.getUserFeed(any())).thenReturn(userProResponse);
         userProfile.setIdamId("1234");
+        when(idamService.registerUser(any(IdamRegisterUserRequest.class))).thenReturn(idamRegistrationInfo);
         UserProfile response = userProfileCreator.reInviteUser(userProfileCreationData);
         assertThat(response).usingRecursiveComparison().isEqualTo(userProfile);
         assertThat(response.getIdamRegistrationResponse()).isEqualTo(CREATED.value());
@@ -635,7 +637,7 @@ class UserProfileCreatorTest {
         userProfile.setIdamId("1234");
         UserProfile response = userProfileCreator.reInviteUser(userProfileCreationData);
         assertThat(response).usingRecursiveComparison().isEqualTo(userProfile);
-        assertThat(response.getIdamRegistrationResponse()).isEqualTo(200);
+        assertThat(response.getIdamRegistrationResponse()).isEqualTo(201);
 
         InOrder inOrder = inOrder(idamService, userProfileRepository);
         inOrder.verify(userProfileRepository, times(1)).findByEmail(any(String.class));

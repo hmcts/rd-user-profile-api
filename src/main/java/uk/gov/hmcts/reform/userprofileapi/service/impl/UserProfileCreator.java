@@ -79,7 +79,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
 
         log.debug("Before userProfileRepository");
         // check if user already in UP then
-        Optional<UserProfile>  optionalExistingUserProfile = userProfileRepository.findByEmail(profileData.getEmail()
+        Optional<UserProfile> optionalExistingUserProfile = userProfileRepository.findByEmail(profileData.getEmail()
                 .toLowerCase());
         UserProfile userProfile = optionalExistingUserProfile.orElse(null);
         if (null != userProfile) {
@@ -91,7 +91,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
             return userProfile;
         }
         log.debug("There is no email exist with this already");
-        String  userId = UUID.randomUUID().toString();
+        String userId = UUID.randomUUID().toString();
         final IdamRegistrationInfo idamRegistrationInfo
                 = idamService.registerUser(createIdamRegistrationRequest(profileData, userId));
         HttpStatus idamStatus = idamRegistrationInfo.getIdamRegistrationResponse();
@@ -111,26 +111,23 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
         }
     }
 
+    @SuppressWarnings("unchecked")
     public UserProfile reInviteUser(UserProfileCreationData profileData) {
 
-        Optional<UserProfile>  optionalExistingUserProfile = userProfileRepository
+        Optional<UserProfile> optionalExistingUserProfile = userProfileRepository
                 .findByEmail(profileData.getEmail().toLowerCase());
         UserProfile userProfile = validationHelperService.validateReInvitedUser(optionalExistingUserProfile);
-        return registerReInvitedUserInSidam(profileData, userProfile);
-    }
-
-    @SuppressWarnings("unchecked")
-    private UserProfile registerReInvitedUserInSidam(UserProfileCreationData profileData, UserProfile userProfile) {
         String emailKey = "email:";
         String email = profileData.getEmail();
         String emailSearchQuery = emailKey + email;
         Map<String, String> formParams = new HashMap<>();
         formParams.put("query", emailSearchQuery);
-        Response response  = idamFeignClient.getUserFeed(formParams);
+        Response response = idamFeignClient.getUserFeed(formParams);
         logIdamResponse(response);
         if (response.status() == 200) {
             ResponseEntity<Object> responseEntity = JsonFeignResponseUtil.toResponseEntity(response,
-                    new TypeReference<Set<IdamFeignClient.User>>() {});
+                    new TypeReference<Set<IdamFeignClient.User>>() {
+                    });
             Set<IdamFeignClient.User> users = (Set<IdamFeignClient.User>) Objects.requireNonNull(
                     responseEntity.getBody());
             if (!CollectionUtils.isEmpty(users)) {
@@ -139,26 +136,33 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
                         && !userProfile.getIdamId().equals(user.getId())) {
                     log.info("Updating Idam Id in user profile");
                     userProfile.setIdamId(user.getId());
-                    userProfile.setIdamRegistrationResponse(HttpStatus.OK.value());
+                    userProfile.setIdamRegistrationResponse(HttpStatus.CREATED.value());
                     userProfile.setStatus(IdamStatus.ACTIVE);
                     saveUserProfile(userProfile);
+                    return userProfile;
                 }
             }
+        }
+        return registerReInvitedUserInSidam(profileData, userProfile);
+    }
+
+    private UserProfile registerReInvitedUserInSidam(UserProfileCreationData profileData, UserProfile userProfile) {
+
+
+        final IdamRegistrationInfo idamRegistrationInfo
+                = idamService.registerUser(createIdamRegistrationRequest(profileData, userProfile.getIdamId()));
+        if (idamRegistrationInfo.isSuccessFromIdam()) {
+            mapUpdatableFieldsForReInvite(profileData, userProfile);
+            userProfile.setIdamRegistrationResponse(idamRegistrationInfo.getIdamRegistrationResponse().value());
+            saveUserProfile(userProfile);
+            userProfile.setIdamRegistrationResponse(201);
+            persistAudit(idamRegistrationInfo.getStatusMessage(),
+                    idamRegistrationInfo.getIdamRegistrationResponse(), userProfile);
         } else {
-            final IdamRegistrationInfo idamRegistrationInfo
-                    = idamService.registerUser(createIdamRegistrationRequest(profileData, userProfile.getIdamId()));
-            if (idamRegistrationInfo.isSuccessFromIdam()) {
-                mapUpdatableFieldsForReInvite(profileData, userProfile);
-                userProfile.setIdamRegistrationResponse(idamRegistrationInfo.getIdamRegistrationResponse().value());
-                saveUserProfile(userProfile);
-                persistAudit(idamRegistrationInfo.getStatusMessage(),
-                        idamRegistrationInfo.getIdamRegistrationResponse(), userProfile);
-            } else {
-                String errorMessage = idamRegistrationInfo.isDuplicateUser() ? String.format(USER_ALREADY_ACTIVE
-                        .getErrorMessage(), syncInterval) : idamRegistrationInfo.getStatusMessage();
-                persistAuditAndThrowIdamException(errorMessage, idamRegistrationInfo.getIdamRegistrationResponse(),
-                        null);
-            }
+            String errorMessage = idamRegistrationInfo.isDuplicateUser() ? String.format(USER_ALREADY_ACTIVE
+                    .getErrorMessage(), syncInterval) : idamRegistrationInfo.getStatusMessage();
+            persistAuditAndThrowIdamException(errorMessage, idamRegistrationInfo.getIdamRegistrationResponse(),
+                    null);
         }
         return userProfile;
     }
@@ -226,7 +230,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
 
             if (idamRolesInfo.isSuccessFromIdam()) {
 
-                updateNamesInSidam(profileData,idamRolesInfo,origin);
+                updateNamesInSidam(profileData, idamRolesInfo, origin);
                 //consolidate XUI + SIDAM roles having unique roles
 
                 Set<String> rolesToUpdate = consolidateRolesFromXuiAndIdam(profileData, idamRolesInfo);
@@ -265,7 +269,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
     private void persistAuditAndThrowIdamException(String message, HttpStatus idamStatus, UserProfile userProfile) {
         persistAudit(message, idamStatus, userProfile);
         UserProfileUtil.idam5xxErrorResponse(message, idamStatus);
-        throw new  IdamServiceException(message,idamStatus);
+        throw new IdamServiceException(message, idamStatus);
     }
 
     public void updateInputRequestWithLatestSidamUserInfo(UserProfileCreationData profileData,
@@ -293,7 +297,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
     }
 
     private void updateSidamUserInfoWithUserProfileDetails(UserProfileCreationData profileData,
-                                                          IdamRolesInfo idamRolesInfo) {
+                                                           IdamRolesInfo idamRolesInfo) {
         profileData.setStatus(IdamStatusResolver.resolveIdamStatus(idamRolesInfo));
         if (!(profileData.getFirstName().equals(idamRolesInfo.getForename()) && profileData.getLastName()
                 .equals(idamRolesInfo.getSurname()))) {
@@ -329,7 +333,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
         return idamService.addUserRoles(createIdamRolesRequest(rolesToUpdate), userId);
     }
 
-    public Set<Map<String,String>> createIdamRolesRequest(Set<String> rolesToUpdate) {
+    public Set<Map<String, String>> createIdamRolesRequest(Set<String> rolesToUpdate) {
         Set<Map<String, String>> roles = new HashSet<>();
         rolesToUpdate.forEach(role -> {
             Map<String, String> rolesMap = new HashMap<>();
