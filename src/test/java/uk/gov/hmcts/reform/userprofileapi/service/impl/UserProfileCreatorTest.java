@@ -600,7 +600,7 @@ class UserProfileCreatorTest {
     }
 
     @Test
-    void test_reInvite_user_failure_with_diff_idamId() throws JsonProcessingException {
+    void test_reInvite_user_pending_with_same_idamId() throws JsonProcessingException {
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
         when(validationHelperService.validateReInvitedUser(any())).thenReturn(userProfile);
 

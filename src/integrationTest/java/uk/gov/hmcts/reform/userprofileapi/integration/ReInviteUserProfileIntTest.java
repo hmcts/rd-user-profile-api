@@ -179,4 +179,22 @@ class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
                 .concat("%s minutes ago. Please try after some time"), resendInterval));
     }
 
+    @Test
+    void should_update_upId_with_idamId_incase_diff_when_user_reinvited() throws Exception {
+
+        updateLastUpdatedTimestamp(userProfile.getIdamId());
+
+        UserProfileCreationData data = buildCreateUserProfileData(true);
+        data.setEmail(pendingUserRequest.getEmail());
+        searchUserProfileSyncWireMock(HttpStatus.OK);
+        UserProfileCreationResponse reInvitedUserResponse = (UserProfileCreationResponse) createUser(data, CREATED,
+                UserProfileCreationResponse.class);
+
+        //getting from DB
+        Optional<UserProfile> persistedUserProfile = userProfileRepository.findByEmail(pendingUserRequest
+                .getEmail().toLowerCase());
+        userProfile = persistedUserProfile.get();
+
+        assertThat(reInvitedUserResponse.getIdamId()).isEqualTo(userProfile.getIdamId());
+    }
 }
