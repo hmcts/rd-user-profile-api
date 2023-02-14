@@ -19,6 +19,7 @@ import java.util.Optional;
 import javax.sql.DataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -181,7 +182,6 @@ class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
 
     @Test
     void should_update_upId_with_idamId_incase_diff_when_user_reinvited() throws Exception {
-
         updateLastUpdatedTimestamp(userProfile.getIdamId());
 
         UserProfileCreationData data = buildCreateUserProfileData(true);
@@ -193,8 +193,9 @@ class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
         //getting from DB
         Optional<UserProfile> persistedUserProfile = userProfileRepository.findByEmail(pendingUserRequest
                 .getEmail().toLowerCase());
-        userProfile = persistedUserProfile.get();
+        UserProfile fetchedUserProfile = persistedUserProfile.get();
 
-        assertThat(reInvitedUserResponse.getIdamId()).isEqualTo(userProfile.getIdamId());
+        assertThat(reInvitedUserResponse.getIdamId()).isEqualTo(fetchedUserProfile.getIdamId());
+        assertNotEquals(reInvitedUserResponse.getIdamId(), userProfile.getIdamId());
     }
 }
