@@ -1,9 +1,11 @@
 package uk.gov.hmcts.reform.userprofileapi.controller;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.CacheControl;
@@ -14,11 +16,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
-
-@Api(
-    value = "/",
-    produces = MediaType.APPLICATION_JSON_VALUE
-)
 
 @Slf4j
 @RestController
@@ -39,12 +36,12 @@ public class WelcomeController {
      *
      * @return Welcome message from the service.
      */
-    @ApiOperation("Welcome to the System User Profile Data API")
+    @Operation(summary = "Welcome to the System User Profile Data API")
     @ApiResponses({
         @ApiResponse(
-            code = 200,
-            message = "Welcome message",
-            response = String.class
+            responseCode = "200",
+            description = "Welcome message",
+            content = @Content(schema = @Schema(implementation  = String.class))
         )
     })
     @GetMapping(
