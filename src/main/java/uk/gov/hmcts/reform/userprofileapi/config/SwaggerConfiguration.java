@@ -17,6 +17,7 @@ import org.springframework.web.method.HandlerMethod;
 @SecurityScheme(name = "Authorization", type = SecuritySchemeType.HTTP, bearerFormat = "JWT", scheme = "bearer")
 @SecurityScheme(name = "ServiceAuthorization", type = SecuritySchemeType.APIKEY,
     in = SecuritySchemeIn.HEADER, bearerFormat = "JWT", description = "ServiceAuthorization")
+@SecurityScheme(name = "UserEmail", type = SecuritySchemeType.APIKEY, in = SecuritySchemeIn.HEADER)
 public class SwaggerConfiguration {
 
     @Bean
@@ -39,8 +40,15 @@ public class SwaggerConfiguration {
                 .name("Authorization")
                 .description("Authorization token")
                 .required(true);
+            Parameter userEmail = new Parameter()
+                    .in(ParameterIn.HEADER.toString())
+                    .schema(new StringSchema())
+                    .name("UserEmail")
+                    .description("UserEmail")
+                    .required(false);
             customOperation.addParametersItem(authorizationHeader);
             customOperation.addParametersItem(serviceAuthorizationHeader);
+            customOperation.addParametersItem(userEmail);
             return customOperation;
         };
     }

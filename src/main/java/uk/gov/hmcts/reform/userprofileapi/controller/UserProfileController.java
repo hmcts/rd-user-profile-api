@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -62,6 +63,9 @@ import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUse
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateCreateUserProfileRequest;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateUserIds;
 
+@Tag(
+        name = "/v1/userprofile"
+)
 
 @RequestMapping(
         path = "/v1/userprofile"
@@ -102,7 +106,7 @@ public class UserProfileController {
             ),
             @ApiResponse(
                     responseCode = "401",
-                    description = "Unauthorized Error : The requested "
+                    description = "Unauthorized Error : The requested"
                         + " resource is restricted and requires authentication"),
             @ApiResponse(
                     responseCode = "403",
@@ -354,6 +358,7 @@ public class UserProfileController {
 
     @ResponseBody
     public ResponseEntity<UserProfileRolesResponse> updateUserProfile(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "updateUserProfileData")
             @Valid @RequestBody UpdateUserProfileData updateUserProfileData,
             @PathVariable String userId,
             @Parameter(name = "origin") @RequestParam(value = "origin", required = false) String origin) {
@@ -433,7 +438,8 @@ public class UserProfileController {
                                                                                 required = true)
                                                                         @RequestParam(value = "rolesRequired",
                                                                                 required = true) String rolesRequired,
-                                                                        @RequestBody UserProfileDataRequest
+                                                                        @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "userProfileDataRequest")
+                                                                            @RequestBody UserProfileDataRequest
                                                                                 userProfileDataRequest) {
         //Retrieving multiple user profiles
 
@@ -566,37 +572,42 @@ public class UserProfileController {
     }
 
 
-    @ApiOperation(value = "Retrieves email IDs and IDAM status of user profiles",
-            authorizations = {
-                    @Authorization(value = "ServiceAuthorization"),
-                    @Authorization(value = "Authorization")
+    @Operation(summary = "Retrieves email IDs and IDAM status of user profiles",
+            security = {
+                    @SecurityRequirement(name = "ServiceAuthorization"),
+                    @SecurityRequirement(name = "Authorization")
             }
     )
     @ApiResponses({
             @ApiResponse(
-                    code = 200,
-                    message = "",
-                    response = UserIdamStatusWithEmailResponse.class
+                    responseCode = "200",
+                    description = "",
+                    content = @Content(schema = @Schema(implementation =  UserIdamStatusWithEmailResponse.class))
             ),
             @ApiResponse(
-                    code = 400,
-                    message = "There is a problem with your request. Please check and try again"
+                    responseCode = "400",
+                    description = "There is a problem with your request. Please check and try again",
+                    content = @Content
             ),
             @ApiResponse(
-                    code = 401,
-                    message = "Unauthorized Error : The requested resource is restricted and requires authentication"
+                    responseCode = "401",
+                    description = "Unauthorized Error : The requested resource is restricted and requires authentication",
+                    content = @Content
             ),
             @ApiResponse(
-                    code = 403,
-                    message = "Forbidden Error: Access denied"
+                    responseCode = "403",
+                    description = "Forbidden Error: Access denied",
+                    content = @Content
             ),
             @ApiResponse(
-                    code = 404,
-                    message = "Could not find any profiles"
+                    responseCode = "404",
+                    description = "Could not find any profiles",
+                    content = @Content
             ),
             @ApiResponse(
-                    code = 500,
-                    message = "Internal Server Error"
+                    responseCode = "500",
+                    description = "Internal Server Error",
+                    content = @Content
             )
     })
     @GetMapping(
