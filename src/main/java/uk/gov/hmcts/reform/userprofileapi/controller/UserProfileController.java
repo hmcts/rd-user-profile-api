@@ -107,7 +107,7 @@ public class UserProfileController {
             @ApiResponse(
                     responseCode = "401",
                     description = "Unauthorized Error : The requested"
-                        + " resource is restricted and requires authentication"),
+                            + " resource is restricted and requires authentication"),
             @ApiResponse(
                     responseCode = "403",
                     description = "Forbidden Error: Access denied"
@@ -134,8 +134,8 @@ public class UserProfileController {
     @ResponseBody
     public ResponseEntity<UserProfileCreationResponse> createUserProfile(
             @Valid @RequestBody UserProfileCreationData userProfileCreationData,
-        @RequestParam(value = "origin", required = false)
-        @Parameter(name = "origin", description = "Any Valid String is allowed") String origin) {
+            @RequestParam(value = "origin", required = false)
+            @Parameter(name = "origin", description = "Any Valid String is allowed") String origin) {
         log.debug("Inside createUserProfile Controller" + origin);
         UserProfileCreationResponse resource;
         validateCreateUserProfileRequest(userProfileCreationData);
@@ -168,7 +168,7 @@ public class UserProfileController {
             @ApiResponse(
                     responseCode = "401",
                     description = "Unauthorized Error : The requested "
-                        + "resource is restricted and requires authentication"
+                            + "resource is restricted and requires authentication"
             ),
             @ApiResponse(
                     responseCode = "403",
@@ -211,7 +211,7 @@ public class UserProfileController {
             @ApiResponse(
                     responseCode = "200",
                     description = "Representation of a User profile with their Roles",
-                    content = @Content(schema = @Schema(implementation =  UserProfileWithRolesResponse.class))
+                    content = @Content(schema = @Schema(implementation = UserProfileWithRolesResponse.class))
             ),
             @ApiResponse(
                     responseCode = "400",
@@ -220,7 +220,7 @@ public class UserProfileController {
             @ApiResponse(
                     responseCode = "401",
                     description = "Unauthorized Error : The requested resource is "
-                        + "restricted and requires authentication"
+                            + "restricted and requires authentication"
             ),
             @ApiResponse(
                     responseCode = "403",
@@ -263,7 +263,7 @@ public class UserProfileController {
             @ApiResponse(
                     responseCode = "200",
                     description = "Representation of a User profile",
-                    content = @Content(schema = @Schema(implementation =  UserProfileResponse.class))
+                    content = @Content(schema = @Schema(implementation = UserProfileResponse.class))
             ),
             @ApiResponse(
                     responseCode = "400",
@@ -272,7 +272,7 @@ public class UserProfileController {
             @ApiResponse(
                     responseCode = "401",
                     description = "Unauthorized Error : The requested resource is "
-                        + "restricted and requires authentication"
+                            + "restricted and requires authentication"
             ),
             @ApiResponse(
                     responseCode = "403",
@@ -321,7 +321,7 @@ public class UserProfileController {
             @ApiResponse(
                     responseCode = "200",
                     description = "User Profile has been Updated successfully",
-                    content = @Content(schema = @Schema(implementation =  UserProfileCreationResponse.class))
+                    content = @Content(schema = @Schema(implementation = UserProfileCreationResponse.class))
             ),
             @ApiResponse(
                     responseCode = "400",
@@ -330,7 +330,7 @@ public class UserProfileController {
             @ApiResponse(
                     responseCode = "401",
                     description = "Unauthorized Error : The requested resource is "
-                        + "restricted and requires authentication"
+                            + "restricted and requires authentication"
             ),
             @ApiResponse(
                     responseCode = "403",
@@ -399,7 +399,7 @@ public class UserProfileController {
             @ApiResponse(
                     responseCode = "200",
                     description = "Successfully retrieved multiple User Profiles",
-                    content = @Content(schema = @Schema(implementation =  UserProfileDataResponse.class))
+                    content = @Content(schema = @Schema(implementation = UserProfileDataResponse.class))
             ),
             @ApiResponse(
                     responseCode = "400",
@@ -408,7 +408,7 @@ public class UserProfileController {
             @ApiResponse(
                     responseCode = "401",
                     description = "Unauthorized Error : The requested resource is "
-                        + "restricted and requires authentication"
+                            + "restricted and requires authentication"
             ),
             @ApiResponse(
                     responseCode = "403",
@@ -430,17 +430,18 @@ public class UserProfileController {
             produces = APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    public ResponseEntity<UserProfileDataResponse> retrieveUserProfiles(@Parameter(name = "showdeleted",
-                                                                                required = true)
-                                                                        @RequestParam(value = "showdeleted",
-                                                                                required = true) String showDeleted,
-                                                                        @Parameter(name = "rolesRequired",
-                                                                                required = true)
-                                                                        @RequestParam(value = "rolesRequired",
-                                                                                required = true) String rolesRequired,
-                                                                        @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "userProfileDataRequest")
-                                                                            @RequestBody UserProfileDataRequest
-                                                                                userProfileDataRequest) {
+    public ResponseEntity<UserProfileDataResponse> retrieveUserProfiles(
+            @Parameter(name = "showdeleted", required = true)
+            @RequestParam(value = "showdeleted",
+                    required = true) String showDeleted,
+            @Parameter(name = "rolesRequired",
+                    required = true)
+            @RequestParam(value = "rolesRequired",
+                    required = true) String rolesRequired,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "userProfileDataRequest")
+            @RequestBody UserProfileDataRequest
+                    userProfileDataRequest) {
         //Retrieving multiple user profiles
 
         boolean showDeletedBoolean = UserProfileValidator.validateAndReturnBooleanForParam(showDeleted);
@@ -462,7 +463,7 @@ public class UserProfileController {
             @ApiResponse(
                     responseCode = "204",
                     description = "User Profiles deleted successfully",
-                    content = @Content(schema = @Schema(implementation =  UserProfilesDeletionResponse.class))
+                    content = @Content(schema = @Schema(implementation = UserProfilesDeletionResponse.class))
             ),
             @ApiResponse(
                     responseCode = "400",
@@ -471,7 +472,7 @@ public class UserProfileController {
             @ApiResponse(
                     responseCode = "401",
                     description = "Unauthorized Error : The requested resource is "
-                        + "restricted and requires authentication"
+                            + "restricted and requires authentication"
             ),
             @ApiResponse(
                     responseCode = "403",
@@ -509,7 +510,7 @@ public class UserProfileController {
             @ApiResponse(
                     responseCode = "204",
                     description = "User Profiles deleted successfully",
-                    content = @Content(schema = @Schema(implementation =  UserProfilesDeletionResponse.class))
+                    content = @Content(schema = @Schema(implementation = UserProfilesDeletionResponse.class))
             ),
             @ApiResponse(
                     responseCode = "400",
@@ -518,7 +519,7 @@ public class UserProfileController {
             @ApiResponse(
                     responseCode = "401",
                     description = "Unauthorized Error : The requested resource is "
-                        + "restricted and requires authentication"
+                            + "restricted and requires authentication"
             ),
             @ApiResponse(
                     responseCode = "403",
@@ -582,7 +583,7 @@ public class UserProfileController {
             @ApiResponse(
                     responseCode = "200",
                     description = "",
-                    content = @Content(schema = @Schema(implementation =  UserIdamStatusWithEmailResponse.class))
+                    content = @Content(schema = @Schema(implementation = UserIdamStatusWithEmailResponse.class))
             ),
             @ApiResponse(
                     responseCode = "400",
@@ -591,7 +592,8 @@ public class UserProfileController {
             ),
             @ApiResponse(
                     responseCode = "401",
-                    description = "Unauthorized Error : The requested resource is restricted and requires authentication",
+                    description = "Unauthorized Error : "
+                            + "The requested resource is restricted and requires authentication",
                     content = @Content
             ),
             @ApiResponse(
@@ -615,7 +617,7 @@ public class UserProfileController {
             produces = APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    public ResponseEntity<UserIdamStatusWithEmailResponse> getUserProfileIdamStatus(@RequestParam  String category) {
+    public ResponseEntity<UserIdamStatusWithEmailResponse> getUserProfileIdamStatus(@RequestParam String category) {
         if (StringUtils.hasText(category) && category.equalsIgnoreCase("caseworker")) {
             log.debug("Inside getUserProfileIdamStatus Controller" + category);
             UserIdamStatusWithEmailResponse response = userProfileService
