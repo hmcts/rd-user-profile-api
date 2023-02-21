@@ -13,6 +13,8 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserIdamStatusWithEmail;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserIdamStatusWithEmailResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
@@ -335,6 +337,32 @@ class UserProfileControllerTest {
 
         ResponseEntity<Object> expect = status(OK).build();
         assertThat(actual).isEqualTo(expect);
+
+    }
+
+    @Test
+    void test_GetUserProfileIdamStatus() {
+        UserIdamStatusWithEmail idamStatus = new UserIdamStatusWithEmail("test@email.com","Penidng");
+        UserIdamStatusWithEmailResponse response = new UserIdamStatusWithEmailResponse();
+        response.setUserProfiles(List.of(idamStatus));
+        when(userProfileServiceMock.retrieveIdamStatus(any())).thenReturn(response);
+        ResponseEntity<UserIdamStatusWithEmailResponse> actual = sut.getUserProfileIdamStatus("caseworker");
+        verify(userProfileServiceMock, times(1)).retrieveIdamStatus(any());
+
+        assertThat(Objects.requireNonNull(actual.getBody())
+                .getUserProfiles().get(0).getEmail())
+                .isEqualTo("test@email.com");
+        assertThat(Objects.requireNonNull(actual.getBody())
+                .getUserProfiles().get(0).getIdamStatus())
+                .isEqualTo("Penidng");
+
+
+    }
+
+    @Test
+    void test_GetUserProfileIdamStatus_InvalidInput() {
+        assertThatThrownBy(() -> sut.getUserProfileIdamStatus("sdfsd"))
+                .hasMessage("3 : There is a problem with your request. Please check and try again");
 
     }
 
