@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -63,9 +62,6 @@ import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUse
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateCreateUserProfileRequest;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateUserIds;
 
-@Tag(
-        name = "/v1/userprofile"
-)
 
 @RequestMapping(
         path = "/v1/userprofile"
