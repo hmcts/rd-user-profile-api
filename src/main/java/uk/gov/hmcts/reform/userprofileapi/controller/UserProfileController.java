@@ -140,6 +140,7 @@ public class UserProfileController {
     @ResponseStatus(value = HttpStatus.CREATED)
     @ResponseBody
     public ResponseEntity<UserProfileCreationResponse> createUserProfile(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "userProfileCreationData")
             @Valid @RequestBody UserProfileCreationData userProfileCreationData,
             @RequestParam(value = "origin", required = false)
             @Parameter(name = "origin", description = "Any Valid String is allowed") String origin) {
@@ -527,8 +528,9 @@ public class UserProfileController {
     )
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @ResponseBody
-    public ResponseEntity<UserProfilesDeletionResponse> deleteUserProfiles(@Valid @RequestBody UserProfileDataRequest
-                                                                                   userProfilesDeletionDataReq) {
+    public ResponseEntity<UserProfilesDeletionResponse> deleteUserProfiles(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "userProfilesDeletionDataReq")
+            @Valid @RequestBody UserProfileDataRequest userProfilesDeletionDataReq) {
         UserProfilesDeletionResponse resource;
 
         validateUserIds(userProfilesDeletionDataReq);
