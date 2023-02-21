@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.CacheControl;
@@ -18,12 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
-@Tag(
-    name = "/",
-    description = APPLICATION_JSON_VALUE
-)
 
 @Slf4j
 @RestController
@@ -46,15 +39,15 @@ public class WelcomeController {
      */
     @Operation(summary = "Welcome to the System User Profile Data API")
     @ApiResponses({
-        @ApiResponse(
-            responseCode = "200",
-            description = "Welcome message",
-            content = @Content(schema = @Schema(implementation  = String.class))
-        )
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Welcome message",
+                    content = @Content(schema = @Schema(implementation = String.class))
+            )
     })
     @GetMapping(
-        path = "/",
-        produces = MediaType.APPLICATION_JSON_VALUE
+            path = "/",
+            produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
     public ResponseEntity<String> welcome() {
@@ -62,8 +55,8 @@ public class WelcomeController {
         log.info("{}:: Welcome message '{}' from running instance: {}", loggingComponentName, MESSAGE, INSTANCE_ID);
 
         return ResponseEntity
-            .ok()
-            .cacheControl(CacheControl.noCache())
-            .body("{\"message\": \"" + MESSAGE + "\"}");
+                .ok()
+                .cacheControl(CacheControl.noCache())
+                .body("{\"message\": \"" + MESSAGE + "\"}");
     }
 }
