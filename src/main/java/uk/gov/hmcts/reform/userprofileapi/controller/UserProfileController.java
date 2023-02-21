@@ -102,27 +102,34 @@ public class UserProfileController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "An invalid request has been provided"
+                    description = "An invalid request has been provided",
+                    content = @Content
             ),
             @ApiResponse(
                     responseCode = "401",
                     description = "Unauthorized Error : The requested"
-                            + " resource is restricted and requires authentication"),
+                            + " resource is restricted and requires authentication",
+                    content = @Content
+            ),
             @ApiResponse(
                     responseCode = "403",
-                    description = "Forbidden Error: Access denied"
+                    description = "Forbidden Error: Access denied",
+                    content = @Content
             ),
             @ApiResponse(
                     responseCode = "409",
-                    description = "A User already exists with the given information"
+                    description = "A User already exists with the given information",
+                    content = @Content
             ),
             @ApiResponse(
                     responseCode = "429",
-                    description = "Too many requests made for re-invite"
+                    description = "Too many requests made for re-invite",
+                    content = @Content
             ),
             @ApiResponse(
                     responseCode = "500",
-                    description = "Internal Server Error"
+                    description = "Internal Server Error",
+                    content = @Content
             )
     })
 
@@ -163,24 +170,29 @@ public class UserProfileController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "An invalid request has been provided"
+                    description = "An invalid request has been provided",
+                    content = @Content
             ),
             @ApiResponse(
                     responseCode = "401",
                     description = "Unauthorized Error : The requested "
-                            + "resource is restricted and requires authentication"
+                            + "resource is restricted and requires authentication",
+                    content = @Content
             ),
             @ApiResponse(
                     responseCode = "403",
-                    description = "Forbidden Error: Access denied"
+                    description = "Forbidden Error: Access denied",
+                    content = @Content
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Not User Profile found with the given ID"
+                    description = "Not User Profile found with the given ID",
+                    content = @Content
             ),
             @ApiResponse(
                     responseCode = "500",
-                    description = "Internal Server Error"
+                    description = "Internal Server Error",
+                    content = @Content
             )
     })
     @GetMapping(
@@ -215,24 +227,29 @@ public class UserProfileController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "An invalid request has been provided"
+                    description = "An invalid request has been provided",
+                    content = @Content
             ),
             @ApiResponse(
                     responseCode = "401",
                     description = "Unauthorized Error : The requested resource is "
-                            + "restricted and requires authentication"
+                            + "restricted and requires authentication",
+                    content = @Content
             ),
             @ApiResponse(
                     responseCode = "403",
-                    description = "Forbidden Error: Access denied"
+                    description = "Forbidden Error: Access denied",
+                    content = @Content
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "No User Profile found with the given Email Address"
+                    description = "No User Profile found with the given Email Address",
+                    content = @Content
             ),
             @ApiResponse(
                     responseCode = "500",
-                    description = "Internal Server Error"
+                    description = "Internal Server Error",
+                    content = @Content
             )
     })
     @GetMapping(
@@ -267,24 +284,29 @@ public class UserProfileController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "An invalid request has been provided"
+                    description = "An invalid request has been provided",
+                    content = @Content
             ),
             @ApiResponse(
                     responseCode = "401",
                     description = "Unauthorized Error : The requested resource is "
-                            + "restricted and requires authentication"
+                            + "restricted and requires authentication",
+                    content = @Content
             ),
             @ApiResponse(
                     responseCode = "403",
-                    description = "Forbidden Error: Access denied"
+                    description = "Forbidden Error: Access denied",
+                    content = @Content
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "No User Profile found with the given ID"
+                    description = "No User Profile found with the given ID",
+                    content = @Content
             ),
             @ApiResponse(
                     responseCode = "500",
-                    description = "Internal Server Error"
+                    description = "Internal Server Error",
+                    content = @Content
             )
 
     })
@@ -325,28 +347,34 @@ public class UserProfileController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "An invalid request has been provided"
+                    description = "An invalid request has been provided",
+                    content = @Content
             ),
             @ApiResponse(
                     responseCode = "401",
                     description = "Unauthorized Error : The requested resource is "
-                            + "restricted and requires authentication"
+                            + "restricted and requires authentication",
+                    content = @Content
             ),
             @ApiResponse(
                     responseCode = "403",
-                    description = "Forbidden Error: Access denied"
+                    description = "Forbidden Error: Access denied",
+                    content = @Content
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "No User Profile found with the given ID"
+                    description = "No User Profile found with the given ID",
+                    content = @Content
             ),
             @ApiResponse(
                     responseCode = "412",
-                    description = "One or more of the Roles provided is already assigned to the User"
+                    description = "One or more of the Roles provided is already assigned to the User",
+                    content = @Content
             ),
             @ApiResponse(
                     responseCode = "500",
-                    description = "Internal Server Error"
+                    description = "Internal Server Error",
+                    content = @Content
             )
     })
 
@@ -403,24 +431,29 @@ public class UserProfileController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "An invalid request has been provided"
+                    description = "An invalid request has been provided",
+                    content = @Content
             ),
             @ApiResponse(
                     responseCode = "401",
                     description = "Unauthorized Error : The requested resource is "
-                            + "restricted and requires authentication"
+                            + "restricted and requires authentication",
+                    content = @Content
             ),
             @ApiResponse(
                     responseCode = "403",
-                    description = "Forbidden Error: Access denied"
+                    description = "Forbidden Error: Access denied",
+                    content = @Content
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "No User Profile found with the given ID"
+                    description = "No User Profile found with the given ID",
+                    content = @Content
             ),
             @ApiResponse(
                     responseCode = "500",
-                    description = "Internal Server Error"
+                    description = "Internal Server Error",
+                    content = @Content
             )
     })
 
@@ -467,20 +500,24 @@ public class UserProfileController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "An invalid request has been provided"
+                    description = "An invalid request has been provided",
+                    content = @Content
             ),
             @ApiResponse(
                     responseCode = "401",
                     description = "Unauthorized Error : The requested resource is "
-                            + "restricted and requires authentication"
+                            + "restricted and requires authentication",
+                    content = @Content
             ),
             @ApiResponse(
                     responseCode = "403",
-                    description = "Forbidden Error: Access denied"
+                    description = "Forbidden Error: Access denied",
+                    content = @Content
             ),
             @ApiResponse(
                     responseCode = "500",
-                    description = "Internal Server Error"
+                    description = "Internal Server Error",
+                    content = @Content
             )
     })
 
@@ -514,20 +551,24 @@ public class UserProfileController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "An invalid request has been provided"
+                    description = "An invalid request has been provided",
+                    content = @Content
             ),
             @ApiResponse(
                     responseCode = "401",
                     description = "Unauthorized Error : The requested resource is "
-                            + "restricted and requires authentication"
+                            + "restricted and requires authentication",
+                    content = @Content
             ),
             @ApiResponse(
                     responseCode = "403",
-                    description = "Forbidden Error: Access denied"
+                    description = "Forbidden Error: Access denied",
+                    content = @Content
             ),
             @ApiResponse(
                     responseCode = "500",
-                    description = "Internal Server Error"
+                    description = "Internal Server Error",
+                    content = @Content
             )
     })
 
