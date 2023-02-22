@@ -8,6 +8,7 @@ import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfileIdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.exception.IdamServiceException;
@@ -118,4 +119,11 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
         auditRepository.save(audit);
     }
 
+    public List<UserProfileIdamStatus> retrieveMultipleProfilesByCategory(String category) {
+        List<UserProfileIdamStatus> userProfiles = querySupplier.getProfilesByUserCategory(category.toUpperCase());
+        if (CollectionUtils.isEmpty(userProfiles)) {
+            throw new ResourceNotFoundException("Could not find any profiles");
+        }
+        return userProfiles;
+    }
 }
