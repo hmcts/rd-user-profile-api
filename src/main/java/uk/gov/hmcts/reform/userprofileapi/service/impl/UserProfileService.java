@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserIdamStatusWithEmailResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
@@ -48,9 +49,14 @@ public class UserProfileService<T extends RequestData> {
                 true);
     }
 
+
     public UserProfileDataResponse retrieveWithRoles(T requestData, boolean showDeleted, boolean rolesRequired) {
         return new UserProfileDataResponse(resourceRetriever.retrieveMultipleProfiles(requestData, showDeleted,
                 rolesRequired), rolesRequired);
+    }
+
+    public UserIdamStatusWithEmailResponse retrieveIdamStatus(String category) {
+        return new UserIdamStatusWithEmailResponse(resourceRetriever.retrieveMultipleProfilesByCategory(category));
     }
 
     public UserProfileResponse retrieve(T requestData) {

@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserIdamStatusWithEmailResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
@@ -52,6 +53,7 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.API_IS_NOT_AVAILABLE_IN_PROD_ENV;
+import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.INVALID_REQUEST;
 import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.NO_USER_ID_OR_EMAIL_PATTERN_PROVIDED_TO_DELETE;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileUtil.getUserEmailFromHeader;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
@@ -555,4 +557,57 @@ public class UserProfileController {
                 || !StringUtils.hasLength(updateUserProfileData.getLastName())
                 || !StringUtils.hasLength(updateUserProfileData.getIdamStatus());
     }
+
+
+    @ApiOperation(value = "Retrieves email IDs and IDAM status of user profiles",
+            authorizations = {
+                    @Authorization(value = "ServiceAuthorization"),
+                    @Authorization(value = "Authorization")
+            }
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    code = 200,
+                    message = "",
+                    response = UserIdamStatusWithEmailResponse.class
+            ),
+            @ApiResponse(
+                    code = 400,
+                    message = "There is a problem with your request. Please check and try again"
+            ),
+            @ApiResponse(
+                    code = 401,
+                    message = "Unauthorized Error : The requested resource is restricted and requires authentication"
+            ),
+            @ApiResponse(
+                    code = 403,
+                    message = "Forbidden Error: Access denied"
+            ),
+            @ApiResponse(
+                    code = 404,
+                    message = "Could not find any profiles"
+            ),
+            @ApiResponse(
+                    code = 500,
+                    message = "Internal Server Error"
+            )
+    })
+    @GetMapping(
+            path = "/idamStatus",
+            produces = APPLICATION_JSON_VALUE
+    )
+    @ResponseBody
+    public ResponseEntity<UserIdamStatusWithEmailResponse> getUserProfileIdamStatus(@RequestParam  String category) {
+        if (StringUtils.hasText(category) && category.equalsIgnoreCase("caseworker")) {
+            log.debug("Inside getUserProfileIdamStatus Controller" + category);
+            UserIdamStatusWithEmailResponse response = userProfileService
+                    .retrieveIdamStatus(category);
+            log.debug("Response returned to the controller");
+            return ResponseEntity.ok(response);
+        } else {
+            throw new InvalidRequest(INVALID_REQUEST.getErrorMessage());
+        }
+
+    }
+
 }
