@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamUserResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfileIdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdentifierName;
 import uk.gov.hmcts.reform.userprofileapi.exception.IdamServiceException;
@@ -27,6 +29,7 @@ import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
@@ -319,6 +322,45 @@ class UserProfileRetrieverTest {
         assertThat(profile.getRoles()).isEmpty();
         assertThat(profile.getErrorMessage()).isEqualTo(IdamStatusResolver.NO_IDAM_CALL);
         assertThat(profile.getErrorStatusCode()).isEqualTo(" ");
+    }
+
+    @Test
+    void test_retrieveMultipleProfilesByCategory() {
+        UserProfileIdamStatus status = buildIdamStatus();
+        when(querySupplier.getProfilesByUserCategory(any())).thenReturn(List.of(status));
+        List<UserProfileIdamStatus> entity = userProfileRetriever.retrieveMultipleProfilesByCategory("caseworker");
+        verify(querySupplier, times(1)).getProfilesByUserCategory("CASEWORKER");
+        assertThat(Objects.requireNonNull(entity)
+                .get(0).getEmail())
+                .isEqualTo("test@email.com");
+        assertThat(Objects.requireNonNull(entity)
+                .get(0).getStatus())
+                .isEqualTo("pending");
+
+    }
+
+
+    @Test
+    void test_retrieveMultipleProfilesByCategory_excpetionThrown() {
+        when(querySupplier.getProfilesByUserCategory(any())).thenReturn(null);
+        assertThatThrownBy(() ->  userProfileRetriever.retrieveMultipleProfilesByCategory("caseworker"))
+                .hasMessage("Could not find any profiles");
+    }
+
+    @NotNull
+    private static UserProfileIdamStatus buildIdamStatus() {
+        UserProfileIdamStatus status = new UserProfileIdamStatus() {
+            @Override
+            public String getEmail() {
+                return "test@email.com";
+            }
+
+            @Override
+            public String getStatus() {
+                return "pending";
+            }
+        };
+        return status;
     }
 
 }
