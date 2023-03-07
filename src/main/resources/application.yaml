@@ -19,6 +19,7 @@ spring:
   flyway.enabled: true
   main:
     allow-bean-definition-overriding: true
+    allow-circular-references: true
   security:
       oauth2:
         client:
@@ -82,9 +83,9 @@ security:
     - "/health/liveness"
     - "/health/readiness"
     - "/loggers/**"
-    - "/swagger-ui.html"
+    - "/swagger-ui/**"
     - "/swagger-resources/**"
-    - "/v2/api-docs"
+    - "/v3/**"
     - "/webjars/springfox-swagger-ui/**"
     - "/favicon.ico"
     - "/error"
