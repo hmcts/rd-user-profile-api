@@ -35,7 +35,7 @@ security:
     - "/loggers/**"
     - "/swagger-ui.html"
     - "/swagger-resources/**"
-    - "/v2/api-docs"
+    - "/v3/**"
     - "/webjars/springfox-swagger-ui/**"
     - "/favicon.ico"
     - "/error"
