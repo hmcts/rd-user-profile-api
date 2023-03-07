@@ -84,5 +84,6 @@
   "10054_Cookie without SameSite Attribute_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile/idamStatus?category=category_GET" : "ignore",
   "10096_Timestamp Disclosure - Unix_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile/idamStatus?category=category_GET" : "ignore",
   "100000_A Client Error response code was returned by the server_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile/idamStatus?category=category_GET" : "ignore",
-  "90033_Loosely Scoped Cookie_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile/idamStatus?category=category_GET" : "ignore"
+  "90033_Loosely Scoped Cookie_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v1/userprofile/idamStatus?category=category_GET" : "ignore",
+  "100000_A Client Error response code was returned by the server_http://rd-user-profile-api-aat.service.core-compute-aat.internal/v2/api-docs_GET" : "ignore"
 }
