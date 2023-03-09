@@ -58,6 +58,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.patch;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -201,6 +202,35 @@ public abstract class AuthorizationEnabledIntegrationTest extends SpringBootInte
             .header("typ", "RS256")
             .header("alg", "RS256")
             .build();
+    }
+
+    public void searchUserProfileSyncWireMock(HttpStatus status) {
+
+        String body = null;
+        int returnHttpStaus = status.value();
+        if (status.is2xxSuccessful()) {
+            body = "[{"
+                    + "  \"id\": \"ef4fac86-d3e8-47b6-88a7-c7477fb69d3f\","
+                    + "  \"forename\": \"Super\","
+                    + "  \"surname\": \"User\","
+                    + "  \"email\": \"dummy@email.com\","
+                    + "  \"active\": \"true\","
+                    + "  \"roles\": ["
+                    + "  \"pui-case-manager\""
+                    + "  ]"
+                    + "}]";
+            returnHttpStaus = 200;
+        } else if (status.is4xxClientError()) {
+            returnHttpStaus = 400;
+        }
+
+        idamMockService.stubFor(get(urlPathMatching("/api/v1/users"))
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withHeader("X-Total-Count", "1")
+                        .withBody(body)
+                        .withStatus(returnHttpStaus)));
+
     }
 
     protected void setSidamUserUpdateMockWithStatus(int status, boolean setBodyEmpty, String idamId) {
