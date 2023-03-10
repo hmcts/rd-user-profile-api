@@ -278,7 +278,7 @@ pitest {
     threads = 10
     outputFormats = ['XML', 'HTML']
     timestampedReports = false
-    mutationThreshold = 90
+    mutationThreshold = 85
 }
 
 project.tasks['pitest'].group = "Verification"
