@@ -88,7 +88,9 @@ class UserProfileTest {
         UserProfile userProfile = new UserProfile(data, HttpStatus.CREATED);
 
         List<String> roles = null;
-        IdamRolesInfo idamRolesInfo = new IdamRolesInfo(UUID.randomUUID().toString(), "test@test.com", "Test", "Test", roles, true, true, CREATED, "test status");
+        IdamRolesInfo idamRolesInfo = new IdamRolesInfo(UUID.randomUUID().toString(),
+                "test@test.com", "Test", "Test", roles,
+                true, true, CREATED, "test status");
 
         userProfile.setRoles(idamRolesInfo);
 
