@@ -3,9 +3,13 @@ package uk.gov.hmcts.reform.userprofileapi.domain.entities;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
+import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
+
+import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.CREATED;
@@ -75,6 +79,35 @@ class UserProfileTest {
 
         UserProfile userProfile = new UserProfile(data, HttpStatus.CREATED);
         assertThat(userProfile.getLanguagePreference()).isEqualTo(LanguagePreference.EN);
+    }
+
+    @Test
+    void test_roles_are_empty_when_roles_field_is_not_provided() {
+        UserProfileCreationData data = buildCreateUserProfileData();
+
+        UserProfile userProfile = new UserProfile(data, HttpStatus.CREATED);
+
+        List<String> roles = null;
+        IdamRolesInfo idamRolesInfo = new IdamRolesInfo(UUID.randomUUID().toString(), "test@test.com", "Test", "Test", roles, true, true, CREATED, "test status");
+
+        userProfile.setRoles(idamRolesInfo);
+
+        assertThat(userProfile.getRoles()).isNotNull();
+        assertThat(userProfile.getRoles()).isEmpty();
+    }
+
+    @Test
+    void test_roles_are_empty_when_idam_roles_info_is_null() {
+        UserProfileCreationData data = buildCreateUserProfileData();
+
+        UserProfile userProfile = new UserProfile(data, HttpStatus.CREATED);
+
+        IdamRolesInfo idamRolesInfo = null;
+
+        userProfile.setRoles(idamRolesInfo);
+
+        assertThat(userProfile.getRoles()).isNotNull();
+        assertThat(userProfile.getRoles()).isEmpty();
     }
 
 }
