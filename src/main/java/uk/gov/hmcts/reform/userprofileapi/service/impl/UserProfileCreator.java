@@ -167,7 +167,7 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
         return userProfile;
     }
 
-    private void logIdamResponse(Response response) {
+    public void logIdamResponse(Response response) {
         log.info("Logging Response from IDAM");
         if (response != null) {
             log.info("Response code from idamClient.getUserFeed {}", response.status());
