@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -117,6 +118,9 @@ public class UserProfile {
     }
 
     public void setRoles(IdamRolesInfo idamrolesInfo) {
-        this.roles = idamrolesInfo.getRoles();
+        Optional.ofNullable(idamrolesInfo).ifPresent(
+                idamRolesInfo -> Optional.ofNullable(idamRolesInfo.getRoles())
+                        .ifPresentOrElse(roles -> this.roles = roles,
+                                () -> this.roles = new ArrayList<>()));
     }
 }
