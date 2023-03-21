@@ -38,13 +38,11 @@ public class WelcomeController {
      * @return Welcome message from the service.
      */
     @Operation(summary = "Welcome to the System User Profile Data API")
-    @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
                     description = "Welcome message",
                     content = @Content(schema = @Schema(implementation = String.class))
             )
-    })
     @GetMapping(
             path = "/",
             produces = MediaType.APPLICATION_JSON_VALUE
