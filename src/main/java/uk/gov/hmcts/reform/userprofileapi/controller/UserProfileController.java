@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -91,42 +90,42 @@ public class UserProfileController {
                     @SecurityRequirement(name = "Authorization")
             })
 
-            @ApiResponse(
-                    responseCode = "201",
-                    description = "User Profile created successfully",
-                    content = @Content(schema = @Schema(implementation = UserProfileCreationResponse.class))
-            )
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "An invalid request has been provided",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "401",
-                    description = "Unauthorized Error : The requested"
-                            + " resource is restricted and requires authentication",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "403",
-                    description = "Forbidden Error: Access denied",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "409",
-                    description = "A User already exists with the given information",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "429",
-                    description = "Too many requests made for re-invite",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Internal Server Error",
-                    content = @Content
-            )
+    @ApiResponse(
+            responseCode = "201",
+            description = "User Profile created successfully",
+            content = @Content(schema = @Schema(implementation = UserProfileCreationResponse.class))
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = "An invalid request has been provided",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized Error : The requested"
+                    + " resource is restricted and requires authentication",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "403",
+            description = "Forbidden Error: Access denied",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "409",
+            description = "A User already exists with the given information",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "429",
+            description = "Too many requests made for re-invite",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "500",
+            description = "Internal Server Error",
+            content = @Content
+    )
 
 
     @PostMapping(
@@ -160,37 +159,37 @@ public class UserProfileController {
             }
     )
 
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Representation of a User profile with their Roles",
-                    content = @Content(schema = @Schema(implementation = UserProfileWithRolesResponse.class))
-            )
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "An invalid request has been provided",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "401",
-                    description = "Unauthorized Error : The requested "
-                            + "resource is restricted and requires authentication",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "403",
-                    description = "Forbidden Error: Access denied",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "Not User Profile found with the given ID",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Internal Server Error",
-                    content = @Content
-            )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Representation of a User profile with their Roles",
+            content = @Content(schema = @Schema(implementation = UserProfileWithRolesResponse.class))
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = "An invalid request has been provided",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized Error : The requested "
+                    + "resource is restricted and requires authentication",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "403",
+            description = "Forbidden Error: Access denied",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "Not User Profile found with the given ID",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "500",
+            description = "Internal Server Error",
+            content = @Content
+    )
 
     @GetMapping(
             path = "/{id}/roles",
@@ -203,7 +202,7 @@ public class UserProfileController {
         log.debug("Inside getUserProfileWithRolesById Controller" + id);
         UserProfileWithRolesResponse response = userProfileService
                 .retrieveWithRoles(new UserProfileIdentifier(IdentifierName.UUID, id));
-        log.debug("Response retuned to the controller" + response.getIdamMessage() + response.getIdamStatusCode()
+        log.debug("Response returned to the controller" + response.getIdamMessage() + response.getIdamStatusCode()
                 + response.getIdamStatus());
         return ResponseEntity.ok(response);
     }
@@ -217,37 +216,37 @@ public class UserProfileController {
     )
 
 
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Representation of a User profile with their Roles",
-                    content = @Content(schema = @Schema(implementation = UserProfileWithRolesResponse.class))
-            )
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "An invalid request has been provided",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "401",
-                    description = "Unauthorized Error : The requested resource is "
-                            + "restricted and requires authentication",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "403",
-                    description = "Forbidden Error: Access denied",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "No User Profile found with the given Email Address",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Internal Server Error",
-                    content = @Content
-            )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Representation of a User profile with their Roles",
+            content = @Content(schema = @Schema(implementation = UserProfileWithRolesResponse.class))
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = "An invalid request has been provided",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized Error : The requested resource is "
+                    + "restricted and requires authentication",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "403",
+            description = "Forbidden Error: Access denied",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "No User Profile found with the given Email Address",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "500",
+            description = "Internal Server Error",
+            content = @Content
+    )
 
     @GetMapping(
             path = "/roles",
@@ -274,37 +273,37 @@ public class UserProfileController {
                     @SecurityRequirement(name = "UserEmail")
             })
 
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Representation of a User profile",
-                    content = @Content(schema = @Schema(implementation = UserProfileResponse.class))
-            )
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "An invalid request has been provided",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "401",
-                    description = "Unauthorized Error : The requested resource is "
-                            + "restricted and requires authentication",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "403",
-                    description = "Forbidden Error: Access denied",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "No User Profile found with the given ID",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Internal Server Error",
-                    content = @Content
-            )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Representation of a User profile",
+            content = @Content(schema = @Schema(implementation = UserProfileResponse.class))
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = "An invalid request has been provided",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized Error : The requested resource is "
+                    + "restricted and requires authentication",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "403",
+            description = "Forbidden Error: Access denied",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "No User Profile found with the given ID",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "500",
+            description = "Internal Server Error",
+            content = @Content
+    )
 
 
     @GetMapping(
@@ -337,42 +336,42 @@ public class UserProfileController {
                     @SecurityRequirement(name = "Authorization")
             })
 
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "User Profile has been Updated successfully",
-                    content = @Content(schema = @Schema(implementation = UserProfileCreationResponse.class))
-            )
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "An invalid request has been provided",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "401",
-                    description = "Unauthorized Error : The requested resource is "
-                            + "restricted and requires authentication",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "403",
-                    description = "Forbidden Error: Access denied",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "No User Profile found with the given ID",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "412",
-                    description = "One or more of the Roles provided is already assigned to the User",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Internal Server Error",
-                    content = @Content
-            )
+    @ApiResponse(
+            responseCode = "200",
+            description = "User Profile has been Updated successfully",
+            content = @Content(schema = @Schema(implementation = UserProfileCreationResponse.class))
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = "An invalid request has been provided",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized Error : The requested resource is "
+                    + "restricted and requires authentication",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "403",
+            description = "Forbidden Error: Access denied",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "No User Profile found with the given ID",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "412",
+            description = "One or more of the Roles provided is already assigned to the User",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "500",
+            description = "Internal Server Error",
+            content = @Content
+    )
 
 
     @PutMapping(
@@ -421,39 +420,39 @@ public class UserProfileController {
     )
 
 
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Successfully retrieved multiple User Profiles",
-                    content = @Content(schema = @Schema(implementation = UserProfileDataResponse.class))
-            )
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "An invalid request has been provided",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "401",
-                    description = "Unauthorized Error : The requested resource is "
-                            + "restricted and requires authentication",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "403",
-                    description = "Forbidden Error: Access denied",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "No User Profile found with the given ID",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Internal Server Error",
-                    content = @Content
-            )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Successfully retrieved multiple User Profiles",
+            content = @Content(schema = @Schema(implementation = UserProfileDataResponse.class))
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = "An invalid request has been provided",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized Error : The requested resource is "
+                    + "restricted and requires authentication",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "403",
+            description = "Forbidden Error: Access denied",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "No User Profile found with the given ID",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "500",
+            description = "Internal Server Error",
+            content = @Content
+    )
 
-@PostMapping(
+    @PostMapping(
             path = "/users",
             consumes = APPLICATION_JSON_VALUE,
             produces = APPLICATION_JSON_VALUE
@@ -489,32 +488,32 @@ public class UserProfileController {
                     @SecurityRequirement(name = "Authorization")
             })
 
-            @ApiResponse(
-                    responseCode = "204",
-                    description = "User Profiles deleted successfully",
-                    content = @Content(schema = @Schema(implementation = UserProfilesDeletionResponse.class))
-            )
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "An invalid request has been provided",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "401",
-                    description = "Unauthorized Error : The requested resource is "
-                            + "restricted and requires authentication",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "403",
-                    description = "Forbidden Error: Access denied",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Internal Server Error",
-                    content = @Content
-            )
+    @ApiResponse(
+            responseCode = "204",
+            description = "User Profiles deleted successfully",
+            content = @Content(schema = @Schema(implementation = UserProfilesDeletionResponse.class))
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = "An invalid request has been provided",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized Error : The requested resource is "
+                    + "restricted and requires authentication",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "403",
+            description = "Forbidden Error: Access denied",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "500",
+            description = "Internal Server Error",
+            content = @Content
+    )
 
 
     @DeleteMapping(
@@ -541,32 +540,32 @@ public class UserProfileController {
                     @SecurityRequirement(name = "Authorization")
             })
 
-            @ApiResponse(
-                    responseCode = "204",
-                    description = "User Profiles deleted successfully",
-                    content = @Content(schema = @Schema(implementation = UserProfilesDeletionResponse.class))
-            )
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "An invalid request has been provided",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "401",
-                    description = "Unauthorized Error : The requested resource is "
-                            + "restricted and requires authentication",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "403",
-                    description = "Forbidden Error: Access denied",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Internal Server Error",
-                    content = @Content
-            )
+    @ApiResponse(
+            responseCode = "204",
+            description = "User Profiles deleted successfully",
+            content = @Content(schema = @Schema(implementation = UserProfilesDeletionResponse.class))
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = "An invalid request has been provided",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized Error : The requested resource is "
+                    + "restricted and requires authentication",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "403",
+            description = "Forbidden Error: Access denied",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "500",
+            description = "Internal Server Error",
+            content = @Content
+    )
 
 
     @DeleteMapping(
@@ -618,37 +617,36 @@ public class UserProfileController {
             }
     )
 
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "",
-                    content = @Content(schema = @Schema(implementation = UserIdamStatusWithEmailResponse.class))
-            )
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "There is a problem with your request. Please check and try again",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "401",
-                    description = "Unauthorized Error : "
-                            + "The requested resource is restricted and requires authentication",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "403",
-                    description = "Forbidden Error: Access denied",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "Could not find any profiles",
-                    content = @Content
-            )
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Internal Server Error",
-                    content = @Content
-            )
+    @ApiResponse(
+            responseCode = "200",
+            content = @Content(schema = @Schema(implementation = UserIdamStatusWithEmailResponse.class))
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = "There is a problem with your request. Please check and try again",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized Error : "
+                    + "The requested resource is restricted and requires authentication",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "403",
+            description = "Forbidden Error: Access denied",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "Could not find any profiles",
+            content = @Content
+    )
+    @ApiResponse(
+            responseCode = "500",
+            description = "Internal Server Error",
+            content = @Content
+    )
 
     @GetMapping(
             path = "/idamStatus",
