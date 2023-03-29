@@ -42,6 +42,8 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
     @Value("${resendInterval}")
     private String resendInterval;
 
+    private static final String ORIGIN_SRD = "SRD";
+
     @Override
     public boolean validateUserId(String userId) {
         if (!isUserIdValid(userId, false)) {
@@ -113,11 +115,13 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
     }
 
     @Override
-    public UserProfile validateReInvitedUser(Optional<UserProfile> userProfileOpt) {
+    public UserProfile validateReInvitedUser(Optional<UserProfile> userProfileOpt, String origin) {
         validateUserIsPresent(userProfileOpt);
         UserProfile userProfile = userProfileOpt.orElse(null);
         validateUserStatus(userProfile, IdamStatus.PENDING);
-        validateUserLastUpdatedWithinSpecifiedTime(userProfile, Long.valueOf(resendInterval));
+        if (!ORIGIN_SRD.equals(origin)) {
+            validateUserLastUpdatedWithinSpecifiedTime(userProfile, Long.valueOf(resendInterval));
+        }
         return userProfile;
     }
 }

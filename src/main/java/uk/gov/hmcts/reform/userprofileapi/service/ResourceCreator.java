@@ -7,6 +7,6 @@ public interface ResourceCreator<T extends RequestData> {
 
     UserProfile create(T profileData, String origin);
 
-    UserProfile reInviteUser(T profileData);
+    UserProfile reInviteUser(T profileData, String origin);
 
 }
