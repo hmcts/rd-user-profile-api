@@ -186,7 +186,7 @@ class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
 
         UserProfileCreationData data = buildCreateUserProfileData(true);
         data.setEmail(pendingUserRequest.getEmail());
-        searchUserProfileSyncWireMock(HttpStatus.OK);
+        searchUserProfileSyncWireMock(HttpStatus.OK, "");
         UserProfileCreationResponse reInvitedUserResponse = (UserProfileCreationResponse) createUser(data, CREATED,
                 UserProfileCreationResponse.class);
 
@@ -198,4 +198,33 @@ class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
         assertThat(reInvitedUserResponse.getIdamId()).isEqualTo(fetchedUserProfile.getIdamId());
         assertNotEquals(reInvitedUserResponse.getIdamId(), userProfile.getIdamId());
     }
+
+
+    @Test
+    void should_update_up_status_when_user_reinvited_within_one_hour_from_srd() throws Exception {
+
+        UserProfileCreationData data = buildCreateUserProfileData(true);
+        data.setEmail(pendingUserRequest.getEmail());
+        Optional<UserProfile> persistedUserProfile = userProfileRepository.findByEmail(pendingUserRequest
+                .getEmail().toLowerCase());
+        searchUserProfileSyncWireMock(HttpStatus.OK, persistedUserProfile.get().getIdamId());
+        UserProfileCreationResponse reInvitedUserResponse = userProfileRequestHandlerTest.sendPost(
+                mockMvc,
+                APP_BASE_PATH + "?origin=SRD",
+                data,
+                CREATED,
+                UserProfileCreationResponse.class
+        );
+
+        persistedUserProfile = userProfileRepository.findByEmail(pendingUserRequest
+                .getEmail().toLowerCase());
+        UserProfile fetchedUserProfile = persistedUserProfile.get();
+
+        assertThat(fetchedUserProfile.getStatus()).isEqualTo(IdamStatus.ACTIVE);
+        assertThat(reInvitedUserResponse.getIdamId()).isEqualTo(fetchedUserProfile.getIdamId());
+
+    }
+
+
+
 }
