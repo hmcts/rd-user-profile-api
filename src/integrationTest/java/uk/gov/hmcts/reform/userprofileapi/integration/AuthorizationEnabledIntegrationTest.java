@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.platform.commons.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -204,11 +205,25 @@ public abstract class AuthorizationEnabledIntegrationTest extends SpringBootInte
             .build();
     }
 
-    public void searchUserProfileSyncWireMock(HttpStatus status) {
+    public void searchUserProfileSyncWireMock(HttpStatus status, String id) {
 
         String body = null;
         int returnHttpStaus = status.value();
-        if (status.is2xxSuccessful()) {
+        if (status.is2xxSuccessful() && StringUtils.isNotBlank(id)) {
+            body = "[{"
+                    + "  \"id\": \""
+                    + id
+                    + "\" ,"
+                    + "  \"forename\": \"Super\","
+                    + "  \"surname\": \"User\","
+                    + "  \"email\": \"dummy@email.com\","
+                    + "  \"active\": \"true\","
+                    + "  \"roles\": ["
+                    + "  \"pui-case-manager\""
+                    + "  ]"
+                    + "}]";
+            returnHttpStaus = 200;
+        } else if (status.is2xxSuccessful() && StringUtils.isBlank(id)) {
             body = "[{"
                     + "  \"id\": \"ef4fac86-d3e8-47b6-88a7-c7477fb69d3f\","
                     + "  \"forename\": \"Super\","
@@ -220,6 +235,7 @@ public abstract class AuthorizationEnabledIntegrationTest extends SpringBootInte
                     + "  ]"
                     + "}]";
             returnHttpStaus = 200;
+
         } else if (status.is4xxClientError()) {
             returnHttpStaus = 400;
         }
