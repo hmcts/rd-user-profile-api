@@ -40,8 +40,8 @@ public class UserProfileService<T extends RequestData> {
         return new UserProfileCreationResponse(resourceCreator.create(requestData, origin));
     }
 
-    public UserProfileCreationResponse reInviteUser(T requestData) {
-        return new UserProfileCreationResponse(resourceCreator.reInviteUser(requestData));
+    public UserProfileCreationResponse reInviteUser(T requestData, String origin) {
+        return new UserProfileCreationResponse(resourceCreator.reInviteUser(requestData, origin));
     }
 
     public UserProfileWithRolesResponse retrieveWithRoles(T requestData) {
