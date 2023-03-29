@@ -170,9 +170,23 @@ class UserProfileServiceTest {
         UserProfileCreationData userProfileData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
 
-        when(userProfileCreator.reInviteUser(userProfileData)).thenReturn(userProfile);
+        when(userProfileCreator.reInviteUser(userProfileData, null)).thenReturn(userProfile);
 
-        UserProfileCreationResponse response = userProfileService.reInviteUser(userProfileData);
+        UserProfileCreationResponse response = userProfileService.reInviteUser(userProfileData, null);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getIdamId()).isEqualTo(userProfile.getIdamId());
+        assertThat(response.getIdamRegistrationResponse()).isEqualTo(201);
+    }
+
+    @Test
+    void test_reInviteUserFromSrd() {
+        UserProfileCreationData userProfileData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
+        UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
+
+        when(userProfileCreator.reInviteUser(userProfileData, "SRD")).thenReturn(userProfile);
+
+        UserProfileCreationResponse response = userProfileService.reInviteUser(userProfileData, "SRD");
 
         assertThat(response).isNotNull();
         assertThat(response.getIdamId()).isEqualTo(userProfile.getIdamId());
