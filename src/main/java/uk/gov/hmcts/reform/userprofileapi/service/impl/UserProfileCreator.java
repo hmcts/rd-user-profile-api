@@ -112,11 +112,11 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
     }
 
     @SuppressWarnings("unchecked")
-    public UserProfile reInviteUser(UserProfileCreationData profileData) {
+    public UserProfile reInviteUser(UserProfileCreationData profileData, String origin) {
 
         Optional<UserProfile> optionalExistingUserProfile = userProfileRepository
                 .findByEmail(profileData.getEmail().toLowerCase());
-        UserProfile userProfile = validationHelperService.validateReInvitedUser(optionalExistingUserProfile);
+        UserProfile userProfile = validationHelperService.validateReInvitedUser(optionalExistingUserProfile, origin);
         String emailKey = "email:";
         String email = profileData.getEmail();
         String emailSearchQuery = emailKey + email;
@@ -140,7 +140,16 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
                     userProfile.setStatus(IdamStatus.ACTIVE);
                     saveUserProfile(userProfile);
                     return userProfile;
+                } else if (ORIGIN_SRD.equals(origin)
+                        && (user = users.stream().findFirst().orElse(null)) != null
+                        && userProfile.getIdamId().equals(user.getId())
+                        && user.isActive()) {
+                    userProfile.setIdamRegistrationResponse(HttpStatus.CREATED.value());
+                    userProfile.setStatus(IdamStatus.ACTIVE);
+                    saveUserProfile(userProfile);
+                    return userProfile;
                 }
+
             }
         }
         return registerReInvitedUserInSidam(profileData, userProfile);
