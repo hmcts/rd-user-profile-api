@@ -144,7 +144,7 @@ public class UserProfileController {
         validateCreateUserProfileRequest(userProfileCreationData);
 
         if (userProfileCreationData.isResendInvite()) {
-            resource = userProfileService.reInviteUser(userProfileCreationData);
+            resource = userProfileService.reInviteUser(userProfileCreationData, origin);
         } else {
             resource = userProfileService.create(userProfileCreationData, origin);
         }

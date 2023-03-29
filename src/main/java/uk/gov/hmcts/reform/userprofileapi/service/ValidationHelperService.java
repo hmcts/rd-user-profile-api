@@ -22,7 +22,7 @@ public interface ValidationHelperService {
 
     boolean validateUserPersisted(HttpStatus status);
 
-    UserProfile validateReInvitedUser(Optional<UserProfile> userProfileOpt);
+    UserProfile validateReInvitedUser(Optional<UserProfile> userProfileOpt, String origin);
 
     void validateUserLastUpdatedWithinSpecifiedTime(UserProfile userProfile, long expectedHours);
 
