@@ -81,14 +81,31 @@ class UserProfileControllerTest {
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         UserProfileCreationResponse expectedBody = new UserProfileCreationResponse(userProfile);
 
-        when(userProfileServiceMock.create(userProfileCreationData,"SRD")).thenReturn(expectedBody);
+        when(userProfileServiceMock.create(userProfileCreationData,null)).thenReturn(expectedBody);
+
+        ResponseEntity<UserProfileCreationResponse> resource = sut.createUserProfile(userProfileCreationData,null);
+        assertThat(resource.getBody()).usingRecursiveComparison().isEqualTo(expectedBody);
+
+        verify(userProfileServiceMock, times(1)).create(any(UserProfileCreationData.class), eq(null));
+        verify(userProfileServiceMock, times(0))
+                .reInviteUser(any(UserProfileCreationData.class), anyString());
+    }
+
+    @Test
+    void test_CreateUserProfileFromSrd() {
+
+        UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
+        UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
+        UserProfileCreationResponse expectedBody = new UserProfileCreationResponse(userProfile);
+
+        when(userProfileServiceMock.create(userProfileCreationData, "SRD")).thenReturn(expectedBody);
 
         ResponseEntity<UserProfileCreationResponse> resource = sut.createUserProfile(userProfileCreationData,"SRD");
         assertThat(resource.getBody()).usingRecursiveComparison().isEqualTo(expectedBody);
 
         verify(userProfileServiceMock, times(1)).create(any(UserProfileCreationData.class), eq("SRD"));
         verify(userProfileServiceMock, times(0))
-                .reInviteUser(any(UserProfileCreationData.class));
+                .reInviteUser(any(UserProfileCreationData.class), anyString());
     }
 
     @Test
@@ -99,14 +116,33 @@ class UserProfileControllerTest {
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         UserProfileCreationResponse expectedBody = new UserProfileCreationResponse(userProfile);
 
-        when(userProfileServiceMock.reInviteUser(userProfileCreationData)).thenReturn(expectedBody);
+        when(userProfileServiceMock.reInviteUser(userProfileCreationData, null)).thenReturn(expectedBody);
+
+        ResponseEntity<UserProfileCreationResponse> resource = sut.createUserProfile(userProfileCreationData, null);
+        assertThat(resource.getBody()).usingRecursiveComparison().isEqualTo(expectedBody);
+
+        verify(userProfileServiceMock, times(0)).create(any(UserProfileCreationData.class), eq(null));
+        verify(userProfileServiceMock, times(1))
+                .reInviteUser(any(UserProfileCreationData.class), eq(null));
+    }
+
+
+    @Test
+    void test_ReInviteUserProfileFromSrd() {
+
+        UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder
+                .buildCreateUserProfileData(true);
+        UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
+        UserProfileCreationResponse expectedBody = new UserProfileCreationResponse(userProfile);
+
+        when(userProfileServiceMock.reInviteUser(userProfileCreationData, "SRD")).thenReturn(expectedBody);
 
         ResponseEntity<UserProfileCreationResponse> resource = sut.createUserProfile(userProfileCreationData, "SRD");
         assertThat(resource.getBody()).usingRecursiveComparison().isEqualTo(expectedBody);
 
         verify(userProfileServiceMock, times(0)).create(any(UserProfileCreationData.class), eq("SRD"));
         verify(userProfileServiceMock, times(1))
-                .reInviteUser(any(UserProfileCreationData.class));
+                .reInviteUser(any(UserProfileCreationData.class), anyString());
     }
 
     @Test

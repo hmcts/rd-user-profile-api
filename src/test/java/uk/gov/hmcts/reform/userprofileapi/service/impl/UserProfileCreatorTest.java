@@ -47,6 +47,8 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -457,7 +459,7 @@ class UserProfileCreatorTest {
         when(idamService.registerUser(any())).thenReturn(idamRegistrationInfo);
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
         when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);
-        when(validationHelperService.validateReInvitedUser(any())).thenReturn(userProfile);
+        when(validationHelperService.validateReInvitedUser(any(), eq(null))).thenReturn(userProfile);
         IdamFeignClient.User userResponse = new IdamFeignClient.User();
         userResponse.setId("1234");
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
@@ -469,7 +471,7 @@ class UserProfileCreatorTest {
 
         when(idamFeignClient.getUserFeed(any())).thenReturn(userProResponse);
 
-        UserProfile response = userProfileCreator.reInviteUser(userProfileCreationData);
+        UserProfile response = userProfileCreator.reInviteUser(userProfileCreationData, null);
 
         assertThat(response).usingRecursiveComparison().isEqualTo(userProfile);
         assertThat(response.getIdamRegistrationResponse()).isEqualTo(CREATED.value());
@@ -480,7 +482,40 @@ class UserProfileCreatorTest {
         inOrder.verify(userProfileRepository, times(1)).save(any(UserProfile.class));
 
         verify(auditRepository, times(1)).save(any(Audit.class));
-        verify(validationHelperService, times(1)).validateReInvitedUser(any());
+        verify(validationHelperService, times(1)).validateReInvitedUser(any(),eq(null));
+
+        verify(userProfile, times(2)).setIdamRegistrationResponse(anyInt());
+    }
+
+    @Test
+    void test_reInvite_user_successfully_fromSrd() throws JsonProcessingException {
+        when(idamService.registerUser(any())).thenReturn(idamRegistrationInfo);
+        when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+        when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);
+        when(validationHelperService.validateReInvitedUser(any(), eq("SRD"))).thenReturn(userProfile);
+        IdamFeignClient.User userResponse = new IdamFeignClient.User();
+        userResponse.setId("1234");
+        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
+                false);
+        String body = mapper.writeValueAsString(Set.of(userResponse));
+
+        Response userProResponse = Response.builder().request(mock(Request.class)).body(body,
+                Charset.defaultCharset()).status(400).build();
+
+        when(idamFeignClient.getUserFeed(any())).thenReturn(userProResponse);
+
+        UserProfile response = userProfileCreator.reInviteUser(userProfileCreationData, "SRD");
+
+        assertThat(response).usingRecursiveComparison().isEqualTo(userProfile);
+        assertThat(response.getIdamRegistrationResponse()).isEqualTo(CREATED.value());
+
+        InOrder inOrder = inOrder(idamService, userProfileRepository);
+        inOrder.verify(idamService, times(1)).registerUser(any(IdamRegisterUserRequest.class));
+        inOrder.verify(userProfileRepository, times(0)).findByEmail(any(String.class));
+        inOrder.verify(userProfileRepository, times(1)).save(any(UserProfile.class));
+
+        verify(auditRepository, times(1)).save(any(Audit.class));
+        verify(validationHelperService, times(1)).validateReInvitedUser(any(),eq("SRD"));
 
         verify(userProfile, times(2)).setIdamRegistrationResponse(anyInt());
     }
@@ -492,7 +527,7 @@ class UserProfileCreatorTest {
         IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(status(CONFLICT).build());
         when(idamService.registerUser(any())).thenReturn(idamRegistrationInfo);
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
-        when(validationHelperService.validateReInvitedUser(any())).thenReturn(userProfile);
+        when(validationHelperService.validateReInvitedUser(any(), anyString())).thenReturn(userProfile);
         IdamFeignClient.User userResponse = new IdamFeignClient.User();
         userResponse.setId("1234");
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
@@ -505,7 +540,7 @@ class UserProfileCreatorTest {
         when(idamFeignClient.getUserFeed(any())).thenReturn(userProResponse);
 
         final Throwable raisedException = catchThrowable(() -> userProfileCreator
-                .reInviteUser(userProfileCreationData));
+                .reInviteUser(userProfileCreationData, anyString()));
 
         assertThat(raisedException).isInstanceOf(IdamServiceException.class)
                 .hasMessageContaining("7 : Resend invite failed as user is already active."
@@ -515,7 +550,7 @@ class UserProfileCreatorTest {
         inOrder.verify(idamService, times(1)).registerUser(any(IdamRegisterUserRequest.class));
         verify(userProfileRepository, times(0)).save(any(UserProfile.class));
         inOrder.verify(auditRepository, times(1)).save(any(Audit.class));
-        verify(validationHelperService, times(1)).validateReInvitedUser(any());
+        verify(validationHelperService, times(1)).validateReInvitedUser(any(), anyString());
 
     }
 
@@ -525,14 +560,14 @@ class UserProfileCreatorTest {
         IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(status(BAD_REQUEST).build());
         when(idamService.registerUser(any())).thenReturn(idamRegistrationInfo);
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
-        when(validationHelperService.validateReInvitedUser(any())).thenReturn(userProfile);
+        when(validationHelperService.validateReInvitedUser(any(), anyString())).thenReturn(userProfile);
         Response userProResponse = Response.builder().request(mock(Request.class)).body(
                 String.valueOf(Collections.emptyList()), Charset.defaultCharset()).status(500).build();
 
         when(idamFeignClient.getUserFeed(any())).thenReturn(userProResponse);
 
         final Throwable raisedException = catchThrowable(() -> userProfileCreator
-                .reInviteUser(userProfileCreationData));
+                .reInviteUser(userProfileCreationData, anyString()));
 
         assertThat(raisedException).isInstanceOf(IdamServiceException.class)
                 .hasMessageContaining("13 Required parameters or one of request field is missing or invalid");
@@ -541,7 +576,7 @@ class UserProfileCreatorTest {
         inOrder.verify(idamService, times(1)).registerUser(any(IdamRegisterUserRequest.class));
         verify(userProfileRepository, times(0)).save(any(UserProfile.class));
         inOrder.verify(auditRepository, times(1)).save(any(Audit.class));
-        verify(validationHelperService, times(1)).validateReInvitedUser(any());
+        verify(validationHelperService, times(1)).validateReInvitedUser(any(), anyString());
     }
 
     @Test
@@ -549,15 +584,15 @@ class UserProfileCreatorTest {
 
         userProfile.setStatus(IdamStatus.ACTIVE);
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
-        when(validationHelperService.validateReInvitedUser(any())).thenThrow(InvalidRequest.class);
+        when(validationHelperService.validateReInvitedUser(any(), anyString())).thenThrow(InvalidRequest.class);
 
         final Throwable raisedException = catchThrowable(() -> userProfileCreator
-                .reInviteUser(userProfileCreationData));
+                .reInviteUser(userProfileCreationData, anyString()));
         assertThat(raisedException).isInstanceOf(InvalidRequest.class);
 
         verify(idamService, times(0)).registerUser(any(IdamRegisterUserRequest.class));
         verify(userProfileRepository, times(0)).save(any(UserProfile.class));
-        verify(validationHelperService, times(1)).validateReInvitedUser(any());
+        verify(validationHelperService, times(1)).validateReInvitedUser(any(), anyString());
 
     }
 
@@ -574,7 +609,7 @@ class UserProfileCreatorTest {
     @Test
     void test_reInvite_user_successfully_with_same_idamId() throws JsonProcessingException {
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
-        when(validationHelperService.validateReInvitedUser(any())).thenReturn(userProfile);
+        when(validationHelperService.validateReInvitedUser(any(), anyString())).thenReturn(userProfile);
         IdamFeignClient.User userResponse = new IdamFeignClient.User();
         userResponse.setId("1234");
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
@@ -587,7 +622,7 @@ class UserProfileCreatorTest {
         when(idamFeignClient.getUserFeed(any())).thenReturn(userProResponse);
         userProfile.setIdamId("1234");
         when(idamService.registerUser(any(IdamRegisterUserRequest.class))).thenReturn(idamRegistrationInfo);
-        UserProfile response = userProfileCreator.reInviteUser(userProfileCreationData);
+        UserProfile response = userProfileCreator.reInviteUser(userProfileCreationData, anyString());
         assertThat(response).usingRecursiveComparison().isEqualTo(userProfile);
         assertThat(response.getIdamRegistrationResponse()).isEqualTo(201);
 
@@ -595,35 +630,84 @@ class UserProfileCreatorTest {
         inOrder.verify(userProfileRepository, times(1)).findByEmail(any(String.class));
         //inOrder.verify(userProfileRepository, times(1)).save(any(UserProfile.class));
 
-        verify(validationHelperService, times(1)).validateReInvitedUser(any());
+        verify(validationHelperService, times(1)).validateReInvitedUser(any(), anyString());
+        verify(idamFeignClient, times(1)).getUserFeed(any());
+    }
+
+    @Test
+    void test_reInvite_user_fromSrd_successfully_with_same_idamId() throws JsonProcessingException {
+        when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+        when(validationHelperService.validateReInvitedUser(any(), anyString())).thenReturn(userProfile);
+        IdamFeignClient.User userResponse = new IdamFeignClient.User();
+        userResponse.setId("1234");
+        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
+                false);
+        String body = mapper.writeValueAsString(Set.of(userResponse));
+
+        Response userProResponse = Response.builder().request(mock(Request.class)).body(body,
+                Charset.defaultCharset()).status(200).build();
+
+        when(idamFeignClient.getUserFeed(any())).thenReturn(userProResponse);
+        userProfile.setIdamId("1234");
+        when(idamService.registerUser(any(IdamRegisterUserRequest.class))).thenReturn(idamRegistrationInfo);
+        UserProfile response = userProfileCreator.reInviteUser(userProfileCreationData, "SRD");
+        assertThat(response).usingRecursiveComparison().isEqualTo(userProfile);
+        assertThat(response.getIdamRegistrationResponse()).isEqualTo(201);
+
+        InOrder inOrder = inOrder(idamService, userProfileRepository);
+        inOrder.verify(userProfileRepository, times(1)).findByEmail(any(String.class));
+        //inOrder.verify(userProfileRepository, times(1)).save(any(UserProfile.class));
+
+        verify(validationHelperService, times(1)).validateReInvitedUser(any(), anyString());
         verify(idamFeignClient, times(1)).getUserFeed(any());
     }
 
     @Test
     void test_reInvite_user_pending_with_same_idamId() throws JsonProcessingException {
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
-        when(validationHelperService.validateReInvitedUser(any())).thenReturn(userProfile);
+        when(validationHelperService.validateReInvitedUser(any(), anyString())).thenReturn(userProfile);
 
         Response userProResponse = Response.builder().request(mock(Request.class)).body(
                 String.valueOf(Collections.emptyList()), Charset.defaultCharset()).status(200).build();
         when(idamFeignClient.getUserFeed(any())).thenReturn(userProResponse);
         userProfile.setIdamId("1234");
         when(idamService.registerUser(any(IdamRegisterUserRequest.class))).thenReturn(idamRegistrationInfo);
-        UserProfile response = userProfileCreator.reInviteUser(userProfileCreationData);
+        UserProfile response = userProfileCreator.reInviteUser(userProfileCreationData, anyString());
         assertThat(response).usingRecursiveComparison().isEqualTo(userProfile);
         assertThat(response.getIdamRegistrationResponse()).isEqualTo(CREATED.value());
 
         InOrder inOrder = inOrder(idamService, userProfileRepository);
         inOrder.verify(userProfileRepository, times(1)).findByEmail(any(String.class));
 
-        verify(validationHelperService, times(1)).validateReInvitedUser(any());
+        verify(validationHelperService, times(1)).validateReInvitedUser(any(), anyString());
+        verify(idamFeignClient, times(1)).getUserFeed(any());
+    }
+
+    @Test
+    void test_reInvite_user_fromSrd_pending_with_same_idamId() throws JsonProcessingException {
+        when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+        when(validationHelperService.validateReInvitedUser(any(), anyString())).thenReturn(userProfile);
+
+        Response userProResponse = Response.builder().request(mock(Request.class)).body(
+                String.valueOf(Collections.emptyList()), Charset.defaultCharset()).status(200).build();
+        when(idamFeignClient.getUserFeed(any())).thenReturn(userProResponse);
+        userProfile.setIdamId("1234");
+        when(idamService.registerUser(any(IdamRegisterUserRequest.class))).thenReturn(idamRegistrationInfo);
+        UserProfile response = userProfileCreator.reInviteUser(userProfileCreationData, "SRD");
+        assertThat(response).usingRecursiveComparison().isEqualTo(userProfile);
+        assertThat(response.getIdamRegistrationResponse()).isEqualTo(CREATED.value());
+
+        InOrder inOrder = inOrder(idamService, userProfileRepository);
+        inOrder.verify(userProfileRepository, times(1)).findByEmail(any(String.class));
+
+        verify(validationHelperService, times(1)).validateReInvitedUser(any(), eq("SRD"));
         verify(idamFeignClient, times(1)).getUserFeed(any());
     }
 
     @Test
     void test_reInvite_user_successfully_with_diff_idamId() throws JsonProcessingException {
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
-        when(validationHelperService.validateReInvitedUser(any())).thenReturn(userProfile);
+        when(validationHelperService.validateReInvitedUser(any(), anyString())).thenReturn(userProfile);
         IdamFeignClient.User userResponse = new IdamFeignClient.User();
         userResponse.setId("12345");
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
@@ -635,7 +719,7 @@ class UserProfileCreatorTest {
 
         when(idamFeignClient.getUserFeed(any())).thenReturn(userProResponse);
         userProfile.setIdamId("1234");
-        UserProfile response = userProfileCreator.reInviteUser(userProfileCreationData);
+        UserProfile response = userProfileCreator.reInviteUser(userProfileCreationData, anyString());
         assertThat(response).usingRecursiveComparison().isEqualTo(userProfile);
         assertThat(response.getIdamRegistrationResponse()).isEqualTo(201);
 
@@ -643,7 +727,34 @@ class UserProfileCreatorTest {
         inOrder.verify(userProfileRepository, times(1)).findByEmail(any(String.class));
         //inOrder.verify(userProfileRepository, times(1)).save(any(UserProfile.class));
 
-        verify(validationHelperService, times(1)).validateReInvitedUser(any());
+        verify(validationHelperService, times(1)).validateReInvitedUser(any(), anyString());
+        verify(idamFeignClient, times(1)).getUserFeed(any());
+    }
+
+    @Test
+    void test_reInvite_user_fromSrd_successfully_with_diff_idamId() throws JsonProcessingException {
+        when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
+        when(validationHelperService.validateReInvitedUser(any(), anyString())).thenReturn(userProfile);
+        IdamFeignClient.User userResponse = new IdamFeignClient.User();
+        userResponse.setId("12345");
+        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
+                false);
+        String body = mapper.writeValueAsString(Set.of(userResponse));
+
+        Response userProResponse = Response.builder().request(mock(Request.class)).body(body,
+                Charset.defaultCharset()).status(200).build();
+
+        when(idamFeignClient.getUserFeed(any())).thenReturn(userProResponse);
+        userProfile.setIdamId("1234");
+        UserProfile response = userProfileCreator.reInviteUser(userProfileCreationData, "SRD");
+        assertThat(response).usingRecursiveComparison().isEqualTo(userProfile);
+        assertThat(response.getIdamRegistrationResponse()).isEqualTo(201);
+
+        InOrder inOrder = inOrder(idamService, userProfileRepository);
+        inOrder.verify(userProfileRepository, times(1)).findByEmail(any(String.class));
+        //inOrder.verify(userProfileRepository, times(1)).save(any(UserProfile.class));
+
+        verify(validationHelperService, times(1)).validateReInvitedUser(any(), anyString());
         verify(idamFeignClient, times(1)).getUserFeed(any());
     }
 }
