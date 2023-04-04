@@ -46,7 +46,7 @@ public class UserProfileQueryProvider {
 
     public List<UserProfileIdamStatus> getProfilesByUserCategory(String userCategory) {
 
-        if (Optional.of(userCategory).isPresent() && UserCategory.CASEWORKER.toString().equals(userCategory)) {
+        if (UserCategory.CASEWORKER.toString().equals(userCategory)) {
             return userProfileRepository.findByUserCategory(UserCategory.CASEWORKER);
         }
         throw new IllegalStateException("Invalid userCategory supplied.");

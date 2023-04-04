@@ -96,8 +96,7 @@ public class IdamServiceImpl implements IdamService {
         } catch (FeignException ex) {
             responseEntity = ResponseEntity.status(gethttpStatusFromFeignException(ex)).build();
         }
-        IdamRolesInfo result = getIdamRolesInfo(responseEntity, response);
-        return result;
+        return getIdamRolesInfo(responseEntity, response);
     }
 
     @Override
@@ -112,8 +111,7 @@ public class IdamServiceImpl implements IdamService {
         } catch (FeignException ex) {
             responseEntity = ResponseEntity.status(gethttpStatusFromFeignException(ex)).build();
         }
-        IdamRolesInfo result = getIdamRolesInfo(responseEntity, response);
-        return result;
+        return getIdamRolesInfo(responseEntity, response);
     }
 
     IdamRolesInfo getIdamRolesInfo(ResponseEntity<Object> responseEntity, Response response) {
