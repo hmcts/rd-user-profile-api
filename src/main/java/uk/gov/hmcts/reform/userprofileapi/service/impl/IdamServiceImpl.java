@@ -167,7 +167,7 @@ public class IdamServiceImpl implements IdamService {
         return new IdamRolesInfo(entity);
     }
 
-    private IdamRolesInfo buildIdamResponseFromFeignException(FeignException ex) {
+    public IdamRolesInfo buildIdamResponseFromFeignException(FeignException ex) {
         return new IdamRolesInfo(ResponseEntity.status(gethttpStatusFromFeignException(ex)).build());
     }
 }

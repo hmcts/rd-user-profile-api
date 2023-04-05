@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -110,6 +111,13 @@ class FeatureConditionEvaluationTest {
         Assertions.assertTrue(featureConditionEvaluation.preHandle(httpRequest, httpServletResponse, handlerMethod));
         verify(featureConditionEvaluation, times(1))
                 .preHandle(httpRequest, httpServletResponse, handlerMethod);
+    }
+
+    @Test
+    void testRemoveBearerFromToken() {
+        String result = featureConditionEvaluation.removeBearerFromToken("token");
+        assertThat(result).isNotNull();
+        assertThat(result).isEqualTo("token");
     }
 
     static String generateDummyS2SToken() {

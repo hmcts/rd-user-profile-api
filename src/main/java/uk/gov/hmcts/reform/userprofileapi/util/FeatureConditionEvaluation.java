@@ -70,7 +70,7 @@ public class FeatureConditionEvaluation implements HandlerInterceptor {
         throw new ForbiddenException(flagName.concat(SPACE).concat(FORBIDDEN_EXCEPTION_LD));
     }
 
-    private String removeBearerFromToken(String token) {
+    public String removeBearerFromToken(String token) {
         if (isNotTrue(token.startsWith(BEARER))) {
             return token;
         } else {

@@ -757,4 +757,28 @@ class UserProfileCreatorTest {
         verify(validationHelperService, times(1)).validateReInvitedUser(any(), anyString());
         verify(idamFeignClient, times(1)).getUserFeed(any());
     }
+
+    @Test
+    void testLogIdamResponse() throws JsonProcessingException {
+        IdamFeignClient.User userResponse = new IdamFeignClient.User();
+        userResponse.setId("1234");
+        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
+                false);
+        String body = mapper.writeValueAsString(Set.of(userResponse));
+        Response userProResponse = Response.builder().request(mock(Request.class)).body(body,
+                Charset.defaultCharset()).status(200).build();
+
+        Response userProResponseStatus400 = Response.builder().request(mock(Request.class)).body(body,
+                Charset.defaultCharset()).status(400).build();
+
+        Response userProResponseStatus400andBodyNull = Response.builder().request(mock(Request.class)).body(null,
+                Charset.defaultCharset()).status(400).build();
+
+        userProfileCreator.logIdamResponse(userProResponse);
+        userProfileCreator.logIdamResponse(userProResponseStatus400);
+        userProfileCreator.logIdamResponse(userProResponseStatus400andBodyNull);
+        userProfileCreator.logIdamResponse(null);
+
+
+    }
 }

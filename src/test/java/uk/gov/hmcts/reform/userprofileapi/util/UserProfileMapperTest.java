@@ -87,13 +87,13 @@ class UserProfileMapperTest {
     @Test
     void test_mapUpdatableFieldsForReInvite() {
         UserProfile userProfileMock = mock(UserProfile.class);
-        when(userProfileMock.getFirstName()).thenReturn(userProfileCreationData.getFirstName());
-        when(userProfileMock.getLastName()).thenReturn(userProfileCreationData.getLastName());
+        when(userProfileMock.getFirstName()).thenReturn("firstName");
+        when(userProfileMock.getLastName()).thenReturn("lastName");
 
         UserProfileMapper.mapUpdatableFieldsForReInvite(userProfileCreationData, userProfileMock);
 
-        assertThat(userProfileMock.getFirstName()).isEqualTo(userProfileCreationData.getFirstName());
-        assertThat(userProfileMock.getLastName()).isEqualTo(userProfileCreationData.getLastName());
+        assertThat(userProfileMock.getFirstName()).isEqualTo("firstName");
+        assertThat(userProfileMock.getLastName()).isEqualTo("lastName");
         verify(userProfileMock, times(1)).setLastUpdated(any(LocalDateTime.class));
         verify(userProfileMock, times(1)).getFirstName();
         verify(userProfileMock, times(1)).getLastName();
