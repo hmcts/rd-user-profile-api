@@ -61,12 +61,28 @@ withPipeline(type, product, component) {
         env.execution_environment = "preview"
         env.LAUNCH_DARKLY_ENV = "preview"
         env.ENVIRONMENT_NAME  = "preview"
+        env.TEST_URL = "http://rd-user-profile-api-preview.preview.hmcts.platform.net"
     }
 
     before('functionalTest:aat') {
         env.execution_environment = "aat"
         env.LAUNCH_DARKLY_ENV = "aat"
         env.ENVIRONMENT_NAME  = "aat"
+        env.TEST_URL = "http://rd-user-profile-api-aat.aat.hmcts.platform.net"
+    }
+
+    before('smoketest:preview') {
+        env.execution_environment = "preview"
+        env.LAUNCH_DARKLY_ENV = "preview"
+        env.ENVIRONMENT_NAME  = "preview"
+        env.TEST_URL = "http://rd-user-profile-api-preview.preview.platform.hmcts.net"
+    }
+
+    before('smoketest:aat') {
+        env.execution_environment = "aat"
+        env.LAUNCH_DARKLY_ENV = "aat"
+        env.ENVIRONMENT_NAME  = "aat"
+        env.TEST_URL = "http://rd-user-profile-api-aat.aat.platform.hmcts.net"
     }
 
     afterSuccess('sonarscan') {
