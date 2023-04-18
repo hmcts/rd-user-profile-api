@@ -39,7 +39,7 @@ def versions = [
         serenity           : '2.0.76',
         springBoot         : '2.7.7',
         springHystrix      : '2.2.8.RELEASE',
-        pact_version       : '3.5.24',
+        pact_version       : '4.1.7',
         launchDarklySdk    : '5.10.7',
         log4j              : '2.17.1',
         springVersion      : '5.3.26',
@@ -202,13 +202,20 @@ task migratePostgresDatabase(type: org.flywaydb.gradle.task.FlywayMigrateTask) {
     }
 }
 //PACT CONFIGURATION
+project.ext {
+    pactVersion = getCheckedOutGitCommitHash()
+}
+
+def getCheckedOutGitCommitHash() {
+    'git rev-parse --verify --short HEAD'.execute().text.trim()
+}
+
 task contract(type: Test) {
     description = 'Runs the consumer Pact tests'
     useJUnitPlatform()
     testClassesDirs = sourceSets.contractTest.output.classesDirs
     classpath = sourceSets.contractTest.runtimeClasspath
     include "uk/gov/hmcts/reform/userprofileapi/**"
-    systemProperty 'pact.rootDir', "pacts"
 }
 
 task runAndPublishConsumerPactTests(type: Test, description: 'Publish pact test to broker.', group: 'Verification') {
@@ -221,9 +228,8 @@ runAndPublishConsumerPactTests.finalizedBy pactPublish
 pact {
     publish {
         pactDirectory = 'pacts'
-        pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:9292'
-        tags = ['Dev']
-        version = "1.0"
+        tags = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
+        version = project.pactVersion
     }
 }
 
@@ -237,6 +243,7 @@ task contractTest(type: Test) {
 }
 
 task runProviderPactVerification(type: Test) {
+    description = 'Runs the provider Pact tests'
     useJUnitPlatform()
     testClassesDirs = sourceSets.contractTest.output.classesDirs
     classpath = sourceSets.contractTest.runtimeClasspath
@@ -475,9 +482,9 @@ dependencies {
     testImplementation group: 'com.github.mifmif', name: 'generex', version: '1.0.2'
     testImplementation 'com.github.hmcts:fortify-client:1.2.0:all'
 
-    contractTestImplementation(group: 'au.com.dius', name:'pact-jvm-consumer-junit5_2.12', version: versions.pact_version) {
-        endorseStrictVersions()
-    }
+    contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: versions.pact_version
+    contractTestImplementation group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pact_version
+    contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pact_version
 
     functionalTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit
     functionalTestRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit
@@ -512,9 +519,6 @@ dependencies {
 
     smokeTestImplementation sourceSets.main.runtimeClasspath
     smokeTestImplementation sourceSets.test.runtimeClasspath
-
-    contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: '4.3.6'
-    contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5spring', version: '4.3.9'
 
     contractTestImplementation sourceSets.main.runtimeClasspath
     contractTestImplementation sourceSets.test.runtimeClasspath
