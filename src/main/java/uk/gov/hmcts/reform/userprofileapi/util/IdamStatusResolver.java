@@ -24,8 +24,9 @@ public final class IdamStatusResolver {
     public static final String ACCEPTED = "12 User Registration accepted";
     public static final String INVALID_REQUEST = "13 Required parameters or one of request field is missing or invalid";
     public static final String MISSING_TOKEN = "14 Missing Bearer Token";
-    public static final String TOKEN_EXPIRED = "15 Bearer token is expired, or the user or service does not have " +
-            "permission to perform this action";
+    public static final String TOKEN_EXPIRED = "15 Bearer token is expired, or the user or service does not have "
+            + "permission to perform this action";
+    
     public static final String NOT_FOUND = "16 Resource not found";
     public static final String USER_EXISTS = "17 User with this email already exists";
     public static final String UNKNOWN = "18 Unknown error from Idam";
