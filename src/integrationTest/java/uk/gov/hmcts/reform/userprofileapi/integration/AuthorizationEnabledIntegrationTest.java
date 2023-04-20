@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -25,8 +26,10 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.reform.lib.util.serenity5.SerenityTest;
 import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRequestHandlerTest;
+import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
@@ -48,6 +51,7 @@ import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -113,7 +117,7 @@ public abstract class AuthorizationEnabledIntegrationTest extends SpringBootInte
     protected JwtDecoder jwtDecoder;
 
     @BeforeEach
-    public void setUpWireMock() {
+    public void setUpWireMock() throws JsonProcessingException {
 
         s2sMockService.stubFor(get(urlEqualTo("/details"))
                 .willReturn(aResponse()
@@ -124,35 +128,32 @@ public abstract class AuthorizationEnabledIntegrationTest extends SpringBootInte
 
         setSidamRegistrationMockWithStatus(HttpStatus.CREATED.value(), true);
 
-        idamMockService.stubFor(get(urlMatching("/api/v1/users/.*"))
-                .willReturn(aResponse()
-                        .withHeader("Content-Type", "application/json")
-                        .withStatus(200)
-                        .withBody("{"
-                                + "  \"active\": \"true\","
-                                + "  \"forename\": \"Super\","
-                                + "  \"surname\": \"User\","
-                                + "  \"email\": \"test@test.com\","
-                                + "  \"pending\": \"false\","
-                                + "  \"roles\": ["
-                                + "    \"pui-organisation-manager\""
-                                + "  ]"
-                                + "}")));
+        HashMap<String,String> data = new HashMap<>();
+        data.put("active","true");
+        data.put("forename","Super");
+        data.put("surname","User");
+        data.put("email","test@test.com");
+        data.put("pending","false");
+        data.put("roles","[pui-organisation-manager]");
 
         idamMockService.stubFor(get(urlMatching("/api/v1/users/.*"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(200)
-                        .withBody("{"
-                                + "  \"active\": \"false\","
-                                + "  \"forename\": \"Suspended\","
-                                + "  \"surname\": \"User\","
-                                + "  \"email\": \"test@test.com\","
-                                + "  \"pending\": \"false\","
-                                + "  \"roles\": ["
-                                + "    \"pui-organisation-manager\""
-                                + "  ]"
-                                + "}")));
+                        .withBody(objectMapper.writeValueAsString(data))));
+
+        UserInfo userDetails = UserInfo.builder()
+            .givenName("Suspended")
+            .familyName("User")
+            .roles(List.of("pui-organisation-manager"))
+            .sub("false")
+            .build();
+
+        idamMockService.stubFor(get(urlMatching("/api/v1/users/.*"))
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withStatus(200)
+                        .withBody(objectMapper.writeValueAsString(userDetails))));
 
         idamMockService.stubFor(delete(urlMatching("/api/v1/users/.*"))
                 .willReturn(aResponse()
@@ -161,23 +162,19 @@ public abstract class AuthorizationEnabledIntegrationTest extends SpringBootInte
                         .withBody("{"
                                 + "  \"response\": \"User deleted successfully.\""
                                 + "}")));
-
+        UserInfo userDetailsNew = UserInfo.builder()
+            .uid("%s")
+            .givenName("User")
+            .familyName("User")
+            .name("Super")
+            .roles(List.of("pui-organisation-manager"))
+            .sub("active")
+            .build();
         idamMockService.stubFor(get(urlEqualTo("/o/userinfo"))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
-                        .withBody("{"
-                                + "  \"uid\": \"%s\","
-                                + "  \"name\": \"Super\","
-                                + "  \"family_name\": \"User\","
-                                + "  \"given_name\": \"User\","
-                                + "  \"sub\": \"test@test.com\","
-                                + "  \"accountStatus\": \"active\","
-                                + "  \"roles\": ["
-                                + "  \"pui-user-manager\""
-                                + "  ]"
-                                + "}")
-                ));
+                        .withBody(objectMapper.writeValueAsString(userDetailsNew))));
 
         when(featureToggleService.isFlagEnabled(anyString(), anyString())).thenReturn(true);
 
@@ -205,7 +202,7 @@ public abstract class AuthorizationEnabledIntegrationTest extends SpringBootInte
             .build();
     }
 
-    public void searchUserProfileSyncWireMock(HttpStatus status, String id) {
+    public void searchUserProfileSyncWireMock(HttpStatus status, String id) throws JsonProcessingException {
 
         String body = null;
         int returnHttpStaus = status.value();
@@ -249,13 +246,15 @@ public abstract class AuthorizationEnabledIntegrationTest extends SpringBootInte
 
     }
 
-    protected void setSidamUserUpdateMockWithStatus(int status, boolean setBodyEmpty, String idamId) {
+    protected void setSidamUserUpdateMockWithStatus(int status, boolean setBodyEmpty, String idamId)
+        throws JsonProcessingException {
         String body = null;
         if (status == 404 && !setBodyEmpty) {
-            body = "{"
-                    + "\"status\": \"404\","
-                    + "\"errorMessage\": \"Not Found\""
-                    + "}";
+            ErrorResponse errorResponse = ErrorResponse.builder()
+                .status(404)
+                .errorMessage("Not Found")
+                .build();
+            body = objectMapper.writeValueAsString(errorResponse);
         }
         idamMockService.stubFor(patch(urlMatching("/api/v1/users/" + idamId))
                 .willReturn(aResponse()
@@ -265,28 +264,41 @@ public abstract class AuthorizationEnabledIntegrationTest extends SpringBootInte
                 ));
     }
 
-    protected void setSidamRegistrationMockWithStatus(int status, boolean setBodyEmpty) {
+    protected void setSidamRegistrationMockWithStatus(int status, boolean setBodyEmpty)  {
         String body = null;
+        ErrorResponse errorResponse;
         if (status == 400 && !setBodyEmpty) {
-            body = "{"
-                    + "\"status\": \"400\","
-                    + "\"errorMessages\": ["
-                    + "\"Role to be assigned does not exist.\""
-                    + "]"
-                    + "}";
+            errorResponse = ErrorResponse.builder()
+                .status(400)
+                .errorMessage("Role to be assigned does not exist.")
+                .build();
+            try {
+                body = objectMapper.writeValueAsString(errorResponse);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+
         } else if (status == 409 && !setBodyEmpty) {
-            body = "{"
-                    + "\"status\": \"409\","
-                    + "\"errorMessages\": ["
-                    + "\"A user is already registered with this email.\""
-                    + "]"
-                    + "}";
+            errorResponse = ErrorResponse.builder()
+                .status(409)
+                .errorMessage("[A user is already registered with this email.]")
+                .build();
+            try {
+                body = objectMapper.writeValueAsString(errorResponse);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
         } else if (status == 404 && !setBodyEmpty) {
-            body = "{"
-                    + "\"status\": \"404\","
-                    + "\"errorMessage\": \"16 Resource not found\","
-                    + "\"errorDescription\": \"The role to be assigned does not exist.\""
-                    + "}";
+            errorResponse = ErrorResponse.builder()
+                .status(404)
+                .errorMessage("16 Resource not found")
+                .errorDescription("The role to be assigned does not exist.")
+                .build();
+            try {
+                body = objectMapper.writeValueAsString(errorResponse);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
         }
         idamMockService.stubFor(post(urlEqualTo("/api/v1/users/registration"))
                 .willReturn(aResponse()
@@ -300,12 +312,15 @@ public abstract class AuthorizationEnabledIntegrationTest extends SpringBootInte
     public void mockWithGetFail(HttpStatus httpStatus, boolean isBodyRequired) {
         String body = null;
         if (httpStatus == HttpStatus.NOT_FOUND && isBodyRequired) {
-            body = "{"
-                    + "\"status\": \"404\","
-                    + "\"errorMessages\": ["
-                    + "\"The user could not be found: c5d631f-af11-4816-abbe-ac6fd9b99ee9\""
-                    + "]"
-                    + "}";
+            ErrorResponse errorResponse = ErrorResponse.builder()
+                .status(404)
+                .errorMessage("The user could not be found: c5d631f-af11-4816-abbe-ac6fd9b99ee9")
+                .build();
+            try {
+                body = objectMapper.writeValueAsString(errorResponse);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
         }
         idamMockService.stubFor(get(urlMatching("/api/v1/users/.*"))
                 .willReturn(aResponse()
@@ -316,14 +331,15 @@ public abstract class AuthorizationEnabledIntegrationTest extends SpringBootInte
 
     }
 
-    public void healthEndpointMock() {
+    public void healthEndpointMock() throws JsonProcessingException {
+
+        HashMap<String,String> data = new HashMap<>();
+        data.put("status","UP");
         s2sMockService.stubFor(get(urlEqualTo("/health"))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
-                        .withBody("{"
-                                + "\"status\": \"UP\""
-                                + "}")));
+                        .withBody(objectMapper.writeValueAsString(data))));
     }
 
     protected UserProfileDataResponse getMultipleUsers(UserProfileDataRequest request, HttpStatus expectedStatus,

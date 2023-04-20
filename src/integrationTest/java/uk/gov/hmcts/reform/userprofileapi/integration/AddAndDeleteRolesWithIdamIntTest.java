@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
@@ -19,6 +21,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -60,33 +63,25 @@ class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTe
 
     }
 
-    public void mockWithGetSuccess(boolean withoutStatusFields) {
+    public void mockWithGetSuccess(boolean withoutStatusFields) throws JsonProcessingException {
 
-        String body;
+        HashMap<String,String> data = new HashMap<>();
         if (!withoutStatusFields) {
-
-            body = "{"
-                    + "  \"active\": \"true\","
-                    + "  \"forename\": \"fname\","
-                    + "  \"surname\": \"lname\","
-                    + "  \"email\": \"test@test.com\","
-                    + "  \"roles\": ["
-                    + "    \"pui-organisation-manager\","
-                    + "    \"pui-user-manager\""
-                    + "  ]"
-                    + "}";
+            data.put("active","true");
+            data.put("forename","fname");
+            data.put("surname","lname");
+            data.put("email","test@test.com");
+            data.put("roles","[pui-organisation-manager,pui-user-manager]");
         } else {
-            body = "{"
-                    + "  \"id\": \" " + id + "\","
-                    + "  \"active\": \"true\""
-                    + "}";
+            data.put("id",id);
+            data.put("active","true");
         }
 
         idamMockService.stubFor(get(urlMatching("/api/v1/users/.*"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(200)
-                        .withBody(body)));
+                        .withBody(objectMapper.writeValueAsString(data))));
 
     }
 
@@ -107,20 +102,23 @@ class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTe
     }
 
 
-    public void mockWithUpdateRolesFailure(HttpStatus httpStatus, boolean isBodyRequired, String userId) {
+    public void mockWithUpdateRolesFailure(HttpStatus httpStatus, boolean isBodyRequired, String userId)
+        throws JsonProcessingException {
         String body = null;
+        ErrorResponse errorResponse;
         if (httpStatus.value() == 412 && isBodyRequired) {
-            body = "{"
-                    + "\"status\": \"412\","
-                    + "\"errorMessage\": \"One or more of the roles provided does not exist.\""
-                    + "}";
+            errorResponse = ErrorResponse.builder()
+                .status(412)
+                .errorMessage("One or more of the roles provided does not exist.")
+                .build();
+            body = objectMapper.writeValueAsString(errorResponse);
         }
         idamMockService.stubFor(post(urlEqualTo("/api/v1/users/" + userId + "/roles"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(httpStatus.value())
-                        .withBody(body)
-                ));
+                        .withBody(body)));
+                ;
     }
 
     public void mockWithDeleteRoleSuccess() {
@@ -131,19 +129,23 @@ class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTe
                 ));
     }
 
-    public void mockWithDeleteRoleFailure(HttpStatus httpStatus, boolean isBodyRequired, boolean isUnassignedRole) {
+    public void mockWithDeleteRoleFailure(HttpStatus httpStatus, boolean isBodyRequired, boolean isUnassignedRole)
+        throws JsonProcessingException {
         String body = null;
+        ErrorResponse errorResponse;
         if (httpStatus.value() == 412 && isBodyRequired && !isUnassignedRole) {
-            body = "{"
-                    + "\"status\": \"412\","
-                    + "\"errorMessage\": \"One or more of the roles provided does not exist.\""
-                    + "}";
+            errorResponse = ErrorResponse.builder()
+                .status(412)
+                .errorMessage("One or more of the roles provided does not exist.")
+                .build();
+            body = objectMapper.writeValueAsString(errorResponse);
         }
         if (httpStatus.value() == 412 && isBodyRequired && isUnassignedRole) {
-            body = "{"
-                    + "\"status\": \"412\","
-                    + "\"errorMessage\": \"The role provided is not assigned to the user.\""
-                    + "}";
+            errorResponse = ErrorResponse.builder()
+                .status(412)
+                .errorMessage("The role provided is not assigned to the user.")
+                .build();
+            body = objectMapper.writeValueAsString(errorResponse);
         }
         idamMockService.stubFor(WireMock.delete(urlMatching("/api/v1/users/.*"))
                 .willReturn(aResponse()
