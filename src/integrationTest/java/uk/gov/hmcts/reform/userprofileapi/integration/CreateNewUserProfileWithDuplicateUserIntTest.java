@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserType;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,34 +46,28 @@ class CreateNewUserProfileWithDuplicateUserIntTest extends AuthorizationEnabledI
                 ));
     }
 
-    public void mockWithGetSuccess(boolean withoutStatusFields) {
+    public void mockWithGetSuccess(boolean withoutStatusFields) throws JsonProcessingException {
 
-        String body;
+        HashMap<Object,Object> data;
         if (!withoutStatusFields) {
-
-            body = "{"
-                    + "  \"active\": \"true\","
-                    + "  \"forename\": \"fname\","
-                    + "  \"surname\": \"lname\","
-                    + "  \"email\": \"test@test.com\","
-                    + "  \"roles\": ["
-                    + "    \"pui-organisation-manager\","
-                    + "    \"pui-user-manager\""
-                    + "  ]"
-                    + "}";
+            data = new HashMap<>();
+            data.put("active", "true");
+            data.put("forename","fname");
+            data.put("surname","lname");
+            data.put("email","test@test.com");
+            data.put("roles",List.of("pui-organisation-manager","pui-user-manager"));
         } else {
-            body = "{"
-                    + "  \"id\": \"e65e5439-a8f7-4ae6-b378-cc1015b72dbb\","
-                    + "  \"active\": \"false\","
-                    + "  \"pending\": \"true\""
-                    + "}";
+            data = new HashMap<>();
+            data.put("id", "e65e5439-a8f7-4ae6-b378-cc1015b72dbb");
+            data.put("active","false");
+            data.put("pending","true");
         }
 
         idamMockService.stubFor(get(urlMatching("/api/v1/users/.*"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(200)
-                        .withBody(body)));
+                        .withBody(objectMapper.writeValueAsString(data))));
 
     }
 

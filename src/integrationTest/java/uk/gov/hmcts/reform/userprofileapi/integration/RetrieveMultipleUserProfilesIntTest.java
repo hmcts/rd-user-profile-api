@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,20 +41,19 @@ class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledIntegratio
     @Autowired
     private WebApplicationContext webApplicationContext;
 
-    public void mockWithGetSuccess() {
+    public void mockWithGetSuccess() throws JsonProcessingException {
+
+        HashMap<Object,Object> data = new HashMap<>();
+        data.put("active", "true");
+        data.put("forename","fname");
+        data.put("surname","lname");
+        data.put("email","email");
+        data.put("roles",List.of("pui-case-manager"));
         idamMockService.stubFor(get(urlMatching("/api/v1/users/.*"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(200)
-                        .withBody("{"
-                                + "  \"active\": \"true\","
-                                + "  \"forename\": \"fname\","
-                                + "  \"surname\": \"lname\","
-                                + "  \"email\": \"test@test.com\","
-                                + "  \"roles\": ["
-                                + "    \"pui-case-manager\""
-                                + "  ]"
-                                + "}")));
+                        .withBody(objectMapper.writeValueAsString(data))));
 
     }
 
