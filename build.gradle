@@ -542,6 +542,12 @@ dependencyManagement {
             entry 'jackson-core'
             entry 'jackson-annotations'
         }
+        
+        //CVE-2021-22044
+        dependencySet(group: 'org.springframework.cloud', version: '3.1.5') {
+            entry 'spring-cloud-starter-openfeign'
+            entry 'spring-cloud-openfeign-core'
+        }
     }
 }
 
