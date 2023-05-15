@@ -5,6 +5,8 @@ import org.assertj.core.util.Lists;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
@@ -185,11 +187,12 @@ class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
         assertThat(errorResponse.getErrorMessage()).isEqualTo("16 Resource not found");
     }
 
-    @Test
-    void should_return_400_and_create_user_profile_resource_with_invalid_email() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"a.adisongmail.com", "a.adison@gmailcom"})
+    void should_return_400_and_create_user_profile_resource_with_invalid_email(String emailId) throws Exception {
 
         UserProfileCreationData data = buildCreateUserProfileData();
-        data.setEmail("a.adisongmail.com");
+        data.setEmail(emailId);
 
 
         userProfileRequestHandlerTest.sendPost(
@@ -199,24 +202,6 @@ class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
                 BAD_REQUEST,
                 UserProfileCreationResponse.class
         );
-
-    }
-
-    @Test
-    void should_return_400_and_create_user_profile_resource_with_invalid_email_1() throws Exception {
-
-        UserProfileCreationData data = buildCreateUserProfileData();
-        data.setEmail("a.adison@gmailcom");
-
-
-        userProfileRequestHandlerTest.sendPost(
-                mockMvc,
-                APP_BASE_PATH,
-                data,
-                BAD_REQUEST,
-                UserProfileCreationResponse.class
-        );
-
 
     }
 
