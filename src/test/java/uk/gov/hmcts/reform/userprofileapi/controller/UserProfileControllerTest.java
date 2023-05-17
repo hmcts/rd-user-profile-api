@@ -171,11 +171,12 @@ class UserProfileControllerTest {
         String id = "a833c2e2-2c73-4900-96ca-74b1efb37928";
         UserProfileWithRolesResponse responseMock = Mockito.mock(UserProfileWithRolesResponse.class);
 
-        when(userProfileServiceMock.retrieveWithRoles(any(UserProfileIdentifier.class))).thenReturn(responseMock);
+        when(userProfileServiceMock.retrieveWithRoles(any(UserProfileIdentifier.class), any()))
+                .thenReturn(responseMock);
 
-        assertThat(sut.getUserProfileWithRolesById(id)).isEqualTo(ResponseEntity.ok(responseMock));
+        assertThat(sut.getUserProfileWithRolesById(id,"SRD")).isEqualTo(ResponseEntity.ok(responseMock));
         verify(userProfileServiceMock, times(1))
-                .retrieveWithRoles(any(UserProfileIdentifier.class));
+                .retrieveWithRoles(any(UserProfileIdentifier.class), any());
     }
 
     @Test
@@ -190,10 +191,11 @@ class UserProfileControllerTest {
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(httpRequest));
         when(httpRequest.getHeader(anyString())).thenReturn(" ");
         UserProfileWithRolesResponse responseMock = Mockito.mock(UserProfileWithRolesResponse.class);
-        when(userProfileServiceMock.retrieveWithRoles(any(UserProfileIdentifier.class))).thenReturn(responseMock);
+        when(userProfileServiceMock.retrieveWithRoles(any(UserProfileIdentifier.class), any()))
+                .thenReturn(responseMock);
         assertThat(sut.getUserProfileWithRolesByEmail()).isEqualTo(ResponseEntity.ok(responseMock));
         verify(userProfileServiceMock, times(1))
-                .retrieveWithRoles(any(UserProfileIdentifier.class));
+                .retrieveWithRoles(any(UserProfileIdentifier.class), any());
         verify(httpRequest, times(2)).getHeader(anyString());
     }
 
@@ -202,10 +204,11 @@ class UserProfileControllerTest {
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(httpRequest));
         UserProfileWithRolesResponse responseMock = Mockito.mock(UserProfileWithRolesResponse.class);
         when(httpRequest.getHeader(anyString())).thenReturn("test@test.com");
-        when(userProfileServiceMock.retrieveWithRoles(any(UserProfileIdentifier.class))).thenReturn(responseMock);
+        when(userProfileServiceMock.retrieveWithRoles(any(UserProfileIdentifier.class), any()))
+                .thenReturn(responseMock);
         assertThat(sut.getUserProfileWithRolesByEmail()).isEqualTo(ResponseEntity.ok(responseMock));
         verify(userProfileServiceMock, times(1))
-                .retrieveWithRoles(any(UserProfileIdentifier.class));
+                .retrieveWithRoles(any(UserProfileIdentifier.class), any());
         verify(httpRequest, times(2)).getHeader(anyString());
     }
 
