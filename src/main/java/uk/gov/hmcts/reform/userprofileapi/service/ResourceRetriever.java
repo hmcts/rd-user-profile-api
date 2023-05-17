@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface ResourceRetriever<T extends RequestData> {
 
-    UserProfile retrieve(T identifier, boolean fetchRoles);
+    UserProfile retrieve(T identifier, boolean fetchRoles, String origin);
 
     List<UserProfile> retrieveMultipleProfiles(T identifier, boolean showDeleted, boolean rolesRequired);
 
