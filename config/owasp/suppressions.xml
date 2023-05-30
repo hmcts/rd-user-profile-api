@@ -28,6 +28,10 @@
     <notes>Temporary suppression for commons-fileupload-1.4.jar</notes>
     <cve>CVE-2023-24998</cve>
   </suppress>
+    <suppress>
+        <notes>Temporary suppression for org.apache.tomcat.embed please remove it once cve is fixed</notes>
+        <cve>CVE-2023-28709</cve>
+    </suppress>
   <suppress>
     <notes><![CDATA[
 file name: launchdarkly-java-server-sdk-5.10.7.jar (shaded: org.yaml:snakeyaml:1.32)
