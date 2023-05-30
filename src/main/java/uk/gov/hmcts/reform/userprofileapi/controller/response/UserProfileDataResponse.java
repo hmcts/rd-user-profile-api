@@ -16,7 +16,7 @@ public class UserProfileDataResponse {
 
     public UserProfileDataResponse(List<UserProfile> userProfile, boolean rolesRequired) {
         this.userProfiles = userProfile.stream()
-                .map(professionalUser -> new UserProfileWithRolesResponse(professionalUser, rolesRequired))
+                .map(professionalUser -> new UserProfileWithRolesResponse(professionalUser, rolesRequired, null))
                 .toList();
     }
 }

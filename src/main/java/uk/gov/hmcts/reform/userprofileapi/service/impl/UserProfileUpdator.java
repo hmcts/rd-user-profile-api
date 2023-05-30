@@ -193,8 +193,9 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
         if (!userProfileOptional.isPresent()) {
             throw new ResourceNotFoundException("could not find user profile for userId: or status is not active "
                     + userId);
-        } else if (!IdamStatus.ACTIVE.equals(userProfileOptional.get().getStatus())) {
-            throw new InvalidRequest("UserId status is not active");
+        } else if (!List.of(IdamStatus.ACTIVE, IdamStatus.SUSPENDED).contains(userProfileOptional.get().getStatus())) {
+            throw new InvalidRequest(String.format("UserId status is {}, So not allowed to update",
+                    userProfileOptional.get().getStatus()));
         }
         return userProfileOptional.get();
     }

@@ -24,12 +24,13 @@ public class UserProfileWithRolesResponse extends UserProfileResponse {
     @JsonProperty
     private String idamMessage;
 
-    public UserProfileWithRolesResponse(UserProfile userProfile, boolean rolesRequired) {
+    public UserProfileWithRolesResponse(UserProfile userProfile, boolean rolesRequired, String origin) {
         super(userProfile);//tbc remove inheritance
         idamStatusCode = " ";
         idamMessage = IdamStatusResolver.NO_IDAM_CALL;
         if (rolesRequired) {
-            if (IdamStatus.ACTIVE == userProfile.getStatus() && !userProfile.getRoles().isEmpty()) {
+            if (IdamStatus.ACTIVE == userProfile.getStatus() && !userProfile.getRoles().isEmpty()
+                    || "SRD".equals(origin)) {
                 roles = userProfile.getRoles();
             }
             idamStatusCode = userProfile.getErrorStatusCode();

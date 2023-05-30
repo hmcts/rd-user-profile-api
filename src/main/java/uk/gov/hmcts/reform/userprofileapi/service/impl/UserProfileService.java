@@ -44,9 +44,9 @@ public class UserProfileService<T extends RequestData> {
         return new UserProfileCreationResponse(resourceCreator.reInviteUser(requestData, origin));
     }
 
-    public UserProfileWithRolesResponse retrieveWithRoles(T requestData) {
-        return new UserProfileWithRolesResponse(resourceRetriever.retrieve(requestData, true),
-                true);
+    public UserProfileWithRolesResponse retrieveWithRoles(T requestData, String origin) {
+        return new UserProfileWithRolesResponse(resourceRetriever.retrieve(requestData, true, origin),
+                true, origin);
     }
 
 
@@ -60,7 +60,7 @@ public class UserProfileService<T extends RequestData> {
     }
 
     public UserProfileResponse retrieve(T requestData) {
-        return new UserProfileResponse(resourceRetriever.retrieve(requestData, false));
+        return new UserProfileResponse(resourceRetriever.retrieve(requestData, false, null));
     }
 
     public AttributeResponse update(T updateData, String userId, String origin) {

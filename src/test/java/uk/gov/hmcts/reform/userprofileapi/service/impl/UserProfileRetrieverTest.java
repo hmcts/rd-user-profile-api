@@ -94,7 +94,7 @@ class UserProfileRetrieverTest {
                     when(querySupplier.getRetrieveByIdQuery(identifier)).thenReturn(supplier);
                     when(supplier.get()).thenReturn(Optional.of(userProfile));
 
-                    UserProfile entity = userProfileRetriever.retrieve(identifier, false);
+                    UserProfile entity = userProfileRetriever.retrieve(identifier, false, null);
                     assertThat(entity).isEqualTo(userProfile);
                     verify(querySupplier, times(1)).getRetrieveByIdQuery(identifier);
                 });
@@ -110,10 +110,10 @@ class UserProfileRetrieverTest {
         when(querySupplier.getRetrieveByIdQuery(identifier)).thenReturn(supplier);
         when(supplier.get()).thenReturn(Optional.of(userProfile));
 
-        UserProfile entity = userProfileRetriever.retrieve(identifier, true);
+        UserProfile entity = userProfileRetriever.retrieve(identifier, true, null);
         assertThat(entity).isEqualTo(userProfile);
         verify(querySupplier, times(1)).getRetrieveByIdQuery(identifier);
-        verify(userProfileRetriever, times(1)).getRolesFromIdam(any(UserProfile.class), any(Boolean.class));
+        verify(userProfileRetriever, times(1)).getRolesFromIdam(any(UserProfile.class), any(Boolean.class),any());
     }
 
     @Test
@@ -123,7 +123,7 @@ class UserProfileRetrieverTest {
         when(querySupplier.getRetrieveByIdQuery(identifier)).thenReturn(supplier);
         when(supplier.get()).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> userProfileRetriever.retrieve(identifier, false))
+        assertThatThrownBy(() -> userProfileRetriever.retrieve(identifier, false, null))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("Could not find resource from database with given identifier");
         verify(querySupplier, times(1)).getRetrieveByIdQuery(identifier);
@@ -136,7 +136,7 @@ class UserProfileRetrieverTest {
 
         when(querySupplier.getRetrieveByIdQuery(identifier)).thenThrow(IllegalStateException.class);
 
-        assertThatThrownBy(() -> userProfileRetriever.retrieve(identifier, false))
+        assertThatThrownBy(() -> userProfileRetriever.retrieve(identifier, false, null))
                 .isInstanceOf(IllegalStateException.class);
         verify(querySupplier, times(1)).getRetrieveByIdQuery(identifier);
     }
@@ -148,7 +148,7 @@ class UserProfileRetrieverTest {
         when(querySupplier.getRetrieveByIdQuery(identifier)).thenReturn(supplier);
         when(supplier.get()).thenThrow(ResourceNotFoundException.class);
 
-        assertThatThrownBy(() -> userProfileRetriever.retrieve(identifier, false))
+        assertThatThrownBy(() -> userProfileRetriever.retrieve(identifier, false, null))
                 .isInstanceOf(ResourceNotFoundException.class);
         verify(querySupplier, times(1)).getRetrieveByIdQuery(identifier);
     }

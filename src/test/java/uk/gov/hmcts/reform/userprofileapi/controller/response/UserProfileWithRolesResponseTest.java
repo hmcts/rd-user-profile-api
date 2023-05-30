@@ -36,7 +36,7 @@ class UserProfileWithRolesResponseTest {
 
     @Test
     void test_UserProfileWithRolesResponse() {
-        sut = new UserProfileWithRolesResponse(userProfile, true);
+        sut = new UserProfileWithRolesResponse(userProfile, true, "SRD");
 
         assertThat(sut).isNotNull();
         assertThat(sut.getIdamId()).isEqualTo(userProfile.getIdamId());
@@ -51,7 +51,7 @@ class UserProfileWithRolesResponseTest {
 
     @Test
     void test_UserProfileWithRolesNotRequired() {
-        sut = new UserProfileWithRolesResponse(userProfile, false);
+        sut = new UserProfileWithRolesResponse(userProfile, false, null);
 
         assertThat(sut.getRoles()).isNull();
         assertThat(sut.getIdamStatusCode()).isEqualTo(" ");
@@ -62,7 +62,7 @@ class UserProfileWithRolesResponseTest {
     void test_UserProfileWithRolesResponseStatusPending() {
         userProfile.setStatus(IdamStatus.PENDING);
 
-        sut = new UserProfileWithRolesResponse(userProfile, true);
+        sut = new UserProfileWithRolesResponse(userProfile, true, null);
 
         assertThat(sut).isNotNull();
         assertThat(sut.getIdamId()).isEqualTo(userProfile.getIdamId());

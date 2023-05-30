@@ -303,6 +303,39 @@ class UserProfileUpdatorTest {
     }
 
     @Test
+    void test_updateRoles_addRoles_SuspendUserRequest() throws Exception {
+        RoleName roleName1 = new RoleName("pui-case-manager");
+        RoleName roleName2 = new RoleName("pui-case-organisation");
+        Set<RoleName> roles = new HashSet<>();
+        roles.add(roleName1);
+        roles.add(roleName2);
+        userProfile.setStatus(IdamStatus.SUSPENDED);
+
+        updateUserProfileData.setRolesAdd(roles);
+
+        UserProfileResponse userProfileResponse = new UserProfileResponse();
+        RoleAdditionResponse roleAdditionResponse = new RoleAdditionResponse();
+        roleAdditionResponse.setIdamStatusCode(HttpStatus.OK.toString());
+        roleAdditionResponse.setIdamMessage("Success");
+        userProfileResponse.setRoleAdditionResponse(roleAdditionResponse);
+
+        mockRolesData();
+
+        String idamId = userProfile.getIdamId();
+        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
+                false);
+        String body = mapper.writeValueAsString(userProfileResponse);
+
+        UserProfileRolesResponse response = sut.updateRoles(updateUserProfileData, idamId);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getRoleAdditionResponse().getIdamStatusCode()).isEqualTo("200");
+
+        verify(idamFeignClientMock, times(1)).addUserRoles(any(), any(String.class));
+        verify(userProfileRepositoryMock, times(1)).findByIdamId(any(String.class));
+    }
+
+    @Test
     void test_update_user_profile_successfully() {
 
         String userId = UUID.randomUUID().toString();

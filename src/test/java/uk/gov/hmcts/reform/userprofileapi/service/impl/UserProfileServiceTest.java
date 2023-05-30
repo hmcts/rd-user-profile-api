@@ -119,13 +119,13 @@ class UserProfileServiceTest {
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         UserProfileResponse expected = new UserProfileResponse(userProfile);
 
-        when(userProfileRetriever.retrieve(identifier, false)).thenReturn(userProfile);
+        when(userProfileRetriever.retrieve(identifier, false, null)).thenReturn(userProfile);
 
         UserProfileResponse resource = userProfileService.retrieve(identifier);
 
         assertThat(resource).usingRecursiveComparison().isEqualTo(expected);
 
-        verify(userProfileRetriever, times(1)).retrieve(any(), any(boolean.class));
+        verify(userProfileRetriever, times(1)).retrieve(any(), any(boolean.class), any());
 
     }
 
@@ -134,15 +134,16 @@ class UserProfileServiceTest {
         UserProfileIdentifier identifier = mock(UserProfileIdentifier.class);
 
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
-        UserProfileWithRolesResponse expected = new UserProfileWithRolesResponse(userProfile, true);
+        UserProfileWithRolesResponse expected = new UserProfileWithRolesResponse(userProfile, true,
+                "SRD");
 
-        when(userProfileRetriever.retrieve(identifier, true)).thenReturn(userProfile);
+        when(userProfileRetriever.retrieve(identifier, true, "SRD")).thenReturn(userProfile);
 
-        UserProfileWithRolesResponse resource = userProfileService.retrieveWithRoles(identifier);
+        UserProfileWithRolesResponse resource = userProfileService.retrieveWithRoles(identifier, "SRD");
 
         assertThat(resource).usingRecursiveComparison().isEqualTo(expected);
 
-        verify(userProfileRetriever, times(1)).retrieve(any(), any(boolean.class));
+        verify(userProfileRetriever, times(1)).retrieve(any(), any(boolean.class), any());
 
     }
 

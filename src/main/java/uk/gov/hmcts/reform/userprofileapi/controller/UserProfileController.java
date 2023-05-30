@@ -196,12 +196,14 @@ public class UserProfileController {
             produces = APPLICATION_JSON_VALUE
     )
     @ResponseBody
-    public ResponseEntity<UserProfileWithRolesResponse> getUserProfileWithRolesById(@PathVariable String id) {
+    public ResponseEntity<UserProfileWithRolesResponse> getUserProfileWithRolesById(@PathVariable String id,
+                        @RequestParam(value = "origin", required = false)
+                        @Parameter(name = "origin", description = "Any Valid String is allowed") String origin) {
         //Getting user profile by id
         isUserIdValid(id, true);
         log.debug("Inside getUserProfileWithRolesById Controller" + id);
         UserProfileWithRolesResponse response = userProfileService
-                .retrieveWithRoles(new UserProfileIdentifier(IdentifierName.UUID, id));
+                .retrieveWithRoles(new UserProfileIdentifier(IdentifierName.UUID, id), origin);
         log.debug("Response returned to the controller" + response.getIdamMessage() + response.getIdamStatusCode()
                 + response.getIdamStatus());
         return ResponseEntity.ok(response);
@@ -261,7 +263,7 @@ public class UserProfileController {
         }
 
         UserProfileWithRolesResponse response = userProfileService
-                .retrieveWithRoles(new UserProfileIdentifier(IdentifierName.EMAIL, userEmail.toLowerCase()));
+                .retrieveWithRoles(new UserProfileIdentifier(IdentifierName.EMAIL, userEmail.toLowerCase()),null);
 
         return ResponseEntity.ok(response);
     }

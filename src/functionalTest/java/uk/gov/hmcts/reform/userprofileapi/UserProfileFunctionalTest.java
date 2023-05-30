@@ -50,6 +50,7 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.reform.userprofileapi.client.FuncTestRequestHandler.BEARER;
 import static uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus.ACTIVE;
+import static uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus.SUSPENDED;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.generateRandomEmail;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.getIdamRolesJson;
 import static uk.gov.hmcts.reform.userprofileapi.util.FeatureToggleConditionExtension.getToggledOffMessage;
@@ -85,6 +86,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         deleteUserScenarios();
         endpointSecurityScenarios();
         getUserProfileIdamStatus();
+        findUserByUserIdWithRolesNOriginShouldReturnSuccess();
     }
 
     public void setUpTestData() {
@@ -293,6 +295,42 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         log.info("findUserByUserIdWithRolesShouldReturnSuccess :: ENDED");
     }
 
+    public void findUserByUserIdWithRolesNOriginShouldReturnSuccess() throws Exception {
+        log.info("findUserByUserIdWithRolesNOriginShouldReturnSuccess :: STARTED");
+        updateUserProfileData.setFirstName("testFn");
+        updateUserProfileData.setLastName("testLn");
+        updateUserProfileData.setEmail(activeUserProfileCreationData.getEmail());
+        updateUserProfileData.setIdamStatus(SUSPENDED.name());
+        Set<RoleName> rolesName = new HashSet<>();
+        rolesName.add(new RoleName(testConfigProperties.getPuiFinanceManager()));
+        updateUserProfileData.setRolesAdd(rolesName);
+
+        updateUserProfile(updateUserProfileData, activeUserProfile.getIdamId());
+
+        var urlPath =
+                new StringBuilder(requestUri);
+        urlPath.append("/")
+                .append(activeUserProfile.getIdamId())
+                .append("/")
+                .append("roles?origin=SRD");
+
+        UserProfileWithRolesResponse resource = testRequestHandler.sendGet(
+                urlPath.toString(), UserProfileWithRolesResponse.class);
+        //verify the profile
+        assertThat(resource).isNotNull();
+        assertEquals("200", resource.getIdamStatusCode());
+        assertEquals(activeUserProfile.getIdamId(), resource.getIdamId());
+        assertEquals("testFn", resource.getFirstName());
+        assertEquals("testLn", resource.getLastName());
+
+        //verify the roles
+        assertThat(resource.getRoles().size()).isEqualTo(3);
+        assertThat(resource.getRoles())
+                .containsExactlyInAnyOrderElementsOf(List.of("pui-finance-manager", "pui-user-manager",
+                        "pui-case-manager"));
+        log.info("findUserByUserIdWithRolesNOriginShouldReturnSuccess :: ENDED");
+    }
+
     public void findUserByEmailInHeaderWithRolesShouldReturnSuccess() {
         log.info("findUserByEmailInHeaderWithRolesShouldReturnSuccess :: STARTED");
 
@@ -325,7 +363,6 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
                 UserProfileDataResponse.class);
 
         assertThat(response.getUserProfiles().size()).isEqualTo(2);
-
         log.info("getAllUsersByUserIdsWithShowDeletedFalseShouldReturnSuccess :: ENDED");
     }
 

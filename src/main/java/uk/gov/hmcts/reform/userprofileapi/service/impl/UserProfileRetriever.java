@@ -39,7 +39,7 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
     private final AuditRepository auditRepository;
 
     @Override
-    public UserProfile retrieve(UserProfileIdentifier identifier, boolean fetchRoles) {
+    public UserProfile retrieve(UserProfileIdentifier identifier, boolean fetchRoles, String origin) {
 
         UserProfile userProfile =
             querySupplier.getRetrieveByIdQuery(identifier)
@@ -48,7 +48,7 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
                     new ResourceNotFoundException(
                         "Could not find resource from database with given identifier"));
         if (fetchRoles) {
-            userProfile = getRolesFromIdam(userProfile, false);
+            userProfile = getRolesFromIdam(userProfile, false, origin);
             log.debug("get Roles from Idam" + userProfile.getStatus() + userProfile.getIdamId()
                     + userProfile.getRoles() + userProfile.getErrorMessage());
         }
@@ -57,10 +57,10 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
         return userProfile;
     }
 
-    public UserProfile getRolesFromIdam(UserProfile userProfile, boolean isMultiUserGet) {
+    public UserProfile getRolesFromIdam(UserProfile userProfile, boolean isMultiUserGet, String origin) {
 
         log.debug("Inside getRolesFromIdam" + userProfile.getStatus());
-        if (IdamStatus.ACTIVE == userProfile.getStatus()) {
+        if (IdamStatus.ACTIVE == userProfile.getStatus() || "SRD".equals(origin)) {
             log.debug("IdamService fetchUserById");
             IdamRolesInfo idamRolesInfo = idamService.fetchUserById(userProfile.getIdamId());
             log.debug("fetch user By Id" + idamRolesInfo.getId() + idamRolesInfo.getStatusMessage()
@@ -94,6 +94,11 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
         log.debug("In the end of the method getRolesFromIdam" + userProfile.getErrorStatusCode()
                 + userProfile.getErrorMessage() + userProfile.getStatus());
         return userProfile;
+    }
+
+    public UserProfile getRolesFromIdam(UserProfile userProfile, boolean isMultiUserGet) {
+
+        return getRolesFromIdam(userProfile, isMultiUserGet, null);
     }
 
     public List<UserProfile> retrieveMultipleProfiles(UserProfileIdentifier identifier, boolean showDeleted,
