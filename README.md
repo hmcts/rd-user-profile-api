@@ -14,6 +14,7 @@ https://tools.hmcts.net/confluence/display/RTRD/User+Profile+API+Low+Level+Desig
 User Profile API High Level Design. Please refer to the confluence
 https://tools.hmcts.net/confluence/display/RTRD/User+Profile+Service+-+High+Level+Design
 
+
 ### Prerequisites
 
 To run the project you will need to have the following installed:
