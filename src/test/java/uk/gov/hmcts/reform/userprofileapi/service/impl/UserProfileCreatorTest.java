@@ -44,6 +44,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -779,6 +780,6 @@ class UserProfileCreatorTest {
         userProfileCreator.logIdamResponse(userProResponseStatus400andBodyNull);
         userProfileCreator.logIdamResponse(null);
 
-
+        assertNotNull(userResponse.getId());
     }
 }
