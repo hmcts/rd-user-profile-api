@@ -116,8 +116,7 @@ class FeatureConditionEvaluationTest {
     @Test
     void testRemoveBearerFromToken() {
         String result = featureConditionEvaluation.removeBearerFromToken("token");
-        assertThat(result).isNotNull();
-        assertThat(result).isEqualTo("token");
+        assertThat(result).isNotNull().isEqualTo("token");
     }
 
     static String generateDummyS2SToken() {
