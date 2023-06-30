@@ -403,6 +403,8 @@ dependencies {
     implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.11'
     implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.10'
 
+    implementation group: 'commons-net', name: 'commons-net', version: '3.9.0'
+
     testImplementation group: 'org.testcontainers', name: 'postgresql', version: versions.testContainer_postgresql
     testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: versions.testContainer_postgresql
     testImplementation group: 'org.testcontainers', name: 'testcontainers', version: versions.testContainer_postgresql
