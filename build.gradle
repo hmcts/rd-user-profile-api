@@ -365,7 +365,9 @@ dependencies {
 
     implementation 'com.github.hmcts:service-auth-provider-java-client:4.0.3'
 
-    implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: versions.launchDarklySdk
+    implementation (group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: versions.launchDarklySdk) {
+        exclude group: "com.google.guava", module: "guava"
+    }
 
     implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: versions.jackson
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
