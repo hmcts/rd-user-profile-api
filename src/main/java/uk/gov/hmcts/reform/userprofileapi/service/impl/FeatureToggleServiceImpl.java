@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.userprofileapi.service.FeatureToggleService;
 
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 @Service
 public class FeatureToggleServiceImpl implements FeatureToggleService {

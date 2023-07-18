@@ -1,28 +1,32 @@
 package uk.gov.hmcts.reform.userprofileapi.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
+import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.expression.method.ExpressionBasedPreInvocationAdvice;
 import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.access.vote.AuthenticatedVoter;
 import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
+@SuppressWarnings("unused")
 @Configuration
-@EnableGlobalMethodSecurity(securedEnabled = true)
-public class MethodSecurityConfiguration extends GlobalMethodSecurityConfiguration {
+@EnableMethodSecurity(securedEnabled = true)
+public class MethodSecurityConfiguration extends DefaultMethodSecurityExpressionHandler {
 
-    protected AccessDecisionManager accessDecisionManager() {
+    @Bean
+    public AccessDecisionManager accessDecisionManager() {
         List<AccessDecisionVoter<? extends Object>> decisionVoters
-                = new ArrayList<AccessDecisionVoter<? extends Object>>();
+                = new ArrayList<>();
         ExpressionBasedPreInvocationAdvice expressionAdvice = new ExpressionBasedPreInvocationAdvice();
-        expressionAdvice.setExpressionHandler(getExpressionHandler());
+        expressionAdvice.setExpressionHandler(new DefaultMethodSecurityExpressionHandler());
         RoleVoter voter = new RoleVoter();
         voter.setRolePrefix("");
         decisionVoters.add(voter);
