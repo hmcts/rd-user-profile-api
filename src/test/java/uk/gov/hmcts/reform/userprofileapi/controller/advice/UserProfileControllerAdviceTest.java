@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.controller.advice;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -20,7 +21,6 @@ import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
 
 import java.util.Collections;
 import java.util.LinkedList;
-import javax.servlet.http.HttpServletRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;

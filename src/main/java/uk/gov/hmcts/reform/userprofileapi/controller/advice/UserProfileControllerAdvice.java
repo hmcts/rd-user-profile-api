@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.controller.advice;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -22,7 +23,6 @@ import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.FORBIDDEN;

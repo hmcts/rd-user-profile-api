@@ -6,9 +6,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
@@ -18,7 +20,7 @@ import org.springframework.security.oauth2.jwt.JwtDecoders;
 import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
-import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationFilter;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import uk.gov.hmcts.reform.authorisation.filters.ServiceAuthFilter;
 import uk.gov.hmcts.reform.userprofileapi.oidc.JwtGrantedAuthoritiesConverter;
@@ -61,7 +63,7 @@ public class SecurityConfiguration {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return web -> web.ignoring().antMatchers(anonymousPaths.toArray(String[]::new));
+        return web -> web.ignoring().requestMatchers(anonymousPaths.toArray(String[]::new));
     }
 
     @Inject
@@ -80,24 +82,16 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-           .addFilterBefore(serviceAuthFilter, BearerTokenAuthenticationFilter.class)
-           .addFilterAfter(securityEndpointFilter, OAuth2AuthorizationRequestRedirectFilter.class)
-           .sessionManagement().sessionCreationPolicy(STATELESS).and()
-           .csrf().disable()
-           .formLogin().disable()
-           .logout().disable()
-           .authorizeRequests()
-           .antMatchers("/error").permitAll()
-           .anyRequest()
-           .authenticated()
-           .and()
-           .oauth2ResourceServer().authenticationEntryPoint(restAuthenticationEntryPoint)
-           .jwt()
-           .jwtAuthenticationConverter(jwtAuthenticationConverter)
-           .and()
-           .and()
-            .oauth2Client();
+        http.addFilterBefore(serviceAuthFilter, BearerTokenAuthenticationFilter.class)
+                .addFilterAfter(securityEndpointFilter, OAuth2AuthorizationRequestRedirectFilter.class)
+                .sessionManagement(s -> s.sessionCreationPolicy(STATELESS))
+                .csrf(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .logout(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/error").permitAll().anyRequest().authenticated())
+                .oauth2ResourceServer(auth -> auth.authenticationEntryPoint(restAuthenticationEntryPoint)
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)))
+                .oauth2Client(Customizer.withDefaults());
         return http.build();
     }
 

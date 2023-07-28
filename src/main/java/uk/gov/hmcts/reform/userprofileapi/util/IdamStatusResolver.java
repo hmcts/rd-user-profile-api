@@ -76,7 +76,7 @@ public final class IdamStatusResolver {
             responseEntity = status(UNAUTHORIZED).build();
         }
         return isNotBlank(errorMessage) ? errorMessage :
-                resolveStatusAndReturnMessage(responseEntity.getStatusCode());
+                resolveStatusAndReturnMessage(HttpStatus.valueOf(responseEntity.getStatusCode().value()));
     }
 
     public static String getErrorMessageFromSidamResponse(Object responseBody) {
@@ -91,7 +91,7 @@ public final class IdamStatusResolver {
     }
 
     public static Integer getStatusCodeValueFromResponseEntity(ResponseEntity<Object> responseEntity) {
-        return nonNull(responseEntity) ? responseEntity.getStatusCodeValue() : UNAUTHORIZED.value();
+        return nonNull(responseEntity) ? responseEntity.getStatusCode().value() : UNAUTHORIZED.value();
     }
 
     public static IdamStatus resolveIdamStatus(IdamRolesInfo idamRolesInfo) {

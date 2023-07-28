@@ -19,7 +19,7 @@ plugins {
     id "info.solidsoft.pitest" version '1.7.4'
     id 'io.spring.dependency-management' version '1.1.0'
     id 'org.sonarqube' version '3.3'
-    id 'org.springframework.boot' version '3.1.0'
+    id 'org.springframework.boot' version '3.1.1'
     id "org.flywaydb.flyway" version "8.5.4"
     id 'au.com.dius.pact' version '4.1.7'// do not change, otherwise serenity report fails
     id 'org.owasp.dependencycheck' version '8.0.1'
@@ -35,17 +35,18 @@ def versions = [
         junitPlatform      : '1.9.2',
         lombok             : '1.18.22',
         pitest             : '1.7.4',
-        reformLogging      : '5.1.9',
+        reformLogging      : '6.0.1',
         serenity           : '2.0.76',
         springBoot         : '2.7.12',
         springHystrix      : '2.2.8.RELEASE',
         pact_version       : '4.1.7',
         launchDarklySdk    : '5.10.9',
-        log4j              : '2.17.1',
-        springVersion      : '5.3.27',
+        log4j              : '2.20.0',
+        springVersion      : '6.0.11',
         jackson            : '2.14.0-rc1',
         feign              : '3.8.0',
-        testContainer_postgresql: '1.17.6'
+        testContainer_postgresql: '1.17.6',
+        logback: '1.4.7'
 ]
 
 mainClassName = 'uk.gov.hmcts.reform.userprofileapi.Application'
@@ -328,7 +329,7 @@ dependencies {
         exclude group: "org.codehaus.groovy", module: "groovy-json"
     }
 
-    implementation group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
+    implementation group: 'jakarta.validation', name: 'jakarta.validation-api', version: '3.0.2'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: versions.springBoot
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: versions.springBoot
@@ -378,7 +379,8 @@ dependencies {
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: versions.jackson
     implementation group: 'com.fasterxml.jackson', name: 'jackson-bom', version: versions.jackson, ext: 'pom'
     implementation group: 'io.jsonwebtoken', name: 'jjwt', version:'0.9.1'
-    implementation group: 'javax.inject', name: 'javax.inject', version: '1'
+    implementation group: 'jakarta.inject', name: 'jakarta.inject-api', version: '1.0.5'
+    implementation group: 'jakarta.servlet', name: 'jakarta.servlet-api', version: '6.0.0'
     implementation 'com.github.hmcts:idam-java-client:2.1.1'
     implementation "org.springframework.boot:spring-boot-starter-oauth2-client"
     implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
@@ -393,7 +395,7 @@ dependencies {
 
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.5.1'
 
-    implementation group: 'javax.el', name: 'javax.el-api', version: '3.0.1-b06'
+    implementation group: 'jakarta.el', name: 'jakarta.el-api', version: '5.0.1'
 
     implementation group: 'com.google.guava', name: 'guava', version: '32.0.1-jre'
 
@@ -407,8 +409,8 @@ dependencies {
     implementation group: 'org.apache.logging.log4j', name: 'log4j', version: versions.log4j
     implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: versions.log4j
 
-    implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.11'
-    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.10'
+    implementation group: 'ch.qos.logback', name: 'logback-core', version: versions.logback
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
 
     testImplementation group: 'org.testcontainers', name: 'postgresql', version: versions.testContainer_postgresql
     testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: versions.testContainer_postgresql
