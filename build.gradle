@@ -46,7 +46,6 @@ def versions = [
         jackson            : '2.14.0-rc1',
         feign              : '3.8.0',
         testContainer_postgresql: '1.17.6',
-        logback: '1.4.7'
 ]
 
 mainClassName = 'uk.gov.hmcts.reform.userprofileapi.Application'
@@ -161,10 +160,10 @@ configurations {
     contractTestRuntimeOnly.extendsFrom testRuntime
     pactTestImplementation.extendsFrom testCompile
     pactTestRuntime.extendsFrom testRuntime
-//    testCompile.exclude group: 'ch.qos.logback', module: 'logback-classic'
-//    testCompile.exclude group: 'ch.qos.logback', module: 'logback-core'
-//    compile.exclude group: 'ch.qos.logback', module: 'logback-classic'
-//    compile.exclude group: 'ch.qos.logback', module: 'logback-core'
+    testCompile.exclude group: 'ch.qos.logback', module: 'logback-classic'
+    testCompile.exclude group: 'ch.qos.logback', module: 'logback-core'
+    compile.exclude group: 'ch.qos.logback', module: 'logback-classic'
+    compile.exclude group: 'ch.qos.logback', module: 'logback-core'
 }
 
 pmd {
@@ -327,8 +326,8 @@ dependencies {
 
     configurations.all {
         exclude group: 'org.apache.logging.log4j', module: 'log4j-to-slf4j'
-//        exclude group: 'ch.qos.logback', module: 'logback-classic'
-//        exclude group: 'ch.qos.logback', module: 'logback-core'
+        exclude group: 'ch.qos.logback', module: 'logback-classic'
+        exclude group: 'ch.qos.logback', module: 'logback-core'
         exclude group: "org.codehaus.groovy", module: "groovy"
         exclude group: "org.codehaus.groovy", module: "groovy-xml"
         exclude group: "org.codehaus.groovy", module: "groovy-json"
@@ -414,8 +413,6 @@ dependencies {
     implementation group: 'org.apache.logging.log4j', name: 'log4j', version: versions.log4j
     implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: versions.log4j
 
-    implementation group: 'ch.qos.logback', name: 'logback-core', version: versions.logback
-    implementation group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
 
     testImplementation group: 'org.testcontainers', name: 'postgresql', version: versions.testContainer_postgresql
     testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: versions.testContainer_postgresql
