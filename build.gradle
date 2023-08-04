@@ -37,7 +37,7 @@ def versions = [
         pitest             : '1.7.4',
         reformLogging      : '6.0.1',
         serenity           : '2.0.76',
-        springBoot         : '2.7.12',
+        springBoot         : '2.7.14',
         springHystrix      : '2.2.8.RELEASE',
         pact_version       : '4.1.7',
         launchDarklySdk    : '5.10.9',
@@ -359,7 +359,7 @@ dependencies {
     implementation group: 'org.springframework', name: 'spring-tx', version: versions.springVersion
     implementation group: 'org.springframework', name: 'spring-web', version: versions.springVersion
     implementation group: 'org.springframework', name: 'spring-webmvc', version: versions.springVersion
-    implementation group: 'org.springframework.security', name: 'spring-security-core', version: '5.7.8'
+    implementation group: 'org.springframework.security', name: 'spring-security-core', version: '5.7.10'
     implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.8'
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '3.1.5'
 
