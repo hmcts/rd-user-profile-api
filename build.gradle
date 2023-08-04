@@ -443,7 +443,7 @@ dependencies {
     implementation "com.github.hmcts.java-logging:logging:${versions.reformLogging}"
     implementation "com.github.hmcts.java-logging:logging-appinsights:${versions.reformLogging}"
 
-    testImplementation ('com.github.hmcts:rd-commons-lib:v0.0.13'){
+    testImplementation ('com.github.hmcts:rd-commons-lib:v0.0.17'){
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-web'
     }
 
