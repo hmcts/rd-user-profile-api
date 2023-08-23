@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.openfeign.EnableFeignClients;
@@ -14,10 +15,21 @@ import uk.gov.hmcts.reform.idam.client.IdamApi;
 @EnableJpaRepositories
 @EnableRetry
 @EnableCaching
-@SpringBootApplication
+@ImportAutoConfiguration({
+        org.springframework.cloud.openfeign.FeignContext.class,
+        org.springframework.cloud.openfeign.FeignClientProperties.class
+})
+@SpringBootApplication(scanBasePackages = {
+        "uk.gov.hmcts.reform.idam",
+        "uk.gov.hmcts.reform.userprofileapi.domain.feign"
+})
 @EnableFeignClients(basePackages = {
-        "uk.gov.hmcts.reform.userprofileapi" }, basePackageClasses = { IdamApi.class, ServiceAuthorisationApi.class })
-@SuppressWarnings("HideUtilityClassConstructor") // Spring needs a constructor, its not a utility class
+        "uk.gov.hmcts.reform.userprofileapi"
+    }, basePackageClasses = {
+            IdamApi.class,
+            ServiceAuthorisationApi.class
+    })
+@SuppressWarnings("HideUtilityClassConstructor") // Spring needs a constructor, it's not a utility class
 public class Application {
 
     public static void main(final String[] args) {

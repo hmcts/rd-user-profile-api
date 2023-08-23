@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.userprofileapi.config;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -30,12 +30,12 @@ import javax.inject.Inject;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
-@Configuration
+//@Configuration
 @ConfigurationProperties(prefix = "security")
 @EnableWebSecurity
+@EnableConfigurationProperties
 @Slf4j
 public class SecurityConfiguration {
-
 
     @Value("${spring.security.oauth2.client.provider.oidc.issuer-uri}")
     private String issuerUri;
@@ -44,7 +44,7 @@ public class SecurityConfiguration {
     private String issuerOverride;
 
     @Order(1)
-    private  ServiceAuthFilter serviceAuthFilter;
+    private final ServiceAuthFilter serviceAuthFilter;
     @Order(2)
     private final SecurityEndpointFilter securityEndpointFilter;
     List<String> anonymousPaths;
@@ -77,7 +77,6 @@ public class SecurityConfiguration {
         jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
         this.securityEndpointFilter = securityEndpointFilter;
-
     }
 
     @Bean
@@ -89,7 +88,8 @@ public class SecurityConfiguration {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/error").permitAll().anyRequest().authenticated())
-                .oauth2ResourceServer(auth -> auth.authenticationEntryPoint(restAuthenticationEntryPoint)
+                .oauth2ResourceServer(auth ->
+                        auth.authenticationEntryPoint(restAuthenticationEntryPoint)
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)))
                 .oauth2Client(Customizer.withDefaults());
         return http.build();
@@ -98,7 +98,7 @@ public class SecurityConfiguration {
     @Bean
     JwtDecoder jwtDecoder() {
 
-        NimbusJwtDecoder jwtDecoder = (NimbusJwtDecoder) JwtDecoders.fromOidcIssuerLocation(issuerUri);
+        NimbusJwtDecoder jwtDecoder = JwtDecoders.fromOidcIssuerLocation(issuerUri);
 
         // We are using issuerOverride instead of issuerUri as SIDAM has the wrong issuer at the moment
         OAuth2TokenValidator<Jwt> withTimestamp = new JwtTimestampValidator();
