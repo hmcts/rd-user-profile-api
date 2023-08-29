@@ -142,4 +142,5 @@ public class UserProfileProviderTest {
                 Collections.singletonList("application/json"));
         return responseHeaders;
     }
+
 }
