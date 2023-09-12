@@ -543,6 +543,21 @@ dependencies {
     pactTestImplementation sourceSets.test.runtimeClasspath
 }
 
+dependencyManagement {
+
+    dependencies {
+        // CVE-2021-33037
+        // CVE-2021-42340
+        // CVE-2023-28709
+        // CVE-2023-41080
+        dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.80') {
+            entry 'tomcat-embed-core'
+            entry 'tomcat-embed-el'
+            entry 'tomcat-embed-websocket'
+        }
+    }
+}
+
 rootProject.tasks.named("processFunctionalTestResources") {
     duplicatesStrategy = 'include'
 }
