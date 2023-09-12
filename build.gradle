@@ -380,6 +380,8 @@ dependencies {
 
     implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '2.8.5'
 
+    implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '11.9.1'
+
     implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '4.0.0'
 
     implementation 'com.github.hmcts:service-auth-provider-java-client:4.0.3'
@@ -447,8 +449,6 @@ dependencies {
     implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: versions.log4j
     implementation "com.github.hmcts.java-logging:logging:${versions.reformLogging}"
     implementation "com.github.hmcts.java-logging:logging-appinsights:${versions.reformLogging}"
-    implementation group: 'io.github.openfeign.form', name: 'feign-form', version: versions.feign
-    implementation group: 'io.github.openfeign.form', name: 'feign-form-spring', version: versions.feign
 
     testImplementation ('com.github.hmcts:rd-commons-lib:v0.0.13'){
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-web'
