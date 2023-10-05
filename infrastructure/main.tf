@@ -100,7 +100,7 @@ module "db-user-profile-v15" {
   env                  = var.env
   pgsql_databases = [
     {
-      name = "rd-user-profile-api-db"
+      name = "dbuserprofile"
     }
   ]
   pgsql_version        = "15"
@@ -135,6 +135,6 @@ resource "azurerm_key_vault_secret" "POSTGRES_PORT-V15" {
 
 resource "azurerm_key_vault_secret" "POSTGRES_DATABASE-V15" {
   name          = join("-", [var.component, "POSTGRES-DATABASE-V15"])
-  value         = "rd-user-profile-api-db"
+  value         = "dbuserprofile"
   key_vault_id  = data.azurerm_key_vault.rd_key_vault.id
 }
