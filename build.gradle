@@ -413,7 +413,7 @@ dependencies {
     implementation group: 'com.google.guava', name: 'guava', version: '32.0.1-jre'
 
     implementation group:"org.yaml", name: "snakeyaml", version:"1.33"
-    implementation (group: 'io.rest-assured', name: 'rest-assured', version: '4.3.1') {
+    implementation (group: 'io.rest-assured', name: 'rest-assured', version: '3.3.0') {
         exclude group: "com.sun.xml.bind", module: "jaxb-osgi"
         exclude group: "org.apache.sling"
     }
@@ -443,7 +443,6 @@ dependencies {
 
     testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.9'
 
-    testImplementation 'net.serenity-bdd:serenity-rest-assured:3.8.1'
     testImplementation group: 'net.serenity-bdd', name: 'serenity-junit', version: '3.8.1'
 
     implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: versions.log4j
@@ -491,9 +490,8 @@ dependencies {
 
     testImplementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.10.0'
 
-    testImplementation (group: 'io.rest-assured', name: 'rest-assured', version: '4.3.1') {
-        exclude group: "com.sun.xml.bind", module: "jaxb-osgi"
-    }
+    testImplementation group: 'io.rest-assured', name: 'rest-assured', version: '3.3.0'
+    testImplementation group: 'io.rest-assured', name: 'rest-assured-common', version: '4.2.0'
 
     testImplementation group: 'com.github.mifmif', name: 'generex', version: '1.0.2'
     testImplementation 'com.github.hmcts:fortify-client:1.2.0:all'
