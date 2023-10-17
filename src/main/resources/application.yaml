@@ -89,6 +89,9 @@ security:
     - "/webjars/springfox-swagger-ui/**"
     - "/favicon.ico"
     - "/error"
+    - "/actuator/**"
+    - "/swagger-ui.html"
+    - "/csrf"
 
 ### dependency configuration
 idam:
