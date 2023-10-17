@@ -413,7 +413,7 @@ dependencies {
     implementation group: 'com.google.guava', name: 'guava', version: '32.0.1-jre'
 
     implementation group:"org.yaml", name: "snakeyaml", version:"1.33"
-    implementation (group: 'io.rest-assured', name: 'rest-assured', version: '3.3.0') {
+    implementation (group: 'io.rest-assured', name: 'rest-assured', version: '5.3.2') {
         exclude group: "com.sun.xml.bind", module: "jaxb-osgi"
         exclude group: "org.apache.sling"
     }
@@ -488,8 +488,8 @@ dependencies {
 
     testImplementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.10.0'
 
-    testImplementation group: 'io.rest-assured', name: 'rest-assured', version: '3.3.0'
-    testImplementation group: 'io.rest-assured', name: 'rest-assured-common', version: '4.2.0'
+    testImplementation group: 'io.rest-assured', name: 'rest-assured', version: '5.3.2'
+    testImplementation group: 'io.rest-assured', name: 'rest-assured-common', version: '5.3.2'
 
     testImplementation group: 'com.github.mifmif', name: 'generex', version: '1.0.2'
     testImplementation 'com.github.hmcts:fortify-client:1.2.0:all'
