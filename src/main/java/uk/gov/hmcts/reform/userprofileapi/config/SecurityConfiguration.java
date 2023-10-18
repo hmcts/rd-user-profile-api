@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.userprofileapi.config;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -30,10 +30,9 @@ import javax.inject.Inject;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
-//@Configuration
+@Configuration
 @ConfigurationProperties(prefix = "security")
 @EnableWebSecurity
-@EnableConfigurationProperties
 @Slf4j
 public class SecurityConfiguration {
 

@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.idam.client.IdamApi;
 })
 @SpringBootApplication(scanBasePackages = {
         "uk.gov.hmcts.reform.idam",
-        "uk.gov.hmcts.reform.userprofileapi.domain.feign"
+        "uk.gov.hmcts.reform.userprofileapi"
 })
 @EnableFeignClients(basePackages = {
         "uk.gov.hmcts.reform.userprofileapi"
