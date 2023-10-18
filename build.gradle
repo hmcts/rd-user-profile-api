@@ -498,8 +498,8 @@ dependencies {
     contractTestImplementation group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pact_version
     contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pact_version
 
-    testImplementation 'net.serenity-bdd:serenity-rest-assured:3.8.1'
-    testImplementation group: 'net.serenity-bdd', name: 'serenity-junit', version: '3.8.1'
+    testImplementation 'net.serenity-bdd:serenity-rest-assured:4.0.15'
+    testImplementation group: 'net.serenity-bdd', name: 'serenity-junit', version: '4.0.15'
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: versions.junit
 
     functionalTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit
@@ -549,7 +549,8 @@ dependencyManagement {
         // CVE-2021-33037
         // CVE-2021-42340
         // CVE-2023-28709
-        dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.81') {
+        // CVE-2023-41080
+        dependencySet(group: 'org.apache.tomcat.embed', version: '10.1.14') {
             entry 'tomcat-embed-core'
             entry 'tomcat-embed-el'
             entry 'tomcat-embed-websocket'
