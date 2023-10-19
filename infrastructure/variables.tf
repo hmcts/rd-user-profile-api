@@ -11,6 +11,7 @@ variable "component" {
   type = string
 }
 
+
 variable "location" {
   type    = string
   default = "UK South"
@@ -32,6 +33,7 @@ variable "team_name" {
   type    = string
   default = "RD"
 }
+
 
 variable "product-V15" {
   type = string
@@ -88,3 +90,4 @@ variable "pgsql_server_configuration" {
     }
   ]
 }
+
