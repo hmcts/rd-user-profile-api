@@ -40,7 +40,7 @@ spring:
 ### database configuration
   datasource:
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5428}/${POSTGRES_NAME:dbuserprofile}${POSTGRES_CONNECTION_OPTIONS:?}?currentSchema=${CURRENT_SCHEMA:dbuserprofile}
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5428}/${POSTGRES_NAME:dbuserprofile}${POSTGRES_CONNECTION_OPTIONS:?}
     username: ${POSTGRES_USERNAME:dbuserprofile}
     password: ${POSTGRES_PASSWORD:dbuserprofile}
     properties:
