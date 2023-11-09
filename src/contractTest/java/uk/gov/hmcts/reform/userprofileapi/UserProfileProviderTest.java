@@ -88,11 +88,6 @@ public class UserProfileProviderTest {
     @Autowired
     private UserProfileQueryProvider querySupplier;
 
-    private static final String EMAIL_ADDRESS = "test@test.com";
-    private static final String TEST_FN = "testFN";
-    private static final String TEST_SN = "testSN";
-
-
 
     @TestTemplate
     @ExtendWith(PactVerificationInvocationContextProvider.class)
@@ -113,8 +108,8 @@ public class UserProfileProviderTest {
     public void getUserProfile() {
         Supplier<Optional<UserProfile>> up = () -> Optional.of(genUserProfile());
         doReturn(up).when(querySupplier).getRetrieveByIdQuery(any());
-        IdamRolesInfo idamRolesInfo = new IdamRolesInfo("007", EMAIL_ADDRESS, TEST_FN,
-                TEST_SN, Collections.singletonList("Secret-Agent"), true, false,
+        IdamRolesInfo idamRolesInfo = new IdamRolesInfo("007", "test@test.com", "testFN",
+                "testSN", Collections.singletonList("Secret-Agent"), true, false,
                 HttpStatus.OK,"11 OK");
         doReturn(idamRolesInfo).when(idamService).fetchUserById(any());
     }
@@ -123,8 +118,8 @@ public class UserProfileProviderTest {
     public void getUserProfileForRoles() {
         Supplier<Optional<UserProfile>> up = () -> Optional.of(genUserProfile());
         doReturn(up).when(querySupplier).getRetrieveByIdQuery(any());
-        IdamRolesInfo idamRolesInfo = new IdamRolesInfo("007", EMAIL_ADDRESS, TEST_FN,
-                TEST_SN, Collections.singletonList("Secret Agent"), true, false,
+        IdamRolesInfo idamRolesInfo = new IdamRolesInfo("007", "test@test.com", "testFN",
+                "testSN", Collections.singletonList("Secret Agent"), true, false,
                 HttpStatus.OK,"11 OK");
         doReturn(idamRolesInfo).when(idamService).fetchUserById(any());
     }
@@ -139,7 +134,7 @@ public class UserProfileProviderTest {
         when(userProfileRepository.findByIdamIdIn(anyList())).thenReturn(Optional.of(userProfiles));
     }
 
-    //@State({"A user profile retrieve request is submitted"})
+    //@State({"Retrieve multiple user profiles"})
     public void retrieveMultipleUserProfile() {
         var userProfiles = Collections.singletonList(genUserProfile());
         when(userProfileRepository.findByIdamIdIn(anyList())).thenReturn(Optional.of(userProfiles));
@@ -197,7 +192,7 @@ public class UserProfileProviderTest {
     }
 
     private UserProfile genUserProfile() {
-        return new UserProfile(007L,"007", EMAIL_ADDRESS, TEST_FN, TEST_SN,
+        return new UserProfile(007L,"007","test@test.com", "testFN", "testSN",
                 LanguagePreference.EN,true, LocalDateTime.now(),true,
                 LocalDateTime.now(), UserCategory.PROFESSIONAL, UserType.INTERNAL,
                 IdamStatus.ACTIVE, 1, LocalDateTime.now(),LocalDateTime.now(),null,
