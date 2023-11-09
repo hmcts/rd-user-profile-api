@@ -6,7 +6,6 @@ import au.com.dius.pact.provider.junitsupport.Provider;
 import au.com.dius.pact.provider.junitsupport.State;
 import au.com.dius.pact.provider.junitsupport.loader.PactBroker;
 import au.com.dius.pact.provider.spring.junit5.MockMvcTestTarget;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Maps;
 import feign.Request;
 import feign.RequestTemplate;
@@ -22,9 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.userprofileapi.controller.UserProfileController;
-import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
-import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfilesDeletionResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
@@ -56,8 +53,8 @@ import static java.nio.charset.Charset.defaultCharset;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -72,8 +69,6 @@ public class UserProfileProviderTest {
 
     @Mock
     private DeleteUserProfileServiceImpl deleteUserProfileService;
-
-    private IdamRolesInfo idamRolesInfo;
 
     @Autowired
     private UserProfileRepository userProfileRepository;
@@ -92,6 +87,11 @@ public class UserProfileProviderTest {
 
     @Autowired
     private UserProfileQueryProvider querySupplier;
+
+    private static final String EMAIL_ADDRESS = "test@test.com";
+    private static final String TEST_FN = "testFN";
+    private static final String TEST_SN = "testSN";
+
 
 
     @TestTemplate
@@ -113,8 +113,8 @@ public class UserProfileProviderTest {
     public void getUserProfile() {
         Supplier<Optional<UserProfile>> up = () -> Optional.of(genUserProfile());
         doReturn(up).when(querySupplier).getRetrieveByIdQuery(any());
-        IdamRolesInfo idamRolesInfo = new IdamRolesInfo("007", "test@test.com", "testFN",
-                "testSN", Collections.singletonList("Secret-Agent"), true, false,
+        IdamRolesInfo idamRolesInfo = new IdamRolesInfo("007", EMAIL_ADDRESS, TEST_FN,
+                TEST_SN, Collections.singletonList("Secret-Agent"), true, false,
                 HttpStatus.OK,"11 OK");
         doReturn(idamRolesInfo).when(idamService).fetchUserById(any());
     }
@@ -123,8 +123,8 @@ public class UserProfileProviderTest {
     public void getUserProfileForRoles() {
         Supplier<Optional<UserProfile>> up = () -> Optional.of(genUserProfile());
         doReturn(up).when(querySupplier).getRetrieveByIdQuery(any());
-        IdamRolesInfo idamRolesInfo = new IdamRolesInfo("007", "test@test.com", "testFN",
-                "testSN", Collections.singletonList("Secret Agent"), true, false,
+        IdamRolesInfo idamRolesInfo = new IdamRolesInfo("007", EMAIL_ADDRESS, TEST_FN,
+                TEST_SN, Collections.singletonList("Secret Agent"), true, false,
                 HttpStatus.OK,"11 OK");
         doReturn(idamRolesInfo).when(idamService).fetchUserById(any());
     }
@@ -139,9 +139,8 @@ public class UserProfileProviderTest {
         when(userProfileRepository.findByIdamIdIn(anyList())).thenReturn(Optional.of(userProfiles));
     }
 
-    //@State({"Retrieve multiple user profiles"})
-    public void retrieveMultipleUserProfile() throws JsonProcessingException {
-
+    //@State({"A user profile retrieve request is submitted"})
+    public void retrieveMultipleUserProfile() {
         var userProfiles = Collections.singletonList(genUserProfile());
         when(userProfileRepository.findByIdamIdIn(anyList())).thenReturn(Optional.of(userProfiles));
 
@@ -183,12 +182,12 @@ public class UserProfileProviderTest {
 
     //@State({"A user profile delete request"})
     public void deleteUserProfile() {
+        Optional<UserProfile> userProfileOptional = Optional.of(genUserProfile());
+        AttributeResponse attributeResponse = new AttributeResponse(ResponseEntity.status(200).build());
+        doReturn(attributeResponse).when(idamService).updateUserDetails(any(), any());
+        doReturn(userProfileOptional).when(userProfileRepository).findByIdamId(any(String.class));
 
-        UserProfileDataRequest identifier = mock(UserProfileDataRequest.class);
-        UserProfilesDeletionResponse userProfilesDeletionResponse =
-                new UserProfilesDeletionResponse(204, "UserProfiles Successfully Deleted");
-
-        when(deleteUserProfileService.delete(identifier)).thenReturn(userProfilesDeletionResponse);
+        doNothing().when(userProfileRepository).deleteAll(anyList());
     }
 
 
@@ -198,7 +197,7 @@ public class UserProfileProviderTest {
     }
 
     private UserProfile genUserProfile() {
-        return new UserProfile(007L,"007","test@test.com", "testFN", "testSN",
+        return new UserProfile(007L,"007", EMAIL_ADDRESS, TEST_FN, TEST_SN,
                 LanguagePreference.EN,true, LocalDateTime.now(),true,
                 LocalDateTime.now(), UserCategory.PROFESSIONAL, UserType.INTERNAL,
                 IdamStatus.ACTIVE, 1, LocalDateTime.now(),LocalDateTime.now(),null,
