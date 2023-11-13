@@ -16,7 +16,10 @@ spring:
   application:
     name: User Profile API
   jackson.date-format: yyyy-MM-dd
-  flyway.enabled: true
+  flyway:
+    enabled: true
+    schemas:
+      - dbuserprofile
   main:
     allow-bean-definition-overriding: true
     allow-circular-references: true
