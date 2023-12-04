@@ -45,7 +45,8 @@ def versions = [
         springVersion      : '5.3.27',
         jackson            : '2.14.0-rc1',
         feign              : '3.8.0',
-        testContainer_postgresql: '1.17.6'
+        testContainer_postgresql: '1.17.6',
+        bouncycastle       : '1.77'
 ]
 
 mainClassName = 'uk.gov.hmcts.reform.userprofileapi.Application'
@@ -355,7 +356,7 @@ dependencies {
     implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.8'
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '3.1.5'
 
-    implementation group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: '1.77'
+    implementation group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: versions.bouncycastle
 
     implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '2.8.5'
 
@@ -594,6 +595,28 @@ bootJar {
     archiveFileName = jarName
     manifest {
         attributes('Implementation-Version': project.version.toString())
+    }
+}
+
+configurations.all {
+    resolutionStrategy.eachDependency { details ->
+        if (details.requested.group == 'org.bouncycastle'
+                && (details.requested.name == 'bcpkix-jdk18on'
+                || details.requested.name == 'bcprov-jdk18on')
+        ){
+            details.useVersion versions.bouncycastle
+        }
+    }
+}
+
+dependencies {
+    modules {
+        module("org.bouncycastle:bcpkix-jdk15on") {
+            replacedBy("org.bouncycastle:bcpkix-jdk18on")
+        }
+        module("org.bouncycastle:bcprov-jdk15on") {
+            replacedBy("org.bouncycastle:bcprov-jdk18on")
+        }
     }
 }
 
