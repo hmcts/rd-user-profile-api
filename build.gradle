@@ -46,7 +46,8 @@ def versions = [
         jackson            : '2.14.0-rc1',
         feign              : '3.8.0',
         testContainer_postgresql: '1.17.6',
-        bouncycastle       : '1.77'
+        bouncycastle       : '1.77',
+        logback            : '1.2.13'
 ]
 
 mainClassName = 'uk.gov.hmcts.reform.userprofileapi.Application'
@@ -404,8 +405,8 @@ dependencies {
     implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '6.6'
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'
     implementation group: 'org.slf4j', name: 'jul-to-slf4j', version: '1.7.32'
-    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.8'
-    implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.8'
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
+    implementation group: 'ch.qos.logback', name: 'logback-core', version: versions.logback
 
     testImplementation group: 'org.testcontainers', name: 'postgresql', version: versions.testContainer_postgresql
     testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: versions.testContainer_postgresql
