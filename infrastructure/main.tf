@@ -84,11 +84,11 @@ module "db-user-profile-v11" {
 }
 
 
+
 # Create the database server v16
 # Name and resource group name will be defaults (<product>-<component>-<env> and <product>-<component>-data-<env> respectively)
 module "db-user-profile-v16" {
   source = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
-
   providers = {
     azurerm.postgres_network = azurerm.postgres_network
   }
@@ -103,6 +103,7 @@ module "db-user-profile-v16" {
       name = "dbuserprofile"
     }
   ]
+
   subnet_suffix        = "expanded"
   pgsql_version        = "16"
   product              = var.product-v16
@@ -130,7 +131,7 @@ resource "azurerm_key_vault_secret" "POSTGRES_HOST-v16" {
 
 resource "azurerm_key_vault_secret" "POSTGRES_PORT-V16" {
   name          = join("-", [var.component, "POSTGRES-PORT-v16"])
-  value         = "5432"
+ value         = "5432"
   key_vault_id  = data.azurerm_key_vault.rd_key_vault.id
 }
 

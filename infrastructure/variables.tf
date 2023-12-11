@@ -34,7 +34,6 @@ variable "team_name" {
   default = "RD"
 }
 
-
 variable "product-v16" {
   type = string
   default="rd-user-profile-api"
