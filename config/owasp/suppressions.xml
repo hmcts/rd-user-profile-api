@@ -23,6 +23,7 @@
     </suppress>
     <suppress>
      <cve>CVE-2022-45688</cve>
+        <cve>CVE-2023-46589</cve>
     </suppress>
      <suppress>
     <notes>Temporary suppression for commons-fileupload-1.4.jar</notes>
