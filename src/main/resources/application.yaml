@@ -16,7 +16,10 @@ spring:
   application:
     name: User Profile API
   jackson.date-format: yyyy-MM-dd
-  flyway.enabled: true
+  flyway:
+    enabled: true
+    schemas:
+      - dbuserprofile
   main:
     allow-bean-definition-overriding: true
     allow-circular-references: true
@@ -47,7 +50,7 @@ spring:
       charSet: UTF-8
     hikari:
       minimumIdle: 2
-      maximumPoolSize: 10
+      maximumPoolSize: ${HIKARI_MAX_POOL_SIZE:50}
       idleTimeout: 600000
       poolName: UPHikariCP
       maxLifetime: 1800000
@@ -71,6 +74,7 @@ spring:
   jpa:
     properties:
       hibernate:
+        default_schema: dbuserprofile
         jdbc:
           lob:
             non_contextual_creation: true
