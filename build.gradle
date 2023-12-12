@@ -350,6 +350,7 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jetty'
     implementation (group: 'org.springframework.boot', name: 'spring-boot-starter-web'){
         exclude group: 'org.glassfish', module: 'jakarta.el'
     }
