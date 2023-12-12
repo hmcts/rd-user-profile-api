@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.userprofileapi;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.openfeign.FeignAutoConfiguration;
@@ -16,6 +18,7 @@ import uk.gov.hmcts.reform.idam.client.IdamApi;
 @EnableJpaRepositories
 @EnableRetry
 @EnableCaching
+@EnableAutoConfiguration(exclude = { WebMvcAutoConfiguration.class })
 @ImportAutoConfiguration({
         FeignAutoConfiguration.class
 })
