@@ -466,7 +466,9 @@ dependencies {
     }
 
 
-    testImplementation('com.github.tomakehurst:wiremock:3.0.1')
+    testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:3.0.1") {
+        exclude group: 'com.github.jknack'
+    }
 
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
         exclude group: 'junit', module: 'junit'
