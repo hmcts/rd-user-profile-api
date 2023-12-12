@@ -48,5 +48,6 @@ file name: launchdarkly-java-server-sdk-5.10.7.jar (shaded: org.yaml:snakeyaml:1
     <notes>jakarta.activation-api@2.1.2 false positive: CVEs reported predate release date by a few years (!)</notes>
     <cve>CVE-2008-7271</cve>
     <cve>CVE-2010-4647</cve>
+    <cve>CVE-2023-4218</cve>
   </suppress>
 </suppressions>
