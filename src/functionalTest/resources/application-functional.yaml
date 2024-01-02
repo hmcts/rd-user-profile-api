@@ -18,6 +18,9 @@ exui.role.pui-organisation-manager: pui-organisation-manager
 exui.role.pui-finance-manager: pui-finance-manager
 exui.role.pui-case-manager: pui-case-manager
 
+logging.level.org.springframework: DEBUG
+logging.level.org.springframework.security: DEBUG
+
 # resent user invite interval in minutes
 resendInterval: 60
 

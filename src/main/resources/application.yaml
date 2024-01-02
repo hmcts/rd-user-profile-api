@@ -137,6 +137,8 @@ loggingComponentName: RD_User_Profile_API
 
 logging.level.com.zaxxer.hikari.HikariConfig: INFO
 logging.level.com.zaxxer.hikari: INFO
+logging.level.org.springframework: DEBUG
+logging.level.org.springframework.security: DEBUG
 
 launchdarkly:
   sdk:
