@@ -68,6 +68,7 @@ logging.level.com.zaxxer.hikari.HikariConfig: INFO
 logging.level.com.zaxxer.hikari: INFO
 logging.level.org.springframework: DEBUG
 logging.level.org.springframework.security: DEBUG
+logging.level.uk.gov.hmcts.reform.userprofileapi: DEBUG
 
 launchdarkly:
   sdk:

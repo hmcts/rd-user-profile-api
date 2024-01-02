@@ -20,6 +20,7 @@ exui.role.pui-case-manager: pui-case-manager
 
 logging.level.org.springframework: DEBUG
 logging.level.org.springframework.security: DEBUG
+logging.level.uk.gov.hmcts.reform.userprofileapi: DEBUG
 
 # resent user invite interval in minutes
 resendInterval: 60
