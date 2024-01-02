@@ -139,7 +139,6 @@ logging.level.com.zaxxer.hikari.HikariConfig: INFO
 logging.level.com.zaxxer.hikari: INFO
 logging.level.org.springframework: DEBUG
 logging.level.org.springframework.security: DEBUG
-logging.level.uk.gov.hmcts.reform.userprofileapi: DEBUG
 
 launchdarkly:
   sdk:
@@ -147,6 +146,6 @@ launchdarkly:
     environment: ${LAUNCH_DARKLY_ENV:local}
     user: rd
 
-logging.level.uk.gov.hmcts: ${APPLICATION_LOGGING_LEVEL:INFO}
+logging.level.uk.gov.hmcts: ${APPLICATION_LOGGING_LEVEL:DEBUG}
 
 
