@@ -34,13 +34,11 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @ConfigurationProperties(prefix = "security")
 @EnableWebSecurity
 @Slf4j
+@SuppressWarnings("unchecked")
 public class SecurityConfiguration {
 
     @Value("${spring.security.oauth2.client.provider.oidc.issuer-uri}")
     private String issuerUri;
-
-    @Value("${oidc.issuer}")
-    private String issuerOverride;
 
     @Order(1)
     private final ServiceAuthFilter serviceAuthFilter;
