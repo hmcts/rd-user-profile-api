@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.userprofileapi.config;
 
 import feign.codec.Encoder;
 import feign.form.spring.SpringFormEncoder;
+import feign.okhttp.OkHttpClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
@@ -24,4 +25,8 @@ public class FeignConfiguration {
         return new SpringFormEncoder(new SpringEncoder(messageConverters));
     }
 
+    @Bean
+    public OkHttpClient client() {
+        return new OkHttpClient();
+    }
 }
