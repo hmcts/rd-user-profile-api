@@ -101,6 +101,8 @@ module "db-user-profile-v16" {
       name = "dbuserprofile"
     }
   ]
+  # Setup Access Reader db user
+  force_user_permissions_trigger = "1"
 
   subnet_suffix        = "expanded"
   pgsql_version        = "16"
