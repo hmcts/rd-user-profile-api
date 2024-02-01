@@ -168,7 +168,8 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
             responseEntity = JsonFeignResponseHelper.toResponseEntity(response, getResponseMapperClass(response, null));
         } catch (FeignException ex) {
             responseEntity = status(getHttpStatusFromFeignException(ex).value()).build();
-            auditService.persistAudit(responseEntity.getStatusCode(), userProfile, ResponseSource.API);
+            auditService.persistAudit(HttpStatus.valueOf(responseEntity.getStatusCode().value()),
+                    userProfile, ResponseSource.API);
         }
         RoleDeletionResponse result = new RoleDeletionResponse(roleName, responseEntity);
         Optional<Response> respOptional = Optional.ofNullable(response);

@@ -1,13 +1,11 @@
 package uk.gov.hmcts.reform.userprofileapi.docs;
 
-import com.microsoft.applicationinsights.web.internal.WebRequestTrackingFilter;
 import net.thucydides.core.annotations.WithTag;
 import net.thucydides.core.annotations.WithTags;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.userprofileapi.integration.AuthorizationEnabledIntegrationTest;
@@ -38,10 +36,7 @@ class SwaggerPublisherTest extends AuthorizationEnabledIntegrationTest {
 
     @BeforeEach
     public void setUp() {
-        WebRequestTrackingFilter filter = new WebRequestTrackingFilter();
-        filter.init(new MockFilterConfig());
         this.mockMvc = webAppContextSetup(webApplicationContext)
-            .addFilter(filter)
             .build();
     }
 

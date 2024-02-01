@@ -23,5 +23,7 @@ java:
           alias: USER_PROFILE_API_S2S_SECRET
         - name: ApplicationInsightsInstrumentationKey
           alias: azure.application-insights.instrumentation-key
+        - name: app-insights-connection-string
+          alias: app-insights-connection-string
         - name: LD-SDK-KEY
           alias: LD_SDK_KEY
