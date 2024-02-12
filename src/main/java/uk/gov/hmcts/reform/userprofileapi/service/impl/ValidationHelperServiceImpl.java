@@ -22,6 +22,7 @@ import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstant
 import static uk.gov.hmcts.reform.userprofileapi.domain.enums.ExceptionType.BADREQUEST;
 import static uk.gov.hmcts.reform.userprofileapi.domain.enums.ExceptionType.ERRORPERSISTINGEXCEPTION;
 import static uk.gov.hmcts.reform.userprofileapi.domain.enums.ExceptionType.REQUIREDFIELDMISSINGEXCEPTION;
+import static uk.gov.hmcts.reform.userprofileapi.domain.enums.ExceptionType.RESOURCEALREADYEXISTS;
 import static uk.gov.hmcts.reform.userprofileapi.domain.enums.ExceptionType.RESOURCENOTFOUNDEXCEPTION;
 import static uk.gov.hmcts.reform.userprofileapi.domain.enums.ExceptionType.TOOMANYREQUESTS;
 import static uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource.API;
@@ -60,6 +61,14 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
             auditService.persistAudit(NOT_FOUND, SYNC);
             final String exceptionMsg = String.format("%s - could not find user profile", RESOURCENOTFOUNDEXCEPTION);
             exceptionService.throwCustomRuntimeException(RESOURCENOTFOUNDEXCEPTION, exceptionMsg);
+        }
+    }
+
+    public void validateUserAlreadyExists(Optional<UserProfile> userProfile) {
+        if (!userProfile.isEmpty()) {
+            final String exceptionMsg = "RequiredFieldMissingException - The " +
+                "userIdam Id you are tryign to update already exists";
+            exceptionService.throwCustomRuntimeException(RESOURCEALREADYEXISTS, exceptionMsg);
         }
     }
 

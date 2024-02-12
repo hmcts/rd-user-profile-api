@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.apache.commons.lang.RandomStringUtils.randomAlphanumeric;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
@@ -42,7 +43,7 @@ public class CreateUserProfileTestDataBuilder {
     }
 
     public static UpdateUserProfileData buildUpdateUserProfileData() {
-        return new UpdateUserProfileData(
+        return new UpdateUserProfileData(UUID.randomUUID().toString(),
                 generateRandomEmail(),
                 randomAlphabetic(10) + " " + randomAlphabetic(10),
                 randomAlphabetic(10) + " " + randomAlphabetic(10),
