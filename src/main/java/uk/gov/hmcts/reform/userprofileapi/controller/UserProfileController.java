@@ -581,6 +581,7 @@ public class UserProfileController {
             @RequestParam(value = "emailPattern", required = false) String emailPattern) {
 
         /**
+         * RDCC-2391
          * This API will need to be revisited if it is to be used for business functionality.
          */
 

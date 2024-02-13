@@ -48,9 +48,12 @@ public class DeleteUserProfileServiceImpl implements DeleteResourceService<UserP
     @Transactional
     public UserProfilesDeletionResponse deleteByUserId(String userId) {
         UserProfilesDeletionResponse deletionResponse = new UserProfilesDeletionResponse();
-
+        //delete from idam
         Response idamResponse = idamClient.deleteUser(userId);
 
+        //if status 204 user delete from UP and IDMA ,
+        // if delete by email -> Pending & 204 only delete in UP not IDAM,
+        // if delete by id -> Pending & 204 delete in both
         if (idamResponse.status() == NO_CONTENT.value() || idamResponse.status() == NOT_FOUND.value()
                 || idamResponse.body().toString().contains("pending")) {
             Optional<UserProfile> userProfile = userProfileRepository.findByIdamId(userId.trim());
