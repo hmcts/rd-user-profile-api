@@ -84,7 +84,7 @@ class UserProfileUpdatorTest {
     private final UserProfileCreationData userProfileCreationData
             = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
 
-    private final UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("test@test.com",
+    private final UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData(UUID.randomUUID().toString(),"test@test.com",
             "firstName", "lastName", "ACTIVE", new HashSet<>(),
             new HashSet<>());
 

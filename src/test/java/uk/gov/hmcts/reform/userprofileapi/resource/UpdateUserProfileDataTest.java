@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,7 +35,7 @@ class UpdateUserProfileDataTest {
         userProfile.setLastName("lname");
         userProfile.setEmail("email");
 
-        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("email", "fname",
+        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData(UUID.randomUUID().toString(),"email", "fname",
                 "lname", "ACTIVE", new HashSet<>(), new HashSet<>());
 
         assertThat(updateUserProfileData.isSameAsUserProfile(userProfile)).isTrue();

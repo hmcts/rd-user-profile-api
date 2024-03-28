@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -31,7 +32,7 @@ class UserProfileMapperTest {
     private final IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(status(CREATED).build());
     private final UserProfile userProfile = new UserProfile(userProfileCreationData,
             idamRegistrationInfo.getIdamRegistrationResponse());
-    private final UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("test@test.com",
+    private final UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData(UUID.randomUUID().toString(),"test@test.com",
             "firstName", "lastName", "ACTIVE", new HashSet<RoleName>(),
             new HashSet<RoleName>());
 
