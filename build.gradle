@@ -41,7 +41,7 @@ def versions = [
         pact_version       : '4.1.7',
         launchDarklySdk    : '5.10.9',
         log4j              : '2.17.1',
-        springVersion      : '5.3.27',
+        springVersion      : '5.3.33',
         jackson            : '2.14.0-rc1',
         feign              : '3.8.0',
         testContainer_postgresql: '1.17.6',
