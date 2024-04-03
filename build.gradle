@@ -484,7 +484,7 @@ dependencies {
     }
 
     testImplementation group: 'com.github.mifmif', name: 'generex', version: '1.0.2'
-    testImplementation 'com.github.hmcts:fortify-client:1.2.0:all'
+    testImplementation 'com.github.hmcts:fortify-client:1.4.1:all'
 
     contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: versions.pact_version
     contractTestImplementation group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pact_version
