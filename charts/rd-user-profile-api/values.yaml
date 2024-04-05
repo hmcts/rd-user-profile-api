@@ -3,6 +3,8 @@ java:
   readinessPath: '/health/readiness'
   ingressHost: rd-user-profile-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
   aadIdentityName: rd
+  spotInstances:
+    enabled: true
   image: 'hmctspublic.azurecr.io/rd/user-profile-api:latest'
   environment:
     POSTGRES_HOST: rd-user-profile-api-postgres-db-v11-{{ .Values.global.environment }}.postgres.database.azure.com
