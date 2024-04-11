@@ -114,6 +114,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
 
     public void updateUserScenario() throws Exception {
         updateUserProfileShouldReturnSuccess();
+        updateUserProfileShouldSaveIdamID();
         updateUserRolesAndProfileShouldReturnSuccess();
     }
 
@@ -252,6 +253,24 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         verifyUpdatedUserProfile(resource, updateUserProfileData);
 
         log.info("updateUserProfileShouldReturnSuccess :: ENDED");
+    }
+
+    @Test
+    public void updateUserProfileShouldSaveIdamID() throws Exception {
+        log.info("updateUserProfileShouldSaveIdamID :: STARTED");
+        setUpTestData();
+        activeUserProfile = createActiveUserProfileWithGivenFields(activeUserProfileCreationData);
+        updateUserProfileData.setFirstName(randomAlphabetic(20));
+        updateUserProfileData.setLastName(randomAlphabetic(20));
+        updateUserProfileData.setIdamId(UUID.randomUUID().toString());
+        updateUserProfile(updateUserProfileData, activeUserProfile.getIdamId());
+
+        UserProfileResponse resource = testRequestHandler.sendGet(
+                requestUri + "?userId=" + updateUserProfileData.getIdamId(), UserProfileResponse.class);
+
+        verifyUpdatedUserProfile(resource, updateUserProfileData);
+
+        log.info("updateUserProfileShouldSaveIdamID :: ENDED");
     }
 
     public void findUserByEmailInHeaderShouldReturnSuccess() {
