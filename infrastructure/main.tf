@@ -116,6 +116,9 @@ module "db-user-profile-v16" {
   pgsql_version        = "16"
   product              = var.product-v16
   name               = join("-", [var.product-v16, var.component-v16])
+
+  pgsql_server_configuration = var.pgsql_server_configuration
+
 }
 
 
