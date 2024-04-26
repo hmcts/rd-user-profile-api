@@ -100,4 +100,19 @@ class UserProfileMapperTest {
         verify(userProfileMock, times(1)).getLastName();
     }
 
+    @Test
+    void test_setIdamId() {
+        String originalIdamId = userProfile.getIdamId();
+        String newIdamId = UUID.randomUUID().toString();
+
+        UserProfileMapper.setIdamId("", userProfile, false);
+        assertThat(userProfile.getIdamId()).isEqualTo(originalIdamId);
+
+        UserProfileMapper.setIdamId(newIdamId, userProfile, true);
+        assertThat(userProfile.getIdamId()).isEqualTo(originalIdamId);
+
+        UserProfileMapper.setIdamId(newIdamId, userProfile, false);
+        assertThat(userProfile.getIdamId()).isEqualTo(newIdamId);
+    }
+
 }

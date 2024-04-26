@@ -21,10 +21,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpStatus.ACCEPTED;
 import static org.springframework.http.ResponseEntity.status;
 
@@ -90,5 +89,12 @@ class ValidationServiceImplTest {
     void test_IsExuiUpdateRequest() {
         assertThat(sut.isExuiUpdateRequest(ResponseSource.EXUI.name())).isTrue();
         assertThat(sut.isExuiUpdateRequest("INVALID")).isFalse();
+    }
+
+    @Test
+    void test_ValidateUpdateAlreadyExists() {
+        doThrow(new RuntimeException("ResourceAlreadyExistsException")).when(validationHelperServiceMock).validateUserAlreadyExists(any());
+        updateUserProfileData.setIdamId(userId);
+        assertThrows(RuntimeException.class, () -> sut.validateUpdate(updateUserProfileData, userId, ResponseSource.API));
     }
 }
