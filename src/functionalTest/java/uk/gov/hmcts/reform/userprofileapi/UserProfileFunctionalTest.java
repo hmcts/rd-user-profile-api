@@ -127,6 +127,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         Set<RoleName> rolesName = new HashSet<>();
         rolesName.add(new RoleName(testConfigProperties.getPuiFinanceManager()));
         updateUserProfileData.setRolesAdd(rolesName);
+        updateUserProfileData.setIdamId(activeUserProfile.getIdamId());
 
         updateUserProfile(updateUserProfileData, activeUserProfile.getIdamId());
         var urlPath =
@@ -245,6 +246,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         updateUserProfileData.setFirstName(randomAlphabetic(20));
         updateUserProfileData.setLastName(randomAlphabetic(20));
         updateUserProfileData.setEmail(activeUserProfileCreationData.getEmail());
+        updateUserProfileData.setIdamId(activeUserProfile.getIdamId());
         updateUserProfile(updateUserProfileData, activeUserProfile.getIdamId());
 
         UserProfileResponse resource = testRequestHandler.sendGet(
