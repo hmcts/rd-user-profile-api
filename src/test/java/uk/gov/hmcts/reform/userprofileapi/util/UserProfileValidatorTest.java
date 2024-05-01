@@ -88,8 +88,10 @@ class UserProfileValidatorTest {
 
         IdamRegistrationInfo idamInfo = new IdamRegistrationInfo(status(CREATED).build());
         UserProfile userProfile = new UserProfile(userProfileData, idamInfo.getIdamRegistrationResponse());
+        String idamId = UUID.randomUUID().toString();
+        userProfile.setIdamId(idamId);
 
-        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData(UUID.randomUUID().toString(),"test-email-@somewhere.com",
+        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData(idamId,"test-email-@somewhere.com",
                 "test-first-name", "test-last-name", "PENDING", addRolesToRoleName(),
                 addRolesToRoleName());
 

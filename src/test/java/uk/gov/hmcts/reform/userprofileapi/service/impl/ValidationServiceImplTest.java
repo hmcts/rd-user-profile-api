@@ -62,11 +62,12 @@ class ValidationServiceImplTest {
         when(validationHelperServiceMock.validateUpdateUserProfileRequestValid(updateUserProfileData, userId,
                 ResponseSource.API)).thenReturn(true);
 
+        updateUserProfileData.setIdamId(userId);
         UserProfile actual = sut.validateUpdate(updateUserProfileData, userId, ResponseSource.API);
 
         assertThat(actual.getStatus()).isEqualTo(IdamStatus.SUSPENDED);
 
-        verify(userProfileRepositoryMock, times(1)).findByIdamId(any(String.class));
+        verify(userProfileRepositoryMock, times(2)).findByIdamId(any(String.class));
         verify(validationHelperServiceMock, times(1)).validateUserIsPresent(any());
     }
 
