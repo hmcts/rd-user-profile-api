@@ -156,13 +156,13 @@ class UserProfileValidatorTest {
 
     @Test
     void test_validateUserProfileStatus() {
-        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData(UUID.randomUUID().toString(),"test-email-@somewhere.com",
-                "test-first-name", "test-last-name", "PENDING", addRolesToRoleName(),
+        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData(UUID.randomUUID().toString(),
+                "test-email-@somewhere.com","test-first-name", "test-last-name", "PENDING", addRolesToRoleName(),
                 addRolesToRoleName());
         assertThat(UserProfileValidator.validateUserProfileStatus(updateUserProfileData)).isTrue();
 
-        UpdateUserProfileData updateUserProfileData1 = new UpdateUserProfileData(UUID.randomUUID().toString(),"test-email-@somewhere.com",
-                "test-first-name", "test-last-name", "PENING", addRolesToRoleName(),
+        UpdateUserProfileData updateUserProfileData1 = new UpdateUserProfileData(UUID.randomUUID().toString(),
+                "test-email-@somewhere.com","test-first-name", "test-last-name", "PENING", addRolesToRoleName(),
                 addRolesToRoleName());
         assertThat(UserProfileValidator.validateUserProfileStatus(updateUserProfileData1)).isFalse();
 

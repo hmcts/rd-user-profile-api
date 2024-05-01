@@ -23,7 +23,10 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.ACCEPTED;
 import static org.springframework.http.ResponseEntity.status;
 
@@ -45,8 +48,8 @@ class ValidationServiceImplTest {
     private final UserProfile userProfile = new UserProfile(userProfileCreationData, idamRegistrationInfo
             .getIdamRegistrationResponse());
 
-    private final UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData(UUID.randomUUID().toString(),"test@test.com",
-            "firstName", "lastName", "ACTIVE", new HashSet<>(),
+    private final UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData(UUID.randomUUID().toString(),
+            "test@test.com","firstName", "lastName", "ACTIVE", new HashSet<>(),
             new HashSet<>());
 
 
@@ -94,8 +97,10 @@ class ValidationServiceImplTest {
 
     @Test
     void test_ValidateUpdateAlreadyExists() {
-        doThrow(new RuntimeException("ResourceAlreadyExistsException")).when(validationHelperServiceMock).validateUserAlreadyExists(any());
+        doThrow(new RuntimeException("ResourceAlreadyExistsException"))
+                .when(validationHelperServiceMock).validateUserAlreadyExists(any());
         updateUserProfileData.setIdamId(userId);
-        assertThrows(RuntimeException.class, () -> sut.validateUpdate(updateUserProfileData, userId, ResponseSource.API));
+        assertThrows(RuntimeException.class, () ->
+                sut.validateUpdate(updateUserProfileData, userId, ResponseSource.API));
     }
 }

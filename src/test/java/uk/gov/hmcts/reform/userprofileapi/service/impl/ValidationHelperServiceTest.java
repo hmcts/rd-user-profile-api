@@ -59,8 +59,8 @@ class ValidationHelperServiceTest {
     private final IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(status(ACCEPTED).build());
     private final UserProfile userProfile = new UserProfile(userProfileCreationData,
             idamRegistrationInfo.getIdamRegistrationResponse());
-    private final UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData(UUID.randomUUID().toString(),"test@test.com",
-            "firstName", "lastName", "ACTIVE", new HashSet<>(),
+    private final UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData(UUID.randomUUID().toString(),
+            "test@test.com","firstName", "lastName", "ACTIVE", new HashSet<>(),
             new HashSet<>());
 
     @Spy

@@ -66,8 +66,8 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
 
     public void validateUserAlreadyExists(Optional<UserProfile> userProfile) {
         if (!userProfile.isEmpty()) {
-            final String exceptionMsg = "RequiredFieldMissingException - The " +
-                "userIdam Id you are tryign to update already exists";
+            final String exceptionMsg = "RequiredFieldMissingException - The "
+                    + "userIdam Id you are tryign to update already exists";
             exceptionService.throwCustomRuntimeException(RESOURCEALREADYEXISTS, exceptionMsg);
         }
     }

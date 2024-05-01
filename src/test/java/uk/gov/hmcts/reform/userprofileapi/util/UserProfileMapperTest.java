@@ -32,8 +32,8 @@ class UserProfileMapperTest {
     private final IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(status(CREATED).build());
     private final UserProfile userProfile = new UserProfile(userProfileCreationData,
             idamRegistrationInfo.getIdamRegistrationResponse());
-    private final UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData(UUID.randomUUID().toString(),"test@test.com",
-            "firstName", "lastName", "ACTIVE", new HashSet<RoleName>(),
+    private final UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData(UUID.randomUUID().toString(),
+            "test@test.com","firstName", "lastName", "ACTIVE", new HashSet<RoleName>(),
             new HashSet<RoleName>());
 
     @Test
