@@ -246,7 +246,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         updateUserProfileData.setFirstName(randomAlphabetic(20));
         updateUserProfileData.setLastName(randomAlphabetic(20));
         updateUserProfileData.setEmail(activeUserProfileCreationData.getEmail());
-        updateUserProfileData.setIdamId(activeUserProfile.getIdamId());
+        updateUserProfileData.setIdamId(UUID.randomUUID().toString());
         updateUserProfile(updateUserProfileData, activeUserProfile.getIdamId());
 
         UserProfileResponse resource = testRequestHandler.sendGet(
