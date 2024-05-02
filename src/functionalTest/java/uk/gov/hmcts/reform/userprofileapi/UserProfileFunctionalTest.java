@@ -114,7 +114,6 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
 
     public void updateUserScenario() throws Exception {
         updateUserProfileShouldReturnSuccess();
-        updateUserProfileShouldSaveIdamID();
         updateUserRolesAndProfileShouldReturnSuccess();
     }
 
