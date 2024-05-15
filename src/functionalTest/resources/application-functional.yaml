@@ -3,14 +3,14 @@ spring.flyway.enabled: false
 
 idam.api.url: ${IDAM_URL_TO_TEST:https://idam-api.aat.platform.hmcts.net}
 
-s2s.auth.secret: ${USER_PROFILE_API_S2S_SECRET:OLMEJQA7UHU6EZKG}
+s2s.auth.secret: ${USER_PROFILE_API_S2S_SECRET:}
 s2s.auth.url: ${S2S_URL_TO_TEST:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
 
 s2s-name: rd_user_profile_api
 
 idam.auth.redirectUrl: ${IDAM_REDIRECT_URL:https://rd-professional-api-aat.service.core-compute-aat.internal/oauth2redirect}
-idam.auth.clientId: ${OAUTH2_CLIENT_ID:rd-professional-api}
-idam.auth.clientSecret: ${OAUTH2_CLIENT_SECRET:a20c3cf7-1fb4-4bcf-89ec-963c05a13f71}
+idam.auth.clientId: ${OAUTH2_CLIENT_ID:}
+idam.auth.clientSecret: ${OAUTH2_CLIENT_SECRET:}
 ## Secure roles configuration 1
 exui.role.hmcts-admin: prd-admin
 exui.role.pui-user-manager: pui-user-manager
@@ -34,7 +34,6 @@ postgres.port: ${FUNC_DATABASE_PORT}
 
 launchdarkly:
   sdk:
-    key: sdk-b1310c4a-e522-4512-9e68-d75d23b04c5d
+    key: ${LD_SDK_KEY:}
     environment: ${LAUNCH_DARKLY_ENV:local}
     user: rd
-LD_SDK_KEY : sdk-b1310c4a-e522-4512-9e68-d75d23b04c5d
