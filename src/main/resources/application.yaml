@@ -43,7 +43,7 @@ spring:
 ### database configuration
   datasource:
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5428}/${POSTGRES_NAME:dbuserprofile}${POSTGRES_CONNECTION_OPTIONS:?}
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5427}/${POSTGRES_NAME:dbuserprofile}${POSTGRES_CONNECTION_OPTIONS:?}
     username: ${POSTGRES_USERNAME:dbuserprofile}
     password: ${POSTGRES_PASSWORD:dbuserprofile}
     properties:
@@ -137,10 +137,15 @@ logging.level.com.zaxxer.hikari: INFO
 
 launchdarkly:
   sdk:
-    key: ${LD_SDK_KEY:}
+    key: sdk-b1310c4a-e522-4512-9e68-d75d23b04c5d
     environment: ${LAUNCH_DARKLY_ENV:local}
     user: rd
 
 logging.level.uk.gov.hmcts: ${APPLICATION_LOGGING_LEVEL:INFO}
 
-
+azure:
+  storage:
+    account-name: rdaat
+    account-key: OvJl7NtlengOYaNSVkkMAEAu21bDkcMi5vnm3EyXLv5xtjF426b98TG0DhbHVp71wbEOpgINr29eEVsSSVYO5g==
+    container-name: ${CONTAINER_NAME:CONTAINER_NAME}
+    blob-url-suffix: core.windows.net
