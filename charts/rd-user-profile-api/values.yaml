@@ -7,8 +7,8 @@ java:
     enabled: true
   image: 'hmctspublic.azurecr.io/rd/user-profile-api:latest'
   environment:
-    POSTGRES_HOST: rd-user-profile-api-postgres-db-v11-{{ .Values.global.environment }}.postgres.database.azure.com
-    POSTGRES_USERNAME: dbuserprofile@rd-user-profile-api-postgres-db-v11-{{ .Values.global.environment }}
+    POSTGRES_HOST: rd-user-profile-api-postgres-db-v16-{{ .Values.global.environment }}.postgres.database.azure.com
+    POSTGRES_USERNAME: pgadmin
     POSTGRES_NAME: dbuserprofile
     POSTGRES_PORT: 5432
     S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
