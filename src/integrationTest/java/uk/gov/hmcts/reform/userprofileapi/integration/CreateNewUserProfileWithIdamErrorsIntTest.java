@@ -103,7 +103,7 @@ class CreateNewUserProfileWithIdamErrorsIntTest extends AuthorizationEnabledInte
     @DisplayName("Should return unAuthorized error response for all Idam 5xx Server errors")
     @ParameterizedTest
     @EnumSource(value = HttpStatus.class, names = {"INTERNAL_SERVER_ERROR","BAD_GATEWAY",
-            "SERVICE_UNAVAILABLE","GATEWAY_TIMEOUT"})
+        "SERVICE_UNAVAILABLE","GATEWAY_TIMEOUT"})
     void should_return_401_when_idam_server_throws_5xx_error(HttpStatus httpStatus) throws Exception {
 
         UserProfileCreationData data = buildCreateUserProfileData();
