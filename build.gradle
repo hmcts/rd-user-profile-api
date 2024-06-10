@@ -459,7 +459,7 @@ dependencies {
     }
 
 
-    testImplementation('com.github.tomakehurst:wiremock:2.32.0') {
+    testImplementation('com.github.tomakehurst:wiremock:2.35.2') {
         exclude group: 'com.github.jknack'
     }
 
