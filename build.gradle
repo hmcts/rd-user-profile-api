@@ -365,7 +365,7 @@ dependencies {
 
     implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '4.0.0'
 
-    implementation 'com.github.hmcts:service-auth-provider-java-client:4.0.3'
+    implementation 'com.github.hmcts:service-auth-provider-java-client:4.1.2'
 
     implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: versions.launchDarklySdk
 
