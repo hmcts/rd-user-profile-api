@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -87,14 +88,16 @@ class UserProfileValidatorTest {
 
         IdamRegistrationInfo idamInfo = new IdamRegistrationInfo(status(CREATED).build());
         UserProfile userProfile = new UserProfile(userProfileData, idamInfo.getIdamRegistrationResponse());
+        String idamId = UUID.randomUUID().toString();
+        userProfile.setIdamId(idamId);
 
-        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("test-email-@somewhere.com",
+        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData(idamId,"test-email-@somewhere.com",
                 "test-first-name", "test-last-name", "PENDING", addRolesToRoleName(),
                 addRolesToRoleName());
 
         assertThat(updateUserProfileData.isSameAsUserProfile(userProfile)).isTrue();
 
-        updateUserProfileData = new UpdateUserProfileData("test-email-@somewhere.com1",
+        updateUserProfileData = new UpdateUserProfileData(UUID.randomUUID().toString(),"test-email-@somewhere.com1",
                 "test-first-name1", "test-last-name", "PENDING", addRolesToRoleName(),
                 addRolesToRoleName());
         assertThat(updateUserProfileData.isSameAsUserProfile(userProfile)).isFalse();
@@ -153,13 +156,13 @@ class UserProfileValidatorTest {
 
     @Test
     void test_validateUserProfileStatus() {
-        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("test-email-@somewhere.com",
-                "test-first-name", "test-last-name", "PENDING", addRolesToRoleName(),
+        UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData(UUID.randomUUID().toString(),
+                "test-email-@somewhere.com","test-first-name", "test-last-name", "PENDING", addRolesToRoleName(),
                 addRolesToRoleName());
         assertThat(UserProfileValidator.validateUserProfileStatus(updateUserProfileData)).isTrue();
 
-        UpdateUserProfileData updateUserProfileData1 = new UpdateUserProfileData("test-email-@somewhere.com",
-                "test-first-name", "test-last-name", "PENING", addRolesToRoleName(),
+        UpdateUserProfileData updateUserProfileData1 = new UpdateUserProfileData(UUID.randomUUID().toString(),
+                "test-email-@somewhere.com","test-first-name", "test-last-name", "PENING", addRolesToRoleName(),
                 addRolesToRoleName());
         assertThat(UserProfileValidator.validateUserProfileStatus(updateUserProfileData1)).isFalse();
 
