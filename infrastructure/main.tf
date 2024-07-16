@@ -1,21 +1,21 @@
 locals {
-  preview_vault_name      = join("-", [var.raw_product, "aat"])
-  non_preview_vault_name  = join("-", [var.raw_product, var.env])
-  key_vault_name          = var.env == "preview" || var.env == "spreview" ? local.preview_vault_name : local.non_preview_vault_name
+  preview_vault_name     = join("-", [var.raw_product, "aat"])
+  non_preview_vault_name = join("-", [var.raw_product, var.env])
+  key_vault_name         = var.env == "preview" || var.env == "spreview" ? local.preview_vault_name : local.non_preview_vault_name
 
-  s2s_rg_prefix             = "rpe-service-auth-provider"
-  s2s_key_vault_name        = var.env == "preview" || var.env == "spreview" ? join("-", ["s2s", "aat"]) : join("-", ["s2s", var.env])
-  s2s_vault_resource_group  = var.env == "preview" || var.env == "spreview" ? join("-", [local.s2s_rg_prefix, "aat"]) : join("-", [local.s2s_rg_prefix, var.env])
+  s2s_rg_prefix            = "rpe-service-auth-provider"
+  s2s_key_vault_name       = var.env == "preview" || var.env == "spreview" ? join("-", ["s2s", "aat"]) : join("-", ["s2s", var.env])
+  s2s_vault_resource_group = var.env == "preview" || var.env == "spreview" ? join("-", [local.s2s_rg_prefix, "aat"]) : join("-", [local.s2s_rg_prefix, var.env])
 }
 
 resource "azurerm_resource_group" "rg" {
-  name      = join("-", [var.raw_product, var.component, var.env])
-  location  = var.location
-  tags      = {
-      "Deployment Environment"  = var.env
-      "Team Name"               = var.team_name
-      "lastUpdated"             = timestamp()
-    }
+  name     = join("-", [var.raw_product, var.component, var.env])
+  location = var.location
+  tags = {
+    "Deployment Environment" = var.env
+    "Team Name"              = var.team_name
+    "lastUpdated"            = timestamp()
+  }
 }
 
 data "azurerm_key_vault" "rd_key_vault" {
@@ -29,14 +29,14 @@ data "azurerm_key_vault" "s2s_key_vault" {
 }
 
 data "azurerm_key_vault_secret" "s2s_secret" {
-  name          = "microservicekey-rd-user-profile-api"
-  key_vault_id  = data.azurerm_key_vault.s2s_key_vault.id
+  name         = "microservicekey-rd-user-profile-api"
+  key_vault_id = data.azurerm_key_vault.s2s_key_vault.id
 }
 
 resource "azurerm_key_vault_secret" "user_profile_s2s_secret" {
-  name          = "user-profile-api-s2s-secret"
-  value         = data.azurerm_key_vault_secret.s2s_secret.value
-  key_vault_id  = data.azurerm_key_vault.rd_key_vault.id
+  name         = "user-profile-api-s2s-secret"
+  value        = data.azurerm_key_vault_secret.s2s_secret.value
+  key_vault_id = data.azurerm_key_vault.rd_key_vault.id
 }
 
 # Create the database server v16
@@ -61,18 +61,18 @@ module "db-user-profile-v16" {
   force_user_permissions_trigger = "3"
 
   # Sets correct DB owner after migration to fix permissions
-  enable_schema_ownership = var.enable_schema_ownership
+  enable_schema_ownership        = var.enable_schema_ownership
   force_schema_ownership_trigger = "3"
-  kv_subscription = var.kv_subscription
-  kv_name = data.azurerm_key_vault.rd_key_vault.name
-  user_secret_name = azurerm_key_vault_secret.POSTGRES-USER.name
-  pass_secret_name = azurerm_key_vault_secret.POSTGRES-PASS.name
+  kv_subscription                = var.kv_subscription
+  kv_name                        = data.azurerm_key_vault.rd_key_vault.name
+  user_secret_name               = azurerm_key_vault_secret.POSTGRES-USER.name
+  pass_secret_name               = azurerm_key_vault_secret.POSTGRES-PASS.name
 
-  subnet_suffix        = "expanded"
-  pgsql_version        = "16"
-  pgsql_sku            = var.pgsql_sku
-  product              = "rd"
-  name               = join("-", [var.product-v16, var.component-v16])
+  subnet_suffix = "expanded"
+  pgsql_version = "16"
+  pgsql_sku     = var.pgsql_sku
+  product       = "rd"
+  name          = join("-", [var.product-v16, var.component-v16])
 
   pgsql_server_configuration = var.pgsql_server_configuration
 
@@ -80,31 +80,31 @@ module "db-user-profile-v16" {
 
 
 resource "azurerm_key_vault_secret" "POSTGRES-USER" {
-  name          = join("-", [var.component, "POSTGRES-USER"])
-  value         = module.db-user-profile-v16.username
-  key_vault_id  = data.azurerm_key_vault.rd_key_vault.id
+  name         = join("-", [var.component, "POSTGRES-USER"])
+  value        = module.db-user-profile-v16.username
+  key_vault_id = data.azurerm_key_vault.rd_key_vault.id
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
-  name          = join("-", [var.component, "POSTGRES-PASS"])
-  value         = module.db-user-profile-v16.password
-  key_vault_id  = data.azurerm_key_vault.rd_key_vault.id
+  name         = join("-", [var.component, "POSTGRES-PASS"])
+  value        = module.db-user-profile-v16.password
+  key_vault_id = data.azurerm_key_vault.rd_key_vault.id
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_HOST" {
-  name          = join("-", [var.component, "POSTGRES-HOST"])
-  value         = module.db-user-profile-v16.fqdn
-  key_vault_id  = data.azurerm_key_vault.rd_key_vault.id
+  name         = join("-", [var.component, "POSTGRES-HOST"])
+  value        = module.db-user-profile-v16.fqdn
+  key_vault_id = data.azurerm_key_vault.rd_key_vault.id
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_PORT" {
-  name          = join("-", [var.component, "POSTGRES-PORT"])
-  value         = "5432"
-  key_vault_id  = data.azurerm_key_vault.rd_key_vault.id
+  name         = join("-", [var.component, "POSTGRES-PORT"])
+  value        = "5432"
+  key_vault_id = data.azurerm_key_vault.rd_key_vault.id
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
-  name          = join("-", [var.component, "POSTGRES-DATABASE"])
-  value         = "dbuserprofile"
-  key_vault_id  = data.azurerm_key_vault.rd_key_vault.id
+  name         = join("-", [var.component, "POSTGRES-DATABASE"])
+  value        = "dbuserprofile"
+  key_vault_id = data.azurerm_key_vault.rd_key_vault.id
 }
