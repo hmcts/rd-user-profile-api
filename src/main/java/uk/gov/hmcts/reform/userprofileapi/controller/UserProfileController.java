@@ -85,8 +85,8 @@ public class UserProfileController {
 
     @Operation(summary = "Create a User Profile",
             security = {
-                    @SecurityRequirement(name = "ServiceAuthorization"),
-                    @SecurityRequirement(name = "Authorization")
+                @SecurityRequirement(name = "ServiceAuthorization"),
+                @SecurityRequirement(name = "Authorization")
             })
 
     @ApiResponse(
@@ -153,8 +153,8 @@ public class UserProfileController {
 
     @Operation(summary = "Retrieves a User Profile and their Roles with the given ID",
             security = {
-                    @SecurityRequirement(name = "ServiceAuthorization"),
-                    @SecurityRequirement(name = "Authorization")
+                @SecurityRequirement(name = "ServiceAuthorization"),
+                @SecurityRequirement(name = "Authorization")
             }
     )
 
@@ -210,9 +210,9 @@ public class UserProfileController {
 
     @Operation(summary = "Retrieves a User Profile and their Roles with the given Email Address",
             security = {
-                    @SecurityRequirement(name = "ServiceAuthorization"),
-                    @SecurityRequirement(name = "Authorization"),
-                    @SecurityRequirement(name = "UserEmail")
+                @SecurityRequirement(name = "ServiceAuthorization"),
+                @SecurityRequirement(name = "Authorization"),
+                @SecurityRequirement(name = "UserEmail")
             }
     )
 
@@ -269,9 +269,9 @@ public class UserProfileController {
 
     @Operation(summary = "Retrieve a User Profile by Email or ID. If both are present then Email is used to retrieve.",
             security = {
-                    @SecurityRequirement(name = "ServiceAuthorization"),
-                    @SecurityRequirement(name = "Authorization"),
-                    @SecurityRequirement(name = "UserEmail")
+                @SecurityRequirement(name = "ServiceAuthorization"),
+                @SecurityRequirement(name = "Authorization"),
+                @SecurityRequirement(name = "UserEmail")
             })
 
     @ApiResponse(
@@ -333,8 +333,8 @@ public class UserProfileController {
 
     @Operation(summary = "Update a User Profile",
             security = {
-                    @SecurityRequirement(name = "ServiceAuthorization"),
-                    @SecurityRequirement(name = "Authorization")
+                @SecurityRequirement(name = "ServiceAuthorization"),
+                @SecurityRequirement(name = "Authorization")
             })
 
     @ApiResponse(
@@ -412,8 +412,8 @@ public class UserProfileController {
 
     @Operation(summary = "Retrieve multiple User Profiles",
             security = {
-                    @SecurityRequirement(name = "ServiceAuthorization"),
-                    @SecurityRequirement(name = "Authorization")
+                @SecurityRequirement(name = "ServiceAuthorization"),
+                @SecurityRequirement(name = "Authorization")
             })
     @Parameter(
             name = "showdeleted",
@@ -485,8 +485,8 @@ public class UserProfileController {
 
     @Operation(summary = "Delete User Profiles",
             security = {
-                    @SecurityRequirement(name = "ServiceAuthorization"),
-                    @SecurityRequirement(name = "Authorization")
+                @SecurityRequirement(name = "ServiceAuthorization"),
+                @SecurityRequirement(name = "Authorization")
             })
 
     @ApiResponse(
@@ -537,8 +537,8 @@ public class UserProfileController {
 
     @Operation(summary = "Delete User Profiles by User ID or Email Pattern",
             security = {
-                    @SecurityRequirement(name = "ServiceAuthorization"),
-                    @SecurityRequirement(name = "Authorization")
+                @SecurityRequirement(name = "ServiceAuthorization"),
+                @SecurityRequirement(name = "Authorization")
             })
 
     @ApiResponse(
@@ -613,8 +613,8 @@ public class UserProfileController {
 
     @Operation(summary = "Retrieves email IDs and IDAM status of user profiles",
             security = {
-                    @SecurityRequirement(name = "ServiceAuthorization"),
-                    @SecurityRequirement(name = "Authorization")
+                @SecurityRequirement(name = "ServiceAuthorization"),
+                @SecurityRequirement(name = "Authorization")
             }
     )
 

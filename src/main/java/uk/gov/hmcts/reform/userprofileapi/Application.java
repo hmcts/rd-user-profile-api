@@ -24,7 +24,7 @@ import uk.gov.hmcts.reform.idam.client.IdamApi;
         "uk.gov.hmcts.reform.userprofileapi"
 })
 @EnableFeignClients(basePackages = {
-        "uk.gov.hmcts.reform.userprofileapi"
+    "uk.gov.hmcts.reform.userprofileapi"
     }, basePackageClasses = {
             IdamApi.class,
             ServiceAuthorisationApi.class
