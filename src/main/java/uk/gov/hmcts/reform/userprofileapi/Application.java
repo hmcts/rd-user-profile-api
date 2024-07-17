@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi;
 
+import com.microsoft.applicationinsights.attach.ApplicationInsights;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,23 +17,15 @@ import uk.gov.hmcts.reform.idam.client.IdamApi;
 @EnableJpaRepositories
 @EnableRetry
 @EnableCaching
-@ImportAutoConfiguration({
-        FeignAutoConfiguration.class
-})
-@SpringBootApplication(scanBasePackages = {
-        "uk.gov.hmcts.reform.idam",
-        "uk.gov.hmcts.reform.userprofileapi"
-})
-@EnableFeignClients(basePackages = {
-    "uk.gov.hmcts.reform.userprofileapi"
-    }, basePackageClasses = {
-            IdamApi.class,
-            ServiceAuthorisationApi.class
-    })
+@ImportAutoConfiguration({FeignAutoConfiguration.class})
+@SpringBootApplication(scanBasePackages = {"uk.gov.hmcts.reform.idam", "uk.gov.hmcts.reform.userprofileapi"})
+@EnableFeignClients(basePackages = {"uk.gov.hmcts.reform.userprofileapi"},
+        basePackageClasses = {IdamApi.class, ServiceAuthorisationApi.class})
 @SuppressWarnings("HideUtilityClassConstructor") // Spring needs a constructor, it's not a utility class
 public class Application {
 
     public static void main(final String[] args) {
+        ApplicationInsights.attach();
         SpringApplication.run(Application.class, args);
     }
 }
