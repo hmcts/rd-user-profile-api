@@ -385,7 +385,7 @@ dependencies {
 
     implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '11.9.1'
 
-    implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '4.0.0'
+    implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '4.0.5'
 
     implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: versions.reformS2sClient
     implementation group: 'com.auth0', name: 'java-jwt', version: '4.4.0'
