@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +39,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import javax.servlet.http.HttpServletRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -304,7 +304,7 @@ class UserProfileControllerTest {
         assertThat(responseEntityActual).isNotNull();
 
         verify(userProfileServiceMock, times(1)).delete(any(UserProfileDataRequest.class));
-        assertThat(responseEntityActual.getStatusCodeValue()).isEqualTo(204);
+        assertThat(responseEntityActual.getStatusCode().value()).isEqualTo(204);
         assertThat(Objects.requireNonNull(responseEntityActual.getBody())
                 .getMessage())
                 .isEqualTo("UserProfiles Successfully Deleted");
@@ -337,7 +337,7 @@ class UserProfileControllerTest {
 
         assertThat(responseEntityActual).isNotNull();
         verify(userProfileServiceMock, times(1)).deleteByUserId(userProfile.getIdamId());
-        assertThat(responseEntityActual.getStatusCodeValue()).isEqualTo(204);
+        assertThat(responseEntityActual.getStatusCode().value()).isEqualTo(204);
         assertThat(Objects.requireNonNull(responseEntityActual.getBody()).getMessage())
                 .isEqualTo("UserProfiles Successfully Deleted");
     }
@@ -358,7 +358,7 @@ class UserProfileControllerTest {
 
         assertThat(responseEntityActual).isNotNull();
         verify(userProfileServiceMock, times(1)).deleteByEmailPattern(emailPattern);
-        assertThat(responseEntityActual.getStatusCodeValue()).isEqualTo(204);
+        assertThat(responseEntityActual.getStatusCode().value()).isEqualTo(204);
         assertThat(Objects.requireNonNull(responseEntityActual.getBody()).getMessage())
                 .isEqualTo("UserProfiles Successfully Deleted");
     }
