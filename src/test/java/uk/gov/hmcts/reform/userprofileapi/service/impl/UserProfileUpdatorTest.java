@@ -505,9 +505,9 @@ class UserProfileUpdatorTest {
 
     @Test
     void test_getHttpStatusFromFeignException_with_RetryableException() {
-        FeignException feignException = new RetryableException(400, "some message", Request.HttpMethod.GET, new Date(),
-                Request.create(Request.HttpMethod.DELETE, "", new HashMap<>(), Request.Body.empty(),
-                        null));
+        FeignException feignException = new RetryableException(400, "some message", Request.HttpMethod.GET,
+                new Date().getTime(), Request.create(Request.HttpMethod.DELETE, "", new HashMap<>(),
+                Request.Body.empty(), null));
         HttpStatus httpStatus = sut.getHttpStatusFromFeignException(feignException);
         assertThat(httpStatus).isEqualTo(HttpStatus.UNAUTHORIZED);
     }

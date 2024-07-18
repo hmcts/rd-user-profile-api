@@ -617,7 +617,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
                 new StringBuilder(requestUri);
         urlPath.append("/")
                 .append("idamStatus")
-                .append("/?category=caseworker");
+                .append("?category=caseworker");
         UserIdamStatusWithEmailResponse resource = testRequestHandler.sendGet(
                 urlPath.toString(), UserIdamStatusWithEmailResponse.class);
         assertThat(resource).isNotNull();
