@@ -52,7 +52,7 @@ def versions = [
         log4j              : '2.20.0',
         jackson            : '2.17.2',
         feign              : '3.8.0',
-        reformS2sClient    : '5.1.0',
+        reformS2sClient    : '5.1.3',
         testContainer_postgresql: '1.17.6',
         bouncycastle       : '1.77',
         logback            : '1.2.13',
