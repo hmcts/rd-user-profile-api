@@ -294,7 +294,7 @@ jacocoTestReport {
 }
 
 pitest {
-    junit5PluginVersion = '1.0.0'
+    junit5PluginVersion = '1.2.1'
     targetClasses = ['uk.gov.hmcts.reform.userprofileapi.*']
     excludedClasses = [
             'uk.gov.hmcts.reform.userprofileapi.config.*',
