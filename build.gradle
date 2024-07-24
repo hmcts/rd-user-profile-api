@@ -40,8 +40,8 @@ ext {
 }
 
 def versions = [
-        junit              : '5.10.0',
-        junitPlatform      : '1.9.3',
+        junit              : '5.10.3',
+        junitPlatform      : '1.10.3',
         lombok             : '1.18.22',
         pitest             : '1.16.1',
         reformLogging      : '6.0.1',
