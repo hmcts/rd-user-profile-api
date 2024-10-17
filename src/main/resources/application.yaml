@@ -146,4 +146,8 @@ launchdarkly:
 
 logging.level.uk.gov.hmcts: ${APPLICATION_LOGGING_LEVEL:INFO}
 
-
+springdoc:
+  swagger-ui:
+    enabled: true
+    operationsSorter: method
+  writer-with-order-by-keys: true
