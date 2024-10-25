@@ -492,7 +492,6 @@ dependencies {
     testImplementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.12.0'
 
     testImplementation group: 'com.github.mifmif', name: 'generex', version: '1.0.2'
-    testImplementation 'com.github.hmcts:fortify-client:1.4.3:all'
 
     contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: versions.pact_version
     contractTestImplementation group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pact_version
