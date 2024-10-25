@@ -149,6 +149,14 @@ sourceSets {
         }
         resources.srcDir file('src/pactTest/resources')
     }
+    fortifyTest {
+        java {
+            compileClasspath += main.output
+            runtimeClasspath += main.output
+            srcDir file('src/Test/java')
+        }
+        resources.srcDir file('src/test/resources')
+    }
 }
 
 idea {
@@ -172,6 +180,8 @@ configurations {
     contractTestRuntimeOnly.extendsFrom testRuntime
     pactTestImplementation.extendsFrom testCompile
     pactTestRuntime.extendsFrom testRuntime
+    fortifyTestImplementation.extendsFrom testCompile
+    fortifyTestRuntimeOnly.extendsFrom testRuntime
     testCompile.exclude group: 'ch.qos.logback', module: 'logback-classic'
     testCompile.exclude group: 'ch.qos.logback', module: 'logback-core'
     compile.exclude group: 'ch.qos.logback', module: 'logback-classic'
@@ -271,7 +281,7 @@ task runProviderPactVerification(type: Test) {
 
 task fortifyScan(type: JavaExec)  {
   mainClass.set("uk.gov.hmcts.fortifyclient.FortifyClientMainApp")
-  classpath += sourceSets.test.runtimeClasspath
+  classpath += sourceSets.fortifyTest.runtimeClasspath
   jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
   // This is a temporary fix to prevent the nightly build from failing if the Fortify scan detects issues
   ignoreExitValue = true
@@ -493,6 +503,8 @@ dependencies {
 
     testImplementation group: 'com.github.mifmif', name: 'generex', version: '1.0.2'
 
+    fortifyTestRuntimeOnly 'com.github.hmcts:fortify-client:1.4.3:all'
+
     contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: versions.pact_version
     contractTestImplementation group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pact_version
     contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pact_version
@@ -540,6 +552,9 @@ dependencies {
 
     pactTestImplementation sourceSets.main.runtimeClasspath
     pactTestImplementation sourceSets.test.runtimeClasspath
+
+    fortifyTestImplementation sourceSets.main.runtimeClasspath
+    fortifyTestImplementation sourceSets.test.runtimeClasspath
 }
 
 rootProject.tasks.named("processFunctionalTestResources") {
