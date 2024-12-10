@@ -7,8 +7,8 @@ import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 
 import static java.util.Objects.nonNull;
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.ResponseEntity.status;
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -26,7 +26,7 @@ public final class IdamStatusResolver {
     public static final String MISSING_TOKEN = "14 Missing Bearer Token";
     public static final String TOKEN_EXPIRED = "15 Bearer token is expired, or the user or service does not have "
             + "permission to perform this action";
-    
+
     public static final String NOT_FOUND = "16 Resource not found";
     public static final String USER_EXISTS = "17 User with this email already exists";
     public static final String UNKNOWN = "18 Unknown error from Idam";
