@@ -12,7 +12,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.Optional;
 
 import static java.lang.System.getenv;
-import static org.apache.commons.lang.BooleanUtils.isNotTrue;
+import static org.apache.commons.lang3.BooleanUtils.isNotTrue;
 import static org.junit.platform.commons.util.AnnotationUtils.findAnnotation;
 
 public class FeatureToggleConditionExtension implements ExecutionCondition {
