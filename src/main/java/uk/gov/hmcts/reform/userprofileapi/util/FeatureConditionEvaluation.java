@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.userprofileapi.service.FeatureToggleService;
 import java.util.Map;
 
 import static java.util.Objects.nonNull;
-import static org.apache.commons.lang.BooleanUtils.isNotTrue;
+import static org.apache.commons.lang3.BooleanUtils.isNotTrue;
 import static org.apache.commons.lang3.StringUtils.SPACE;
 
 @Component

@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.userprofileapi.domain.entities;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 @Getter
 @Setter

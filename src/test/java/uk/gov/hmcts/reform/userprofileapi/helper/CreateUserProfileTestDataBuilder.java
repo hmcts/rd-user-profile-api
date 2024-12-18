@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.helper;
 
 import lombok.Setter;
+import org.apache.commons.lang3.RandomStringUtils;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserCategory;
@@ -10,9 +11,6 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.apache.commons.lang.RandomStringUtils.randomAlphanumeric;
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 
 @Setter
 public class CreateUserProfileTestDataBuilder {
@@ -30,8 +28,8 @@ public class CreateUserProfileTestDataBuilder {
     public static UserProfileCreationData buildCreateUserProfileData(boolean isReinviteUser) {
         return new UserProfileCreationData(
                 generateRandomEmail(),
-                randomAlphabetic(20),
-                randomAlphabetic(20),
+                RandomStringUtils.secure().nextAlphabetic(20),
+                RandomStringUtils.secure().nextAlphabetic(20),
                 LanguagePreference.EN.toString(),
                 false,
                 false,
@@ -44,21 +42,20 @@ public class CreateUserProfileTestDataBuilder {
     public static UpdateUserProfileData buildUpdateUserProfileData() {
         return new UpdateUserProfileData(
                 generateRandomEmail(),
-                randomAlphabetic(10) + " " + randomAlphabetic(10),
-                randomAlphabetic(10) + " " + randomAlphabetic(10),
+                RandomStringUtils.secure().nextAlphabetic(10) + " " + RandomStringUtils.secure().nextAlphabetic(10),
+                RandomStringUtils.secure().nextAlphabetic(10) + " " + RandomStringUtils.secure().nextAlphabetic(10),
                 IdamStatus.ACTIVE.toString(),
                 null, null
         );
     }
 
     public static String generateRandomEmail() {
-        return String.format(EMAIL_TEMPLATE, randomAlphanumeric(10));
+        return String.format(EMAIL_TEMPLATE, RandomStringUtils.secure().nextAlphanumeric(10));
     }
 
     public static List<String> getIdamRolesJson() {
-        List<String> roles = new ArrayList<String>();
+        List<String> roles = new ArrayList<>();
         roles.add("caseworker");
         return roles;
     }
-
 }

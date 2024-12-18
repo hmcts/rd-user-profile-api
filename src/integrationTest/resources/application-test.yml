@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: ${DB_URL:jdbc:tc:postgresql:11.1:///dbuserprofile}
+    url: ${DB_URL:jdbc:tc:postgresql:16:///dbuserprofile}
     username: ${DB_USERNAME:dbuserprofile}
     password: ${DB_PASSWORD:dbuserprofile}
   flyway:
