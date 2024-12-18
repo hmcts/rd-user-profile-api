@@ -425,7 +425,7 @@ dependencies {
 
     implementation group: 'org.flywaydb', name: 'flyway-core', version: '9.22.3'
 
-    implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.3'
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.4'
 
     implementation group: 'jakarta.el', name: 'jakarta.el-api', version: '5.0.1'
 
