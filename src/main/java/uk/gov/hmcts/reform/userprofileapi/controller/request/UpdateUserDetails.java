@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.userprofileapi.controller.request;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 @Getter
 @Setter
