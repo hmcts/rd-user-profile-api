@@ -23,6 +23,7 @@ plugins {
     id "org.flywaydb.flyway" version "9.22.3"
     id 'au.com.dius.pact' version '4.1.7'// do not change, otherwise serenity report fails
     id 'org.owasp.dependencycheck' version '10.0.3'
+    id 'idea'
 }
 
 apply plugin: 'java'
@@ -578,6 +579,10 @@ dependencyCheck {
     analyzers {
         // Disable scanning of .NET related binaries
         assemblyEnabled = false
+    }
+
+    nvd {
+        apiKey = 'eb58f7df-7dee-40d7-8c1a-b1a804443eb6'
     }
 }
 
