@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.helper;
 
 import lombok.Setter;
+import org.apache.commons.lang3.RandomStringUtils;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserCategory;
@@ -12,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.commons.lang.RandomStringUtils.randomAlphanumeric;
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 
 @Setter
 public class CreateUserProfileTestDataBuilder {
@@ -59,6 +59,10 @@ public class CreateUserProfileTestDataBuilder {
         List<String> roles = new ArrayList<String>();
         roles.add("caseworker");
         return roles;
+    }
+
+    public static String randomAlphabetic(int count) {
+        return RandomStringUtils.secure().nextAlphabetic(count);
     }
 
 }
