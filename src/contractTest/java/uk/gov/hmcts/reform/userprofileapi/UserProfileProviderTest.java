@@ -75,7 +75,7 @@ public class UserProfileProviderTest {
     @Autowired
     private UserProfileRepository userProfileRepository;
 
-    @Autowired
+    @Mock
     private IdamService idamService;
 
     @Autowired
