@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.userprofileapi.integration;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfilesDeletionResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
@@ -23,7 +22,6 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 import static uk.gov.hmcts.reform.userprofileapi.client.UserProfileRequestHandlerTest.COMMON_EMAIL_PATTERN;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 
-@Transactional
 class DeleteUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
 
     @BeforeEach
@@ -78,10 +76,9 @@ class DeleteUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
 
     @Test
     void should_return_204_and_delete_user_profile_by_email_pattern() throws Exception {
-
         UserProfileCreationData data = buildCreateUserProfileData();
 
-        //user profile create and  delete
+        // user profile create and delete
         UserProfileCreationResponse createdResource =
                 userProfileRequestHandlerTest.sendPost(mockMvc, APP_BASE_PATH,
                         data, CREATED, UserProfileCreationResponse.class);
