@@ -1,34 +1,26 @@
 buildscript {
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        maven { url 'https://jitpack.io' }
-    }
     dependencies {
-        classpath("net.serenity-bdd:serenity-gradle-plugin:2.4.34")
+        classpath "org.flywaydb:flyway-database-postgresql:11.0.1"
     }
 }
-
 
 plugins {
     id 'application'
     id 'uk.gov.hmcts.java' version '0.12.63'
+    id 'idea'
     id 'jacoco'
     id 'pmd'
+    id 'project-report'
     id 'com.github.ben-manes.versions' version '0.51.0'
     id "info.solidsoft.pitest" version '1.15.0'
     id 'io.spring.dependency-management' version '1.1.6'
-    id 'org.sonarqube' version '5.1.0.4882'
+    id 'org.sonarqube' version '6.0.1.5171'
     id 'org.springframework.boot' version '3.3.7'
-    id "org.flywaydb.flyway" version "9.22.3"
-    id 'au.com.dius.pact' version '4.1.7'// do not change, otherwise serenity report fails
-    id 'org.owasp.dependencycheck' version '10.0.3'
+    id "org.flywaydb.flyway" version "11.0.1"
+    id 'au.com.dius.pact' version '4.6.16'
+    id 'org.owasp.dependencycheck' version '11.1.1'
+    id 'net.serenity-bdd.serenity-gradle-plugin' version '4.2.8'
 }
-
-apply plugin: 'java'
-apply plugin: 'net.serenity-bdd.aggregator'
-apply plugin: 'project-report'
-apply plugin: 'idea'
 
 java {
     toolchain {
@@ -41,29 +33,36 @@ ext {
 }
 
 def versions = [
-        junit              : '5.10.3',
-        junitPlatform      : '1.10.3',
-        lombok             : '1.18.22',
-        gradlePitest       : '1.15.0',
-        pitest             : '1.16.1',
-        sonarPitest        : '0.5',
+        junit              : '5.11.3',
+        junitPlatform      : '1.11.3',
         junitPitest        : '1.2.1',
+        lombok             : '1.18.36',
+        flywaydb           : '11.0.1',
+        sonarPitest        : '0.5',
         reformLogging      : '6.1.5',
-        serenity           : '2.0.76',
-        springHystrix      : '2.2.10.RELEASE',
-        pact_version       : '4.6.11',
+        serenity           : '4.2.9',
+        pact_version       : '4.6.16',
         launchDarklySdk    : '5.10.9',
-        log4j              : '2.23.1',
-        jackson            : '2.17.2',
+        log4j              : '2.24.2',
+        jackson            : '2.18.2',
         feign              : '3.8.0',
-        reformS2sClient    : '5.1.3',
-        testContainer_postgresql: '1.20.0',
-        bouncycastle       : '1.78.1',
-        logback            : '1.2.13',
+        reformS2sClient    : '5.3.0',
+        testContainer_postgresql: '1.20.4',
+        bouncycastle       : '1.79',
+        logback            : '1.5.12',
         okio               : '3.4.0'
 ]
 
-mainClassName = 'uk.gov.hmcts.reform.userprofileapi.Application'
+application {
+    mainClass = 'uk.gov.hmcts.reform.userprofileapi.Application'
+
+    // this is required to force Java running on the Azure Windows Server OS into using
+    // UTF-8 as the default character set instead of windows-1252 which causes issues.
+    // this setting only applies when running via gradle bootRun -- see web.config for the
+    // java flag that configures the deployed applications
+    applicationDefaultJvmArgs = ["-Dfile.encoding=UTF-8"]
+}
+
 def jarName = 'rd-user-profile-api.jar'
 
 group = 'uk.gov.hmcts.reform'
@@ -71,7 +70,7 @@ version = '0.0.1'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
@@ -152,14 +151,6 @@ sourceSets {
         }
         resources.srcDir file('src/pactTest/resources')
     }
-    fortifyTest {
-        java {
-            compileClasspath += main.output
-            runtimeClasspath += main.output
-            srcDir file('src/Test/java')
-        }
-        resources.srcDir file('src/test/resources')
-    }
 }
 
 idea {
@@ -183,8 +174,6 @@ configurations {
     contractTestRuntimeOnly.extendsFrom testRuntime
     pactTestImplementation.extendsFrom testCompile
     pactTestRuntime.extendsFrom testRuntime
-    fortifyTestImplementation.extendsFrom testCompile
-    fortifyTestRuntimeOnly.extendsFrom testRuntime
     testCompile.exclude group: 'ch.qos.logback', module: 'logback-classic'
     testCompile.exclude group: 'ch.qos.logback', module: 'logback-core'
     compile.exclude group: 'ch.qos.logback', module: 'logback-classic'
@@ -283,8 +272,8 @@ task runProviderPactVerification(type: Test) {
 }
 
 task fortifyScan(type: JavaExec)  {
-  mainClass.set("uk.gov.hmcts.fortifyclient.FortifyClientMainApp")
-  classpath += sourceSets.fortifyTest.runtimeClasspath
+  mainClass = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
+  classpath += sourceSets.test.runtimeClasspath
   jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
   // This is a temporary fix to prevent the nightly build from failing if the Fortify scan detects issues
   ignoreExitValue = true
@@ -308,7 +297,6 @@ jacocoTestReport {
 }
 
 pitest {
-    pitestVersion = versions.pitest
     junit5PluginVersion = versions.junitPitest
     targetClasses = ['uk.gov.hmcts.reform.userprofileapi.*']
     excludedClasses = [
@@ -367,40 +355,22 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jetty'
-    implementation (group: 'org.springframework.boot', name: 'spring-boot-starter-web'){
-        exclude group: 'org.glassfish', module: 'jakarta.el'
-    }
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
+    implementation "org.springframework.boot:spring-boot-starter-oauth2-client"
+    implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
     implementation group: 'org.springframework.retry', name: 'spring-retry', version: '1.3.2'
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.17.0'
 
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-cache'
-
-    implementation group: 'commons-lang', name: 'commons-lang', version: '2.6'
-
-    implementation group: 'org.springframework', name: 'spring-core'
-    implementation group: 'org.springframework', name: 'spring-beans'
-    implementation group: 'org.springframework', name: 'spring-aop'
-    implementation group: 'org.springframework', name: 'spring-aspects'
-    implementation group: 'org.springframework', name: 'spring-context'
-    implementation group: 'org.springframework', name: 'spring-context-support'
-    implementation group: 'org.springframework', name: 'spring-expression'
-    implementation group: 'org.springframework', name: 'spring-jcl'
-    implementation group: 'org.springframework', name: 'spring-jdbc'
-    implementation group: 'org.springframework', name: 'spring-orm'
-    implementation group: 'org.springframework', name: 'spring-tx'
-    implementation group: 'org.springframework', name: 'spring-web'
-    implementation group: 'org.springframework', name: 'spring-webmvc'
-    implementation group: 'org.springframework.security', name: 'spring-security-core'
     implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.6.0'
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap'
-    implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.8.0'
     implementation group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: versions.bouncycastle
 
-    implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '2.8.5'
+    implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.1.8'
 
-    implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '11.10'
-
-    implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '4.0.5'
+    implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '13.5'
 
     implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: versions.reformS2sClient
     implementation group: 'com.auth0', name: 'java-jwt', version: '4.4.0'
@@ -411,31 +381,20 @@ dependencies {
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
     implementation group: 'com.fasterxml.jackson', name: 'jackson-bom', version: versions.jackson, ext: 'pom'
     implementation group: 'io.jsonwebtoken', name: 'jjwt', version:'0.9.1'
-    implementation group: 'jakarta.inject', name: 'jakarta.inject-api', version: '1.0.5'
-    implementation group: 'jakarta.servlet', name: 'jakarta.servlet-api', version: '6.1.0'
     implementation 'com.github.hmcts:idam-java-client:3.0.3'
-    implementation "org.springframework.boot:spring-boot-starter-oauth2-client"
-    implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
-    implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.40'
-    implementation ('org.springframework.boot:spring-boot-starter-validation'){
-        exclude group: 'org.glassfish', module: 'jakarta.el'
-    }
-    //Fix for CVE-2021-29425
-    implementation 'commons-io:commons-io:2.16.1'
+    implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.47'
 
-    implementation group: 'org.flywaydb', name: 'flyway-core', version: '9.22.3'
+    implementation group: 'org.flywaydb', name: 'flyway-core', version: versions.flywaydb
+    implementation group: 'org.flywaydb', name: 'flyway-database-postgresql', version: versions.flywaydb
 
-    implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.3'
-
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.4'
     implementation group: 'jakarta.el', name: 'jakarta.el-api', version: '5.0.1'
-
-    implementation group: 'com.google.guava', name: 'guava', version: '32.1.3-jre'
+    implementation group: 'com.google.guava', name: 'guava', version: '33.3.1-jre'
 
     implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: versions.log4j
     implementation group: 'org.apache.logging.log4j', name: 'log4j', version: versions.log4j
     implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: versions.log4j
-    implementation group: 'com.microsoft.azure', name: 'applicationinsights-runtime-attach', version: '3.5.3'
-    implementation group: 'com.microsoft.azure', name: 'applicationinsights-core', version: '3.5.3'
+    implementation group: 'com.microsoft.azure', name: 'applicationinsights-core', version: '3.6.2'
 
 
     testImplementation group: 'org.testcontainers', name: 'postgresql', version: versions.testContainer_postgresql
@@ -450,21 +409,17 @@ dependencies {
         exclude group: "net.bytebuddy", module: "byte-buddy"
         exclude group: "net.bytebuddy", module: "byte-buddy-agent"
     }
-    testImplementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.14.18'
-    testImplementation group: 'net.bytebuddy', name: 'byte-buddy-agent', version: '1.14.18'
+    testImplementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.15.10'
+    testImplementation group: 'net.bytebuddy', name: 'byte-buddy-agent', version: '1.15.10'
 
     testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '4.11.0'
-
-
     testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.9'
 
     implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: versions.log4j
     implementation "com.github.hmcts.java-logging:logging:${versions.reformLogging}"
     implementation "com.github.hmcts.java-logging:logging-appinsights:${versions.reformLogging}"
 
-    testImplementation ('com.github.hmcts:rd-commons-lib:0.0.18'){
-        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-web'
-    }
+    testImplementation 'com.github.hmcts:rd-commons-lib:0.1.0'
 
     compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
@@ -483,38 +438,24 @@ dependencies {
         exclude group: "org.hamcrest", module: "hamcrest-library"
     }
 
-
-    testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:3.0.1") {
-        exclude group: 'com.github.jknack'
-    }
+    testImplementation "com.github.tomakehurst:wiremock-jre8-standalone:3.0.1"
 
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
         exclude group: 'junit', module: 'junit'
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
 
-    testImplementation group: 'org.pitest', name: 'pitest', version: versions.pitest
-
-    testImplementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: versions.gradlePitest
-    testImplementation group: 'org.pitest', name: 'pitest-junit5-plugin', version: versions.junitPitest
-
-    testImplementation group: 'org.codehaus.sonar-plugins', name: 'sonar-pitest-plugin', {
-        exclude group: 'junit', module: 'junit'
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    }, version: versions.sonarPitest
-
+    testImplementation group: 'org.codehaus.sonar-plugins', name: 'sonar-pitest-plugin', version: versions.sonarPitest
     testImplementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.12.0'
-
     testImplementation group: 'com.github.mifmif', name: 'generex', version: '1.0.2'
-
-    fortifyTestRuntimeOnly 'com.github.hmcts:fortify-client:1.4.3:all'
+    testImplementation 'com.github.hmcts:fortify-client:1.4.5:all'
 
     contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: versions.pact_version
     contractTestImplementation group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pact_version
     contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pact_version
 
-    testImplementation 'net.serenity-bdd:serenity-rest-assured:3.8.1'
-    testImplementation group: 'net.serenity-bdd', name: 'serenity-junit', version: '3.8.1'
+    testImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
+    testImplementation group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: versions.junit
 
     functionalTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit
@@ -540,7 +481,7 @@ dependencies {
     contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: versions.junit
     contractTestImplementation group: 'org.junit.platform', name: 'junit-platform-commons', version: versions.junitPlatform
     contractTestRuntimeOnly group: 'org.junit.platform', name: 'junit-platform-engine', version: versions.junitPlatform
-    contractTestImplementation('org.scala-lang:scala-library:2.13.14')
+    contractTestImplementation('org.scala-lang:scala-library:2.13.15')
 
     integrationTestImplementation sourceSets.main.runtimeClasspath
     integrationTestImplementation sourceSets.test.runtimeClasspath
@@ -556,9 +497,6 @@ dependencies {
 
     pactTestImplementation sourceSets.main.runtimeClasspath
     pactTestImplementation sourceSets.test.runtimeClasspath
-
-    fortifyTestImplementation sourceSets.main.runtimeClasspath
-    fortifyTestImplementation sourceSets.test.runtimeClasspath
 }
 
 rootProject.tasks.named("processFunctionalTestResources") {
@@ -581,7 +519,7 @@ dependencyCheck {
     }
 }
 
-dependencyUpdates.resolutionStrategy = {
+dependencyUpdates.resolutionStrategy {
     componentSelection { rules ->
         rules.all { ComponentSelection selection ->
             boolean rejected = ['alpha', 'beta', 'rc', 'cr', 'm'].any { qualifier ->
@@ -624,6 +562,8 @@ configurations.all {
             details.useVersion versions.okio
         }
     }
+
+
 }
 
 dependencies {
@@ -636,9 +576,3 @@ dependencies {
         }
     }
 }
-
-// this is required to force Java running on the Azure Windows Server OS into using
-// UTF-8 as the default character set instead of windows-1252 which causes issues.
-// this setting only applies when running via gradle bootRun -- see web.config for the
-// java flag that configures the deployed applications
-applicationDefaultJvmArgs = ["-Dfile.encoding=UTF-8"]
