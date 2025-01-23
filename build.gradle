@@ -247,7 +247,6 @@ pact {
         pactDirectory = 'pacts'
         tags = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
         version = project.pactVersion
-        pactBrokerUrl = 'localhost:9292'
     }
 }
 
@@ -533,10 +532,6 @@ dependencyCheck {
     analyzers {
         // Disable scanning of .NET related binaries
         assemblyEnabled = false
-    }
-
-    nvd {
-        apiKey = 'eb58f7df-7dee-40d7-8c1a-b1a804443eb6'
     }
 }
 
