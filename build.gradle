@@ -387,7 +387,7 @@ dependencies {
     implementation group: 'org.flywaydb', name: 'flyway-core', version: versions.flywaydb
     implementation group: 'org.flywaydb', name: 'flyway-database-postgresql', version: versions.flywaydb
 
-    implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.4'
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.5'
     implementation group: 'jakarta.el', name: 'jakarta.el-api', version: '5.0.1'
     implementation group: 'com.google.guava', name: 'guava', version: '33.3.1-jre'
 
