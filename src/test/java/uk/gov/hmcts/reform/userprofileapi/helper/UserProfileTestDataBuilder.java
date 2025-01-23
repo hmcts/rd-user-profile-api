@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.helper;
 
-import org.assertj.core.util.Lists;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import static org.apache.commons.lang.RandomStringUtils.randomAlphanumeric;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 
 public class UserProfileTestDataBuilder {
@@ -41,8 +40,7 @@ public class UserProfileTestDataBuilder {
 
     public static UserProfile buildUserProfileWithAllFields() {
 
-        List<String> unInitFields =
-                Lists.newArrayList("id", "idamId", "status", "created", "lastUpdated");
+        List<String> unInitFields = List.of("id", "idamId", "status", "created", "lastUpdated");
 
         UserProfile userProfile = new UserProfile(buildCreateUserProfileData(), HttpStatus.CREATED);
 
@@ -56,7 +54,7 @@ public class UserProfileTestDataBuilder {
                 if (field.getType().equals(UUID.class)) {
                     field.set(userProfile, UUID.randomUUID());
                 } else if ((field.getType().equals(String.class))) {
-                    field.set(userProfile, randomAlphanumeric(32));
+                    field.set(userProfile, RandomStringUtils.secure().nextAlphanumeric(32));
                 } else if ((field.getType().equals(LocalDateTime.class))) {
                     field.set(userProfile, LocalDateTime.now());
                 }
@@ -77,7 +75,7 @@ public class UserProfileTestDataBuilder {
         try {
             idamIdField = userProfile.getClass().getDeclaredField("idamId");
             idamIdField.setAccessible(true);
-            idamIdField.set(userProfile, randomAlphanumeric(32));
+            idamIdField.set(userProfile, RandomStringUtils.secure().nextAlphanumeric(32));
         } catch (Exception e) {
             throw new IllegalStateException("could not set idamId field value", e);
         }
