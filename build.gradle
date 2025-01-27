@@ -380,7 +380,7 @@ dependencies {
     implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
     implementation group: 'com.fasterxml.jackson', name: 'jackson-bom', version: versions.jackson, ext: 'pom'
-    implementation group: 'io.jsonwebtoken', name: 'jjwt', version:'0.9.1'
+    implementation group: 'io.jsonwebtoken', name: 'jjwt', version:'0.12.6'
     implementation 'com.github.hmcts:idam-java-client:3.0.3'
     implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '9.47'
 
