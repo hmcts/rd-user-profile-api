@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.userprofileapi.controller.UserProfileController;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
@@ -62,6 +63,7 @@ import static org.mockito.Mockito.when;
 @PactBroker(scheme = "${PACT_BROKER_SCHEME:http}", host = "${PACT_BROKER_URL:localhost}",
         port = "${PACT_BROKER_PORT:9292}")
 @Import(UserProfileProviderTestConfiguration.class)
+@Component
 public class UserProfileProviderTest {
 
     @Autowired
