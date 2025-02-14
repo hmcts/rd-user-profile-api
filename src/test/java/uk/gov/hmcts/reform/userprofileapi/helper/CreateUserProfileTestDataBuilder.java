@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Setter
 public class CreateUserProfileTestDataBuilder {
@@ -40,7 +41,7 @@ public class CreateUserProfileTestDataBuilder {
     }
 
     public static UpdateUserProfileData buildUpdateUserProfileData() {
-        return new UpdateUserProfileData(
+        return new UpdateUserProfileData(UUID.randomUUID().toString(),
                 generateRandomEmail(),
                 RandomStringUtils.secure().nextAlphabetic(10) + " " + RandomStringUtils.secure().nextAlphabetic(10),
                 RandomStringUtils.secure().nextAlphabetic(10) + " " + RandomStringUtils.secure().nextAlphabetic(10),
