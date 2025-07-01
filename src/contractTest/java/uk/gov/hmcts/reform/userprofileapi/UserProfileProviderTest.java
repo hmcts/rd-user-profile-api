@@ -67,7 +67,7 @@ import static org.mockito.Mockito.when;
 @Component
 public class UserProfileProviderTest {
 
-    @Autowired
+    @MockitoBean
     private UserProfileService<RequestData> userProfileService;
 
     @Mock
