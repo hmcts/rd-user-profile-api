@@ -95,4 +95,6 @@ public class UserProfileProviderTestConfiguration {
         return new ValidationServiceImpl();
     }
 
+    
+
 }
