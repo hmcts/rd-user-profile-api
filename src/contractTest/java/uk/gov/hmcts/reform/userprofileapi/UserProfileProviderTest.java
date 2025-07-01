@@ -79,16 +79,16 @@ public class UserProfileProviderTest {
     @MockitoBean
     private IdamService idamService;
 
-    @Autowired
+    @MockitoBean
     private IdamFeignClient idamClient;
 
-    @Autowired
+    @MockitoBean
     private ValidationService validationService;
 
     @Mock
     IdamServiceImpl idamServiceMock;
 
-    @Autowired
+    @MockitoBean
     private UserProfileQueryProvider querySupplier;
 
 
