@@ -16,10 +16,12 @@ import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.userprofileapi.controller.UserProfileController;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
@@ -75,7 +77,7 @@ public class UserProfileProviderTest {
     @Autowired
     private UserProfileRepository userProfileRepository;
 
-    @Autowired
+    @MockitoBean
     private IdamService idamService;
 
     @Autowired
