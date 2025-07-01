@@ -73,7 +73,7 @@ public class UserProfileProviderTest {
     @Mock
     private DeleteUserProfileServiceImpl deleteUserProfileService;
 
-    @Autowired
+    @MockitoBean
     private UserProfileRepository userProfileRepository;
 
     @MockitoBean
