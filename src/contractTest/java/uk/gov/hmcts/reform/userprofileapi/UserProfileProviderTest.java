@@ -72,7 +72,7 @@ import static org.mockito.Mockito.when;
 @Component
 public class UserProfileProviderTest {
 
-    @Mock
+    @MockitoBean
     private UserProfileService<RequestData> userProfileService;
 
     @MockitoBean
@@ -81,17 +81,17 @@ public class UserProfileProviderTest {
     @Mock
     private DeleteUserProfileServiceImpl deleteUserProfileService;
 
-    @Mock
+    @MockitoBean
     private UserProfileRepository userProfileRepository;
 
     @MockitoBean
     private IdamService idamService;
 
 
-    @Mock
+    @MockitoBean
     private IdamFeignClient idamClient;
 
-    @Mock
+    @MockitoBean
     private ValidationService validationService;
 
     @MockitoBean
