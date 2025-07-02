@@ -84,7 +84,7 @@ public class UserProfileProviderTest {
     @Mock
     private UserProfileRepository userProfileRepository;
 
-    @Mock
+    @MockitoBean
     private IdamService idamService;
 
 
