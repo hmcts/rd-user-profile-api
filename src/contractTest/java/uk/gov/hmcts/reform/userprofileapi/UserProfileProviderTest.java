@@ -98,6 +98,9 @@ public class UserProfileProviderTest {
     @MockitoBean
     private ValidationHelperService validationHelperService;
 
+    @MockitoBean
+    private UserProfileQueryProvider userProfileQueryProvider;
+
     @Mock
     IdamServiceImpl idamServiceMock;
 
