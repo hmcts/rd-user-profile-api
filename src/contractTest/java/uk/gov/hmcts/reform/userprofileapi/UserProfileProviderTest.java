@@ -42,6 +42,7 @@ import uk.gov.hmcts.reform.userprofileapi.service.UserProfileQueryProvider;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationHelperService;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
 import uk.gov.hmcts.reform.userprofileapi.service.impl.DeleteUserProfileServiceImpl;
+import uk.gov.hmcts.reform.userprofileapi.service.impl.FeatureToggleServiceImpl;
 import uk.gov.hmcts.reform.userprofileapi.service.impl.IdamServiceImpl;
 import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileService;
 
@@ -98,6 +99,9 @@ public class UserProfileProviderTest {
 
     @Mock
     IdamServiceImpl idamServiceMock;
+
+    @MockitoBean
+    protected FeatureToggleServiceImpl featureToggleService;
 
     @Mock
     private UserProfileQueryProvider querySupplier;
