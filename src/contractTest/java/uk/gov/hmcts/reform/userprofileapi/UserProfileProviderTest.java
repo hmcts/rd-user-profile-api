@@ -65,7 +65,6 @@ import static org.mockito.Mockito.when;
 
 @WebMvcTest(UserProfileController.class)
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @Provider("rd_user_profile_api_service")
 @PactBroker(scheme = "${PACT_BROKER_SCHEME:http}", host = "${PACT_BROKER_URL:localhost}",
         port = "${PACT_BROKER_PORT:9292}")
