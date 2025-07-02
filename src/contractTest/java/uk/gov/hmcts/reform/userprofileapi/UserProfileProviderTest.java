@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.userprofileapi;
 
 import au.com.dius.pact.provider.junit5.PactVerificationContext;
-import au.com.dius.pact.provider.junit5.PactVerificationInvocationContextProvider;
 import au.com.dius.pact.provider.junitsupport.Provider;
 import au.com.dius.pact.provider.junitsupport.State;
 import au.com.dius.pact.provider.junitsupport.loader.PactBroker;
 import au.com.dius.pact.provider.spring.junit5.MockMvcTestTarget;
+import au.com.dius.pact.provider.spring.junit5.PactVerificationSpringProvider;
 import com.google.common.collect.Maps;
 import feign.Request;
 import feign.RequestTemplate;
@@ -15,6 +15,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,7 +63,9 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
+@WebMvcTest(UserProfileController.class)
 @ExtendWith(SpringExtension.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @Provider("rd_user_profile_api_service")
 @PactBroker(scheme = "${PACT_BROKER_SCHEME:http}", host = "${PACT_BROKER_URL:localhost}",
         port = "${PACT_BROKER_PORT:9292}")
@@ -84,6 +88,7 @@ public class UserProfileProviderTest {
     @Mock
     private IdamService idamService;
 
+
     @Mock
     private IdamFeignClient idamClient;
 
@@ -103,7 +108,7 @@ public class UserProfileProviderTest {
     private AuditService auditService;
 
     @TestTemplate
-    @ExtendWith(PactVerificationInvocationContextProvider.class)
+    @ExtendWith(PactVerificationSpringProvider.class)
     void pactVerificationTestTemplate(PactVerificationContext context) {
         context.verifyInteraction();
     }
