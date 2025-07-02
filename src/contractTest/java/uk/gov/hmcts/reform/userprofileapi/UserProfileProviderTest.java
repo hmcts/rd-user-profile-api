@@ -34,6 +34,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserType;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
+import uk.gov.hmcts.reform.userprofileapi.repository.IdamRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
@@ -99,6 +100,9 @@ public class UserProfileProviderTest {
 
     @Mock
     IdamServiceImpl idamServiceMock;
+
+    @MockitoBean
+    IdamRepository idamRepository;
 
     @MockitoBean
     protected FeatureToggleServiceImpl featureToggleService;
