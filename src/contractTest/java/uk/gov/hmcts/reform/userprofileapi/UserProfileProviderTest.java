@@ -29,6 +29,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.PlatformTransactionManager;
+import uk.gov.hmcts.reform.idam.client.IdamApi;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.userprofileapi.controller.UserProfileController;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
@@ -90,6 +92,12 @@ public class UserProfileProviderTest {
 
     @MockitoBean
     private EntityManager entityManager;
+
+    @MockitoBean
+    private IdamApi idamApi;
+
+    @MockitoBean
+    private IdamClient idamClient;
 
     @MockitoBean
     private ResourceCreator getResourceCreator;
