@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -88,6 +89,10 @@ import static org.mockito.Mockito.when;
 @PactBroker(scheme = "${PACT_BROKER_SCHEME:http}", host = "${PACT_BROKER_URL:localhost}",
         port = "${PACT_BROKER_PORT:9292}")
 @Import(UserProfileProviderTestConfiguration.class)
+@TestPropertySource(properties = {
+    "feign.client.config.idamApi.url=http://localhost:1234",
+    "spring.main.allow-bean-definition-overriding=true"
+})
 public class UserProfileProviderTest {
     @MockitoBean
     private JpaMetamodelMappingContext jpaMetamodelMappingContext;
@@ -127,7 +132,7 @@ public class UserProfileProviderTest {
 
 
     @MockitoBean
-    private IdamFeignClient idamClient;
+    private IdamFeignClient idamFeignClient;
 
     @MockitoBean
     private ValidationService validationService;
@@ -224,11 +229,11 @@ public class UserProfileProviderTest {
 
         doReturn(Response.builder().status(200).body("Success", defaultCharset())
                 .request(userProfileRequest(Request.HttpMethod.PUT)).build())
-                .when(idamClient).addUserRoles(any(),anyString());
+                .when(idamFeignClient).addUserRoles(any(),anyString());
 
         doReturn(Response.builder().status(200).body("Success", defaultCharset())
                 .request(userProfileRequest(Request.HttpMethod.DELETE)).build())
-                .when(idamClient).deleteUserRole(any(),anyString());
+                .when(idamFeignClient).deleteUserRole(any(),anyString());
     }
 
     @State({"A user profile create request is submitted"})
