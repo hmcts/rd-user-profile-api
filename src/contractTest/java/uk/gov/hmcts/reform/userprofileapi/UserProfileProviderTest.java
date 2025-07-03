@@ -97,7 +97,7 @@ public class UserProfileProviderTest {
     private IdamApi idamApi;
 
     @MockitoBean
-    private IdamClient idamClient;
+    private IdamClient idamApiClient;
 
     @MockitoBean
     private ResourceCreator getResourceCreator;
@@ -123,6 +123,9 @@ public class UserProfileProviderTest {
     @MockitoBean
     private IdamService idamService;
 
+
+    @MockitoBean
+    private IdamFeignClient idamClient;
 
     @MockitoBean
     private ValidationService validationService;
