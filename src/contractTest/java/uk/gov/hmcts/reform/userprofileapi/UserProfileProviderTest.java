@@ -85,7 +85,6 @@ import static org.mockito.Mockito.when;
 @PactBroker(scheme = "${PACT_BROKER_SCHEME:http}", host = "${PACT_BROKER_URL:localhost}",
         port = "${PACT_BROKER_PORT:9292}")
 @Import(UserProfileProviderTestConfiguration.class)
-@Component
 public class UserProfileProviderTest {
     @MockitoBean
     private JpaMetamodelMappingContext jpaMetamodelMappingContext;
