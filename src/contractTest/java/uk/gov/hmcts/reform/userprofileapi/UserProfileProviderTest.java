@@ -125,9 +125,6 @@ public class UserProfileProviderTest {
 
 
     @MockitoBean
-    private IdamFeignClient idamClient;
-
-    @MockitoBean
     private ValidationService validationService;
 
     @MockitoBean
