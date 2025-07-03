@@ -46,6 +46,7 @@ import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
+import uk.gov.hmcts.reform.userprofileapi.service.ResourceCreator;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileQueryProvider;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationHelperService;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
@@ -89,6 +90,9 @@ public class UserProfileProviderTest {
 
     @MockitoBean
     private EntityManager entityManager;
+
+    @MockitoBean
+    private ResourceCreator getResourceCreator;
 
     @MockitoBean
     private EntityManagerFactory entityManagerFactory;
