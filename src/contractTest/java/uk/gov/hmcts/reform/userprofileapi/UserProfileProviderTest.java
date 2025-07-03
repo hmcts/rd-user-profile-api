@@ -10,6 +10,7 @@ import com.google.common.collect.Maps;
 import feign.Request;
 import feign.RequestTemplate;
 import feign.Response;
+import jakarta.persistence.EntityManagerFactory;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestTemplate;
@@ -26,6 +27,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.PlatformTransactionManager;
 import uk.gov.hmcts.reform.userprofileapi.controller.UserProfileController;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
@@ -78,11 +80,16 @@ import static org.mockito.Mockito.when;
 @PactBroker(scheme = "${PACT_BROKER_SCHEME:http}", host = "${PACT_BROKER_URL:localhost}",
         port = "${PACT_BROKER_PORT:9292}")
 @Import(UserProfileProviderTestConfiguration.class)
-
 @Component
 public class UserProfileProviderTest {
     @MockitoBean
     private JpaMetamodelMappingContext jpaMetamodelMappingContext;
+
+    @MockitoBean
+    private EntityManagerFactory entityManagerFactory;
+
+    @MockitoBean
+    private PlatformTransactionManager platformTransactionManager;
 
     @MockitoBean
     private UserProfileService<RequestData> userProfileService;
