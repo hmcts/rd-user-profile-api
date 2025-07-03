@@ -90,7 +90,8 @@ import static org.mockito.Mockito.when;
         port = "${PACT_BROKER_PORT:9292}")
 @Import(UserProfileProviderTestConfiguration.class)
 @TestPropertySource(properties = {
-    "feign.client.config.IdamFeignClient.url=http://localhost:1234",
+    "idam.api.url=https://idam-api.aat.platform.hmcts.net",
+    "feign.client.config.IdamFeignClient.url=https://idam-api.aat.platform.hmcts.net",
     "spring.main.allow-bean-definition-overriding=true"
 })
 public class UserProfileProviderTest {
