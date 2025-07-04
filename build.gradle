@@ -239,9 +239,15 @@ runAndPublishConsumerPactTests.finalizedBy pactPublish
 pact {
     publish {
         pactDirectory = 'pacts'
-        tags = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
+        pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:9292'
+        tags = ['Dev']
         version = project.pactVersion
     }
+}
+
+pactPublish {
+    // Workaround for Pact-JVM 4.3.16+:
+    pactPublish = project.pact.publish
 }
 
 //Provider PACT tasks
@@ -265,12 +271,12 @@ task runProviderPactVerification(type: Test) {
     include "uk/gov/hmcts/reform/userprofileapi/**"
 }
 
-task fortifyScan(type: JavaExec)  {
-  main("uk.gov.hmcts.fortifyclient.FortifyClientMainApp")
-  classpath += sourceSets.test.runtimeClasspath
-  jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
-  // This is a temporary fix to prevent the nightly build from failing if the Fortify scan detects issues
-  ignoreExitValue = true as JavaExecSpec
+task fortifyScan(type: JavaExec) {
+    mainClass.set("uk.gov.hmcts.fortifyclient.FortifyClientMainApp")
+    classpath += sourceSets.test.runtimeClasspath
+    jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
+    // This is a temporary fix to prevent the nightly build from failing if the Fortify scan detects issues
+    ignoreExitValue = true
 }
 
 runProviderPactVerification.dependsOn contractTest
@@ -328,6 +334,9 @@ repositories {
     mavenLocal()
     mavenCentral()
     maven { url 'https://pkgs.dev.azure.com/hmcts/Artifacts/_packaging/hmcts-lib/maven/v1' }
+    maven { url = uri("https://jitpack.io")}
+    maven { url = uri("https://repo.maven.apache.org/maven2")}
+    maven { url = uri("https://repo.reform.hmcts.net/artifactory/hmcts-releases")}
 }
 
 dependencies {
