@@ -333,9 +333,6 @@ repositories {
     mavenLocal()
     mavenCentral()
     maven { url 'https://pkgs.dev.azure.com/hmcts/Artifacts/_packaging/hmcts-lib/maven/v1' }
-    maven { url = uri("https://jitpack.io")}
-    maven { url = uri("https://repo.maven.apache.org/maven2")}
-    maven { url = uri("https://repo.reform.hmcts.net/artifactory/hmcts-releases")}
 }
 
 dependencies {
