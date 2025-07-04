@@ -1,41 +1,25 @@
 package uk.gov.hmcts.reform.userprofileapi;
 
 import au.com.dius.pact.provider.junit5.PactVerificationContext;
-import au.com.dius.pact.provider.junitsupport.IgnoreNoPactsToVerify;
+import au.com.dius.pact.provider.junit5.PactVerificationInvocationContextProvider;
 import au.com.dius.pact.provider.junitsupport.Provider;
 import au.com.dius.pact.provider.junitsupport.State;
 import au.com.dius.pact.provider.junitsupport.loader.PactBroker;
 import au.com.dius.pact.provider.spring.junit5.MockMvcTestTarget;
-import au.com.dius.pact.provider.spring.junit5.PactVerificationSpringProvider;
 import com.google.common.collect.Maps;
 import feign.Request;
 import feign.RequestTemplate;
 import feign.Response;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.PlatformTransactionManager;
-import uk.gov.hmcts.reform.idam.client.IdamApi;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.userprofileapi.controller.UserProfileController;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
@@ -47,22 +31,13 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserType;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
-import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
-import uk.gov.hmcts.reform.userprofileapi.repository.IdamRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
-import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
+import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
-import uk.gov.hmcts.reform.userprofileapi.service.ResourceCreator;
-import uk.gov.hmcts.reform.userprofileapi.service.ResourceUpdator;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileQueryProvider;
-import uk.gov.hmcts.reform.userprofileapi.service.ValidationHelperService;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
 import uk.gov.hmcts.reform.userprofileapi.service.impl.DeleteUserProfileServiceImpl;
-import uk.gov.hmcts.reform.userprofileapi.service.impl.FeatureToggleServiceImpl;
 import uk.gov.hmcts.reform.userprofileapi.service.impl.IdamServiceImpl;
-import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileCreator;
-import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileRetriever;
 import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileService;
 
 import java.time.LocalDateTime;
@@ -75,7 +50,6 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import static java.nio.charset.Charset.defaultCharset;
-import static java.util.Objects.nonNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -83,72 +57,24 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
-
-@EnableAutoConfiguration(exclude = {
-    DataSourceAutoConfiguration.class,
-    DataSourceTransactionManagerAutoConfiguration.class,
-    HibernateJpaAutoConfiguration.class,
-    JpaRepositoriesAutoConfiguration.class
-})
-@EnableFeignClients(basePackages = "uk.gov.hmcts.reform.idam.client")
 @ExtendWith(SpringExtension.class)
 @Provider("rd_user_profile_api_service")
 @PactBroker(scheme = "${PACT_BROKER_SCHEME:http}", host = "${PACT_BROKER_URL:localhost}",
         port = "${PACT_BROKER_PORT:9292}")
 @Import(UserProfileProviderTestConfiguration.class)
-@TestPropertySource(properties = {
-    "idam.api.url=https://idam-api.aat.platform.hmcts.net",
-    "feign.client.config.IdamFeignClient.url=https://idam-api.aat.platform.hmcts.net",
-    "spring.main.allow-bean-definition-overriding=true"
-})
-@ContextConfiguration(classes = {UserProfileController.class, UserProfileService.class})
-@IgnoreNoPactsToVerify
 public class UserProfileProviderTest {
 
     @Autowired
-    UserProfileController userProfileController;
-
-    @MockitoBean
-    private IdamService idamService;
-
-    @Mock
-    private UserProfileCreator userProfileCreator;
-
-    @Mock
-    private UserProfileRetriever userProfileRetriever;
+    private UserProfileService<RequestData> userProfileService;
 
     @Mock
     private DeleteUserProfileServiceImpl deleteUserProfileService;
 
-    @MockitoBean
-    UserProfileRepository userProfileRepository;
+    @Autowired
+    private UserProfileRepository userProfileRepository;
 
-    @Mock
-    private ResourceUpdator<UpdateUserProfileData> resourceUpdatorMock;
-
-    @MockitoBean
-    private JpaMetamodelMappingContext jpaMetamodelMappingContext;
-
-    @MockitoBean
-    private EntityManager entityManager;
-
-    @MockitoBean
-    private IdamApi idamApi;
-
-    @MockitoBean
-    private IdamClient idamApiClient;
-
-    @MockitoBean
-    private ResourceCreator getResourceCreator;
-
-    @MockitoBean
-    private EntityManagerFactory entityManagerFactory;
-
-    @MockitoBean
-    private PlatformTransactionManager platformTransactionManager;
-
-    @MockitoBean
-    private AuditRepository auditRepository;
+    @Autowired
+    private IdamService idamService;
 
     @Autowired
     private IdamFeignClient idamClient;
@@ -156,29 +82,15 @@ public class UserProfileProviderTest {
     @Autowired
     private ValidationService validationService;
 
-    @MockitoBean
-    private ValidationHelperService validationHelperService;
-
-    @MockitoBean
-    private UserProfileQueryProvider userProfileQueryProvider;
-
     @Mock
     IdamServiceImpl idamServiceMock;
-
-    @MockitoBean
-    IdamRepository idamRepository;
-
-    @MockitoBean
-    protected FeatureToggleServiceImpl featureToggleService;
 
     @Autowired
     private UserProfileQueryProvider querySupplier;
 
-    @MockitoBean
-    private AuditService auditService;
 
     @TestTemplate
-    @ExtendWith(PactVerificationSpringProvider.class)
+    @ExtendWith(PactVerificationInvocationContextProvider.class)
     void pactVerificationTestTemplate(PactVerificationContext context) {
         context.verifyInteraction();
     }
@@ -187,10 +99,9 @@ public class UserProfileProviderTest {
     void beforeCreate(PactVerificationContext context) {
         MockMvcTestTarget testTarget = new MockMvcTestTarget();
         System.getProperties().setProperty("pact.verifier.publishResults", "true");
-        testTarget.setControllers(userProfileController);
-        if (nonNull(context)) {
-            context.setTarget(testTarget);
-        }
+        testTarget.setControllers(new UserProfileController(userProfileService, idamService,
+                validationService, "preview"));
+        context.setTarget(testTarget);
     }
 
     @State({"A user profile with roles get request is submitted with valid Id"})
