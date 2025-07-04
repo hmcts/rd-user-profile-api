@@ -149,7 +149,8 @@ public class UserProfileController {
             resource = userProfileService.create(userProfileCreationData, origin);
         }
         log.debug("Response createUserProfile from controller" + resource.getIdamRegistrationResponse());
-        return ResponseEntity.status(resource.getIdamRegistrationResponse()).contentType(MediaType.APPLICATION_JSON).body(resource);
+        return ResponseEntity.status(resource.getIdamRegistrationResponse()).contentType(MediaType.APPLICATION_JSON)
+            .body(resource);
     }
 
     @Operation(summary = "Retrieves a User Profile and their Roles with the given ID",
