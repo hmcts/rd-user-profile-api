@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi;
 
 import au.com.dius.pact.provider.junit5.PactVerificationContext;
+import au.com.dius.pact.provider.junitsupport.IgnoreNoPactsToVerify;
 import au.com.dius.pact.provider.junitsupport.Provider;
 import au.com.dius.pact.provider.junitsupport.State;
 import au.com.dius.pact.provider.junitsupport.loader.PactBroker;
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -94,6 +96,7 @@ import static org.mockito.Mockito.when;
     "feign.client.config.IdamFeignClient.url=https://idam-api.aat.platform.hmcts.net",
     "spring.main.allow-bean-definition-overriding=true"
 })
+@IgnoreNoPactsToVerify
 public class UserProfileProviderTest {
     @MockitoBean
     private JpaMetamodelMappingContext jpaMetamodelMappingContext;
@@ -116,7 +119,7 @@ public class UserProfileProviderTest {
     @MockitoBean
     private PlatformTransactionManager platformTransactionManager;
 
-    @MockitoBean
+    @Autowired
     private UserProfileService<RequestData> userProfileService;
 
     @MockitoBean
@@ -125,17 +128,16 @@ public class UserProfileProviderTest {
     @Mock
     private DeleteUserProfileServiceImpl deleteUserProfileService;
 
-    @MockitoBean
+    @Autowired
     private UserProfileRepository userProfileRepository;
 
-    @MockitoBean
+    @Autowired
     private IdamService idamService;
 
-
-    @MockitoBean
+    @Autowired
     private IdamFeignClient idamFeignClient;
 
-    @MockitoBean
+    @Autowired
     private ValidationService validationService;
 
     @MockitoBean
@@ -153,7 +155,7 @@ public class UserProfileProviderTest {
     @MockitoBean
     protected FeatureToggleServiceImpl featureToggleService;
 
-    @Mock
+    @Autowired
     private UserProfileQueryProvider querySupplier;
 
     @MockitoBean
