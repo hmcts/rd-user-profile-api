@@ -30,6 +30,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -76,6 +77,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import static java.nio.charset.Charset.defaultCharset;
+import static java.util.Objects.nonNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -101,8 +103,12 @@ import static org.mockito.Mockito.when;
     "feign.client.config.IdamFeignClient.url=https://idam-api.aat.platform.hmcts.net",
     "spring.main.allow-bean-definition-overriding=true"
 })
+@ContextConfiguration(classes = {UserProfileController.class, UserProfileService.class})
 @IgnoreNoPactsToVerify
 public class UserProfileProviderTest {
+
+    @Autowired
+    UserProfileController userProfileController;
 
     @Mock
     private IdamService idamService;
@@ -142,9 +148,6 @@ public class UserProfileProviderTest {
 
     @MockitoBean
     private PlatformTransactionManager platformTransactionManager;
-
-    @InjectMocks
-    private UserProfileService<RequestData> userProfileService;
 
     @MockitoBean
     private AuditRepository auditRepository;
@@ -186,9 +189,10 @@ public class UserProfileProviderTest {
     void beforeCreate(PactVerificationContext context) {
         MockMvcTestTarget testTarget = new MockMvcTestTarget();
         System.getProperties().setProperty("pact.verifier.publishResults", "true");
-        testTarget.setControllers(new UserProfileController(userProfileService, idamService,
-                validationService, "preview"));
-        context.setTarget(testTarget);
+        testTarget.setControllers(userProfileController);
+        if (nonNull(context)) {
+            context.setTarget(testTarget);
+        }
     }
 
     @State({"A user profile with roles get request is submitted with valid Id"})
