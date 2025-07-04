@@ -120,7 +120,7 @@ public class UserProfileProviderTest {
     @Mock
     private DeleteUserProfileServiceImpl deleteUserProfileService;
 
-    @Mock
+    @MockitoBean
     UserProfileRepository userProfileRepository;
 
     @Mock
