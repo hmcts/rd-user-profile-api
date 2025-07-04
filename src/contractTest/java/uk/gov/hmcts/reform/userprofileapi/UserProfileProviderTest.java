@@ -108,7 +108,7 @@ public class UserProfileProviderTest {
     @Autowired
     UserProfileController userProfileController;
 
-    @Mock
+    @MockitoBean
     private IdamService idamService;
 
     @Mock
