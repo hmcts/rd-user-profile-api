@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -50,15 +51,19 @@ import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.IdamRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
+import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceCreator;
+import uk.gov.hmcts.reform.userprofileapi.service.ResourceUpdator;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileQueryProvider;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationHelperService;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
 import uk.gov.hmcts.reform.userprofileapi.service.impl.DeleteUserProfileServiceImpl;
 import uk.gov.hmcts.reform.userprofileapi.service.impl.FeatureToggleServiceImpl;
 import uk.gov.hmcts.reform.userprofileapi.service.impl.IdamServiceImpl;
+import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileCreator;
+import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileRetriever;
 import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileService;
 
 import java.time.LocalDateTime;
@@ -98,6 +103,25 @@ import static org.mockito.Mockito.when;
 })
 @IgnoreNoPactsToVerify
 public class UserProfileProviderTest {
+
+    @Mock
+    private IdamService idamService;
+
+    @Mock
+    private UserProfileCreator userProfileCreator;
+
+    @Mock
+    private UserProfileRetriever userProfileRetriever;
+
+    @Mock
+    private DeleteUserProfileServiceImpl deleteUserProfileService;
+
+    @Mock
+    UserProfileRepository userProfileRepository;
+
+    @Mock
+    private ResourceUpdator<UpdateUserProfileData> resourceUpdatorMock;
+
     @MockitoBean
     private JpaMetamodelMappingContext jpaMetamodelMappingContext;
 
@@ -119,23 +143,14 @@ public class UserProfileProviderTest {
     @MockitoBean
     private PlatformTransactionManager platformTransactionManager;
 
-    @Autowired
+    @InjectMocks
     private UserProfileService<RequestData> userProfileService;
 
     @MockitoBean
     private AuditRepository auditRepository;
 
-    @Mock
-    private DeleteUserProfileServiceImpl deleteUserProfileService;
-
     @Autowired
-    private UserProfileRepository userProfileRepository;
-
-    @Autowired
-    private IdamService idamService;
-
-    @Autowired
-    private IdamFeignClient idamFeignClient;
+    private IdamFeignClient idamClient;
 
     @Autowired
     private ValidationService validationService;
@@ -232,11 +247,11 @@ public class UserProfileProviderTest {
 
         doReturn(Response.builder().status(200).body("Success", defaultCharset())
                 .request(userProfileRequest(Request.HttpMethod.PUT)).build())
-                .when(idamFeignClient).addUserRoles(any(),anyString());
+                .when(idamClient).addUserRoles(any(),anyString());
 
         doReturn(Response.builder().status(200).body("Success", defaultCharset())
                 .request(userProfileRequest(Request.HttpMethod.DELETE)).build())
-                .when(idamFeignClient).deleteUserRole(any(),anyString());
+                .when(idamClient).deleteUserRole(any(),anyString());
     }
 
     @State({"A user profile create request is submitted"})
