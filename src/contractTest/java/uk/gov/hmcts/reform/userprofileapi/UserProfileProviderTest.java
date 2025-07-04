@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.userprofileapi.controller.UserProfileController;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
@@ -31,10 +32,14 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.LanguagePreference;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserType;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
+import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.RequestData;
+import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
+import uk.gov.hmcts.reform.userprofileapi.service.DeleteResourceService;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileQueryProvider;
+import uk.gov.hmcts.reform.userprofileapi.service.ValidationHelperService;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
 import uk.gov.hmcts.reform.userprofileapi.service.impl.DeleteUserProfileServiceImpl;
 import uk.gov.hmcts.reform.userprofileapi.service.impl.IdamServiceImpl;
@@ -60,9 +65,12 @@ import static org.mockito.Mockito.when;
 @ExtendWith(SpringExtension.class)
 @Provider("rd_user_profile_api_service")
 @PactBroker(scheme = "${PACT_BROKER_SCHEME:http}", host = "${PACT_BROKER_URL:localhost}",
-        port = "${PACT_BROKER_PORT:9292}")
+    port = "${PACT_BROKER_PORT:9292}", tags ="Dev")
 @Import(UserProfileProviderTestConfiguration.class)
 public class UserProfileProviderTest {
+
+    @MockitoBean
+    private IdamService idamService;
 
     @Autowired
     private UserProfileService<RequestData> userProfileService;
@@ -70,13 +78,22 @@ public class UserProfileProviderTest {
     @Mock
     private DeleteUserProfileServiceImpl deleteUserProfileService;
 
-    @Autowired
+    @MockitoBean
+    private AuditService auditService;
+
+    @MockitoBean
+    private DeleteResourceService deleteResourceService;
+
+    @MockitoBean
+    private AuditRepository auditRepository;
+
+    @MockitoBean
     private UserProfileRepository userProfileRepository;
 
-    @Autowired
-    private IdamService idamService;
+    @MockitoBean
+    private ValidationHelperService validationHelperService;
 
-    @Autowired
+    @MockitoBean
     private IdamFeignClient idamClient;
 
     @Autowired
@@ -85,23 +102,34 @@ public class UserProfileProviderTest {
     @Mock
     IdamServiceImpl idamServiceMock;
 
-    @Autowired
+    @MockitoBean
     private UserProfileQueryProvider querySupplier;
 
 
     @TestTemplate
     @ExtendWith(PactVerificationInvocationContextProvider.class)
     void pactVerificationTestTemplate(PactVerificationContext context) {
+        if (context == null) {
+            // No pacts found—skip this template invocation
+            return;
+        }
         context.verifyInteraction();
     }
 
     @BeforeEach
     void beforeCreate(PactVerificationContext context) {
+        if (context == null) {
+            // No pacts to verify — skip setup
+            return;
+        }
+
+        System.setProperty("pact.verifier.publishResults", "true");
         MockMvcTestTarget testTarget = new MockMvcTestTarget();
-        System.getProperties().setProperty("pact.verifier.publishResults", "true");
-        testTarget.setControllers(new UserProfileController(userProfileService, idamService,
-                validationService, "preview"));
+        testTarget.setControllers(
+            new UserProfileController(userProfileService, idamService, validationService, "test")
+        );
         context.setTarget(testTarget);
+
     }
 
     @State({"A user profile with roles get request is submitted with valid Id"})
