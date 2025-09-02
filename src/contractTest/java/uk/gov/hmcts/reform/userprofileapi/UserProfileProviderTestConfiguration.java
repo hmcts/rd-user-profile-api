@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.userprofileapi;
 
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.repository.AuditRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
@@ -33,30 +33,30 @@ public class UserProfileProviderTestConfiguration {
 
     private ResourceUpdator<RequestData> resourceUpdator;
 
-    @MockBean
+    @MockitoBean
     private DeleteResourceService<RequestData> resourceDeleter;
 
-    @MockBean
+    @MockitoBean
     private UserProfileRepository userProfileRepository;
 
-    @MockBean
+    @MockitoBean
     private IdamService idamService;
 
-    @MockBean
+    @MockitoBean
     private IdamFeignClient idamClient;
 
-    @MockBean
+    @MockitoBean
     private AuditRepository auditRepository;
 
-    @MockBean
+    @MockitoBean
     private AuditService auditService;
 
-    @MockBean
+    @MockitoBean
     private ValidationHelperService validationHelperService;
 
     private ValidationService validationService;
 
-    @MockBean
+    @MockitoBean
     private UserProfileQueryProvider querySupplier;
 
 

@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -148,7 +149,8 @@ public class UserProfileController {
             resource = userProfileService.create(userProfileCreationData, origin);
         }
         log.debug("Response createUserProfile from controller" + resource.getIdamRegistrationResponse());
-        return ResponseEntity.status(resource.getIdamRegistrationResponse()).body(resource);
+        return ResponseEntity.status(resource.getIdamRegistrationResponse()).contentType(MediaType.APPLICATION_JSON)
+            .body(resource);
     }
 
     @Operation(summary = "Retrieves a User Profile and their Roles with the given ID",

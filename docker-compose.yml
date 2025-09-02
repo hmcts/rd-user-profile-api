@@ -65,16 +65,16 @@ services:
       TESTING_SUPPORT_ENABLED: "true"
 
   service-token-provider:
-      image: hmcts/service-token-provider
-      container_name: user-profile-service-token-provider
-      environment:
-        - S2S_URL=http://service-auth-provider-api:8080
-        - S2S_MICROSERVICE=rd_user_profile_api
-        - USER_PROFILE_API_S2S_SECRET=${USER_PROFILE_API_S2S_SECRET}
-      ports:
-        - 8099:8090
-      depends_on:
-        - service-auth-provider-api
+    image: hmcts/service-token-provider
+    container_name: user-profile-service-token-provider
+    environment:
+      - S2S_URL=http://service-auth-provider-api:8080
+      - S2S_MICROSERVICE=rd_user_profile_api
+      - USER_PROFILE_API_S2S_SECRET=${USER_PROFILE_API_S2S_SECRET}
+    ports:
+      - 8099:8090
+    depends_on:
+      - service-auth-provider-api
 
 volumes:
   rd-user-profile-db-volume:
