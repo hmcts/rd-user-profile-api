@@ -40,7 +40,7 @@ def versions = [
         flywaydb           : '11.3.2',
         sonarPitest        : '0.5',
         reformLogging      : '6.1.8',
-        serenity           : '4.2.16',
+        serenity           : '4.2.34',
         pact_version       : '4.6.17',
         launchDarklySdk    : '5.10.9',
         log4j              : '2.24.3',
