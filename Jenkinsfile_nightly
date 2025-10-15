@@ -72,7 +72,7 @@ withNightlyPipeline(type, product, component) {
     enableSecurityScan()
     enableFortifyScan()
 
-    afterSuccess('fullFunctionalTest') {
+    afterAlways('fullFunctionalTest') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
         publishHTML target: [
@@ -92,11 +92,11 @@ withNightlyPipeline(type, product, component) {
         print "done delete script for nightly"
     }
 
-    afterSuccess('fortify-scan') {
+    afterAlways('fortify-scan') {
        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
      }
 
-    afterSuccess('mutationTest') {
+    afterAlways('mutationTest') {
         publishHTML target: [
                 allowMissing         : true,
                 alwaysLinkToLastBuild: true,
@@ -110,7 +110,7 @@ withNightlyPipeline(type, product, component) {
 }
 
 def deleteFunctionalDbData() {
-    withDocker('jbergknoff/postgresql-client', "--entrypoint='' -e PGPASSWORD=${FUNC_DATABASE_PASS} -v ${WORKSPACE}/deletescript/:/deletescript") {
+    withDocker('hmctspublic.azurecr.io/imported/jbergknoff/postgresql-client', "--entrypoint='' -e PGPASSWORD=${FUNC_DATABASE_PASS} -v ${WORKSPACE}/deletescript/:/deletescript") {
         sh "chmod +x /deletescript/delete-functional-data.sh"
         sh "/deletescript/delete-functional-data.sh \
                         ${FUNC_DATABASE_USER} \

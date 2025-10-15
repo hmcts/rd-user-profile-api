@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.docs;
 
-import net.thucydides.core.annotations.WithTag;
-import net.thucydides.core.annotations.WithTags;
+import net.serenitybdd.annotations.WithTag;
+import net.serenitybdd.annotations.WithTags;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -27,7 +27,7 @@ class SwaggerPublisherTest extends AuthorizationEnabledIntegrationTest {
 
     private static final Logger LOG = getLogger(SwaggerPublisherTest.class);
 
-    private static final String SWAGGER_DOC_JSON_FILE = "/tmp/swagger-specs.json";
+    private static final String SWAGGER_DOC_JSON_FILE = "/tmp/openapi-specs.json";
 
     private MockMvc mockMvc;
 
