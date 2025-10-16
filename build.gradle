@@ -419,7 +419,7 @@ dependencies {
     implementation "com.github.hmcts.java-logging:logging:${versions.reformLogging}"
     implementation "com.github.hmcts.java-logging:logging-appinsights:${versions.reformLogging}"
 
-    testImplementation 'com.github.hmcts:rd-commons-lib:0.1.2'
+    testImplementation 'com.github.hmcts:rd-commons-lib:0.1.3'
 
     compileOnly group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
