@@ -1,7 +1,7 @@
 name: 'Close stale issues and PRs'
 on:
   schedule:
-    - cron: '0 9 * * *' # Run daily at 9am GMT
+    - cron: '0 19 * * *' # Run daily at 7pm GMT
   workflow_dispatch: # Allow manual trigger
 
 permissions:
@@ -36,7 +36,7 @@ jobs:
           exempt-all-issue-assignees: false
           
           # Delete branch after closing stale PR
-          delete-branch: false
+          delete-branch: true
           
           # Operations per run
           operations-per-run: 50
