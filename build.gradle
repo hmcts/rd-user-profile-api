@@ -33,8 +33,8 @@ ext {
 }
 
 def versions = [
-        junit              : '6.0.0',
-        junitPlatform      : '6.0.0',
+        junit              : '6.0.1',
+        junitPlatform      : '6.0.1',
         junitPitest        : '1.2.1',
         lombok             : '1.18.42',
         flywaydb           : '11.15.0',
