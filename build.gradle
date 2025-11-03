@@ -446,7 +446,7 @@ dependencies {
     }
 
     testImplementation group: 'org.codehaus.sonar-plugins', name: 'sonar-pitest-plugin', version: versions.sonarPitest
-    testImplementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '5.2.1'
+    testImplementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '5.3.0'
     testImplementation group: 'com.github.mifmif', name: 'generex', version: '1.0.2'
     testImplementation 'com.github.hmcts:fortify-client:1.4.10:all'
 
