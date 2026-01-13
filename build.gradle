@@ -362,7 +362,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
     implementation group: 'org.springframework.retry', name: 'spring-retry', version: '2.0.12'
-    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.19.0'
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.20.0'
 
     implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.8.13'
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap'
