@@ -401,7 +401,7 @@ dependencies {
     testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: versions.testContainer_postgresql
     testImplementation group: 'org.testcontainers', name: 'testcontainers', version: versions.testContainer_postgresql
 
-    testImplementation ("org.mockito:mockito-core:5.20.0") {
+    testImplementation ("org.mockito:mockito-core:5.21.0") {
         exclude group: "net.bytebuddy", module: "byte-buddy"
         exclude group: "net.bytebuddy", module: "byte-buddy-agent"
     }
@@ -412,7 +412,7 @@ dependencies {
     testImplementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.18.3'
     testImplementation group: 'net.bytebuddy', name: 'byte-buddy-agent', version: '1.18.3'
 
-    testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '5.20.0'
+    testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '5.21.0'
     testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.9'
 
     implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: versions.log4j
