@@ -27,4 +27,6 @@ public interface ValidationHelperService {
     void validateUserLastUpdatedWithinSpecifiedTime(UserProfile userProfile, long expectedHours);
 
     void validateUserStatus(UserProfile userProfile, IdamStatus expectedStatus);
+
+    void validateUserAlreadyExists(Optional<UserProfile> userProfile);
 }
