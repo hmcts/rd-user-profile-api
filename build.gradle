@@ -409,7 +409,7 @@ dependencies {
         exclude group: "net.bytebuddy", module: "byte-buddy"
         exclude group: "net.bytebuddy", module: "byte-buddy-agent"
     }
-    testImplementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.18.3'
+    testImplementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.18.4'
     testImplementation group: 'net.bytebuddy', name: 'byte-buddy-agent', version: '1.18.3'
 
     testImplementation group: 'org.mockito', name: 'mockito-junit-jupiter', version: '5.21.0'
