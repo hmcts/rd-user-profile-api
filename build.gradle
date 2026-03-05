@@ -164,7 +164,6 @@ idea {
     }
 }
 
-
 configurations {
     integrationTestImplementation.extendsFrom testCompile
     integrationTestRuntime.extendsFrom testRuntime
