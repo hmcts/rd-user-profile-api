@@ -172,6 +172,7 @@ public class UserProfileProviderTest {
         IdamRegistrationInfo idamRegistrationInfo =
                 new IdamRegistrationInfo(HttpStatus.OK,"OK", ResponseEntity.accepted().build());
         doReturn(idamRegistrationInfo).when(idamService).registerUser(any());
+        doReturn(Optional.empty()).when(userProfileRepository).findByEmail(anyString());
     }
 
 
