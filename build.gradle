@@ -29,7 +29,7 @@ java {
 }
 
 ext {
-    springCloudVersion = '2023.0.6'
+    springCloudVersion = '2024.0.0'
 }
 
 def versions = [
@@ -67,12 +67,6 @@ def jarName = 'rd-user-profile-api.jar'
 
 group = 'uk.gov.hmcts.reform'
 version = '0.0.1'
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-}
 
 jacocoTestCoverageVerification {
     violationRules {
@@ -249,6 +243,11 @@ pact {
     }
 }
 
+pactPublish {
+    // Workaround for Pact-JVM 4.3.16+:
+    pactPublish = project.pact.publish
+}
+
 //Provider PACT tasks
 task contractTest(type: Test) {
     logger.lifecycle("Runnning contract Tests")
@@ -270,12 +269,12 @@ task runProviderPactVerification(type: Test) {
     include "uk/gov/hmcts/reform/userprofileapi/**"
 }
 
-task fortifyScan(type: JavaExec)  {
-  main("uk.gov.hmcts.fortifyclient.FortifyClientMainApp")
-  classpath += sourceSets.test.runtimeClasspath
-  jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
-  // This is a temporary fix to prevent the nightly build from failing if the Fortify scan detects issues
-  ignoreExitValue = true as JavaExecSpec
+task fortifyScan(type: JavaExec) {
+    mainClass.set("uk.gov.hmcts.fortifyclient.FortifyClientMainApp")
+    classpath += sourceSets.test.runtimeClasspath
+    jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
+    // This is a temporary fix to prevent the nightly build from failing if the Fortify scan detects issues
+    ignoreExitValue = true
 }
 
 runProviderPactVerification.dependsOn contractTest
@@ -363,7 +362,7 @@ dependencies {
     implementation group: 'org.springframework.retry', name: 'spring-retry', version: '2.0.12'
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.20.0'
 
-    implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.6.0'
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.7.0'
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap'
     implementation group: 'org.bouncycastle', name: 'bcpkix-jdk18on', version: versions.bouncycastle
 

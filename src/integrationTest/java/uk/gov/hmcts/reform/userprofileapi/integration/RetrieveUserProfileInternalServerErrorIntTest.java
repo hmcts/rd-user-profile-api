@@ -4,8 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,10 +33,10 @@ class RetrieveUserProfileInternalServerErrorIntTest extends AuthorizationEnabled
 
     private static final String APP_BASE_PATH = "/v1/userprofile";
     private static final String SLASH = "/";
-    @MockBean
+    @MockitoBean
     protected IdamService idamService;
 
-    @MockBean
+    @MockitoBean
     private UserProfileRepository userProfileRepository;
 
     @Autowired
