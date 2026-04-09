@@ -18,8 +18,18 @@ public class AccessDecisionManagerAuthorizationManagerAdapter implements Authori
         object - the AuthorizationManager object to check
         Throws: AccessDeniedException - if access is not granted
     */
+    @SuppressWarnings("deprecation")
     @Override
     public AuthorizationDecision check(Supplier<Authentication> authentication, Authentication object) {
+        return decide(authentication, object);
+    }
+
+    @Override
+    public AuthorizationDecision authorize(Supplier<Authentication> authentication, Authentication object) {
+        return decide(authentication, object);
+    }
+
+    private AuthorizationDecision decide(Supplier<Authentication> authentication, Authentication object) {
         List<GrantedAuthority> userAuthorities = authentication.get().getAuthorities()
                 .stream()
                 .map(authority -> (GrantedAuthority) authority)
