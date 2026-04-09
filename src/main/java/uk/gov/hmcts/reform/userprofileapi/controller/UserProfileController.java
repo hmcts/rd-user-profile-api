@@ -128,6 +128,7 @@ public class UserProfileController {
 
 
     @PostMapping(
+            path = {"", "/"},
             consumes = APPLICATION_JSON_VALUE,
             produces = APPLICATION_JSON_VALUE
     )
