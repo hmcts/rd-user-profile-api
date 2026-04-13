@@ -5,7 +5,7 @@ java:
   aadIdentityName: rd
   spotInstances:
     enabled: true
-  image: 'hmctspublic.azurecr.io/rd/user-profile-api:latest'
+  image: 'hmctsprod.azurecr.io/rd/user-profile-api:latest'
   environment:
     POSTGRES_HOST: rd-user-profile-api-postgres-db-v16-{{ .Values.global.environment }}.postgres.database.azure.com
     POSTGRES_USERNAME: pgadmin
