@@ -6,7 +6,7 @@ buildscript {
 
 plugins {
     id 'application'
-    id 'uk.gov.hmcts.java' version '0.12.70'
+    id 'uk.gov.hmcts.java' version '0.12.67'
     id 'idea'
     id 'jacoco'
     id 'pmd'
@@ -416,7 +416,7 @@ dependencies {
 
     implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: versions.log4j
     implementation "com.github.hmcts.java-logging:logging:${versions.reformLogging}"
-    implementation "com.github.hmcts.java-logging:logging-appinsights:${versions.reformLogging}"
+    implementation "com.github.hmcts.java-logging:logging-appinsights:6.1.9"
 
     testImplementation 'com.github.hmcts:rd-commons-lib:0.1.3'
 
