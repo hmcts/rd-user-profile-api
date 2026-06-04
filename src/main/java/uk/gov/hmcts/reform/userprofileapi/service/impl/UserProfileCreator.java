@@ -33,6 +33,7 @@ import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 import uk.gov.hmcts.reform.userprofileapi.util.JsonFeignResponseUtil;
 import uk.gov.hmcts.reform.userprofileapi.util.UserProfileUtil;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -230,7 +231,13 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
         if (responseEntity != null) {
             //get userId from location header
             locationHeader = idamRegistrationInfo.getResponse().getHeaders().getFirst("location");
-            userId = nonNull(locationHeader) ? locationHeader.substring(sidamGetUri.length()) : null;
+            userId = extractUserIdFromLocationHeader(locationHeader);
+            if (!org.springframework.util.StringUtils.hasText(userId)) {
+                log.error("{}:: Did not get valid userId from location header", loggingComponentName);
+                idamStatus = HttpStatus.UNAUTHORIZED;
+                persistAuditAndThrowIdamException(IdamStatusResolver.resolveStatusAndReturnMessage(idamStatus),
+                        idamStatus, null);
+            }
             log.error("{}:: Received existing idam user", loggingComponentName);
             // search with id to get roles
             idamRolesInfo = idamService.fetchUserById(userId);
@@ -268,6 +275,33 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
                     idamStatus, null);
         }
         return userProfile;
+    }
+
+    String extractUserIdFromLocationHeader(String locationHeader) {
+        if (!org.springframework.util.StringUtils.hasText(locationHeader)) {
+            return null;
+        }
+
+        String trimmedLocationHeader = locationHeader.trim();
+        if (trimmedLocationHeader.startsWith(sidamGetUri)) {
+            return trimmedLocationHeader.substring(sidamGetUri.length());
+        }
+
+        try {
+            String path = URI.create(trimmedLocationHeader).getPath();
+            if (org.springframework.util.StringUtils.hasText(path)) {
+                trimmedLocationHeader = path;
+            }
+        } catch (IllegalArgumentException ex) {
+            log.warn("{}:: Unable to parse IDAM location header as URI: {}", loggingComponentName, locationHeader);
+        }
+
+        int lastSlashIndex = trimmedLocationHeader.lastIndexOf('/');
+        if (lastSlashIndex >= 0 && lastSlashIndex < trimmedLocationHeader.length() - 1) {
+            return trimmedLocationHeader.substring(lastSlashIndex + 1);
+        }
+
+        return trimmedLocationHeader;
     }
 
     private void persistAudit(String message, HttpStatus idamStatus, UserProfile userProfile) {
