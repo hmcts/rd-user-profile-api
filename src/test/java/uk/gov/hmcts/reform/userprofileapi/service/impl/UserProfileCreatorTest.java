@@ -814,4 +814,18 @@ class UserProfileCreatorTest {
         verify(idamService, times(0)).fetchUserById(any());
         verify(auditRepository, times(1)).save(any(Audit.class));
     }
+
+    @Test
+    void should_throw_when_duplicate_idam_response_entity_is_null() {
+        idamRegistrationInfo = new IdamRegistrationInfo(CONFLICT, "Conflict", null);
+
+        when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.empty());
+        when(idamService.registerUser(any(IdamRegisterUserRequest.class))).thenReturn(idamRegistrationInfo);
+
+        assertThatThrownBy(() -> userProfileCreator.create(userProfileCreationData, null))
+                .isExactlyInstanceOf(IdamServiceException.class);
+
+        verify(idamService, times(0)).fetchUserById(any());
+        verify(auditRepository, times(1)).save(any(Audit.class));
+    }
 }
