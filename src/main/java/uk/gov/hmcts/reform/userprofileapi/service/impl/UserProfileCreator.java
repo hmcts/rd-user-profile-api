@@ -44,7 +44,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import static java.util.Objects.nonNull;
 import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.USER_ALREADY_ACTIVE;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileMapper.mapUpdatableFieldsForReInvite;
 
