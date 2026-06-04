@@ -802,6 +802,26 @@ class UserProfileCreatorTest {
     }
 
     @Test
+    void should_extract_user_id_when_location_header_is_not_a_parseable_uri() {
+        ReflectionTestUtils.setField(userProfileCreator, "sidamGetUri", "/api/v1/users/");
+
+        String userId = userProfileCreator.extractUserIdFromLocationHeader(
+                "https://idam-api.perftest.platform.hmcts.net/api/v1/users/12345678-1234 invalid");
+
+        assertThat(userId).isEqualTo("12345678-1234 invalid");
+    }
+
+    @Test
+    void should_return_trimmed_location_header_when_no_path_separator_exists() {
+        ReflectionTestUtils.setField(userProfileCreator, "sidamGetUri", "/api/v1/users/");
+
+        String userId = userProfileCreator.extractUserIdFromLocationHeader(
+                " 12345678-1234-1234-1234-123456789012 ");
+
+        assertThat(userId).isEqualTo("12345678-1234-1234-1234-123456789012");
+    }
+
+    @Test
     void should_throw_when_duplicate_idam_response_has_no_location_header() {
         idamRegistrationInfo = new IdamRegistrationInfo(status(CONFLICT).build());
 
