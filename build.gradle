@@ -566,6 +566,9 @@ dependencyManagement {
           entry 'spring-web'
           entry 'spring-webmvc'
       }
+      dependencySet(group: 'commons-fileupload', version: '1.6.0') {
+          entry 'commons-fileupload'
+      }
     }
 }
 
