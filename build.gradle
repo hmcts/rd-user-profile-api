@@ -369,7 +369,7 @@ dependencies {
 
     implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.2.3'
 
-    implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '13.6'
+    implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '13.12'
 
     implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: versions.reformS2sClient
     implementation group: 'com.auth0', name: 'java-jwt', version: '4.5.0'
@@ -393,7 +393,7 @@ dependencies {
     implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: versions.log4j
     implementation group: 'org.apache.logging.log4j', name: 'log4j', version: versions.log4j
     implementation group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: versions.log4j
-    implementation group: 'com.microsoft.azure', name: 'applicationinsights-core', version: '3.7.7'
+    implementation group: 'com.microsoft.azure', name: 'applicationinsights-core', version: '3.7.8'
 
 
     testImplementation group: 'org.testcontainers', name: 'postgresql', version: versions.testContainer_postgresql
