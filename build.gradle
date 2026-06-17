@@ -570,6 +570,14 @@ dependencyManagement {
       dependencySet(group: 'commons-fileupload', version: '1.6.0') {
           entry 'commons-fileupload'
       }
+      dependencySet(group: 'io.github.openfeign', version: '13.12') {
+        entry 'feign-core'
+        entry 'feign-form'
+        entry 'feign-form-spring'
+        entry 'feign-httpclient'
+        entry 'feign-jackson'
+        entry 'feign-slf4j'
+      }
     }
 }
 
