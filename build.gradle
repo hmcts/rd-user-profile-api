@@ -50,7 +50,7 @@ def versions = [
         testContainer_postgresql: '1.21.4',
         bouncycastle       : '1.84',
         logback            : '1.5.12',
-        okio               : '3.4.0'
+        okio               : '3.17.0'
 ]
 
 application {
