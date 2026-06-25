@@ -190,7 +190,9 @@ class UserProfileCreatorTest {
 
         List<String> roles = new ArrayList<>();
         roles.add("pui-case-manager");
-        idamRegistrationInfo = new IdamRegistrationInfo(status(CONFLICT).build());
+        idamRegistrationInfo = new IdamRegistrationInfo(status(CONFLICT)
+                .header("location", "/api/v1/users/12345678-1234-1234-1234-123456789012")
+                .build());
 
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.empty());
         when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);
@@ -226,7 +228,9 @@ class UserProfileCreatorTest {
     @Test
     void test_register_when_idam_registration_conflicts_and_roles_null() {
 
-        idamRegistrationInfo = new IdamRegistrationInfo(status(CONFLICT).build());
+        idamRegistrationInfo = new IdamRegistrationInfo(status(CONFLICT)
+                .header("location", "/api/v1/users/12345678-1234-1234-1234-123456789012")
+                .build());
 
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.empty());
         when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);
@@ -261,7 +265,9 @@ class UserProfileCreatorTest {
     @Test
     void test_register_when_idam_registration_conflicts_and_roles_null_with_origin() {
 
-        idamRegistrationInfo = new IdamRegistrationInfo(status(CONFLICT).build());
+        idamRegistrationInfo = new IdamRegistrationInfo(status(CONFLICT)
+                .header("location", "/api/v1/users/12345678-1234-1234-1234-123456789012")
+                .build());
 
         when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);
         when(idamService.registerUser(any(IdamRegisterUserRequest.class))).thenReturn(idamRegistrationInfo);
@@ -295,7 +301,9 @@ class UserProfileCreatorTest {
     @Test
     void test_register_when_idam_registration_conflicts_and_idamstatuscode_400_with_origin() {
 
-        idamRegistrationInfo = new IdamRegistrationInfo(status(CONFLICT).build());
+        idamRegistrationInfo = new IdamRegistrationInfo(status(CONFLICT)
+                .header("location", "/api/v1/users/12345678-1234-1234-1234-123456789012")
+                .build());
 
         when(idamService.registerUser(any(IdamRegisterUserRequest.class))).thenReturn(idamRegistrationInfo);
         when(idamRolesInfo.getRoles()).thenReturn(null);
@@ -781,5 +789,63 @@ class UserProfileCreatorTest {
         userProfileCreator.logIdamResponse(null);
 
         assertNotNull(userResponse.getId());
+    }
+
+    @Test
+    void should_extract_user_id_from_absolute_location_header() {
+        ReflectionTestUtils.setField(userProfileCreator, "sidamGetUri", "/api/v1/users/");
+
+        String userId = userProfileCreator.extractUserIdFromLocationHeader(
+                "https://idam-api.perftest.platform.hmcts.net/api/v1/users/12345678-1234-1234-1234-123456789012");
+
+        assertThat(userId).isEqualTo("12345678-1234-1234-1234-123456789012");
+    }
+
+    @Test
+    void should_extract_user_id_when_location_header_is_not_a_parseable_uri() {
+        ReflectionTestUtils.setField(userProfileCreator, "sidamGetUri", "/api/v1/users/");
+
+        String userId = userProfileCreator.extractUserIdFromLocationHeader(
+                "https://idam-api.perftest.platform.hmcts.net/api/v1/users/12345678-1234 invalid");
+
+        assertThat(userId).isEqualTo("12345678-1234 invalid");
+    }
+
+    @Test
+    void should_return_trimmed_location_header_when_no_path_separator_exists() {
+        ReflectionTestUtils.setField(userProfileCreator, "sidamGetUri", "/api/v1/users/");
+
+        String userId = userProfileCreator.extractUserIdFromLocationHeader(
+                " 12345678-1234-1234-1234-123456789012 ");
+
+        assertThat(userId).isEqualTo("12345678-1234-1234-1234-123456789012");
+    }
+
+    @Test
+    void should_throw_when_duplicate_idam_response_has_no_location_header() {
+        idamRegistrationInfo = new IdamRegistrationInfo(status(CONFLICT).build());
+
+        when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.empty());
+        when(idamService.registerUser(any(IdamRegisterUserRequest.class))).thenReturn(idamRegistrationInfo);
+
+        assertThatThrownBy(() -> userProfileCreator.create(userProfileCreationData, null))
+                .isExactlyInstanceOf(IdamServiceException.class);
+
+        verify(idamService, times(0)).fetchUserById(any());
+        verify(auditRepository, times(1)).save(any(Audit.class));
+    }
+
+    @Test
+    void should_throw_when_duplicate_idam_response_entity_is_null() {
+        idamRegistrationInfo = new IdamRegistrationInfo(CONFLICT, "Conflict", null);
+
+        when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.empty());
+        when(idamService.registerUser(any(IdamRegisterUserRequest.class))).thenReturn(idamRegistrationInfo);
+
+        assertThatThrownBy(() -> userProfileCreator.create(userProfileCreationData, null))
+                .isExactlyInstanceOf(IdamServiceException.class);
+
+        verify(idamService, times(0)).fetchUserById(any());
+        verify(auditRepository, times(1)).save(any(Audit.class));
     }
 }
