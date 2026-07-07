@@ -58,4 +58,31 @@
     </notes>
     <cve>CVE-2025-7962</cve>
   </suppress>
+  <suppress>
+    <notes>
+      <![CDATA[
+        Reviewed 2026-07-03
+        False positive:
+        CVE-2026-54515 applies to jackson libraries.
+        Affected libraries reported by dependency-check are:
+        - jackson-core 2.22.0
+        - jackson-databind 2.22.0
+        Versions of used libraries are their latest respectively.
+      ]]>
+    </notes>
+    <cve>CVE-2026-54515</cve>
+  </suppress>
+  <suppress>
+    <notes>
+      <![CDATA[
+        Reviewed 2026-07-03
+        False positive:
+        CVE-2026-53914 applies to kotlin libraries.
+        Affected libraries reported by dependency-check are:
+        - kotlin-stdlib 1.9.25 (a transitive dependency of feign-okhttp 13.13)
+        Versions of used libraries are their latest respectively.
+      ]]>
+    </notes>
+    <cve>CVE-2026-53914</cve>
+  </suppress>
 </suppressions>

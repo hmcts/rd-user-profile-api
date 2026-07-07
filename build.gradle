@@ -18,7 +18,7 @@ plugins {
     id 'org.springframework.boot' version '3.5.15'
     id "org.flywaydb.flyway" version "11.20.2"
     id 'au.com.dius.pact' version '4.6.19'
-    id 'org.owasp.dependencycheck' version '12.2.0'
+    id 'org.owasp.dependencycheck' version '12.2.2'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '4.3.2'
 }
 
@@ -44,7 +44,7 @@ def versions = [
         pact_version       : '4.6.19',
         launchDarklySdk    : '5.10.9',
         log4j              : '2.26.0',
-        jackson            : '2.21.0',
+        jackson            : '2.22.0',
         feign              : '3.8.0',
         reformS2sClient    : '5.3.4',
         testContainer_postgresql: '1.21.4',
@@ -369,7 +369,7 @@ dependencies {
 
     implementation group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '3.2.4'
 
-    implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '13.12'
+    implementation group: 'io.github.openfeign', name: 'feign-okhttp', version: '13.13'
     implementation group: 'com.squareup.okhttp3', name: 'okhttp-jvm', version: '5.4.0'
 
     implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: versions.reformS2sClient
@@ -377,9 +377,21 @@ dependencies {
 
     implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: versions.launchDarklySdk
 
-    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310'
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind'
-    implementation group: 'com.fasterxml.jackson', name: 'jackson-bom', version: versions.jackson, ext: 'pom'
+    implementation (group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310') {
+      version {
+        strictly versions.jackson
+      }
+    }
+    implementation (group: 'com.fasterxml.jackson.core', name: 'jackson-databind') {
+        version {
+            strictly versions.jackson
+        }
+    }
+    implementation (group: 'com.fasterxml.jackson', name: 'jackson-bom', ext: 'pom') {
+        version {
+            strictly versions.jackson
+        }
+    }
     implementation group: 'io.jsonwebtoken', name: 'jjwt', version:'0.9.1'
     implementation 'com.github.hmcts:idam-java-client:3.0.5'
     implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '10.7'
@@ -547,7 +559,7 @@ dependencyManagement {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
     dependencies {
-      dependencySet(group: 'org.apache.tomcat.embed', version: '10.1.55') {
+      dependencySet(group: 'org.apache.tomcat.embed', version: '10.1.56') {
         entry 'tomcat-embed-core'
         entry 'tomcat-embed-el'
         entry 'tomcat-embed-websocket'
@@ -577,6 +589,20 @@ dependencyManagement {
         entry 'feign-httpclient'
         entry 'feign-jackson'
         entry 'feign-slf4j'
+      }
+      dependencySet(group: 'com.fasterxml.jackson.core', version: versions.jackson) {
+        entry 'jackson-core'
+        entry 'jackson-databind'
+      }
+      dependencySet(group: 'com.fasterxml.jackson.datatype', version: versions.jackson) {
+        entry 'jackson-datatype-jsr310'
+        entry 'jackson-datatype-jdk8'
+      }
+      dependencySet(group: 'com.fasterxml.jackson.dataformat', version: versions.jackson) {
+        entry 'jackson-dataformat-yaml'
+      }
+      dependencySet(group: 'com.fasterxml.jackson.module', version: versions.jackson) {
+        entry 'jackson-module-parameter-names'
       }
     }
 }
