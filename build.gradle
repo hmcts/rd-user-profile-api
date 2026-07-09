@@ -36,7 +36,7 @@ def versions = [
         junit              : '5.12.2',
         junitPlatform      : '1.12.2',
         junitPitest        : '1.2.1',
-        lombok             : '1.18.42',
+        lombok             : '1.18.46',
         flywaydb           : '11.20.2',
         sonarPitest        : '0.5',
         reformLogging      : '8.0.0',
