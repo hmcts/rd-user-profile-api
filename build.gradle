@@ -394,7 +394,7 @@ dependencies {
     }
     implementation group: 'io.jsonwebtoken', name: 'jjwt', version:'0.9.1'
     implementation 'com.github.hmcts:idam-java-client:3.0.5'
-    implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '10.7'
+    implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '10.9.1'
 
     implementation group: 'org.flywaydb', name: 'flyway-core', version: versions.flywaydb
     implementation group: 'org.flywaydb', name: 'flyway-database-postgresql', version: versions.flywaydb
