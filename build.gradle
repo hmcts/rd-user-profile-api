@@ -43,7 +43,7 @@ def versions = [
         serenity           : '4.2.34',
         pact_version       : '4.7.3',
         launchDarklySdk    : '5.10.9',
-        log4j              : '2.26.0',
+        log4j              : '2.26.1',
         jackson            : '2.22.0',
         feign              : '3.8.0',
         reformS2sClient    : '6.0.0',
