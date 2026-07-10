@@ -44,7 +44,7 @@ def versions = [
         pact_version       : '4.7.3',
         launchDarklySdk    : '5.10.9',
         log4j              : '2.26.0',
-        jackson            : '2.22.0',
+        jackson            : '2.22.1',
         feign              : '3.8.0',
         reformS2sClient    : '5.3.4',
         testContainer_postgresql: '1.21.4',
