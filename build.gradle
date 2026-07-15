@@ -373,7 +373,7 @@ dependencies {
     implementation group: 'com.squareup.okhttp3', name: 'okhttp-jvm', version: '5.4.0'
 
     implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: versions.reformS2sClient
-    implementation group: 'com.auth0', name: 'java-jwt', version: '4.5.2'
+    implementation group: 'com.auth0', name: 'java-jwt', version: '4.6.0'
 
     implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: versions.launchDarklySdk
 
