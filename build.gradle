@@ -48,7 +48,7 @@ def versions = [
         feign              : '3.8.0',
         reformS2sClient    : '5.3.4',
         testContainer_postgresql: '1.21.4',
-        bouncycastle       : '1.84',
+        bouncycastle       : '1.85',
         logback            : '1.5.12',
         okio               : '3.17.0'
 ]
