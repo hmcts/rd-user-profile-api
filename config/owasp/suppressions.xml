@@ -99,4 +99,17 @@
     <cve>CVE-2026-54399</cve>
     <cve>CVE-2026-54428</cve>
   </suppress>
+  <suppress>
+    <notes>
+      <![CDATA[
+        Reviewed 2026-08-07
+        No remedy released:
+        CVE-2026-66299 applies to apache tomcat libraries.
+        Affected libraries reported by dependency-check are:
+        - tomcat 10.1.57
+        Versions of used libraries are their latest respectively.
+      ]]>
+    </notes>
+    <cve>CVE-2026-66299</cve>
+  </suppress>
 </suppressions>
