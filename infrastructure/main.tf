@@ -56,10 +56,12 @@ module "db-user-profile-v16" {
   pgsql_databases = [
     {
       name = "dbuserprofile"
+      schemas_for_reader_access : ["dbuserprofile"]
+      schemas_for_writer_access : ["dbuserprofile"]
     }
   ]
   # Setup Access Reader db user
-  force_user_permissions_trigger = "3"
+  force_user_permissions_trigger = "4"
   enable_write_group_access      = true
 
   # Sets correct DB owner after migration to fix permissions
