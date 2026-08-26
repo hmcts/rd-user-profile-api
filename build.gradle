@@ -622,7 +622,6 @@ configurations.all {
         }
     }
 
-
 }
 
 dependencies {
