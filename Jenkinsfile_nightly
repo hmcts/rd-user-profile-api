@@ -73,16 +73,10 @@ withNightlyPipeline(type, product, component) {
     enableFortifyScan()
 
     afterAlways('securityScan') {
-        sh script: '''
-          set +e
-          id
-          ls -ld .
-          ls -la
-          ls -ld api-report.html activescan.html report.json output.json audit.json jq_pattern functional-output 2>/dev/null
-          ls -la functional-output 2>/dev/null
-          find . -xdev ! -writable -exec ls -ld {} + 2>/dev/null | head -50
-          exit 0
-        ''', label: 'Inspect security scan output ownership'
+        def workspaceOwner = sh(script: 'echo "$(id -u):$(id -g)"', returnStdout: true).trim()
+        withDocker('hmctsprod.azurecr.io/imported/jbergknoff/postgresql-client', "--entrypoint='' -u 0:0") {
+            sh "chown -R ${workspaceOwner} ."
+        }
     }
 
     afterAlways('fullFunctionalTest') {
