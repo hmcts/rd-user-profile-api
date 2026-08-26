@@ -72,6 +72,18 @@ withNightlyPipeline(type, product, component) {
     enableSecurityScan()
     enableFortifyScan()
 
+    afterAlways('securityScan') {
+        sh script: '''
+          set +e
+          id
+          ls -ld .
+          ls -la
+          ls -ld api-report.html activescan.html report.json output.json audit.json jq_pattern functional-output 2>/dev/null
+          ls -la functional-output 2>/dev/null
+          exit 0
+        ''', label: 'Inspect security scan output ownership'
+    }
+
     afterAlways('fullFunctionalTest') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
