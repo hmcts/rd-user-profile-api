@@ -73,10 +73,7 @@ withNightlyPipeline(type, product, component) {
     enableFortifyScan()
 
     afterAlways('securityScan') {
-        def workspaceOwner = sh(script: 'echo "$(id -u):$(id -g)"', returnStdout: true).trim()
-        withDocker('hmctsprod.azurecr.io/imported/jbergknoff/postgresql-client', "--entrypoint='' -u 0:0") {
-            sh "chown -R ${workspaceOwner} ."
-        }
+        sh 'rm -rf functional-output; rm -f api-report.html report.json glue.txt zap.out'
     }
 
     afterAlways('fullFunctionalTest') {
