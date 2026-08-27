@@ -88,11 +88,11 @@ withNightlyPipeline(type, product, component) {
                 reportName           : "Functional Tests Report"
         ]
         print "calling delete script for nightly"
-        withSubscription(subscription) {
+        withSubscription(subscription, product, params.ENVIRONMENT) {
             withTeamSecrets(config, params.ENVIRONMENT) {
                 deleteFunctionalDbData()
             }
-        }
+    
         print "done delete script for nightly"
     }
 
