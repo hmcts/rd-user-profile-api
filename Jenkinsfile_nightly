@@ -92,7 +92,7 @@ withNightlyPipeline(type, product, component) {
             withTeamSecrets(config, params.ENVIRONMENT) {
                 deleteFunctionalDbData()
             }
-    
+        }
         print "done delete script for nightly"
     }
 
