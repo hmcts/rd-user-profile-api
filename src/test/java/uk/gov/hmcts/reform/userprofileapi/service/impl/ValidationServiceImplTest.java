@@ -21,7 +21,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -46,8 +48,8 @@ class ValidationServiceImplTest {
     private final UserProfile userProfile = new UserProfile(userProfileCreationData, idamRegistrationInfo
             .getIdamRegistrationResponse());
 
-    private final UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("test@test.com",
-            "firstName", "lastName", "ACTIVE", new HashSet<>(),
+    private final UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData(UUID.randomUUID().toString(),
+            "test@test.com","firstName", "lastName", "ACTIVE", new HashSet<>(),
             new HashSet<>());
 
 
@@ -63,11 +65,12 @@ class ValidationServiceImplTest {
         when(validationHelperServiceMock.validateUpdateUserProfileRequestValid(updateUserProfileData, userId,
                 ResponseSource.API)).thenReturn(true);
 
+        updateUserProfileData.setIdamId(userId);
         UserProfile actual = sut.validateUpdate(updateUserProfileData, userId, ResponseSource.API);
 
         assertThat(actual.getStatus()).isEqualTo(IdamStatus.SUSPENDED);
 
-        verify(userProfileRepositoryMock, times(1)).findByIdamId(any(String.class));
+        verify(userProfileRepositoryMock, times(2)).findByIdamId(any(String.class));
         verify(validationHelperServiceMock, times(1)).validateUserIsPresent(any());
     }
 
@@ -90,5 +93,14 @@ class ValidationServiceImplTest {
     void test_IsExuiUpdateRequest() {
         assertThat(sut.isExuiUpdateRequest(ResponseSource.EXUI.name())).isTrue();
         assertThat(sut.isExuiUpdateRequest("INVALID")).isFalse();
+    }
+
+    @Test
+    void test_ValidateUpdateAlreadyExists() {
+        doThrow(new RuntimeException("ResourceAlreadyExistsException"))
+                .when(validationHelperServiceMock).validateUserAlreadyExists(any());
+        updateUserProfileData.setIdamId(userId);
+        assertThrows(RuntimeException.class, () ->
+                sut.validateUpdate(updateUserProfileData, userId, ResponseSource.API));
     }
 }

@@ -14,6 +14,8 @@ import java.util.Set;
 @Setter
 public class UpdateUserProfileData implements RequestData {
 
+    private String idamId;
+
     private String email;
 
     private String firstName;
@@ -27,12 +29,14 @@ public class UpdateUserProfileData implements RequestData {
     private Set<RoleName> rolesDelete;
 
     @JsonCreator
-    public UpdateUserProfileData(@JsonProperty(value = "email") String email,
+    public UpdateUserProfileData(@JsonProperty(value = "idamId") String idamId,
+                                 @JsonProperty(value = "email") String email,
                                  @JsonProperty(value = "firstName") String firstName,
                                  @JsonProperty(value = "lastName") String lastName,
                                  @JsonProperty(value = "idamStatus") String idamStatus,
                                  @JsonProperty(value = "rolesAdd") Set<RoleName> rolesAdd,
                                  @JsonProperty(value = "rolesDelete") Set<RoleName> rolesDelete) {
+        this.idamId = idamId;
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -45,6 +49,7 @@ public class UpdateUserProfileData implements RequestData {
     public boolean isSameAsUserProfile(UserProfile userProfile) {
         return null != userProfile
                 && (null != this.getEmail() && userProfile.getEmail().trim().equals(this.getEmail().trim()))
+                && (null != this.getIdamId() && userProfile.getIdamId().trim().equals(this.getIdamId().trim()))
                 && (null != this.getFirstName() && userProfile.getFirstName().trim().equals(this.getFirstName().trim()))
                 && (null != this.getLastName() && userProfile.getLastName().trim().equals(this.getLastName().trim()))
                 && (null != this.getIdamStatus() && userProfile.getStatus().toString()

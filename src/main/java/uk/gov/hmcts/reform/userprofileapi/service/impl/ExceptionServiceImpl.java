@@ -22,7 +22,10 @@ public class ExceptionServiceImpl implements ExceptionService {
     private String loggingComponentName;
 
     public void throwCustomRuntimeException(ExceptionType className, String msg) {
-        throwCustomRuntimeException(className, msg, HttpStatus.OK);
+        switch (className) {
+            case RESOURCENOTFOUNDEXCEPTION : throw new ResourceNotFoundException(msg);
+            default: throwCustomRuntimeException(className, msg, HttpStatus.OK);
+        }
     }
 
     public void throwCustomRuntimeException(ExceptionType className, String msg, HttpStatus httpStatus) {
