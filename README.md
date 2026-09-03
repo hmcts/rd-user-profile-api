@@ -2,6 +2,7 @@
 
 User Profile API
 
+
 ## Purpose
 
 Provides user profile data to clients, implemented as a Java/SpringBoot application.
