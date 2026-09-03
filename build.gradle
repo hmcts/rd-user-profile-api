@@ -392,7 +392,7 @@ dependencies {
             strictly versions.jackson
         }
     }
-    implementation group: 'io.jsonwebtoken', name: 'jjwt', version:'0.9.1'
+    implementation group: 'io.jsonwebtoken', name: 'jjwt', version:'0.13.0'
     implementation 'com.github.hmcts:idam-java-client:3.0.5'
     implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '10.9.1'
 
