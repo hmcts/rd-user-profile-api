@@ -304,4 +304,37 @@ class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
         );
 
     }
+
+    @Test
+    void should_return_200_and_update_user_profile_resource_with_valid_idam_id() throws Exception {
+
+        UserProfile persistedUserProfile = userProfileMap.get("user");
+        String idamId = persistedUserProfile.getIdamId();
+        UpdateUserProfileData data = buildUpdateUserProfileData();
+        data.setIdamId(UUID.randomUUID().toString());
+
+        userProfileRequestHandlerTest.sendPut(
+                mockMvc,
+                APP_BASE_PATH + SLASH + idamId,
+                data,
+                OK
+        );
+
+    }
+
+    @Test
+    void should_return_404_when_update_user_profile_resource_with_invalid_idam_id() throws Exception {
+
+        String idamId = "InvalidIdamId";
+        UpdateUserProfileData data = buildUpdateUserProfileData();
+        data.setIdamId(UUID.randomUUID().toString());
+
+        userProfileRequestHandlerTest.sendPut(
+                mockMvc,
+                APP_BASE_PATH + SLASH + idamId,
+                data,
+                NOT_FOUND
+        );
+
+    }
 }

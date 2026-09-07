@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
 
 import java.util.Optional;
 
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 @Service
 public class ValidationServiceImpl implements ValidationService {
@@ -31,6 +32,14 @@ public class ValidationServiceImpl implements ValidationService {
                                       ResponseSource source) {
         // validate input
         validationHelperService.validateUserId(userId);
+
+        if (isNotBlank(updateUserProfileData.getIdamId())) {
+            // validate that the userid that you are trying to update does not already exist
+            Optional<UserProfile> userResult = userProfileRepository.findByIdamId(updateUserProfileData.getIdamId());
+
+            validationHelperService.validateUserAlreadyExists(userResult);
+
+        }
 
         // retrieve user by id
         Optional<UserProfile> result = userProfileRepository.findByIdamId(userId);
