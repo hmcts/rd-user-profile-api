@@ -16,6 +16,7 @@ import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequest
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtClaimValidator;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtDecoders;
 import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
@@ -24,9 +25,12 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import uk.gov.hmcts.reform.authorisation.filters.ServiceAuthFilter;
+import uk.gov.hmcts.reform.userprofileapi.config.security.IdamSecurityProperties;
 import uk.gov.hmcts.reform.userprofileapi.oidc.JwtGrantedAuthoritiesConverter;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
@@ -93,15 +97,31 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    JwtDecoder jwtDecoder() {
+    JwtDecoder jwtDecoder(IdamSecurityProperties securityProperties) {
 
         NimbusJwtDecoder jwtDecoder = JwtDecoders.fromOidcIssuerLocation(issuerUri);
-
-        // We are using issuerOverride instead of issuerUri as SIDAM has the wrong issuer at the moment
-        OAuth2TokenValidator<Jwt> withTimestamp = new JwtTimestampValidator();
-        OAuth2TokenValidator<Jwt> validator = new DelegatingOAuth2TokenValidator<Jwt>(withTimestamp);
-        jwtDecoder.setJwtValidator(validator);
+        jwtDecoder.setJwtValidator(getIssuerValidator(securityProperties));
         return jwtDecoder;
+    }
+
+    private OAuth2TokenValidator<Jwt> getIssuerValidator(IdamSecurityProperties securityProperties) {
+        OAuth2TokenValidator<Jwt> withTimestamp = new JwtTimestampValidator();
+        OAuth2TokenValidator<Jwt> validator;
+        if (Boolean.parseBoolean(System.getProperty("idam.security.issuerValidation"))) {
+            log.debug("Validating issuers");
+            validator = new DelegatingOAuth2TokenValidator<>(withTimestamp,
+                    allowedIssuersValidator(securityProperties.getAllowedIssuers())
+            );
+        } else {
+            log.debug("Validating timestamp");
+            validator = new DelegatingOAuth2TokenValidator<>(withTimestamp);
+        }
+        return validator;
+    }
+
+    protected OAuth2TokenValidator<Jwt> allowedIssuersValidator(List<String> allowedIssuers) {
+        Set<String> allowedIssuerSet = Set.copyOf(allowedIssuers);
+        return new JwtClaimValidator<>("iss", iss -> Objects.nonNull(iss) && allowedIssuerSet.contains(iss));
     }
 }
 
