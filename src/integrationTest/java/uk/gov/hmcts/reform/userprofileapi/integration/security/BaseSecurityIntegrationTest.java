@@ -23,19 +23,17 @@ public class BaseSecurityIntegrationTest extends AuthorizationEnabledIntegration
 
         return SerenityRest.given()
             .baseUri(testApplicationServer.getBaseUrl())
-            .headers(getHttpHeaders(issuer, expired, null, "lrd-admin"));
+            .headers(getHttpHeaders(issuer, expired, null, "prd-admin"));
     }
 
     protected RequestSpecification unexpiredJwt(
-            String issuer)
-            throws Exception {
+            String issuer) {
 
         return jwtRequest(issuer, false);
     }
 
     protected RequestSpecification expiredJwt(
-            String issuer)
-            throws Exception {
+            String issuer) {
 
         return jwtRequest(issuer, true);
     }
