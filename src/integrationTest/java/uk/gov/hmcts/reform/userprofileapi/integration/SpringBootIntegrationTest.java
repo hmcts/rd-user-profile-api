@@ -8,14 +8,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.userprofileapi.Application;
 import uk.gov.hmcts.reform.userprofileapi.integration.util.TestApplicationServer;
+import uk.gov.hmcts.reform.userprofileapi.integration.wiremock.WireMockContextInitializer;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource(properties = {"spring.config.location=classpath:application-test.yml"})
+@ContextConfiguration(initializers = WireMockContextInitializer.class)
 @WithTags({@WithTag("testType:Integration")})
 public abstract class SpringBootIntegrationTest {
 

@@ -16,6 +16,7 @@ public class BaseSecurityIntegrationTest extends AuthorizationEnabledIntegration
     protected static final String ROGUE_ISSUER = "https://rogue-issuer.com";
 
     protected static final String CREATE_USER_URL = "/v1/userprofile/";
+    public static final String UP_SERVICE_NAME = "rd-user-profile-api";
 
     protected RequestSpecification jwtRequest(
             String issuer,
@@ -38,7 +39,7 @@ public class BaseSecurityIntegrationTest extends AuthorizationEnabledIntegration
         return jwtRequest(issuer, true);
     }
 
-    protected UserProfileCreationData  getUserProfileCreationData() {
+    protected UserProfileCreationData getUserProfileCreationData() {
         UserProfileCreationData result = new UserProfileCreationData();
         result.setResendInvite(false);
         result.setUserType(USERTYPE.name());
