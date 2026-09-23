@@ -7,6 +7,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.TextCodec;
 import net.serenitybdd.annotations.WithTag;
 import net.serenitybdd.annotations.WithTags;
+import net.serenitybdd.junit5.SerenityJUnit5Extension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
@@ -24,11 +25,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
-import uk.gov.hmcts.reform.lib.util.serenity5.SerenityTest;
 import uk.gov.hmcts.reform.userprofileapi.ProfileConfig;
 import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRequestHandlerTest;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
@@ -76,8 +75,7 @@ import static uk.gov.hmcts.reform.userprofileapi.integration.util.JwtTokenUtil.g
 import static uk.gov.hmcts.reform.userprofileapi.util.FeatureConditionEvaluation.SERVICE_AUTHORIZATION;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@SerenityTest
-@ExtendWith(SpringExtension.class)
+@ExtendWith(SerenityJUnit5Extension.class)
 @WithTags({@WithTag("testType:Integration")})
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @Configuration
