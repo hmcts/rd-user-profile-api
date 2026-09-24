@@ -100,7 +100,7 @@ public class JwtIssuerValidationEnabledIntegrationTest extends BaseSecurityInteg
                 .with()
                 .body(getObjectMapper().writeValueAsString(getUserProfileCreationData()))
                 .and()
-                .get(CREATE_USER_URL)
+                .post(CREATE_USER_URL)
                 .then()
                 .assertThat()
                 .statusCode(expectedStatusCode);
