@@ -15,7 +15,7 @@ public class BaseSecurityIntegrationTest extends AuthorizationEnabledIntegration
     protected static final String VALID_ISSUER_2 = "https://secondary-idam.platform.hmcts.net";
     protected static final String ROGUE_ISSUER = "https://rogue-issuer.com";
 
-    protected static final String CREATE_USER_URL = "/v1/userprofile/";
+    protected static final String CREATE_USER_URL = "/v1/userprofile";
     public static final String UP_SERVICE_NAME = "rd-user-profile-api";
 
     protected RequestSpecification jwtRequest(
