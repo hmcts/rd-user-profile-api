@@ -165,6 +165,7 @@ idea {
 }
 
 configurations {
+    integrationTestImplementation.extendsFrom testImplementation
     integrationTestImplementation.extendsFrom testCompile
     integrationTestRuntime.extendsFrom testRuntime
     functionalTestImplementation.extendsFrom testCompile
@@ -467,7 +468,10 @@ dependencies {
     contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pact_version
 
     testImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
-    testImplementation group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
+    testImplementation group: 'net.serenity-bdd', name: 'serenity-junit5', version: versions.serenity
+    testImplementation group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
+    testImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
+
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter', version: versions.junit
 
     functionalTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit

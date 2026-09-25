@@ -7,6 +7,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.TextCodec;
 import net.serenitybdd.annotations.WithTag;
 import net.serenitybdd.annotations.WithTags;
+import net.serenitybdd.junit5.SerenityJUnit5Extension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
@@ -16,19 +17,17 @@ import org.junit.platform.commons.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
-import uk.gov.hmcts.reform.lib.util.serenity5.SerenityTest;
 import uk.gov.hmcts.reform.userprofileapi.ProfileConfig;
 import uk.gov.hmcts.reform.userprofileapi.client.UserProfileRequestHandlerTest;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
@@ -50,7 +49,6 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.service.impl.FeatureToggleServiceImpl;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -72,10 +70,12 @@ import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static uk.gov.hmcts.reform.userprofileapi.integration.util.JwtTokenUtil.generateAuthToken;
+import static uk.gov.hmcts.reform.userprofileapi.integration.util.JwtTokenUtil.generateS2SToken;
+import static uk.gov.hmcts.reform.userprofileapi.util.FeatureConditionEvaluation.SERVICE_AUTHORIZATION;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@SerenityTest
-@ExtendWith(SpringExtension.class)
+@ExtendWith(SerenityJUnit5Extension.class)
 @WithTags({@WithTag("testType:Integration")})
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @Configuration
@@ -104,7 +104,7 @@ public abstract class AuthorizationEnabledIntegrationTest extends SpringBootInte
     @Autowired
     protected ObjectMapper objectMapper;
 
-    @MockBean
+    @MockitoBean
     protected FeatureToggleServiceImpl featureToggleService;
 
     @RegisterExtension
@@ -115,9 +115,6 @@ public abstract class AuthorizationEnabledIntegrationTest extends SpringBootInte
 
     @Value("${idam.s2s-auth.microservice}")
     static String authorisedService;
-
-    @MockBean
-    protected JwtDecoder jwtDecoder;
 
     @BeforeEach
     public void setUpWireMock() throws JsonProcessingException {
@@ -189,20 +186,6 @@ public abstract class AuthorizationEnabledIntegrationTest extends SpringBootInte
             .setIssuedAt(new Date())
             .signWith(SignatureAlgorithm.HS256, TextCodec.BASE64.encode("AA"))
             .compact();
-    }
-
-    public static synchronized Jwt getJwt() {
-        var s2SToken = generateDummyS2SToken(authorisedService);
-        return Jwt.withTokenValue(s2SToken)
-            .claim("exp", Instant.ofEpochSecond(1585763216))
-            .claim("iat", Instant.ofEpochSecond(1585734416))
-            .claim("token_type", "Bearer")
-            .claim("tokenName", "access_token")
-            .claim("expires_in", 28800)
-            .header("kid", "b/O6OvVv1+y+WgrH5Ui9WTioLt0=")
-            .header("typ", "RS256")
-            .header("alg", "RS256")
-            .build();
     }
 
     public void searchUserProfileSyncWireMock(HttpStatus status, String id) throws JsonProcessingException {
@@ -469,5 +452,14 @@ public abstract class AuthorizationEnabledIntegrationTest extends SpringBootInte
                 status,
                 UserProfilesDeletionResponse.class);
 
+    }
+
+    public static HttpHeaders getHttpHeaders(String issuer, boolean isExpired, String userId, String role) {
+        HttpHeaders headers = new HttpHeaders();
+        var userAuthToken = generateAuthToken(issuer, isExpired, userId, role);
+        headers.setBearerAuth(userAuthToken);
+        headers.add(SERVICE_AUTHORIZATION, "Bearer " + generateS2SToken("rd_user_profile_api"));
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return headers;
     }
 }
