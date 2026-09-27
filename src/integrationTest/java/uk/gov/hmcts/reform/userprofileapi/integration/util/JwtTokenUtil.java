@@ -36,9 +36,7 @@ public final class JwtTokenUtil {
     }
 
     public static String generateAuthToken(String issuer,
-                                           boolean isExpired,
-                                           String userId,
-                                           String role) {
+                                           boolean isExpired) {
 
         Instant now = Instant.now();
 
@@ -51,8 +49,7 @@ public final class JwtTokenUtil {
             : now.plusSeconds(3600);
 
         JWTClaimsSet.Builder claimsBuilder =
-            getJwtClaimsBuilder(Date.from(issuedAt), Date.from(expiresAt))
-                .subject(role + " " + userId).audience(role);
+            getJwtClaimsBuilder(Date.from(issuedAt), Date.from(expiresAt));
 
         if (issuer != null) {
             claimsBuilder.issuer(issuer);

@@ -26,6 +26,8 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.TOO_MANY_REQUESTS;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
+import static uk.gov.hmcts.reform.userprofileapi.integration.wiremock.IdamWireMockStubs.searchUserProfileSyncWireMock;
+import static uk.gov.hmcts.reform.userprofileapi.integration.wiremock.IdamWireMockStubs.stubUserRegistration;
 
 @Slf4j
 class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
@@ -33,16 +35,12 @@ class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
     UserProfileCreationData pendingUserRequest = null;
 
     UserProfile userProfile = null;
-
-    @Value("${resendInterval}")
-    private String resendInterval;
-
     @Value("${syncInterval}")
     String syncInterval;
-
     @Autowired
     DataSource dataSource;
-
+    @Value("${resendInterval}")
+    private String resendInterval;
 
     void updateLastUpdatedTimestamp(String givenIdamId) throws SQLException {
 
@@ -71,9 +69,9 @@ class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
     // AC1: resend invite to a given user
     @Test
     void should_return_201_when_user_reinvited() throws Exception {
-
+        System.out.println("should_return_201_when_user_reinvited==" + userProfile.getIdamId());
         updateLastUpdatedTimestamp(userProfile.getIdamId());
-
+        searchUserProfileSyncWireMock(HttpStatus.OK, userProfile.getIdamId());
         UserProfileCreationData data = buildCreateUserProfileData(true);
         data.setEmail(pendingUserRequest.getEmail());
         UserProfileCreationResponse reInvitedUserResponse = (UserProfileCreationResponse) createUser(data, CREATED,
@@ -126,9 +124,9 @@ class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
     // AC9: invited more than an hour ago but has recently activated their account
     @Test
     void should_return_409_when_reinvited_user_gets_active_in_sidam_but_pending_in_up() throws Exception {
-
         updateLastUpdatedTimestamp(userProfile.getIdamId());
-        setSidamRegistrationMockWithStatus(HttpStatus.CONFLICT.value(), false);
+        searchUserProfileSyncWireMock(HttpStatus.CONFLICT, userProfile.getIdamId());
+        stubUserRegistration(HttpStatus.CONFLICT.value(), false);
         UserProfileCreationData data = buildCreateUserProfileData(true);
         data.setEmail(pendingUserRequest.getEmail());
         ErrorResponse errorResponse = (ErrorResponse) createUser(data, HttpStatus.CONFLICT, ErrorResponse.class);
@@ -138,13 +136,11 @@ class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
                         .concat("Wait for some time for the system to refresh."));
     }
 
-    // resend invite fail with 429 if user is already invited and again within 1 hour
     @Test
-    void should_return_429_when_user_reinvited_successfully_and_again_reinvited_within_one_hour()
+    void should_return_201_when_user_reinvited_successfully_and_again_reinvited_within_one_hour()
             throws Exception {
-
         updateLastUpdatedTimestamp(userProfile.getIdamId());
-
+        searchUserProfileSyncWireMock(HttpStatus.OK, userProfile.getIdamId());
         UserProfileCreationData data = buildCreateUserProfileData(true);
         data.setEmail(pendingUserRequest.getEmail());
         UserProfileCreationResponse reInvitedUserResponse = (UserProfileCreationResponse) createUser(data, CREATED,
@@ -205,9 +201,10 @@ class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
 
         UserProfileCreationData data = buildCreateUserProfileData(true);
         data.setEmail(pendingUserRequest.getEmail());
-        Optional<UserProfile> persistedUserProfile = userProfileRepository.findByEmail(pendingUserRequest
+        userProfileRepository.findByEmail(pendingUserRequest
                 .getEmail().toLowerCase());
-        searchUserProfileSyncWireMock(HttpStatus.OK, persistedUserProfile.get().getIdamId());
+        Optional<UserProfile> persistedUserProfile;
+        searchUserProfileSyncWireMock(HttpStatus.OK, userProfile.getIdamId());
         UserProfileCreationResponse reInvitedUserResponse = userProfileRequestHandlerTest.sendPost(
                 mockMvc,
                 APP_BASE_PATH + "?origin=SRD",
@@ -224,7 +221,6 @@ class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
         assertThat(reInvitedUserResponse.getIdamId()).isEqualTo(fetchedUserProfile.getIdamId());
 
     }
-
 
 
 }

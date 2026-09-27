@@ -22,7 +22,6 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
  * Built-in feature which saves service's swagger specs in temporary directory.
  * Each travis run on master should automatically save and upload (if updated) documentation.
  */
-@WithTags({@WithTag("testType:Integration")})
 class SwaggerPublisherTest extends AuthorizationEnabledIntegrationTest {
 
     private static final Logger LOG = getLogger(SwaggerPublisherTest.class);

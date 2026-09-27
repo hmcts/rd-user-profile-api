@@ -1,32 +1,38 @@
 package uk.gov.hmcts.reform.userprofileapi.integration.wiremock;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.tomakehurst.wiremock.WireMockServer;
+
+import java.util.HashMap;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static uk.gov.hmcts.reform.userprofileapi.integration.security.BaseSecurityIntegrationTest.UP_SERVICE_NAME;
+import static uk.gov.hmcts.reform.userprofileapi.integration.SpringBootIntegrationTest.getObjectMapper;
 
 public class S2sWireMockStubs {
+
+    private static WireMockServer s2sMockServer = null;
 
     private S2sWireMockStubs() {
     }
 
     public static void registerDefaults(WireMockServer server) {
-
+        s2sMockServer = server;
         server.stubFor(get(urlEqualTo("/details"))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
-                        .withBody(UP_SERVICE_NAME)));
+                        .withBody("rd_user_profile_api")));
+    }
 
-        server.stubFor(post(urlEqualTo("/lease"))
+    public static void healthEndpointMock() throws JsonProcessingException {
+        HashMap<String, String> data = new HashMap<>();
+        data.put("status", "UP");
+        s2sMockServer.stubFor(get(urlEqualTo("/health"))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
-                        .withBody("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJyZF9wcm9mZXNzaW9uYWxfYXBpIiwiZXhwIjoxNTY0NzU2MzY4fQ"
-                                + ".UnRfwq_yGo6tVWEoBldCkD1zFoiMSqqm1rTHqq4f_PuTEHIJj2IHeARw3wOnJG2c3MpjM71ZTFa0RNE4D2"
-                                + "AUgA")));
+                        .withBody(getObjectMapper().writeValueAsString(data))));
     }
 }
