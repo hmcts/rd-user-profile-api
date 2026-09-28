@@ -31,6 +31,7 @@ java {
 ext {
     springCloudVersion = '2025.0.2'
 }
+ext['spring-security.version'] = '6.5.12'
 
 def versions = [
         junit              : '5.14.4',
@@ -568,7 +569,7 @@ dependencyManagement {
         entry 'tomcat-embed-el'
         entry 'tomcat-embed-websocket'
       }
-      dependencySet(group: 'org.springframework', version: '6.2.19') {
+      dependencySet(group: 'org.springframework', version: '6.2.20') {
           entry 'spring-aop'
           entry 'spring-aspects'
           entry 'spring-beans'
