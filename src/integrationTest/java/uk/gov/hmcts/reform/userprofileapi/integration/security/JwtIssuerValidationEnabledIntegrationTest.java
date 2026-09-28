@@ -5,14 +5,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileService;
 
 import java.util.stream.Stream;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static uk.gov.hmcts.reform.userprofileapi.integration.security.BaseSecurityIntegrationTest.VALID_ISSUER_1;
 import static uk.gov.hmcts.reform.userprofileapi.integration.security.BaseSecurityIntegrationTest.VALID_ISSUER_2;
@@ -24,22 +20,19 @@ import static uk.gov.hmcts.reform.userprofileapi.integration.security.BaseSecuri
 })
 public class JwtIssuerValidationEnabledIntegrationTest extends BaseSecurityIntegrationTest {
 
-    @MockitoBean
-    private UserProfileService userProfileService;
-
     private static Stream<Arguments> issuerValidationEnabledScenarios() {
         return Stream.of(
                 Arguments.of(
-                        "Scenario 1 - JWT Issuer validation is enabled And Valid primary issuer is accepted - 200",
+                        "Scenario 1 - JWT Issuer validation is enabled And Valid primary issuer is accepted - 201",
                         VALID_ISSUER_1,
                         false,
-                        OK.value()),
+                        CREATED.value()),
 
                 Arguments.of(
-                        "Scenario 2 - JWT Issuer validation is enabled And Valid secondary issuer is accepted - 200",
+                        "Scenario 2 - JWT Issuer validation is enabled And Valid secondary issuer is accepted - 201",
                         VALID_ISSUER_2,
                         false,
-                        OK.value()),
+                        CREATED.value()),
 
                 Arguments.of(
                         "Scenario 3 - JWT Issuer validation is enabled And Rogue issuer is rejected - 401",
@@ -87,8 +80,6 @@ public class JwtIssuerValidationEnabledIntegrationTest extends BaseSecurityInteg
                                                             String jwtIssuer,
                                                             boolean tokenExpired,
                                                             int expectedStatusCode) throws Exception {
-        mockCreateUser();
-
         RequestSpecification jwtRequestSpecification =
                 tokenExpired
                         ? expiredJwt(jwtIssuer)
@@ -98,15 +89,11 @@ public class JwtIssuerValidationEnabledIntegrationTest extends BaseSecurityInteg
                 .when()
                 .request()
                 .with()
-                .body(getObjectMapper().writeValueAsString(getUserProfileCreationData()))
+                .body(getObjectMapper().writeValueAsString(USERP_ROFILE_CREATION_DATA))
                 .and()
                 .post(CREATE_USER_URL)
                 .then()
                 .assertThat()
                 .statusCode(expectedStatusCode);
-    }
-
-    private void mockCreateUser() {
-        when(userProfileService.create(any(), any())).thenReturn(getUserProfileCreationResponse());
     }
 }

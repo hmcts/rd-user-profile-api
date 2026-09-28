@@ -30,9 +30,8 @@ public abstract class SpringBootIntegrationTest {
 
     public static ObjectMapper getObjectMapper() {
 
-        ObjectMapper mapper = new ObjectMapper()
+        return new ObjectMapper()
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        return mapper;
 
     }
 }
