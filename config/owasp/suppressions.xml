@@ -181,14 +181,4 @@
     </packageUrl>
     <cve>CVE-2026-47842</cve>
 </suppress>
-
-    <suppress until="2026-12-31Z">
-        <notes><![CDATA[
-        CVE-2026-41707: DPoP proof replay in DPoPProofJwtDecoderFactory (oauth2 resource server).
-        Service does not use DPoP-bound tokens. OSS fix only exists in Security 7.0.7/7.1.1 (needs Boot 4.x);
-        6.5.12 is commercial-only. Remove once we upgrade to Spring Boot 4.x.
-    ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring-security-.*@6\.5\.11$</packageUrl>
-        <cve>CVE-2026-41707</cve>
-    </suppress>
 </suppressions>
