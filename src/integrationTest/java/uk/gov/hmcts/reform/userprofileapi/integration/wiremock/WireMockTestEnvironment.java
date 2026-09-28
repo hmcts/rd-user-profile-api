@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.userprofileapi.integration.wiremock;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.tomakehurst.wiremock.WireMockServer;
-import com.nimbusds.jose.JOSEException;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
@@ -17,7 +17,7 @@ public final class WireMockTestEnvironment {
     private static final WireMockServer S2S_MOCK_SERVER =
             new WireMockServer(wireMockConfig().dynamicPort());
 
-    private static boolean started;
+    private static final AtomicBoolean STARTED = new AtomicBoolean(false);
 
     private WireMockTestEnvironment() {
     }
@@ -28,8 +28,8 @@ public final class WireMockTestEnvironment {
         );
     }
 
-    public static synchronized void start() {
-        if (started) {
+    public static void start() {
+        if (!STARTED.compareAndSet(false, true)) {
             return;
         }
 
@@ -37,18 +37,13 @@ public final class WireMockTestEnvironment {
             startOidcMockServer();
             startIdamMockServer();
             startS2sMockServer();
-
-            started = true;
-        } catch (RuntimeException ex) {
+        } catch (RuntimeException e) {
             stop();
-            throw ex;
-        } catch (JOSEException | JsonProcessingException ex) {
-            stop();
-            throw new RuntimeException(ex.getMessage(), ex);
+            throw e;
         }
     }
 
-    private static void startOidcMockServer() throws JOSEException, JsonProcessingException {
+    private static void startOidcMockServer() {
         if (!OIDC_MOCK_SERVER.isRunning()) {
             OIDC_MOCK_SERVER.start();
             OidcWireMockStubs.registerDefaults(OIDC_MOCK_SERVER);
@@ -93,12 +88,12 @@ public final class WireMockTestEnvironment {
         return "http://127.0.0.1:" + S2S_MOCK_SERVER.port();
     }
 
-    public static synchronized void stop() {
+    public static void stop() {
         stopServer(OIDC_MOCK_SERVER);
         stopServer(IDAM_MOCK_SERVER);
         stopServer(S2S_MOCK_SERVER);
 
-        started = false;
+        STARTED.set(false);
     }
 
     private static void stopServer(WireMockServer server) {

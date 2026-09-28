@@ -15,9 +15,7 @@ public class WireMockContextInitializer
 
     private static void registerBeans(ConfigurableApplicationContext context) {
         ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-
-        TestApplicationServer testApplicationServer =
-                new TestApplicationServer();
+        TestApplicationServer testApplicationServer = new TestApplicationServer();
 
         beanFactory.registerSingleton(
                 "testApplicationServer",
@@ -43,11 +41,8 @@ public class WireMockContextInitializer
 
     @Override
     public void initialize(@NonNull ConfigurableApplicationContext context) {
-
         WireMockTestEnvironment.start();
-
         registerBeans(context);
-
         configureProperties(context);
 
         context.addApplicationListener(event -> {
