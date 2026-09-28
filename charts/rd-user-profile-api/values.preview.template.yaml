@@ -10,7 +10,6 @@ java:
     ENVIRONMENT_NAME: "preview"
     JWT_ISSUER_VALIDATION_ENABLED: true
     IDAM_SECURITY_ALLOWED_ISSUERS_0: https://idam-web-public.aat.platform.hmcts.net/o
-
   postgresql:
     enabled: true
     auth:
