@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.exception.ErrorPersistingException;
 import uk.gov.hmcts.reform.userprofileapi.exception.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
+import uk.gov.hmcts.reform.userprofileapi.exception.UndefinedException;
 import uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
@@ -27,6 +28,7 @@ import uk.gov.hmcts.reform.userprofileapi.service.ValidationHelperService;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -57,8 +59,8 @@ class ValidationHelperServiceTest {
     private final IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(status(ACCEPTED).build());
     private final UserProfile userProfile = new UserProfile(userProfileCreationData,
             idamRegistrationInfo.getIdamRegistrationResponse());
-    private final UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("test@test.com",
-            "firstName", "lastName", "ACTIVE", new HashSet<>(),
+    private final UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData(UUID.randomUUID().toString(),
+            "test@test.com","firstName", "lastName", "ACTIVE", new HashSet<>(),
             new HashSet<>());
 
     @Spy
@@ -318,4 +320,30 @@ class ValidationHelperServiceTest {
                 anyLong());
     }
 
+    @Test
+    void test_validateUserAlreadyExists_null_idam_id() {
+        userProfile.setIdamId("");
+        final Throwable raisedException = catchThrowable(() ->
+                sut.validateUserAlreadyExists(Optional.of(userProfile)));
+        assertThat(raisedException).isInstanceOf(UndefinedException.class);
+        verify(exceptionServiceMock, times(1))
+                .throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
+    }
+
+    @Test
+    void test_validateUserAlreadyExists_correctly_formatted_idam_id() {
+        userProfile.setIdamId(UUID.randomUUID().toString());
+        final Throwable raisedException = catchThrowable(() ->
+                sut.validateUserAlreadyExists(Optional.of(userProfile)));
+        assertThat(raisedException).isInstanceOf(UndefinedException.class);
+        verify(exceptionServiceMock, times(1))
+                .throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
+    }
+
+    @Test
+    void test_validateUserAlreadyExists_null_userProfile() {
+        sut.validateUserAlreadyExists(Optional.empty());
+        verify(exceptionServiceMock, times(0))
+                .throwCustomRuntimeException(any(ExceptionType.class), any(String.class));
+    }
 }
