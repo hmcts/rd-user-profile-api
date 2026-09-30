@@ -22,6 +22,9 @@ public class FeatureToggleServiceImpl implements FeatureToggleService {
     @Value("${launchdarkly.sdk.environment}")
     private String environment;
 
+    @Value("${launchdarkly.flags.delete-userprofile-by-id-or-emailpattern.enabled:false}")
+    private boolean deleteByIdOrEmailPatternEnabled;
+
     private final String userName;
 
     private Map<String, String> launchDarklyMap;
@@ -41,6 +44,10 @@ public class FeatureToggleServiceImpl implements FeatureToggleService {
 
     @Override
     public boolean isFlagEnabled(String serviceName, String flagName) {
+        if (UP_DELETE_BY_ID_OR_EMAILPATTERN_FLAG.equals(flagName) && !deleteByIdOrEmailPatternEnabled) {
+            return false;
+        }
+
         LDUser user = new LDUser.Builder(userName)
                 .firstName(userName)
                 .custom("servicename", serviceName)
