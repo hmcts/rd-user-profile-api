@@ -33,6 +33,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildUpdateUserProfileData;
 import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfile;
+import static uk.gov.hmcts.reform.userprofileapi.integration.wiremock.IdamWireMockStubs.stubUpdateUserFailure;
 
 @Transactional
 class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
@@ -98,8 +99,8 @@ class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
     void should_see_idam_error_message_and_when_IdamStatus_is_updated_by_exui_and_idam_fails() throws Exception {
 
         UserProfile persistedUserProfile = userProfileMap.get("user");
-        setSidamUserUpdateMockWithStatus(NOT_FOUND.value(), false, persistedUserProfile.getIdamId());
-        updateUserStatusAndVerify(persistedUserProfile, "Not Found", 404);
+        stubUpdateUserFailure(NOT_FOUND, false, persistedUserProfile.getIdamId());
+        updateUserStatusAndVerify(persistedUserProfile, "16 Resource not found", 404);
 
     }
 
@@ -107,7 +108,7 @@ class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
     void should_see_idam_error_message_and_when_IdamStatus_is_updated_by_exui_and_idam_fails_5xx() throws Exception {
 
         UserProfile persistedUserProfile = userProfileMap.get("user");
-        setSidamUserUpdateMockWithStatus(INTERNAL_SERVER_ERROR.value(), false, persistedUserProfile.getIdamId());
+        stubUpdateUserFailure(INTERNAL_SERVER_ERROR, false, persistedUserProfile.getIdamId());
         updateUserStatusAndVerify5xx(persistedUserProfile, IdamStatusResolver.IDAM_5XX_ERROR_RESPONSE, 401);
 
     }
@@ -117,7 +118,7 @@ class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
             throws Exception {
 
         UserProfile persistedUserProfile = userProfileMap.get("user");
-        setSidamUserUpdateMockWithStatus(NOT_FOUND.value(), true, persistedUserProfile.getIdamId());
+        stubUpdateUserFailure(NOT_FOUND, true, persistedUserProfile.getIdamId());
         updateUserStatusAndVerify(persistedUserProfile, "16 Resource not found", 404);
 
     }
@@ -127,7 +128,7 @@ class UpdateUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
             throws Exception {
 
         UserProfile persistedUserProfile = userProfileMap.get("user");
-        setSidamUserUpdateMockWithStatus(INTERNAL_SERVER_ERROR.value(), true, persistedUserProfile.getIdamId());
+        stubUpdateUserFailure(INTERNAL_SERVER_ERROR, true, persistedUserProfile.getIdamId());
         updateUserStatusAndVerify5xx(persistedUserProfile, IdamStatusResolver.IDAM_5XX_ERROR_RESPONSE, 401);
 
     }
