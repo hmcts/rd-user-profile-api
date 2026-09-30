@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,14 +28,14 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
+import static uk.gov.hmcts.reform.userprofileapi.integration.wiremock.IdamWireMockStubs.stubUserRegistration;
 
 @Transactional
 class CreateNewUserProfileWithIdamErrorsIntTest extends AuthorizationEnabledIntegrationTest {
 
     @BeforeEach
-    public void setUpWireMock() {
-
-        setSidamRegistrationMockWithStatus(BAD_REQUEST.value(), true);
+    public void setUpMock() throws JsonProcessingException {
+        stubUserRegistration(BAD_REQUEST.value(), true);
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
     }
 
@@ -63,7 +64,7 @@ class CreateNewUserProfileWithIdamErrorsIntTest extends AuthorizationEnabledInte
         List<String> roles = new ArrayList<String>();
         roles.add("puicasemanager");
         data.setRoles(roles);
-        setSidamRegistrationMockWithStatus(BAD_REQUEST.value(), false);
+        stubUserRegistration(BAD_REQUEST.value(), false);
         ErrorResponse errorResponse =
                 userProfileRequestHandlerTest.sendPost(
                         mockMvc,
@@ -85,7 +86,7 @@ class CreateNewUserProfileWithIdamErrorsIntTest extends AuthorizationEnabledInte
         List<String> roles = new ArrayList<String>();
         roles.add("puicasemanager");
         data.setRoles(roles);
-        setSidamRegistrationMockWithStatus(BAD_REQUEST.value(), true);
+        stubUserRegistration(BAD_REQUEST.value(), true);
         ErrorResponse errorResponse =
                 userProfileRequestHandlerTest.sendPost(
                         mockMvc,
@@ -108,7 +109,7 @@ class CreateNewUserProfileWithIdamErrorsIntTest extends AuthorizationEnabledInte
 
         UserProfileCreationData data = buildCreateUserProfileData();
 
-        setSidamRegistrationMockWithStatus(httpStatus.value(), true);
+        stubUserRegistration(httpStatus.value(), true);
 
         ErrorResponse errorResponse =
                 userProfileRequestHandlerTest.sendPost(mockMvc, APP_BASE_PATH, data, UNAUTHORIZED, ErrorResponse.class);
