@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,8 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfile;
+import static uk.gov.hmcts.reform.userprofileapi.integration.wiremock.IdamWireMockStubs.mockWithGetFail;
+import static uk.gov.hmcts.reform.userprofileapi.integration.wiremock.IdamWireMockStubs.stubUserRegistration;
 
 @Transactional
 class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabledIntegrationTest {
@@ -30,11 +33,9 @@ class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabledInteg
     private Map<String, UserProfile> userProfileMap;
 
     @BeforeEach
-    public void setUpWireMock() {
-
+    public void setUpMock() throws JsonProcessingException {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
-
-        setSidamRegistrationMockWithStatus(HttpStatus.CREATED.value(), true);
+        stubUserRegistration(HttpStatus.CREATED.value(), true);
         mockWithGetFail(NOT_FOUND, false);
 
         Iterable<UserProfile> userProfiles = userProfileRepository.findAll();
@@ -144,7 +145,7 @@ class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabledInteg
     void should_return_401_when_idam_server_throws_500_error_getUserProfileWithRolesById() throws Exception {
         UserProfile userProfile = userProfileMap.get("user");
 
-        setSidamRegistrationMockWithStatus(INTERNAL_SERVER_ERROR.value(), true);
+        stubUserRegistration(INTERNAL_SERVER_ERROR.value(), true);
         mockWithGetFail(INTERNAL_SERVER_ERROR, false);
 
         ErrorResponse errorResponse =
@@ -163,7 +164,7 @@ class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabledInteg
     void should_return_401_when_idam_server_throws_500_error_getUserProfileWithRolesByEmail() throws Exception {
         UserProfile userProfile = userProfileMap.get("user");
 
-        setSidamRegistrationMockWithStatus(INTERNAL_SERVER_ERROR.value(), true);
+        stubUserRegistration(INTERNAL_SERVER_ERROR.value(), true);
         mockWithGetFail(INTERNAL_SERVER_ERROR, false);
 
         ErrorResponse errorResponse =
