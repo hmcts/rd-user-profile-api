@@ -75,7 +75,6 @@ public final class JwtTokenUtil {
             final LocalDateTime issuedAt,
             final LocalDateTime expiresAt) {
         final ZoneId zoneId = ZoneId.systemDefault();
-
         return new JWTClaimsSet.Builder()
                 .issueTime(Date.from(issuedAt.atZone(zoneId).toInstant()))
                 .claim(TOKEN_NAME, ACCESS_TOKEN)
