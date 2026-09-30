@@ -1,10 +1,15 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import net.serenitybdd.annotations.WithTag;
+import net.serenitybdd.annotations.WithTags;
+import net.serenitybdd.junit5.SerenityJUnit5Extension;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.util.Lists;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
@@ -24,12 +29,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
+import static uk.gov.hmcts.reform.userprofileapi.integration.wiremock.IdamWireMockStubs.stubUserRegistration;
 
+@ExtendWith(SerenityJUnit5Extension.class)
+@WithTags({@WithTag("testType:Integration")})
 class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws JsonProcessingException {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
+        stubUserRegistration(HttpStatus.CREATED.value(), true);
     }
 
 
@@ -179,7 +188,7 @@ class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
         UserProfileCreationData data = buildCreateUserProfileData();
         data.setRoles(List.of("puicasemanager"));
 
-        setSidamRegistrationMockWithStatus(NOT_FOUND.value(), true);
+        stubUserRegistration(NOT_FOUND.value(), true);
 
         ErrorResponse errorResponse =
                 userProfileRequestHandlerTest.sendPost(mockMvc, APP_BASE_PATH, data, NOT_FOUND, ErrorResponse.class);
