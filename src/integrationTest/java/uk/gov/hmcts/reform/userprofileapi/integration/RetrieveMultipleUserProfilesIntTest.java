@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,15 +19,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfile;
 import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfileWithDeletedStatus;
 import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfileWithSuspendedStatus;
+import static uk.gov.hmcts.reform.userprofileapi.integration.wiremock.IdamWireMockStubs.mockWithGetFail;
+import static uk.gov.hmcts.reform.userprofileapi.integration.wiremock.IdamWireMockStubs.mockWithGetSuccess;
 
 @Transactional
 class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledIntegrationTest {
@@ -40,22 +38,6 @@ class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledIntegratio
 
     @Autowired
     private WebApplicationContext webApplicationContext;
-
-    public void mockWithGetSuccess() throws JsonProcessingException {
-
-        HashMap<Object,Object> data = new HashMap<>();
-        data.put("active", "true");
-        data.put("forename","fname");
-        data.put("surname","lname");
-        data.put("email","email");
-        data.put("roles",List.of("pui-case-manager"));
-        idamMockService.stubFor(get(urlMatching("/api/v1/users/.*"))
-                .willReturn(aResponse()
-                        .withHeader("Content-Type", "application/json")
-                        .withStatus(200)
-                        .withBody(objectMapper.writeValueAsString(data))));
-
-    }
 
     @BeforeEach
     public void setUp() {
