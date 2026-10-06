@@ -68,12 +68,6 @@ def jarName = 'rd-user-profile-api.jar'
 group = 'uk.gov.hmcts.reform'
 version = '0.0.1'
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-}
-
 jacocoTestCoverageVerification {
     violationRules {
         rule {
