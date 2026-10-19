@@ -9,8 +9,10 @@ import net.serenitybdd.annotations.WithTags;
 import net.serenitybdd.junit5.SerenityJUnit5Extension;
 import net.serenitybdd.rest.SerenityRest;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpStatus;
@@ -57,6 +59,7 @@ import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDat
 import static uk.gov.hmcts.reform.userprofileapi.util.FeatureToggleConditionExtension.getToggledOffMessage;
 
 @Slf4j
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ExtendWith({SpringExtension.class, SerenityJUnit5Extension.class})
 @WithTags({@WithTag("testType:Functional")})
 public class UserProfileFunctionalTest extends AbstractFunctional {
@@ -73,6 +76,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
     private static UserProfileCreationData pendingUserProfileCreationData;
 
     @Test
+    @Order(1)
     @DisplayName("User profile test scenarios")
     void testUserProfileScenarios() throws Exception {
         setUpTestData();
@@ -519,6 +523,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
     }
 
     @Test
+    @Order(2)
     @ExtendWith(FeatureToggleConditionExtension.class)
     @ToggleEnable(mapKey = DELETE_USER_BY_ID_OR_EMAIL_PATTERN, withFeature = false)
     @DisplayName("Delete active user by email pattern, should be ignored when feature is toggled off")
@@ -611,8 +616,8 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
     }
 
 
-    @Order(Ordered.LOWEST_PRECEDENCE)
     @Test
+    @Order(Ordered.LOWEST_PRECEDENCE)
     void cleanUpTestData() {
         try {
             deleteActiveUserByIdShouldReturnSuccess();
