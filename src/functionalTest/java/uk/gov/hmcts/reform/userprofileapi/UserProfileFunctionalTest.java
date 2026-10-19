@@ -518,7 +518,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
     }
 
     @Test
-    @ExtendWith(FeatureToggleConditionExtension.class)
+    @ExtendWith({FeatureToggleConditionExtension.class, SpringExtension.class, SerenityJUnit5Extension.class})
     @ToggleEnable(mapKey = DELETE_USER_BY_ID_OR_EMAIL_PATTERN, withFeature = false)
     @DisplayName("Delete active user by email pattern, should be ignored when feature is toggled off")
     void deleteActiveUserByEmailPatternShouldReturnFailureWhenToggledOff() {
