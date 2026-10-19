@@ -8,10 +8,11 @@ import net.serenitybdd.annotations.WithTag;
 import net.serenitybdd.annotations.WithTags;
 import net.serenitybdd.junit5.SerenityJUnit5Extension;
 import net.serenitybdd.rest.SerenityRest;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.core.Ordered;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -518,7 +519,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
     }
 
     @Test
-    @ExtendWith({FeatureToggleConditionExtension.class, SpringExtension.class, SerenityJUnit5Extension.class})
+    @ExtendWith(FeatureToggleConditionExtension.class)
     @ToggleEnable(mapKey = DELETE_USER_BY_ID_OR_EMAIL_PATTERN, withFeature = false)
     @DisplayName("Delete active user by email pattern, should be ignored when feature is toggled off")
     void deleteActiveUserByEmailPatternShouldReturnFailureWhenToggledOff() {
@@ -535,7 +536,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
 
     @DisplayName("Delete active user by id, should run this test only when feature is toggled on")
     @ToggleEnable(mapKey = DELETE_USER_BY_ID_OR_EMAIL_PATTERN, withFeature = true)
-    public static void deleteActiveUserByIdShouldReturnSuccess() throws Exception {
+    void deleteActiveUserByIdShouldReturnSuccess() throws Exception {
         log.info("deleteActiveUserByIdShouldReturnSuccess :: STARTED");
 
         UserProfileCreationData userProfileCreationData = new UserProfileCreationData(generateRandomEmail(),
@@ -563,7 +564,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
 
     @DisplayName("Delete active user by email pattern, should run this test only when feature is toggled on")
     @ToggleEnable(mapKey = DELETE_USER_BY_ID_OR_EMAIL_PATTERN, withFeature = true)
-    public static void deleteActiveUserByEmailPatternShouldReturnSuccess() throws Exception {
+    void deleteActiveUserByEmailPatternShouldReturnSuccess() throws Exception {
         log.info("deleteActiveUsersByEmailPatternShouldReturnSuccess :: STARTED");
 
         UserProfileCreationData userProfileCreationData = new UserProfileCreationData(generateRandomEmail(),
@@ -610,8 +611,9 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
     }
 
 
-    @AfterAll
-    public static void cleanUpTestData() {
+    @Order(Ordered.LOWEST_PRECEDENCE)
+    @Test
+    void cleanUpTestData() {
         try {
             deleteActiveUserByIdShouldReturnSuccess();
             deleteActiveUserByEmailPatternShouldReturnSuccess();
