@@ -61,6 +61,7 @@ public class IdamOpenIdClient {
 
         Response createdUserResponse = null;
 
+        log.info("Idam URL = " + testConfigProperties.getIdamApiUrl());
         for (int i = 0; i < 5; i++) {
             log.info("SIDAM createUser retry attempt : " + i + 1);
             createdUserResponse = SerenityRest
