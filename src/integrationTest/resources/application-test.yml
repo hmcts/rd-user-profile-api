@@ -49,15 +49,15 @@ idam:
   s2s-auth:
     totp_secret: ${USER_PROFILE_API_S2S_SECRET:}
     microservice: rd_user_profile_api
-    url: ${S2S_URL:http://127.0.0.1:8990}
+    url: http://127.0.0.1:8990
 
   s2s-authorised:
     services: ${PRD_S2S_AUTHORISED_SERVICES:rd_user_profile_api}
   api:
-    url: ${IDAM_URL:http://127.0.0.1:5000}
+    url: http://127.0.0.1:5000
   oidc:
     use_oidc_api: true
-    url: ${IDAM_OIDC_URL:http://127.0.0.1:5000}
+    url: http://127.0.0.1:5000
   security:
     issuerValidation: ${JWT_ISSUER_VALIDATION_ENABLED:false}
 
