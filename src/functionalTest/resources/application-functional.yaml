@@ -7,7 +7,7 @@ idam.s2s-auth.url: ${S2S_URL_TO_TEST:http://rpe-service-auth-provider-aat.servic
 
 # separate server for OIDC requests
 idam.oidc.use_oidc_api: true
-idam.oidc.url: https://idam-api.aat.platform.hmcts.net/o
+idam.oidc.url: https://idam-api.aat.platform.hmcts.net
 
 idam.auth.redirectUrl: ${IDAM_REDIRECT_URL:https://rd-professional-api-aat.service.core-compute-aat.internal/oauth2redirect}
 idam.auth.clientId: ${OAUTH2_CLIENT_ID:}
