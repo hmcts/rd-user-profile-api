@@ -1,9 +1,12 @@
 targetInstance: ${TEST_URL:http://localhost:8091}
 spring.flyway.enabled: false
 
-idam.api.url: ${IDAM_URL_TO_TEST:https://idam-api.aat.platform.hmcts.net}
+idam.api.url: ${IDAM_URL:https://idam-api.aat.platform.hmcts.net}
+idam.oidc.url: ${IDAM_OIDC_URL:https://idam-web-public.aat.platform.hmcts.net}
 
-idam.s2s-auth.url: ${S2S_URL_TO_TEST:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
+idam.s2s-auth.totp_secret: ${USER_PROFILE_API_S2S_SECRET:}
+idam.s2s-auth.microservice: rd_user_profile_api
+idam.s2s-auth.url: ${S2S_URL:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
 
 idam.auth.redirectUrl: ${IDAM_REDIRECT_URL:https://rd-professional-api-aat.service.core-compute-aat.internal/oauth2redirect}
 idam.auth.clientId: ${OAUTH2_CLIENT_ID:}
