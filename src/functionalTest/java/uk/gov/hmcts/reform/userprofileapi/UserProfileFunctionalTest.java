@@ -12,9 +12,9 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserIdamStatusWithEmailResponse;
@@ -56,7 +56,8 @@ import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDat
 import static uk.gov.hmcts.reform.userprofileapi.util.FeatureToggleConditionExtension.getToggledOffMessage;
 
 @Slf4j
-@ExtendWith({SpringExtension.class, SerenityJUnit5Extension.class})
+@ExtendWith(SerenityJUnit5Extension.class)
+@SpringBootTest
 @WithTags({@WithTag("testType:Functional")})
 public class UserProfileFunctionalTest extends AbstractFunctional {
 
