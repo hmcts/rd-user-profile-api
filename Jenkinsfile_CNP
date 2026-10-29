@@ -13,11 +13,6 @@ def secrets = [
         secret('microservicekey-rd-user-profile-api', 'USER_PROFILE_API_S2S_SECRET')
     ],
     'rd-${env}': [
-            secret('user-profile-api-POSTGRES-HOST', 'FUNC_DATABASE_HOST'),
-            secret('user-profile-api-POSTGRES-PASS', 'FUNC_DATABASE_PASS'),
-            secret('user-profile-api-POSTGRES-USER', 'FUNC_DATABASE_USER'),
-            secret('user-profile-api-POSTGRES-DATABASE', 'FUNC_DATABASE_NAME'),
-            secret('user-profile-api-POSTGRES-PORT', 'FUNC_DATABASE_PORT'),
             secret('OAUTH2-CLIENT-SECRET', 'OAUTH2_CLIENT_SECRET'),
             secret('OAUTH2-CLIENT-AUTH', 'OAUTH2_CLIENT_AUTH'),
             secret('OAUTH2-CLIENT-ID', 'OAUTH2_CLIENT_ID'),
@@ -159,14 +154,6 @@ withPipeline(type, product, component) {
             reportFiles          : "index.html",
             reportName           : "Functional Tests Report"
         ]
-
-        print "calling delete script for nightly"
-        withSubscription(subscription) {
-            withTeamSecrets(config, params.ENVIRONMENT) {
-                deleteFunctionalDbData()
-            }
-        }
-        print "done delete script for nightly"
     }
 
     afterAlways('pact-provider-verification') {
@@ -187,16 +174,5 @@ withPipeline(type, product, component) {
     onPR() {
         enablePactAs([AppPipelineDsl.PactRoles.PROVIDER])
 
-    }
-}
-
-def deleteFunctionalDbData() {
-    withDocker('hmctsprod.azurecr.io/imported/jbergknoff/postgresql-client', "--entrypoint='' -e PGPASSWORD=${FUNC_DATABASE_PASS} -v ${WORKSPACE}/deletescript/:/deletescript") {
-        sh "chmod +x /deletescript/delete-functional-data.sh"
-        sh "/deletescript/delete-functional-data.sh \
-                        ${FUNC_DATABASE_USER} \
-                        ${FUNC_DATABASE_NAME} \
-                        ${FUNC_DATABASE_HOST} \
-                        ${FUNC_DATABASE_PORT}"
     }
 }
