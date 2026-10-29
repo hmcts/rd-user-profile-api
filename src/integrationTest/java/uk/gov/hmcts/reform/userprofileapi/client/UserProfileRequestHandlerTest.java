@@ -30,7 +30,7 @@ public class UserProfileRequestHandlerTest {
     @Value("${spring.security.oauth2.client.provider.oidc.issuer-uri}")
     protected String jwtIssuer;
 
-    public static final String COMMON_EMAIL_PATTERN = "@prdfunctestuser.com";
+    public static final String COMMON_EMAIL_PATTERN = "@upfunctestuser.com";
 
     public MvcResult sendPost(MockMvc mockMvc,
                               String path,
