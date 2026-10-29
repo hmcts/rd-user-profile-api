@@ -11,11 +11,12 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Setter
 public class CreateUserProfileTestDataBuilder {
 
-    public static final String EMAIL_TEMPLATE = "freg-test-user-%s@prdfunctestuser.com";
+    public static final String EMAIL_TEMPLATE = "up_test_user-%s@upfunctestuser.com";
 
     private CreateUserProfileTestDataBuilder() {
         //not meant to be instantiated.
@@ -50,7 +51,11 @@ public class CreateUserProfileTestDataBuilder {
     }
 
     public static String generateRandomEmail() {
-        return String.format(EMAIL_TEMPLATE, RandomStringUtils.secure().nextAlphanumeric(10));
+        String uniqueId = UUID.randomUUID()
+                .toString()
+                .replace("-", "");
+
+        return String.format(EMAIL_TEMPLATE, uniqueId);
     }
 
     public static List<String> getIdamRolesJson() {
