@@ -49,6 +49,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.reform.userprofileapi.client.FuncTestRequestHandler.BEARER;
+import static uk.gov.hmcts.reform.userprofileapi.client.FuncTestRequestHandler.COMMON_EMAIL_PATTERN;
 import static uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus.ACTIVE;
 import static uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus.SUSPENDED;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.generateRandomEmail;
@@ -544,7 +545,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         log.info("deleteActiveUserByEmailPatternShouldReturnFailureWhenToggledOff :: STARTED");
 
         Response response = testRequestHandler
-                .sendDeleteWithoutBody(requestUri + "/users?emailPattern=@prdfunctestuser.com");
+                .sendDeleteWithoutBody(requestUri + "/users?emailPattern=" + COMMON_EMAIL_PATTERN);
 
         assertThat(HttpStatus.FORBIDDEN.value()).isEqualTo(response.statusCode());
         assertThat(response.getBody().asString()).contains(getToggledOffMessage());
@@ -595,7 +596,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         verifyCreateUserProfile(activeUserProfile);
 
         Response response = testRequestHandler
-                .sendDeleteWithoutBody(requestUri + "/users?emailPattern=@prdfunctestuser.com");
+                .sendDeleteWithoutBody(requestUri + "/users?emailPattern=" + COMMON_EMAIL_PATTERN);
 
         if (NO_CONTENT.value() == response.statusCode()) {
             testRequestHandler.getUserProfileResponse(
