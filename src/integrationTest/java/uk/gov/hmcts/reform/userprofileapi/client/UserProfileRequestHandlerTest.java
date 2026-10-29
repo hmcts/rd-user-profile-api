@@ -27,7 +27,7 @@ public class UserProfileRequestHandlerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Value("${oidc.issuer}")
+    @Value("${spring.security.oauth2.client.provider.oidc.issuer-uri}")
     protected String jwtIssuer;
 
     public static final String COMMON_EMAIL_PATTERN = "@prdfunctestuser.com";
