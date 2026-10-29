@@ -154,6 +154,14 @@ withPipeline(type, product, component) {
             reportFiles          : "index.html",
             reportName           : "Functional Tests Report"
         ]
+
+        print "calling delete script for nightly"
+        withSubscription(subscription) {
+            withTeamSecrets(config, params.ENVIRONMENT) {
+                deleteFunctionalDbData()
+            }
+        }
+        print "done delete script for nightly"
     }
 
     afterAlways('pact-provider-verification') {
@@ -174,5 +182,16 @@ withPipeline(type, product, component) {
     onPR() {
         enablePactAs([AppPipelineDsl.PactRoles.PROVIDER])
 
+    }
+}
+
+def deleteFunctionalDbData() {
+    withDocker('hmctsprod.azurecr.io/imported/jbergknoff/postgresql-client', "--entrypoint='' -e PGPASSWORD=${FUNC_DATABASE_PASS} -v ${WORKSPACE}/deletescript/:/deletescript") {
+        sh "chmod +x /deletescript/delete-functional-data.sh"
+        sh "/deletescript/delete-functional-data.sh \
+                        ${FUNC_DATABASE_USER} \
+                        ${FUNC_DATABASE_NAME} \
+                        ${FUNC_DATABASE_HOST} \
+                        ${FUNC_DATABASE_PORT}"
     }
 }

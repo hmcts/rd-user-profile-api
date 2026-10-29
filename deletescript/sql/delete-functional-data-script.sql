@@ -1,7 +1,9 @@
-delete from user_profile where
-        email_address like any (values('%@prdfunctestuser.com'))
-       or email_address like any (values('cwr-rd-func-test-user-only%'))
-       or email_address like any(values('staff-rd-profile-func-test-user-only-%'));
+BEGIN;
 
-commit;
+DELETE FROM dbuserprofile.user_profile
+WHERE email_address LIKE '%@prdfunctestuser.com'
+   OR email_address LIKE '%@upfunctestuser.com'
+   OR email_address LIKE 'cwr-rd-func-test-user-only%'
+   OR email_address LIKE 'staff-rd-profile-func-test-user-only-%';
 
+COMMIT;
