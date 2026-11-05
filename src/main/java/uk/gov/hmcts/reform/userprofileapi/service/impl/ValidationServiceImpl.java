@@ -1,9 +1,16 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
+import uk.gov.hmcts.reform.userprofileapi.exception.ForbiddenException;
+import uk.gov.hmcts.reform.userprofileapi.repository.IdamRepository;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
@@ -15,6 +22,7 @@ import java.util.Optional;
 
 @Service
 public class ValidationServiceImpl implements ValidationService {
+    private static final String EMAIL_CLAIM = "email";
 
     @Autowired
     private AuditService auditService;
@@ -25,6 +33,8 @@ public class ValidationServiceImpl implements ValidationService {
     @Autowired
     private ValidationHelperService validationHelperService;
 
+    @Autowired
+    private IdamRepository idamRepository;
 
     @Override
     public UserProfile validateUpdate(UpdateUserProfileData updateUserProfileData, String userId,
@@ -54,4 +64,44 @@ public class ValidationServiceImpl implements ValidationService {
 
     }
 
+    @Override
+    public void validateUserEmailMatchesAuthenticatedPrincipal(String userEmail) {
+        if (!StringUtils.hasText(userEmail)) {
+            return;
+        }
+
+        JwtAuthenticationToken jwtAuthenticationToken = getJwtAuthenticationToken();
+        String authenticatedEmail = jwtAuthenticationToken.getToken().getClaimAsString(EMAIL_CLAIM);
+        if (!StringUtils.hasText(authenticatedEmail)) {
+            UserInfo userInfo = idamRepository.getUserInfo(jwtAuthenticationToken.getToken().getTokenValue());
+            authenticatedEmail = userInfo.getName();
+        }
+
+        if (!userEmail.trim().equalsIgnoreCase(authenticatedEmail)) {
+            throw new ForbiddenException("UserEmail header does not match authenticated user");
+        }
+    }
+
+    @Override
+    public void validateUserIdMatchesAuthenticatedPrincipal(String userId) {
+        if (!StringUtils.hasText(userId)) {
+            return;
+        }
+        JwtAuthenticationToken jwtAuthenticationToken = getJwtAuthenticationToken();
+        String authenticatedSubject = jwtAuthenticationToken.getToken().getSubject();
+        if (!StringUtils.hasText(authenticatedSubject)) {
+            throw new ForbiddenException("Could not determine authenticated user");
+        }
+        if (!userId.trim().equalsIgnoreCase(authenticatedSubject.trim())) {
+            throw new ForbiddenException("userId does not match authenticated user");
+        }
+    }
+
+    private JwtAuthenticationToken getJwtAuthenticationToken() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authentication instanceof JwtAuthenticationToken jwtAuthenticationToken)) {
+            throw new ForbiddenException("Could not determine authenticated user");
+        }
+        return jwtAuthenticationToken;
+    }
 }

@@ -42,6 +42,7 @@ class RetrieveUserProfileWithIdamErrorsIntTest extends AuthorizationEnabledInteg
         assertThat(userProfiles).isEmpty();
 
         UserProfile user1 = buildUserProfile();
+        user1.setEmail("test@test.com");
         user1.setStatus(IdamStatus.ACTIVE);
         user1 = userProfileRepository.save(user1);
 

@@ -12,4 +12,8 @@ public interface ValidationService {
                                        ResponseSource source);
 
     boolean isExuiUpdateRequest(String origin);
+
+    void validateUserEmailMatchesAuthenticatedPrincipal(String userEmail);
+
+    void validateUserIdMatchesAuthenticatedPrincipal(String userId);
 }

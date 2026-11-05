@@ -27,6 +27,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
@@ -128,6 +129,8 @@ class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
     @Test
     void should_retrieve_user_profile_resource_with_roles_by_email() throws Exception {
         UserProfile userProfile = userProfileMap.get("user");
+        userProfile.setEmail("test@test.com");
+        userProfile = userProfileRepository.save(userProfile);
 
         UserProfileWithRolesResponse retrievedResource =
                 userProfileRequestHandlerTest.sendGetFromHeader(
@@ -161,6 +164,8 @@ class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
     @Test
     void should_retrieve_user_profile_resource_with_roles_by_email_fromHeader() throws Exception {
         UserProfile userProfile = userProfileMap.get("user");
+        userProfile.setEmail("test@test.com");
+        userProfile = userProfileRepository.save(userProfile);
 
         UserProfileWithRolesResponse retrievedResource =
                 userProfileRequestHandlerTest.sendGetFromHeader(
@@ -205,6 +210,8 @@ class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
     @Test
     void should_retrieve_user_profile_resource_with_email_from_header() throws Exception {
         UserProfile userProfile = userProfileMap.get("user");
+        userProfile.setEmail("test@test.com");
+        userProfile = userProfileRepository.save(userProfile);
 
         UserProfileResponse retrievedResource =
                 userProfileRequestHandlerTest.sendGetFromHeader(
@@ -227,7 +234,7 @@ class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
                 userProfileRequestHandlerTest.sendGetFromHeader(
                         mockMvc,
                         APP_BASE_PATH + "?" + "email=" + userProfile.getEmail(),
-                        NOT_FOUND,
+                        FORBIDDEN,
                         UserProfileResponse.class,
                         "up@prdfunctestuser.com"
                 );

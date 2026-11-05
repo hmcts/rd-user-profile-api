@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.UserIdamStatusWith
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserIdamStatusWithEmailResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfilesDeletionResponse;
@@ -30,6 +31,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
+import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
 import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileService;
 
 import java.util.ArrayList;
@@ -61,6 +63,9 @@ class UserProfileControllerTest {
 
     @Mock
     private UserProfileService<RequestData> userProfileServiceMock;
+
+    @Mock
+    private ValidationService validationService;
 
     @InjectMocks
     private UserProfileController sut;
@@ -196,6 +201,7 @@ class UserProfileControllerTest {
         assertThat(sut.getUserProfileWithRolesByEmail()).isEqualTo(ResponseEntity.ok(responseMock));
         verify(userProfileServiceMock, times(1))
                 .retrieveWithRoles(any(UserProfileIdentifier.class), any());
+        verify(validationService, times(1)).validateUserEmailMatchesAuthenticatedPrincipal(" ");
         verify(httpRequest, times(2)).getHeader(anyString());
     }
 
@@ -209,7 +215,36 @@ class UserProfileControllerTest {
         assertThat(sut.getUserProfileWithRolesByEmail()).isEqualTo(ResponseEntity.ok(responseMock));
         verify(userProfileServiceMock, times(1))
                 .retrieveWithRoles(any(UserProfileIdentifier.class), any());
+        verify(validationService, times(1)).validateUserEmailMatchesAuthenticatedPrincipal("test@test.com");
         verify(httpRequest, times(2)).getHeader(anyString());
+    }
+
+    @Test
+    void test_GetUserProfileByEmail_UsesHeaderValidation() {
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(httpRequest));
+        when(httpRequest.getHeader(anyString())).thenReturn("test@test.com");
+        UserProfileResponse responseMock = mock(UserProfileResponse.class);
+        when(userProfileServiceMock.retrieve(any(UserProfileIdentifier.class))).thenReturn(responseMock);
+
+        ResponseEntity<UserProfileResponse> actual = sut.getUserProfileByEmail(null);
+
+        assertThat(actual).isEqualTo(ResponseEntity.ok(responseMock));
+        verify(validationService, times(1)).validateUserEmailMatchesAuthenticatedPrincipal("test@test.com");
+        verify(validationService, times(0)).validateUserIdMatchesAuthenticatedPrincipal(anyString());
+    }
+
+    @Test
+    void test_GetUserProfileByEmail_UsesUserIdValidationWithoutHeader() {
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(httpRequest));
+        when(httpRequest.getHeader(anyString())).thenReturn(null);
+        String userId = UUID.randomUUID().toString();
+        UserProfileResponse responseMock = mock(UserProfileResponse.class);
+        when(userProfileServiceMock.retrieve(any(UserProfileIdentifier.class))).thenReturn(responseMock);
+
+        ResponseEntity<UserProfileResponse> actual = sut.getUserProfileByEmail(userId);
+
+        assertThat(actual).isEqualTo(ResponseEntity.ok(responseMock));
+        verify(validationService, times(1)).validateUserIdMatchesAuthenticatedPrincipal(userId);
     }
 
     @Test

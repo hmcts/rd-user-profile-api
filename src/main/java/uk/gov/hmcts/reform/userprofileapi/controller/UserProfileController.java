@@ -261,6 +261,7 @@ public class UserProfileController {
         if (isEmpty(userEmail)) {
             throw new InvalidRequest("No User Email provided via header");
         }
+        validationService.validateUserEmailMatchesAuthenticatedPrincipal(userEmail);
 
         UserProfileWithRolesResponse response = userProfileService
                 .retrieveWithRoles(new UserProfileIdentifier(IdentifierName.EMAIL, userEmail.toLowerCase()),null);
@@ -319,6 +320,7 @@ public class UserProfileController {
         if (userEmail == null && userId == null) {
             return ResponseEntity.badRequest().build();
         } else if (userEmail != null) {
+            validationService.validateUserEmailMatchesAuthenticatedPrincipal(userEmail);
 
             response =
                     userProfileService.retrieve(
@@ -326,6 +328,7 @@ public class UserProfileController {
                     );
         } else {
             isUserIdValid(userId, true);
+            validationService.validateUserIdMatchesAuthenticatedPrincipal(userId);
             response = userProfileService.retrieve(
                     new UserProfileIdentifier(IdentifierName.UUID, userId.trim()));
         }
