@@ -10,6 +10,7 @@ public enum ExceptionType {
     UNDEFINDEDEXCEPTION("UndefinedException"),
     ERRORPERSISTINGEXCEPTION("PersistingException"),
     BADREQUEST("BadRequest"),
+    RESOURCEALREADYEXISTS("ResourceAlreadyExistsException"),
     TOOMANYREQUESTS("TooManyRequestException");
 
     private String content;

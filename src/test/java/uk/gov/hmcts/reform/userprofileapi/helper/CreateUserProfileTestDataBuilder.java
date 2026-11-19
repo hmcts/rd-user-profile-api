@@ -41,7 +41,7 @@ public class CreateUserProfileTestDataBuilder {
     }
 
     public static UpdateUserProfileData buildUpdateUserProfileData() {
-        return new UpdateUserProfileData(
+        return new UpdateUserProfileData(UUID.randomUUID().toString(),
                 generateRandomEmail(),
                 RandomStringUtils.secure().nextAlphabetic(10) + " " + RandomStringUtils.secure().nextAlphabetic(10),
                 RandomStringUtils.secure().nextAlphabetic(10) + " " + RandomStringUtils.secure().nextAlphabetic(10),

@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -31,8 +32,8 @@ class UserProfileMapperTest {
     private final IdamRegistrationInfo idamRegistrationInfo = new IdamRegistrationInfo(status(CREATED).build());
     private final UserProfile userProfile = new UserProfile(userProfileCreationData,
             idamRegistrationInfo.getIdamRegistrationResponse());
-    private final UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData("test@test.com",
-            "firstName", "lastName", "ACTIVE", new HashSet<RoleName>(),
+    private final UpdateUserProfileData updateUserProfileData = new UpdateUserProfileData(UUID.randomUUID().toString(),
+            "test@test.com","firstName", "lastName", "ACTIVE", new HashSet<RoleName>(),
             new HashSet<RoleName>());
 
     @Test
@@ -97,6 +98,21 @@ class UserProfileMapperTest {
         verify(userProfileMock, times(1)).setLastUpdated(any(LocalDateTime.class));
         verify(userProfileMock, times(1)).getFirstName();
         verify(userProfileMock, times(1)).getLastName();
+    }
+
+    @Test
+    void test_setIdamId() {
+        String originalIdamId = userProfile.getIdamId();
+        String newIdamId = UUID.randomUUID().toString();
+
+        UserProfileMapper.setIdamId("", userProfile, false);
+        assertThat(userProfile.getIdamId()).isEqualTo(originalIdamId);
+
+        UserProfileMapper.setIdamId(newIdamId, userProfile, true);
+        assertThat(userProfile.getIdamId()).isEqualTo(originalIdamId);
+
+        UserProfileMapper.setIdamId(newIdamId, userProfile, false);
+        assertThat(userProfile.getIdamId()).isEqualTo(newIdamId);
     }
 
 }

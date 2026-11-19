@@ -14,6 +14,7 @@ public interface UserProfileMapper {
     static void mapUpdatableFields(UpdateUserProfileData updateUserProfileData, UserProfile userProfile,
                                    boolean isExuiUpdate) {
         if (!updateUserProfileData.isSameAsUserProfile(userProfile)) {
+            setIdamId(updateUserProfileData.getIdamId(), userProfile, isExuiUpdate);
             setEmail(updateUserProfileData.getEmail(), userProfile, isExuiUpdate);
             setFirstName(updateUserProfileData.getFirstName(), userProfile);
             setLastName(updateUserProfileData.getLastName(), userProfile);
@@ -40,6 +41,12 @@ public interface UserProfileMapper {
             return IdamStatus.ACTIVE.toString().equalsIgnoreCase(data.getIdamStatus());
         }
         return false;
+    }
+
+    static void setIdamId(String idamId, UserProfile userProfile, boolean isExuiUpdate) {
+        if (!isExuiUpdate && StringUtils.isNotEmpty(idamId)) {
+            userProfile.setIdamId(idamId.trim().toLowerCase());
+        }
     }
 
     static void setEmail(String email, UserProfile userProfile, boolean isExuiUpdate) {
