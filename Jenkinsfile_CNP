@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure")
+@Library("Infrastructure@2.12.2")
 
 import uk.gov.hmcts.contino.AppPipelineDsl
 
@@ -37,6 +37,9 @@ def vaultOverrides = [
 // Configure branches to sync with master branch
 def branchesToSync = ['demo', 'ithc', 'perftest']
 
+// Var for testcontainers.org
+env.TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX = "hmctsprod.azurecr.io/imported/"
+
 // Vars for Kubernetes PACT
 env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
 env.PACT_BROKER_URL = "pact-broker.platform.hmcts.net"
@@ -44,8 +47,9 @@ env.PACT_BROKER_PORT = "443"
 env.PACT_BROKER_SCHEME = "https"
 
 withPipeline(type, product, component) {
-    env.S2S_URL_TO_TEST = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-    env.IDAM_URL_TO_TEST = "https://idam-api.aat.platform.hmcts.net"
+    env.S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+    env.IDAM_URL = "https://idam-api.aat.platform.hmcts.net"
+    env.IDAM_OIDC_URL = "https://idam-web-public.aat.platform.hmcts.net"
     env.TEST_URL = "http://rd-user-profile-api-aat.service.core-compute-aat.internal"
 
     overrideVaultEnvironments(vaultOverrides)
@@ -59,13 +63,33 @@ withPipeline(type, product, component) {
 
     before('functionalTest:preview') {
         env.execution_environment = "preview"
+        env.LAUNCH_DARKLY_ENV = "preview"
+        env.ENVIRONMENT_NAME  = "preview"
+        env.TEST_URL = "http://rd-user-profile-api-preview.preview.hmcts.platform.net"
     }
 
     before('functionalTest:aat') {
         env.execution_environment = "aat"
+        env.LAUNCH_DARKLY_ENV = "aat"
+        env.ENVIRONMENT_NAME  = "aat"
+        env.TEST_URL = "http://rd-user-profile-api-aat.aat.hmcts.platform.net"
     }
 
-    after('sonarscan') {
+    before('smoketest:preview') {
+        env.execution_environment = "preview"
+        env.LAUNCH_DARKLY_ENV = "preview"
+        env.ENVIRONMENT_NAME  = "preview"
+        env.TEST_URL = "http://rd-user-profile-api-preview.preview.platform.hmcts.net"
+    }
+
+    before('smoketest:aat') {
+        env.execution_environment = "aat"
+        env.LAUNCH_DARKLY_ENV = "aat"
+        env.ENVIRONMENT_NAME  = "aat"
+        env.TEST_URL = "http://rd-user-profile-api-aat.aat.platform.hmcts.net"
+    }
+
+    afterAlways('sonarscan') {
 
         publishHTML target: [
             allowMissing         : true,
@@ -86,7 +110,7 @@ withPipeline(type, product, component) {
         ]
     }
 
-    after('smoketest:preview') {
+    afterAlways('smoketest:preview') {
         publishHTML target: [
             allowMissing         : true,
             alwaysLinkToLastBuild: true,
@@ -97,7 +121,7 @@ withPipeline(type, product, component) {
         ]
     }
 
-    after('smoketest:aat') {
+    afterAlways('smoketest:aat') {
         publishHTML target: [
             allowMissing         : true,
             alwaysLinkToLastBuild: true,
@@ -108,7 +132,7 @@ withPipeline(type, product, component) {
         ]
     }
 
-    after('functionalTest:aat') {
+    afterAlways('functionalTest:aat') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
         publishHTML target: [
             allowMissing         : true,
@@ -120,7 +144,7 @@ withPipeline(type, product, component) {
         ]
     }
 
-    after('functionalTest:preview') {
+    afterAlways('functionalTest:preview') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
         publishHTML target: [
             allowMissing         : true,
@@ -132,7 +156,7 @@ withPipeline(type, product, component) {
         ]
     }
 
-    after('pact-provider-verification') {
+    afterAlways('pact-provider-verification') {
         publishHTML target: [
              allowMissing         : true,
              alwaysLinkToLastBuild: true,
@@ -144,7 +168,11 @@ withPipeline(type, product, component) {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/tests/**/*'
     }
 
-   enablePactAs([
-       AppPipelineDsl.PactRoles.PROVIDER
-   ])
+    onMaster() {
+        enablePactAs([AppPipelineDsl.PactRoles.PROVIDER])
+    }
+    onPR() {
+        enablePactAs([AppPipelineDsl.PactRoles.PROVIDER])
+
+    }
 }

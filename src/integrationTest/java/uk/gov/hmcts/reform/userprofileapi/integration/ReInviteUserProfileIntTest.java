@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
@@ -13,42 +12,40 @@ import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Optional;
+import javax.sql.DataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.TOO_MANY_REQUESTS;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
+import static uk.gov.hmcts.reform.userprofileapi.integration.wiremock.IdamWireMockStubs.searchUserProfileSyncWireMock;
+import static uk.gov.hmcts.reform.userprofileapi.integration.wiremock.IdamWireMockStubs.stubUserRegistration;
 
-@SpringBootTest(webEnvironment = MOCK)
 @Slf4j
 class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
 
     UserProfileCreationData pendingUserRequest = null;
 
     UserProfile userProfile = null;
-
+    @Value("${syncInterval}")
+    String syncInterval;
+    @Autowired
+    DataSource dataSource;
     @Value("${resendInterval}")
     private String resendInterval;
 
-    @Value("${syncInterval}")
-    String syncInterval;
-
-    @Autowired
-    DataSource dataSource;
-
-
     void updateLastUpdatedTimestamp(String givenIdamId) throws SQLException {
 
-        String query = "update user_profile set last_updated = (sysdate - 1) where idam_id = '" + givenIdamId + "'";
+        String query = "update user_profile set last_updated = (CURRENT_DATE - 1) where idam_id = '"
+                + givenIdamId + "'";
         try (Connection connection = dataSource.getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 statement.executeUpdate(query);
@@ -72,9 +69,9 @@ class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
     // AC1: resend invite to a given user
     @Test
     void should_return_201_when_user_reinvited() throws Exception {
-
+        System.out.println("should_return_201_when_user_reinvited==" + userProfile.getIdamId());
         updateLastUpdatedTimestamp(userProfile.getIdamId());
-
+        searchUserProfileSyncWireMock(HttpStatus.OK, userProfile.getIdamId());
         UserProfileCreationData data = buildCreateUserProfileData(true);
         data.setEmail(pendingUserRequest.getEmail());
         UserProfileCreationResponse reInvitedUserResponse = (UserProfileCreationResponse) createUser(data, CREATED,
@@ -127,9 +124,9 @@ class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
     // AC9: invited more than an hour ago but has recently activated their account
     @Test
     void should_return_409_when_reinvited_user_gets_active_in_sidam_but_pending_in_up() throws Exception {
-
         updateLastUpdatedTimestamp(userProfile.getIdamId());
-        setSidamRegistrationMockWithStatus(HttpStatus.CONFLICT.value(), false);
+        searchUserProfileSyncWireMock(HttpStatus.CONFLICT, userProfile.getIdamId());
+        stubUserRegistration(HttpStatus.CONFLICT.value(), false);
         UserProfileCreationData data = buildCreateUserProfileData(true);
         data.setEmail(pendingUserRequest.getEmail());
         ErrorResponse errorResponse = (ErrorResponse) createUser(data, HttpStatus.CONFLICT, ErrorResponse.class);
@@ -139,13 +136,11 @@ class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
                         .concat("Wait for some time for the system to refresh."));
     }
 
-    // resend invite fail with 429 if user is already invited and again within 1 hour
     @Test
-    void should_return_429_when_user_reinvited_successfully_and_again_reinvited_within_one_hour()
+    void should_return_201_when_user_reinvited_successfully_and_again_reinvited_within_one_hour()
             throws Exception {
-
         updateLastUpdatedTimestamp(userProfile.getIdamId());
-
+        searchUserProfileSyncWireMock(HttpStatus.OK, userProfile.getIdamId());
         UserProfileCreationData data = buildCreateUserProfileData(true);
         data.setEmail(pendingUserRequest.getEmail());
         UserProfileCreationResponse reInvitedUserResponse = (UserProfileCreationResponse) createUser(data, CREATED,
@@ -180,5 +175,52 @@ class ReInviteUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
         assertThat(errorResponse.getErrorDescription()).contains(String.format("The request was last made less than "
                 .concat("%s minutes ago. Please try after some time"), resendInterval));
     }
+
+    @Test
+    void should_update_upId_with_idamId_incase_diff_when_user_reinvited() throws Exception {
+        updateLastUpdatedTimestamp(userProfile.getIdamId());
+
+        UserProfileCreationData data = buildCreateUserProfileData(true);
+        data.setEmail(pendingUserRequest.getEmail());
+        searchUserProfileSyncWireMock(HttpStatus.OK, "");
+        UserProfileCreationResponse reInvitedUserResponse = (UserProfileCreationResponse) createUser(data, CREATED,
+                UserProfileCreationResponse.class);
+
+        //getting from DB
+        Optional<UserProfile> persistedUserProfile = userProfileRepository.findByEmail(pendingUserRequest
+                .getEmail().toLowerCase());
+        UserProfile fetchedUserProfile = persistedUserProfile.get();
+
+        assertThat(reInvitedUserResponse.getIdamId()).isEqualTo(fetchedUserProfile.getIdamId());
+        assertNotEquals(reInvitedUserResponse.getIdamId(), userProfile.getIdamId());
+    }
+
+
+    @Test
+    void should_update_up_status_when_user_reinvited_within_one_hour_from_srd() throws Exception {
+
+        UserProfileCreationData data = buildCreateUserProfileData(true);
+        data.setEmail(pendingUserRequest.getEmail());
+        userProfileRepository.findByEmail(pendingUserRequest
+                .getEmail().toLowerCase());
+        Optional<UserProfile> persistedUserProfile;
+        searchUserProfileSyncWireMock(HttpStatus.OK, userProfile.getIdamId());
+        UserProfileCreationResponse reInvitedUserResponse = userProfileRequestHandlerTest.sendPost(
+                mockMvc,
+                APP_BASE_PATH + "?origin=SRD",
+                data,
+                CREATED,
+                UserProfileCreationResponse.class
+        );
+
+        persistedUserProfile = userProfileRepository.findByEmail(pendingUserRequest
+                .getEmail().toLowerCase());
+        UserProfile fetchedUserProfile = persistedUserProfile.get();
+
+        assertThat(fetchedUserProfile.getStatus()).isEqualTo(IdamStatus.ACTIVE);
+        assertThat(reInvitedUserResponse.getIdamId()).isEqualTo(fetchedUserProfile.getIdamId());
+
+    }
+
 
 }

@@ -1,17 +1,17 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
-import static java.util.Objects.nonNull;
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.ResponseEntity.status;
-import static org.springframework.util.CollectionUtils.isEmpty;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamErrorResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
+
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static org.springframework.http.ResponseEntity.status;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 
 @SuppressWarnings("HideUtilityClassConstructor")
@@ -24,7 +24,9 @@ public final class IdamStatusResolver {
     public static final String ACCEPTED = "12 User Registration accepted";
     public static final String INVALID_REQUEST = "13 Required parameters or one of request field is missing or invalid";
     public static final String MISSING_TOKEN = "14 Missing Bearer Token";
-    public static final String TOKEN_EXPIRED = "15 Bearer token is expired, or it doesn’t have the 'create-user' scope";
+    public static final String TOKEN_EXPIRED = "15 Bearer token is expired, or the user or service does not have "
+            + "permission to perform this action";
+
     public static final String NOT_FOUND = "16 Resource not found";
     public static final String USER_EXISTS = "17 User with this email already exists";
     public static final String UNKNOWN = "18 Unknown error from Idam";
@@ -35,6 +37,8 @@ public final class IdamStatusResolver {
 
     public static final String ACTIVE = "ACTIVE";
     public static final String PENDING = "PENDING";
+    public static final String IDAM_5XX_ERROR_RESPONSE = "The identity server is unable to  process "
+            + "the request due to high load.Please try again later";
 
     public static String resolveStatusAndReturnMessage(HttpStatus httpStatus) {
         switch (httpStatus) {
@@ -69,10 +73,10 @@ public final class IdamStatusResolver {
                 errorMessage = getErrorMessageFromSidamResponse(responseBody);
             }
         } else {
-            responseEntity = status(INTERNAL_SERVER_ERROR).build();
+            responseEntity = status(UNAUTHORIZED).build();
         }
         return isNotBlank(errorMessage) ? errorMessage :
-                resolveStatusAndReturnMessage(responseEntity.getStatusCode());
+                resolveStatusAndReturnMessage(HttpStatus.valueOf(responseEntity.getStatusCode().value()));
     }
 
     public static String getErrorMessageFromSidamResponse(Object responseBody) {
@@ -87,7 +91,7 @@ public final class IdamStatusResolver {
     }
 
     public static Integer getStatusCodeValueFromResponseEntity(ResponseEntity<Object> responseEntity) {
-        return nonNull(responseEntity) ? responseEntity.getStatusCodeValue() : INTERNAL_SERVER_ERROR.value();
+        return nonNull(responseEntity) ? responseEntity.getStatusCode().value() : UNAUTHORIZED.value();
     }
 
     public static IdamStatus resolveIdamStatus(IdamRolesInfo idamRolesInfo) {

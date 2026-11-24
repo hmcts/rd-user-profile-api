@@ -28,13 +28,13 @@ public class TestConfigProperties {
     @Value("${targetInstance}")
     protected String targetInstance;
 
-    @Value("${s2s.auth.secret}")
+    @Value("${idam.s2s-auth.totp_secret}")
     protected String s2sSecret;
 
-    @Value("${s2s.auth.url}")
+    @Value("${idam.s2s-auth.url}")
     protected String s2sBaseUrl;
 
-    @Value("${s2s.auth.microservice:rd_user_profile_api}")
+    @Value("${idam.s2s-auth.microservice:rd_user_profile_api}")
     protected String s2sMicroservice;
 
     @Value("${exui.role.hmcts-admin}")

@@ -4,34 +4,34 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserIdamStatusWithEmailResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfile;
 
-@SpringBootTest(webEnvironment = MOCK)
 @Transactional
 class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
 
@@ -356,4 +356,71 @@ class RetrieveUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
                 .isEqualTo("No User Email provided via header");
 
     }
+
+
+    @Test
+    void should_retrieve_user_profile_IdamStatusWithEmailResponse() throws Exception {
+        UserProfile user1 = buildUserProfile();
+        user1.setUserCategory(UserCategory.CASEWORKER);
+        user1.setStatus(IdamStatus.ACTIVE);
+        userProfileRepository.save(user1);
+        String email = user1.getEmail();
+        UserIdamStatusWithEmailResponse retrievedResource =
+                userProfileRequestHandlerTest.sendGet(
+                        mockMvc,
+                        APP_BASE_PATH + "/idamStatus?category=caseworker",
+                        OK,
+                        UserIdamStatusWithEmailResponse.class
+                );
+        assertThat(retrievedResource).isNotNull();
+        assertThat(Objects.requireNonNull(retrievedResource)
+                .getUserProfiles().get(0).getEmail())
+                .isEqualToIgnoringCase(email);
+        assertThat(Objects.requireNonNull(retrievedResource)
+                .getUserProfiles().get(0).getIdamStatus())
+                .isEqualToIgnoringCase(IdamStatus.ACTIVE.name());
+
+
+    }
+
+    @Test
+    void should_return_invalidRequest_when_retrieve_user_profile_IdamStatusWithEmail_with_invalid_query_param()
+            throws Exception {
+
+        MvcResult retrievedResource = userProfileRequestHandlerTest.sendGet(
+                        mockMvc,
+                        APP_BASE_PATH + "/idamStatus?category=casessworker",
+                BAD_REQUEST
+                );
+
+        assertThat(retrievedResource).isNotNull();
+
+        Exception resolvedException = retrievedResource.getResolvedException();
+
+        assertThat(resolvedException).isNotNull();
+        assertThat(resolvedException.getMessage())
+                .isEqualTo("3 : There is a problem with your request. Please check and try again");
+
+    }
+
+    @Test
+    void should_return_invalidRequest_when_retrieve_user_profile_IdamStatusWithEmail_() throws Exception {
+
+        MvcResult retrievedResource = userProfileRequestHandlerTest.sendGet(
+                mockMvc,
+                APP_BASE_PATH + "/idamStatus?category=caseworker",
+                NOT_FOUND
+        );
+
+        assertThat(retrievedResource).isNotNull();
+
+        Exception resolvedException = retrievedResource.getResolvedException();
+
+        assertThat(resolvedException).isNotNull();
+        assertThat(resolvedException.getMessage())
+                .isEqualTo("Could not find any profiles");
+
+    }
+
+
 }

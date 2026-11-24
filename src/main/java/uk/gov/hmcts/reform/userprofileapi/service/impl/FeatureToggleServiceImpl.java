@@ -2,12 +2,12 @@ package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
 import com.launchdarkly.sdk.LDUser;
 import com.launchdarkly.sdk.server.LDClient;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.userprofileapi.service.FeatureToggleService;
 
-import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
 

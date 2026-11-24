@@ -1,8 +1,12 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -20,19 +24,18 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
+import static uk.gov.hmcts.reform.userprofileapi.integration.wiremock.IdamWireMockStubs.stubUserRegistration;
 
-@SpringBootTest(webEnvironment = MOCK)
 @Transactional
 class CreateNewUserProfileWithIdamErrorsIntTest extends AuthorizationEnabledIntegrationTest {
 
     @BeforeEach
-    public void setUpWireMock() {
-
-        setSidamRegistrationMockWithStatus(BAD_REQUEST.value(), true);
+    public void setUpMock() throws JsonProcessingException {
+        stubUserRegistration(BAD_REQUEST.value(), true);
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
     }
 
@@ -61,7 +64,7 @@ class CreateNewUserProfileWithIdamErrorsIntTest extends AuthorizationEnabledInte
         List<String> roles = new ArrayList<String>();
         roles.add("puicasemanager");
         data.setRoles(roles);
-        setSidamRegistrationMockWithStatus(BAD_REQUEST.value(), false);
+        stubUserRegistration(BAD_REQUEST.value(), false);
         ErrorResponse errorResponse =
                 userProfileRequestHandlerTest.sendPost(
                         mockMvc,
@@ -83,7 +86,7 @@ class CreateNewUserProfileWithIdamErrorsIntTest extends AuthorizationEnabledInte
         List<String> roles = new ArrayList<String>();
         roles.add("puicasemanager");
         data.setRoles(roles);
-        setSidamRegistrationMockWithStatus(BAD_REQUEST.value(), true);
+        stubUserRegistration(BAD_REQUEST.value(), true);
         ErrorResponse errorResponse =
                 userProfileRequestHandlerTest.sendPost(
                         mockMvc,
@@ -96,6 +99,24 @@ class CreateNewUserProfileWithIdamErrorsIntTest extends AuthorizationEnabledInte
                 .isEqualTo("13 Required parameters or one of request field is missing or invalid");
         assertThat(errorResponse.getErrorDescription())
                 .isEqualTo("13 Required parameters or one of request field is missing or invalid");
+    }
+
+    @DisplayName("Should return unAuthorized error response for all Idam 5xx Server errors")
+    @ParameterizedTest
+    @EnumSource(value = HttpStatus.class, names = {"INTERNAL_SERVER_ERROR","BAD_GATEWAY",
+        "SERVICE_UNAVAILABLE","GATEWAY_TIMEOUT"})
+    void should_return_401_when_idam_server_throws_5xx_error(HttpStatus httpStatus) throws Exception {
+
+        UserProfileCreationData data = buildCreateUserProfileData();
+
+        stubUserRegistration(httpStatus.value(), true);
+
+        ErrorResponse errorResponse =
+                userProfileRequestHandlerTest.sendPost(mockMvc, APP_BASE_PATH, data, UNAUTHORIZED, ErrorResponse.class);
+
+        assertThat(errorResponse.getStatus()).isEqualTo(UNAUTHORIZED.value());
+        assertThat(errorResponse.getErrorDescription()).isEqualTo(IdamStatusResolver.IDAM_5XX_ERROR_RESPONSE);
+
     }
 
     private void verifyUserProfileCreation(UserProfileCreationData data) {

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,6 +14,8 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserIdamStatusWithEmail;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserIdamStatusWithEmailResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesResponse;
@@ -29,7 +32,6 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileIdentifier;
 import uk.gov.hmcts.reform.userprofileapi.service.impl.UserProfileService;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -79,14 +81,31 @@ class UserProfileControllerTest {
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         UserProfileCreationResponse expectedBody = new UserProfileCreationResponse(userProfile);
 
-        when(userProfileServiceMock.create(userProfileCreationData,"SRD")).thenReturn(expectedBody);
+        when(userProfileServiceMock.create(userProfileCreationData,null)).thenReturn(expectedBody);
+
+        ResponseEntity<UserProfileCreationResponse> resource = sut.createUserProfile(userProfileCreationData,null);
+        assertThat(resource.getBody()).usingRecursiveComparison().isEqualTo(expectedBody);
+
+        verify(userProfileServiceMock, times(1)).create(any(UserProfileCreationData.class), eq(null));
+        verify(userProfileServiceMock, times(0))
+                .reInviteUser(any(UserProfileCreationData.class), anyString());
+    }
+
+    @Test
+    void test_CreateUserProfileFromSrd() {
+
+        UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
+        UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
+        UserProfileCreationResponse expectedBody = new UserProfileCreationResponse(userProfile);
+
+        when(userProfileServiceMock.create(userProfileCreationData, "SRD")).thenReturn(expectedBody);
 
         ResponseEntity<UserProfileCreationResponse> resource = sut.createUserProfile(userProfileCreationData,"SRD");
         assertThat(resource.getBody()).usingRecursiveComparison().isEqualTo(expectedBody);
 
         verify(userProfileServiceMock, times(1)).create(any(UserProfileCreationData.class), eq("SRD"));
         verify(userProfileServiceMock, times(0))
-                .reInviteUser(any(UserProfileCreationData.class));
+                .reInviteUser(any(UserProfileCreationData.class), anyString());
     }
 
     @Test
@@ -97,14 +116,33 @@ class UserProfileControllerTest {
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         UserProfileCreationResponse expectedBody = new UserProfileCreationResponse(userProfile);
 
-        when(userProfileServiceMock.reInviteUser(userProfileCreationData)).thenReturn(expectedBody);
+        when(userProfileServiceMock.reInviteUser(userProfileCreationData, null)).thenReturn(expectedBody);
+
+        ResponseEntity<UserProfileCreationResponse> resource = sut.createUserProfile(userProfileCreationData, null);
+        assertThat(resource.getBody()).usingRecursiveComparison().isEqualTo(expectedBody);
+
+        verify(userProfileServiceMock, times(0)).create(any(UserProfileCreationData.class), eq(null));
+        verify(userProfileServiceMock, times(1))
+                .reInviteUser(any(UserProfileCreationData.class), eq(null));
+    }
+
+
+    @Test
+    void test_ReInviteUserProfileFromSrd() {
+
+        UserProfileCreationData userProfileCreationData = CreateUserProfileTestDataBuilder
+                .buildCreateUserProfileData(true);
+        UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
+        UserProfileCreationResponse expectedBody = new UserProfileCreationResponse(userProfile);
+
+        when(userProfileServiceMock.reInviteUser(userProfileCreationData, "SRD")).thenReturn(expectedBody);
 
         ResponseEntity<UserProfileCreationResponse> resource = sut.createUserProfile(userProfileCreationData, "SRD");
         assertThat(resource.getBody()).usingRecursiveComparison().isEqualTo(expectedBody);
 
         verify(userProfileServiceMock, times(0)).create(any(UserProfileCreationData.class), eq("SRD"));
         verify(userProfileServiceMock, times(1))
-                .reInviteUser(any(UserProfileCreationData.class));
+                .reInviteUser(any(UserProfileCreationData.class), anyString());
     }
 
     @Test
@@ -133,11 +171,12 @@ class UserProfileControllerTest {
         String id = "a833c2e2-2c73-4900-96ca-74b1efb37928";
         UserProfileWithRolesResponse responseMock = Mockito.mock(UserProfileWithRolesResponse.class);
 
-        when(userProfileServiceMock.retrieveWithRoles(any(UserProfileIdentifier.class))).thenReturn(responseMock);
+        when(userProfileServiceMock.retrieveWithRoles(any(UserProfileIdentifier.class), any()))
+                .thenReturn(responseMock);
 
-        assertThat(sut.getUserProfileWithRolesById(id)).isEqualTo(ResponseEntity.ok(responseMock));
+        assertThat(sut.getUserProfileWithRolesById(id,"SRD")).isEqualTo(ResponseEntity.ok(responseMock));
         verify(userProfileServiceMock, times(1))
-                .retrieveWithRoles(any(UserProfileIdentifier.class));
+                .retrieveWithRoles(any(UserProfileIdentifier.class), any());
     }
 
     @Test
@@ -152,10 +191,11 @@ class UserProfileControllerTest {
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(httpRequest));
         when(httpRequest.getHeader(anyString())).thenReturn(" ");
         UserProfileWithRolesResponse responseMock = Mockito.mock(UserProfileWithRolesResponse.class);
-        when(userProfileServiceMock.retrieveWithRoles(any(UserProfileIdentifier.class))).thenReturn(responseMock);
+        when(userProfileServiceMock.retrieveWithRoles(any(UserProfileIdentifier.class), any()))
+                .thenReturn(responseMock);
         assertThat(sut.getUserProfileWithRolesByEmail()).isEqualTo(ResponseEntity.ok(responseMock));
         verify(userProfileServiceMock, times(1))
-                .retrieveWithRoles(any(UserProfileIdentifier.class));
+                .retrieveWithRoles(any(UserProfileIdentifier.class), any());
         verify(httpRequest, times(2)).getHeader(anyString());
     }
 
@@ -164,10 +204,11 @@ class UserProfileControllerTest {
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(httpRequest));
         UserProfileWithRolesResponse responseMock = Mockito.mock(UserProfileWithRolesResponse.class);
         when(httpRequest.getHeader(anyString())).thenReturn("test@test.com");
-        when(userProfileServiceMock.retrieveWithRoles(any(UserProfileIdentifier.class))).thenReturn(responseMock);
+        when(userProfileServiceMock.retrieveWithRoles(any(UserProfileIdentifier.class), any()))
+                .thenReturn(responseMock);
         assertThat(sut.getUserProfileWithRolesByEmail()).isEqualTo(ResponseEntity.ok(responseMock));
         verify(userProfileServiceMock, times(1))
-                .retrieveWithRoles(any(UserProfileIdentifier.class));
+                .retrieveWithRoles(any(UserProfileIdentifier.class), any());
         verify(httpRequest, times(2)).getHeader(anyString());
     }
 
@@ -263,7 +304,7 @@ class UserProfileControllerTest {
         assertThat(responseEntityActual).isNotNull();
 
         verify(userProfileServiceMock, times(1)).delete(any(UserProfileDataRequest.class));
-        assertThat(responseEntityActual.getStatusCodeValue()).isEqualTo(204);
+        assertThat(responseEntityActual.getStatusCode().value()).isEqualTo(204);
         assertThat(Objects.requireNonNull(responseEntityActual.getBody())
                 .getMessage())
                 .isEqualTo("UserProfiles Successfully Deleted");
@@ -296,7 +337,7 @@ class UserProfileControllerTest {
 
         assertThat(responseEntityActual).isNotNull();
         verify(userProfileServiceMock, times(1)).deleteByUserId(userProfile.getIdamId());
-        assertThat(responseEntityActual.getStatusCodeValue()).isEqualTo(204);
+        assertThat(responseEntityActual.getStatusCode().value()).isEqualTo(204);
         assertThat(Objects.requireNonNull(responseEntityActual.getBody()).getMessage())
                 .isEqualTo("UserProfiles Successfully Deleted");
     }
@@ -317,7 +358,7 @@ class UserProfileControllerTest {
 
         assertThat(responseEntityActual).isNotNull();
         verify(userProfileServiceMock, times(1)).deleteByEmailPattern(emailPattern);
-        assertThat(responseEntityActual.getStatusCodeValue()).isEqualTo(204);
+        assertThat(responseEntityActual.getStatusCode().value()).isEqualTo(204);
         assertThat(Objects.requireNonNull(responseEntityActual.getBody()).getMessage())
                 .isEqualTo("UserProfiles Successfully Deleted");
     }
@@ -335,6 +376,32 @@ class UserProfileControllerTest {
 
         ResponseEntity<Object> expect = status(OK).build();
         assertThat(actual).isEqualTo(expect);
+
+    }
+
+    @Test
+    void test_GetUserProfileIdamStatus() {
+        UserIdamStatusWithEmail idamStatus = new UserIdamStatusWithEmail("test@email.com","Penidng");
+        UserIdamStatusWithEmailResponse response = new UserIdamStatusWithEmailResponse();
+        response.setUserProfiles(List.of(idamStatus));
+        when(userProfileServiceMock.retrieveIdamStatus(any())).thenReturn(response);
+        ResponseEntity<UserIdamStatusWithEmailResponse> actual = sut.getUserProfileIdamStatus("caseworker");
+        verify(userProfileServiceMock, times(1)).retrieveIdamStatus(any());
+
+        assertThat(Objects.requireNonNull(actual.getBody())
+                .getUserProfiles().get(0).getEmail())
+                .isEqualTo("test@email.com");
+        assertThat(Objects.requireNonNull(actual.getBody())
+                .getUserProfiles().get(0).getIdamStatus())
+                .isEqualTo("Penidng");
+
+
+    }
+
+    @Test
+    void test_GetUserProfileIdamStatus_InvalidInput() {
+        assertThatThrownBy(() -> sut.getUserProfileIdamStatus("sdfsd"))
+                .hasMessage("3 : There is a problem with your request. Please check and try again");
 
     }
 

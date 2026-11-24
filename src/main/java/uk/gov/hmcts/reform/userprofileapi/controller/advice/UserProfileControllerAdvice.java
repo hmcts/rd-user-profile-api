@@ -1,23 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.controller.advice;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.FORBIDDEN;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
-import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.DATA_INTEGRITY_VIOLATION;
-import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.INVALID_REQUEST;
-import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.RESOURCE_NOT_FOUND;
-import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.UNKNOWN_EXCEPTION;
-import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.resolveStatusAndReturnMessage;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import javax.servlet.http.HttpServletRequest;
-
 import com.fasterxml.jackson.databind.JsonMappingException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -35,6 +19,21 @@ import uk.gov.hmcts.reform.userprofileapi.exception.ForbiddenException;
 import uk.gov.hmcts.reform.userprofileapi.exception.IdamServiceException;
 import uk.gov.hmcts.reform.userprofileapi.exception.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.DATA_INTEGRITY_VIOLATION;
+import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.INVALID_REQUEST;
+import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.RESOURCE_NOT_FOUND;
+import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.UNKNOWN_EXCEPTION;
+import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.resolveStatusAndReturnMessage;
 
 @Slf4j
 @ControllerAdvice(basePackages = "uk.gov.hmcts.reform.userprofileapi.controller")

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserIdamStatusWithEmailResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
@@ -39,22 +40,27 @@ public class UserProfileService<T extends RequestData> {
         return new UserProfileCreationResponse(resourceCreator.create(requestData, origin));
     }
 
-    public UserProfileCreationResponse reInviteUser(T requestData) {
-        return new UserProfileCreationResponse(resourceCreator.reInviteUser(requestData));
+    public UserProfileCreationResponse reInviteUser(T requestData, String origin) {
+        return new UserProfileCreationResponse(resourceCreator.reInviteUser(requestData, origin));
     }
 
-    public UserProfileWithRolesResponse retrieveWithRoles(T requestData) {
-        return new UserProfileWithRolesResponse(resourceRetriever.retrieve(requestData, true),
-                true);
+    public UserProfileWithRolesResponse retrieveWithRoles(T requestData, String origin) {
+        return new UserProfileWithRolesResponse(resourceRetriever.retrieve(requestData, true, origin),
+                true, origin);
     }
+
 
     public UserProfileDataResponse retrieveWithRoles(T requestData, boolean showDeleted, boolean rolesRequired) {
         return new UserProfileDataResponse(resourceRetriever.retrieveMultipleProfiles(requestData, showDeleted,
                 rolesRequired), rolesRequired);
     }
 
+    public UserIdamStatusWithEmailResponse retrieveIdamStatus(String category) {
+        return new UserIdamStatusWithEmailResponse(resourceRetriever.retrieveMultipleProfilesByCategory(category));
+    }
+
     public UserProfileResponse retrieve(T requestData) {
-        return new UserProfileResponse(resourceRetriever.retrieve(requestData, false));
+        return new UserProfileResponse(resourceRetriever.retrieve(requestData, false, null));
     }
 
     public AttributeResponse update(T updateData, String userId, String origin) {

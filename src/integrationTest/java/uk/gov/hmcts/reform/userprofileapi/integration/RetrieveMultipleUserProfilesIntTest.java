@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.userprofileapi.integration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
@@ -20,18 +19,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfile;
 import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfileWithDeletedStatus;
 import static uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder.buildUserProfileWithSuspendedStatus;
+import static uk.gov.hmcts.reform.userprofileapi.integration.wiremock.IdamWireMockStubs.mockWithGetFail;
+import static uk.gov.hmcts.reform.userprofileapi.integration.wiremock.IdamWireMockStubs.mockWithGetSuccess;
 
-@SpringBootTest(webEnvironment = MOCK)
 @Transactional
 class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledIntegrationTest {
 
@@ -42,23 +38,6 @@ class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledIntegratio
 
     @Autowired
     private WebApplicationContext webApplicationContext;
-
-    public void mockWithGetSuccess() {
-        idamMockService.stubFor(get(urlMatching("/api/v1/users/.*"))
-                .willReturn(aResponse()
-                        .withHeader("Content-Type", "application/json")
-                        .withStatus(200)
-                        .withBody("{"
-                                + "  \"active\": \"true\","
-                                + "  \"forename\": \"fname\","
-                                + "  \"surname\": \"lname\","
-                                + "  \"email\": \"test@test.com\","
-                                + "  \"roles\": ["
-                                + "    \"pui-case-manager\""
-                                + "  ]"
-                                + "}")));
-
-    }
 
     @BeforeEach
     public void setUp() {
@@ -152,6 +131,7 @@ class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledIntegratio
         assertThat(matchedAudit.size()).isZero();
     }
 
+
     @Test
     void should_retrieve_multiple_user_profiles_with_showDeleted_false() throws Exception {
 
@@ -183,6 +163,18 @@ class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledIntegratio
 
         UserProfileDataResponse response = getMultipleUsers(request, OK, "true", "true");
         verifyMultipleUserResponse(response, "16 Resource not found");
+
+    }
+
+    @Test
+    void should_retrieve_multiple_user_profiles_with_idam_failure_5xx() throws Exception {
+
+        mockWithGetFail(HttpStatus.INTERNAL_SERVER_ERROR, false);
+        UserProfileDataRequest request = new UserProfileDataRequest(userIds);
+        request.getUserIds().add(UUID.randomUUID().toString());
+
+        UserProfileDataResponse response = getMultipleUsers(request, OK, "true", "true");
+        verifyMultipleUser5xxResponse(response, IdamStatusResolver.IDAM_5XX_ERROR_RESPONSE);
 
     }
 
@@ -248,6 +240,18 @@ class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledIntegratio
     }
 
     @Test
+    void should_see_idam_error_message_with_no_body_while_retrieve_multiple_user_profiles_with_idam_failure_5xx()
+            throws Exception {
+
+        mockWithGetFail(HttpStatus.INTERNAL_SERVER_ERROR, false);
+        UserProfileDataRequest request = new UserProfileDataRequest(userIds);
+        request.getUserIds().add(UUID.randomUUID().toString());
+
+        UserProfileDataResponse response = getMultipleUsers(request, OK, "true", "true");
+        verifyMultipleUser5xxResponse(response, IdamStatusResolver.IDAM_5XX_ERROR_RESPONSE);
+    }
+
+    @Test
     void should_see_idam_error_message_with_body_while_retrieve_multiple_user_profiles_with_idam_failure()
             throws Exception {
 
@@ -260,6 +264,22 @@ class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledIntegratio
         assertThat(response.getUserProfiles().size()).isEqualTo(5);
         verifyMultipleUserResponse(response,
                 "The user could not be found: c5d631f-af11-4816-abbe-ac6fd9b99ee9");
+
+    }
+
+    @Test
+    void should_see_idam_error_message_with_body_while_retrieve_multiple_user_profiles_with_idam_failure_5xx()
+            throws Exception {
+
+        mockWithGetFail(HttpStatus.INTERNAL_SERVER_ERROR, true);
+        UserProfileDataRequest request = new UserProfileDataRequest(userIds);
+        request.getUserIds().add(UUID.randomUUID().toString());
+
+        UserProfileDataResponse response = getMultipleUsers(request, OK, "true", "true");
+
+        assertThat(response.getUserProfiles().size()).isEqualTo(5);
+        verifyMultipleUser5xxResponse(response,
+                IdamStatusResolver.IDAM_5XX_ERROR_RESPONSE);
 
     }
 
@@ -296,6 +316,26 @@ class RetrieveMultipleUserProfilesIntTest extends AuthorizationEnabledIntegratio
 
         actualMatchedAudits = getMatchedAuditRecords(audits, userProfileMap.get("user4").getIdamId());
         assertThat(actualMatchedAudits).isEmpty();
+    }
+
+    public void verifyMultipleUser5xxResponse(UserProfileDataResponse response, String errorMessageToVerify) {
+        response.getUserProfiles().forEach(getUserProfilesResponse -> {
+            UserProfile up = userProfileMapWithUuid.get(getUserProfilesResponse.getIdamId());
+            assertThat(getUserProfilesResponse.getEmail()).isEqualTo(up.getEmail());
+            assertThat(getUserProfilesResponse.getFirstName()).isEqualTo(up.getFirstName());
+            assertThat(getUserProfilesResponse.getLastName()).isEqualTo(up.getLastName());
+            assertThat(getUserProfilesResponse.getIdamStatus()).isEqualTo(up.getStatus().name());
+            assertThat(getUserProfilesResponse.getRoles()).isNull();
+            if (IdamStatus.ACTIVE == up.getStatus()) {
+                assertThat(getUserProfilesResponse.getIdamStatusCode()).isEqualTo("401");
+                assertThat(getUserProfilesResponse.getIdamMessage()).isEqualTo(errorMessageToVerify);
+            } else {
+                assertThat(getUserProfilesResponse.getIdamStatusCode()).isEqualTo(" ");
+                assertThat(getUserProfilesResponse.getIdamMessage())
+                        .isEqualTo("19 No call made to SIDAM to get the user roles as user status is not 'ACTIVE'");
+            }
+        });
+
     }
 
 }

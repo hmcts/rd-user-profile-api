@@ -22,7 +22,6 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.ACCEPTED;
 import static uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver.INVALID_REQUEST;
@@ -131,7 +130,7 @@ class IdamStatusResolverTest {
     void test_resolveStatusAndReturnMessage_when_responseEntity_is_null() {
         ResponseEntity<Object> responseEntity = null;
         String errorMessage = resolveStatusAndReturnMessage(responseEntity);
-        assertThat(errorMessage).isEqualTo(resolveStatusAndReturnMessage(INTERNAL_SERVER_ERROR));
+        assertThat(errorMessage).isEqualTo(resolveStatusAndReturnMessage(HttpStatus.UNAUTHORIZED));
     }
 
     @Test

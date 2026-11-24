@@ -2,9 +2,7 @@ package uk.gov.hmcts.reform.userprofileapi.integration;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
@@ -18,98 +16,35 @@ import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
+import static uk.gov.hmcts.reform.userprofileapi.integration.wiremock.IdamWireMockStubs.mockWithGetFail;
+import static uk.gov.hmcts.reform.userprofileapi.integration.wiremock.IdamWireMockStubs.mockWithGetSuccess;
+import static uk.gov.hmcts.reform.userprofileapi.integration.wiremock.IdamWireMockStubs.mockWithUpdateFail;
+import static uk.gov.hmcts.reform.userprofileapi.integration.wiremock.IdamWireMockStubs.mockWithUpdateRolesSuccess;
+import static uk.gov.hmcts.reform.userprofileapi.integration.wiremock.IdamWireMockStubs.stubRegistrationResponse;
 
-@SpringBootTest(webEnvironment = MOCK)
-@Transactional
 class CreateNewUserProfileWithDuplicateUserIntTest extends AuthorizationEnabledIntegrationTest {
 
+    private final String userId = UUID.randomUUID().toString();
 
     @BeforeEach
     public void setUpWireMock() {
-
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
-        idamMockService.stubFor(post(urlEqualTo("/api/v1/users/registration"))
-                .willReturn(aResponse()
-                        .withHeader("Content-Type", "application/json")
-                        .withHeader("Location", "/api/v1/users/" + "7feb739c-1ae1-4ef4-9f46-86716d84fd72")
-                        .withStatus(409)
-                ));
+        stubRegistrationResponse(userId);
     }
 
-    public void mockWithGetSuccess(boolean withoutStatusFields) {
-
-        String body;
-        if (!withoutStatusFields) {
-
-            body = "{"
-                    + "  \"active\": \"true\","
-                    + "  \"forename\": \"fname\","
-                    + "  \"surname\": \"lname\","
-                    + "  \"email\": \"test@test.com\","
-                    + "  \"roles\": ["
-                    + "    \"pui-organisation-manager\","
-                    + "    \"pui-user-manager\""
-                    + "  ]"
-                    + "}";
-        } else {
-            body = "{"
-                    + "  \"id\": \"e65e5439-a8f7-4ae6-b378-cc1015b72dbb\","
-                    + "  \"active\": \"false\","
-                    + "  \"pending\": \"true\""
-                    + "}";
-        }
-
-        idamMockService.stubFor(get(urlMatching("/api/v1/users/.*"))
-                .willReturn(aResponse()
-                        .withHeader("Content-Type", "application/json")
-                        .withStatus(200)
-                        .withBody(body)));
-
-    }
-
-    public void mockWithUpdateSuccess() {
-        idamMockService.stubFor(post(urlMatching("/api/v1/users/7feb739c-1ae1-4ef4-9f46-86716d84fd72/roles"))
-                .willReturn(aResponse()
-                        .withHeader("Content-Type", "application/json")
-                        .withStatus(200)
-                ));
-    }
-
-    public void mockWithGetFail() {
-        idamMockService.stubFor(get(urlMatching("/api/v1/users/.*"))
-                .willReturn(aResponse()
-                        .withHeader("Content-Type", "application/json")
-                        .withStatus(404)
-                ));
-
-    }
-
-    public void mockWithUpdateFail() {
-        idamMockService.stubFor(post(urlMatching("/api/v1/users/7feb739c-1ae1-4ef4-9f46-86716d84fd72/roles"))
-                .willReturn(aResponse()
-                        .withHeader("Content-Type", "application/json")
-                        .withStatus(400)
-                ));
-    }
 
     @Test
     void should_return_201_and_create_user_profile_when_duplicate_in_sidam() throws Exception {
-
-        mockWithGetSuccess(false);
-        mockWithUpdateSuccess();
+        mockWithGetSuccess(userId, false);
+        mockWithUpdateRolesSuccess(userId);
         UserProfileCreationData data = buildCreateUserProfileData();
 
         UserProfileCreationResponse createdResource =
@@ -128,9 +63,8 @@ class CreateNewUserProfileWithDuplicateUserIntTest extends AuthorizationEnabledI
     @Test
     void should_return_201_and_create_user_profile_when_status_not_properly_returned_by_sidam()
             throws Exception {
-
-        mockWithGetSuccess(false);
-        mockWithUpdateSuccess();
+        mockWithGetSuccess(userId, false);
+        mockWithUpdateRolesSuccess(userId);
         UserProfileCreationData data = buildCreateUserProfileData();
 
         UserProfileCreationResponse createdResource =
@@ -149,13 +83,11 @@ class CreateNewUserProfileWithDuplicateUserIntTest extends AuthorizationEnabledI
     @Test
     void should_return_404_and_not_create_user_profile_when_duplicate_in_sidam_and_get_failed()
             throws Exception {
-
-        mockWithGetFail();
-        mockWithUpdateSuccess();
+        mockWithGetFail(NOT_FOUND, false);
+        mockWithUpdateRolesSuccess(userId);
         auditRepository.deleteAll();
         userProfileRepository.deleteAll();
         UserProfileCreationData data = buildCreateUserProfileData();
-
 
         userProfileRequestHandlerTest.sendPost(
                 mockMvc,
@@ -164,7 +96,6 @@ class CreateNewUserProfileWithDuplicateUserIntTest extends AuthorizationEnabledI
                 NOT_FOUND,
                 UserProfileCreationResponse.class
         );
-
         verifyUserProfileCreationForFailure(NOT_FOUND);
 
     }
@@ -172,9 +103,8 @@ class CreateNewUserProfileWithDuplicateUserIntTest extends AuthorizationEnabledI
     @Test
     void should_return_400_and_not_create_user_profile_when_duplicate_in_sidam_and_update_failed()
             throws Exception {
-
         mockWithGetSuccess(true);
-        mockWithUpdateFail();
+        mockWithUpdateFail(userId);
         auditRepository.deleteAll();
         userProfileRepository.deleteAll();
         UserProfileCreationData data = buildCreateUserProfileData();
@@ -202,7 +132,7 @@ class CreateNewUserProfileWithDuplicateUserIntTest extends AuthorizationEnabledI
         Optional<UserProfile> persistedUserProfile = userProfileRepository.findByIdamId(createdResource.getIdamId());
         UserProfile userProfile = persistedUserProfile.get();
         assertThat(userProfile.getId()).isNotNull().isExactlyInstanceOf(Long.class);
-        assertThat(userProfile.getIdamRegistrationResponse()).isEqualTo(201);
+        assertThat(userProfile.getIdamRegistrationResponse()).isNull();
         assertThat(userProfile.getLanguagePreference()).isEqualTo(LanguagePreference.EN);
         assertThat(userProfile.getUserCategory()).isEqualTo(UserCategory.PROFESSIONAL);
         assertThat(userProfile.getUserType()).isEqualTo(UserType.EXTERNAL);

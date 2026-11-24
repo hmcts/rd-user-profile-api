@@ -2,13 +2,12 @@ package uk.gov.hmcts.reform.userprofileapi.resource;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import java.util.Set;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+
+import java.util.Set;
 
 @NoArgsConstructor
 @Getter

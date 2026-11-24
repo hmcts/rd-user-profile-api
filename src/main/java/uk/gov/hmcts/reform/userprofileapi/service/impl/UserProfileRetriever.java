@@ -1,16 +1,14 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.Audit;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfileIdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
 import uk.gov.hmcts.reform.userprofileapi.exception.IdamServiceException;
@@ -22,7 +20,12 @@ import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.ResourceRetriever;
 import uk.gov.hmcts.reform.userprofileapi.service.UserProfileQueryProvider;
 import uk.gov.hmcts.reform.userprofileapi.util.IdamStatusResolver;
+import uk.gov.hmcts.reform.userprofileapi.util.UserProfileUtil;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Slf4j
 @Service
 @AllArgsConstructor
 public class UserProfileRetriever implements ResourceRetriever<UserProfileIdentifier> {
@@ -36,7 +39,7 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
     private final AuditRepository auditRepository;
 
     @Override
-    public UserProfile retrieve(UserProfileIdentifier identifier, boolean fetchRoles) {
+    public UserProfile retrieve(UserProfileIdentifier identifier, boolean fetchRoles, String origin) {
 
         UserProfile userProfile =
             querySupplier.getRetrieveByIdQuery(identifier)
@@ -45,15 +48,23 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
                     new ResourceNotFoundException(
                         "Could not find resource from database with given identifier"));
         if (fetchRoles) {
-            userProfile = getRolesFromIdam(userProfile, false);
+            userProfile = getRolesFromIdam(userProfile, false, origin);
+            log.debug("get Roles from Idam" + userProfile.getStatus() + userProfile.getIdamId()
+                    + userProfile.getRoles() + userProfile.getErrorMessage());
         }
+        log.debug("Inside retrieve method return userProfile" + userProfile.getErrorMessage()
+                + userProfile.getErrorStatusCode() + userProfile.getStatus());
         return userProfile;
     }
 
-    public UserProfile getRolesFromIdam(UserProfile userProfile, boolean isMultiUserGet) {
+    public UserProfile getRolesFromIdam(UserProfile userProfile, boolean isMultiUserGet, String origin) {
 
-        if (IdamStatus.ACTIVE == userProfile.getStatus()) {
+        log.debug("Inside getRolesFromIdam" + userProfile.getStatus());
+        if (IdamStatus.ACTIVE == userProfile.getStatus() || "SRD".equals(origin)) {
+            log.debug("IdamService fetchUserById");
             IdamRolesInfo idamRolesInfo = idamService.fetchUserById(userProfile.getIdamId());
+            log.debug("fetch user By Id" + idamRolesInfo.getId() + idamRolesInfo.getStatusMessage()
+                    + idamRolesInfo.getRoles() + idamRolesInfo.getResponseStatusCode());
             if (idamRolesInfo.getResponseStatusCode().is2xxSuccessful()) {
                 persistAudit(idamRolesInfo, userProfile);
                 userProfile.setRoles(idamRolesInfo);
@@ -63,19 +74,31 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
                 persistAudit(idamRolesInfo, userProfile);
                 // for multiple users get request , do not throw exception and continue flow
                 if (!isMultiUserGet) {
+                    UserProfileUtil.idam5xxErrorResponse(idamRolesInfo.getStatusMessage(),
+                            idamRolesInfo.getResponseStatusCode());
                     throw new IdamServiceException(idamRolesInfo.getStatusMessage(),
                             idamRolesInfo.getResponseStatusCode());
                 } else {
                     // if SIDAM fails then send errorMessage and status code in response
                     userProfile.setErrorMessage(idamRolesInfo.getStatusMessage());
                     userProfile.setErrorStatusCode(String.valueOf(idamRolesInfo.getResponseStatusCode().value()));
+                    log.debug("inside else method where idam status is not success"
+                            + idamRolesInfo.getResponseStatusCode());
                 }
             }
         } else {
             userProfile.setErrorMessage(IdamStatusResolver.NO_IDAM_CALL);
             userProfile.setErrorStatusCode(" ");
+            log.debug("Inside Else Block" + userProfile.getErrorMessage() + userProfile.getErrorStatusCode());
         }
+        log.debug("In the end of the method getRolesFromIdam" + userProfile.getErrorStatusCode()
+                + userProfile.getErrorMessage() + userProfile.getStatus());
         return userProfile;
+    }
+
+    public UserProfile getRolesFromIdam(UserProfile userProfile, boolean isMultiUserGet) {
+
+        return getRolesFromIdam(userProfile, isMultiUserGet, null);
     }
 
     public List<UserProfile> retrieveMultipleProfiles(UserProfileIdentifier identifier, boolean showDeleted,
@@ -101,4 +124,11 @@ public class UserProfileRetriever implements ResourceRetriever<UserProfileIdenti
         auditRepository.save(audit);
     }
 
+    public List<UserProfileIdamStatus> retrieveMultipleProfilesByCategory(String category) {
+        List<UserProfileIdamStatus> userProfiles = querySupplier.getProfilesByUserCategory(category.toUpperCase());
+        if (CollectionUtils.isEmpty(userProfiles)) {
+            throw new ResourceNotFoundException("Could not find any profiles");
+        }
+        return userProfiles;
+    }
 }

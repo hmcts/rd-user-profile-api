@@ -1,0 +1,93 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:tc:postgresql:16:///dbuserprofile}
+    username: ${DB_USERNAME:dbuserprofile}
+    password: ${DB_PASSWORD:dbuserprofile}
+  flyway:
+    enabled: true
+    locations: classpath:db/testmigration
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: false
+    properties:
+      hibernate:
+        enable_lazy_load_no_trans: true
+        hbm2ddl.auto: none
+  main:
+    allow-bean-definition-overriding: true
+  security:
+      oauth2:
+        client:
+          provider:
+            oidc:
+              issuer-uri: ${OPEN_ID_API_BASE_URI:https://idam-web-public.aat.platform.hmcts.net/o}
+          registration:
+            oidc:
+              client-id: microservicekey-rd-user-profile-api
+              client-secret: ${USER_PROFILE_API_S2S_SECRET:}
+  cache:
+    type: caffeine
+    cache-names:
+      - token
+
+security:
+  anonymousPaths:
+    - "/"
+    - "/csrf"
+    - "/health"
+    - "/health/liveness"
+    - "/health/readiness"
+    - "/loggers/**"
+    - "/swagger-ui/**"
+    - "/swagger-resources/**"
+    - "/v3/**"
+    - "/webjars/springfox-swagger-ui/**"
+    - "/favicon.ico"
+    - "/error"
+
+idam:
+  s2s-auth:
+    totp_secret: ${USER_PROFILE_API_S2S_SECRET:}
+    microservice: rd_user_profile_api
+    url: http://127.0.0.1:8990
+
+  s2s-authorised:
+    services: ${PRD_S2S_AUTHORISED_SERVICES:rd_user_profile_api}
+  api:
+    url: http://127.0.0.1:5000
+  oidc:
+    use_oidc_api: true
+    url: http://127.0.0.1:5000
+  security:
+    issuerValidation: ${JWT_ISSUER_VALIDATION_ENABLED:false}
+
+environment_name: ${ENVIRONMENT_NAME:preview}
+
+# resent user invite interval in minutes
+resendInterval: 60
+
+# sync time interval in minutes
+syncInterval: 60
+
+loggingComponentName: RD_User_Profile_API
+
+logging.level.com.zaxxer.hikari.HikariConfig: INFO
+logging.level.com.zaxxer.hikari: INFO
+
+launchdarkly:
+  sdk:
+    key: ${LD_SDK_KEY:}
+    environment: ${LAUNCH_DARKLY_ENV:local}
+    user: rd
+
+logging.level.uk.gov.hmcts: ${APPLICATION_LOGGING_LEVEL:INFO}
+management:
+  endpoints:
+    jmx:
+      exposure:
+        include: 'health'
+    web:
+      base-path: "/"
+  endpoint:
+    health:
+      show-details: "always"

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
@@ -10,6 +9,8 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationHelperService;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationService;
+
+import java.util.Optional;
 
 
 @Service

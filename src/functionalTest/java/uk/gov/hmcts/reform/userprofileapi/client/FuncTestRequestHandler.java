@@ -19,7 +19,7 @@ public class FuncTestRequestHandler {
     protected String baseUrl;
     protected String s2sToken;
     public static final String BEARER = "Bearer ";
-    public static final String COMMON_EMAIL_PATTERN = "@prdfunctestuser.com";
+    public static final String COMMON_EMAIL_PATTERN = "@upfunctestuser.com";
     public static IdamOpenIdClient idamOpenIdClient;
 
     public FuncTestRequestHandler(String baseUrl, String s2sToken, IdamOpenIdClient idamOpenIdClient) {

@@ -297,11 +297,25 @@ class ValidationHelperServiceTest {
         ReflectionTestUtils.setField(sut, "resendInterval", "60");
         userProfile.setLastUpdated(LocalDateTime.now().minusMinutes(120L));
         Optional<UserProfile> userProfileOptional = Optional.of(userProfile);
-        UserProfile userProfileResponse = sut.validateReInvitedUser(userProfileOptional);
+        UserProfile userProfileResponse = sut.validateReInvitedUser(userProfileOptional, null);
         assertThat(userProfileResponse).isNotNull();
         verify(sut, times(1)).validateUserIsPresent(userProfileOptional);
         verify(sut, times(1)).validateUserStatus(userProfile, IdamStatus.PENDING);
         verify(sut, times(1)).validateUserLastUpdatedWithinSpecifiedTime(any(UserProfile.class),
                 anyLong());
     }
+
+    @Test
+    void test_validateReInvitedUserFromSrd_should_return_userProfile() {
+        ReflectionTestUtils.setField(sut, "resendInterval", "60");
+        userProfile.setLastUpdated(LocalDateTime.now().minusMinutes(120L));
+        Optional<UserProfile> userProfileOptional = Optional.of(userProfile);
+        UserProfile userProfileResponse = sut.validateReInvitedUser(userProfileOptional, "SRD");
+        assertThat(userProfileResponse).isNotNull();
+        verify(sut, times(1)).validateUserIsPresent(userProfileOptional);
+        verify(sut, times(1)).validateUserStatus(userProfile, IdamStatus.PENDING);
+        verify(sut, times(0)).validateUserLastUpdatedWithinSpecifiedTime(any(UserProfile.class),
+                anyLong());
+    }
+
 }

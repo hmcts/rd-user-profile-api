@@ -4,9 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
+import net.serenitybdd.annotations.WithTag;
+import net.serenitybdd.annotations.WithTags;
+import net.serenitybdd.junit5.SerenityJUnit5Extension;
 import net.serenitybdd.rest.SerenityRest;
-import net.thucydides.core.annotations.WithTag;
-import net.thucydides.core.annotations.WithTags;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,9 +15,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import uk.gov.hmcts.reform.lib.util.serenity5.SerenityTest;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserIdamStatusWithEmailResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
@@ -48,13 +49,15 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.reform.userprofileapi.client.FuncTestRequestHandler.BEARER;
+import static uk.gov.hmcts.reform.userprofileapi.client.FuncTestRequestHandler.COMMON_EMAIL_PATTERN;
 import static uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus.ACTIVE;
+import static uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus.SUSPENDED;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.generateRandomEmail;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.getIdamRolesJson;
 import static uk.gov.hmcts.reform.userprofileapi.util.FeatureToggleConditionExtension.getToggledOffMessage;
 
 @Slf4j
-@SerenityTest
+@ExtendWith(SerenityJUnit5Extension.class)
 @SpringBootTest
 @WithTags({@WithTag("testType:Functional")})
 public class UserProfileFunctionalTest extends AbstractFunctional {
@@ -83,6 +86,8 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         reinviteUserScenario();
         deleteUserScenarios();
         endpointSecurityScenarios();
+        getUserProfileIdamStatus();
+        findUserByUserIdWithRolesNOriginShouldReturnSuccess();
     }
 
     public void setUpTestData() {
@@ -291,6 +296,42 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         log.info("findUserByUserIdWithRolesShouldReturnSuccess :: ENDED");
     }
 
+    public void findUserByUserIdWithRolesNOriginShouldReturnSuccess() throws Exception {
+        log.info("findUserByUserIdWithRolesNOriginShouldReturnSuccess :: STARTED");
+        updateUserProfileData.setFirstName("testFn");
+        updateUserProfileData.setLastName("testLn");
+        updateUserProfileData.setEmail(activeUserProfileCreationData.getEmail());
+        updateUserProfileData.setIdamStatus(SUSPENDED.name());
+        Set<RoleName> rolesName = new HashSet<>();
+        rolesName.add(new RoleName(testConfigProperties.getPuiFinanceManager()));
+        updateUserProfileData.setRolesAdd(rolesName);
+
+        updateUserProfile(updateUserProfileData, activeUserProfile.getIdamId());
+
+        var urlPath =
+                new StringBuilder(requestUri);
+        urlPath.append("/")
+                .append(activeUserProfile.getIdamId())
+                .append("/")
+                .append("roles?origin=SRD");
+
+        UserProfileWithRolesResponse resource = testRequestHandler.sendGet(
+                urlPath.toString(), UserProfileWithRolesResponse.class);
+        //verify the profile
+        assertThat(resource).isNotNull();
+        assertEquals("200", resource.getIdamStatusCode());
+        assertEquals(activeUserProfile.getIdamId(), resource.getIdamId());
+        assertEquals("testFn", resource.getFirstName());
+        assertEquals("testLn", resource.getLastName());
+
+        //verify the roles
+        assertThat(resource.getRoles().size()).isEqualTo(3);
+        assertThat(resource.getRoles())
+                .containsExactlyInAnyOrderElementsOf(List.of("pui-finance-manager", "pui-user-manager",
+                        "pui-case-manager"));
+        log.info("findUserByUserIdWithRolesNOriginShouldReturnSuccess :: ENDED");
+    }
+
     public void findUserByEmailInHeaderWithRolesShouldReturnSuccess() {
         log.info("findUserByEmailInHeaderWithRolesShouldReturnSuccess :: STARTED");
 
@@ -323,7 +364,6 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
                 UserProfileDataResponse.class);
 
         assertThat(response.getUserProfiles().size()).isEqualTo(2);
-
         log.info("getAllUsersByUserIdsWithShowDeletedFalseShouldReturnSuccess :: ENDED");
     }
 
@@ -487,7 +527,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         log.info("deleteActiveUserByEmailPatternShouldReturnFailureWhenToggledOff :: STARTED");
 
         Response response = testRequestHandler
-                .sendDeleteWithoutBody(requestUri + "/users?emailPattern=@prdfunctestuser.com");
+                .sendDeleteWithoutBody(requestUri + "/users?emailPattern=" + COMMON_EMAIL_PATTERN);
 
         assertThat(HttpStatus.FORBIDDEN.value()).isEqualTo(response.statusCode());
         assertThat(response.getBody().asString()).contains(getToggledOffMessage());
@@ -538,7 +578,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
         verifyCreateUserProfile(activeUserProfile);
 
         Response response = testRequestHandler
-                .sendDeleteWithoutBody(requestUri + "/users?emailPattern=@prdfunctestuser.com");
+                .sendDeleteWithoutBody(requestUri + "/users?emailPattern=" + COMMON_EMAIL_PATTERN);
 
         if (NO_CONTENT.value() == response.statusCode()) {
             testRequestHandler.getUserProfileResponse(
@@ -550,6 +590,27 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
 
         log.info("deleteActiveUsersByEmailPatternShouldReturnSuccess :: ENDED");
     }
+
+
+    public void getUserProfileIdamStatus() throws Exception {
+        log.info("getUserProfileIdamStatus :: STARTED");
+        activeUserProfileCreationData.setUserCategory("CASEWORKER");
+        createUserProfile(activeUserProfileCreationData, HttpStatus.CREATED);
+        var urlPath =
+                new StringBuilder(requestUri);
+        urlPath.append("/")
+                .append("idamStatus")
+                .append("?category=caseworker");
+        UserIdamStatusWithEmailResponse resource = testRequestHandler.sendGet(
+                urlPath.toString(), UserIdamStatusWithEmailResponse.class);
+        assertThat(resource).isNotNull();
+        assertThat(resource.getUserProfiles().get(0)).isNotNull();
+        assertThat(resource.getUserProfiles().get(0).getEmail()).isNotNull();
+        assertThat(resource.getUserProfiles().get(0).getIdamStatus()).isNotNull();
+
+        log.info("getUserProfileIdamStatus :: ENDED");
+    }
+
 
     @AfterAll
     public static void cleanUpTestData() {

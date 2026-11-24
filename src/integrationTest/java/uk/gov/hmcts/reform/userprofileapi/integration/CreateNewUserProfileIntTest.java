@@ -1,14 +1,19 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import net.serenitybdd.annotations.WithTag;
+import net.serenitybdd.annotations.WithTags;
+import net.serenitybdd.junit5.SerenityJUnit5Extension;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.util.Lists;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
@@ -16,7 +21,6 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -25,14 +29,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 import static uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder.buildCreateUserProfileData;
+import static uk.gov.hmcts.reform.userprofileapi.integration.wiremock.IdamWireMockStubs.stubUserRegistration;
 
-@SpringBootTest(webEnvironment = MOCK)
-@Transactional
+@ExtendWith(SerenityJUnit5Extension.class)
+@WithTags({@WithTag("testType:Integration")})
 class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws JsonProcessingException {
         this.mockMvc = webAppContextSetup(webApplicationContext).build();
+        stubUserRegistration(HttpStatus.CREATED.value(), true);
     }
 
 
@@ -182,7 +188,7 @@ class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
         UserProfileCreationData data = buildCreateUserProfileData();
         data.setRoles(List.of("puicasemanager"));
 
-        setSidamRegistrationMockWithStatus(NOT_FOUND.value(), true);
+        stubUserRegistration(NOT_FOUND.value(), true);
 
         ErrorResponse errorResponse =
                 userProfileRequestHandlerTest.sendPost(mockMvc, APP_BASE_PATH, data, NOT_FOUND, ErrorResponse.class);
@@ -190,11 +196,12 @@ class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
         assertThat(errorResponse.getErrorMessage()).isEqualTo("16 Resource not found");
     }
 
-    @Test
-    void should_return_400_and_create_user_profile_resource_with_invalid_email() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"a.adisongmail.com", "a.adison@gmailcom"})
+    void should_return_400_and_create_user_profile_resource_with_invalid_email(String emailId) throws Exception {
 
         UserProfileCreationData data = buildCreateUserProfileData();
-        data.setEmail("a.adisongmail.com");
+        data.setEmail(emailId);
 
 
         userProfileRequestHandlerTest.sendPost(
@@ -204,24 +211,6 @@ class CreateNewUserProfileIntTest extends AuthorizationEnabledIntegrationTest {
                 BAD_REQUEST,
                 UserProfileCreationResponse.class
         );
-
-    }
-
-    @Test
-    void should_return_400_and_create_user_profile_resource_with_invalid_email_1() throws Exception {
-
-        UserProfileCreationData data = buildCreateUserProfileData();
-        data.setEmail("a.adison@gmailcom");
-
-
-        userProfileRequestHandlerTest.sendPost(
-                mockMvc,
-                APP_BASE_PATH,
-                data,
-                BAD_REQUEST,
-                UserProfileCreationResponse.class
-        );
-
 
     }
 

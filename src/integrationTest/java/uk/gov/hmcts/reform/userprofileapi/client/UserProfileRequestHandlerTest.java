@@ -3,11 +3,13 @@ package uk.gov.hmcts.reform.userprofileapi.client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -16,6 +18,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.userprofileapi.integration.AuthorizationEnabledIntegrationTest.getHttpHeaders;
 
 @Component
 @Slf4j
@@ -24,12 +27,10 @@ public class UserProfileRequestHandlerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
-    private static final String IDAM_TOKEN = "";
+    @Value("${spring.security.oauth2.client.provider.oidc.issuer-uri}")
+    protected String jwtIssuer;
 
-    private static final String JWT_TOKEN = "";
-
-    public static final String COMMON_EMAIL_PATTERN = "@prdfunctestuser.com";
+    public static final String COMMON_EMAIL_PATTERN = "@upfunctestuser.com";
 
     public MvcResult sendPost(MockMvc mockMvc,
                               String path,
@@ -37,9 +38,9 @@ public class UserProfileRequestHandlerTest {
                               HttpStatus expectedHttpStatus) throws Exception {
 
         return mockMvc.perform(post(path)
-                .headers(getMultipleAuthHeaders())
-                .content(jsonBody)
-                .contentType(APPLICATION_JSON))
+                        .headers(getHttpHeaders(jwtIssuer, false))
+                        .content(jsonBody)
+                        .contentType(APPLICATION_JSON))
                 .andExpect(status().is(expectedHttpStatus.value())).andReturn();
     }
 
@@ -62,7 +63,12 @@ public class UserProfileRequestHandlerTest {
         assertThat(result.getResponse().getContentAsString())
                 .as("Expected json content was empty")
                 .isNotEmpty();
-
+        if (clazz.getName().contains("ErrorResponse")) {
+            ErrorResponse response = objectMapper.readValue(result.getResponse()
+                    .getContentAsString(), ErrorResponse.class);
+            response.setStatus(result.getResponse().getStatus());
+            return (T) response;
+        }
         return objectMapper.readValue(result.getResponse().getContentAsString(), clazz);
     }
 
@@ -71,8 +77,8 @@ public class UserProfileRequestHandlerTest {
                              HttpStatus expectedHttpStatus) throws Exception {
 
         return mockMvc.perform(get(path)
-                .headers(getMultipleAuthHeaders())
-                .contentType(APPLICATION_JSON))
+                        .headers(getHttpHeaders(jwtIssuer, false))
+                        .contentType(APPLICATION_JSON))
                 .andExpect(status().is(expectedHttpStatus.value()))
                 .andReturn();
     }
@@ -106,7 +112,7 @@ public class UserProfileRequestHandlerTest {
     public MvcResult sendGetFromHeader(MockMvc mockMvc,
                                        String path,
                                        HttpStatus expectedHttpStatus, String email) throws Exception {
-        HttpHeaders httpHeaders = getMultipleAuthHeaders();
+        HttpHeaders httpHeaders = getHttpHeaders(jwtIssuer, false);
         httpHeaders.add("UserEmail", email);
         return mockMvc.perform(get(path)
                 .headers(httpHeaders)
@@ -143,7 +149,7 @@ public class UserProfileRequestHandlerTest {
                              HttpStatus expectedHttpStatus) throws Exception {
 
         return mockMvc.perform(put(path)
-                .headers(getMultipleAuthHeaders())
+                .headers(getHttpHeaders(jwtIssuer, false))
                 .content(jsonBody)
                 .contentType(APPLICATION_JSON))
                 .andExpect(status().is(expectedHttpStatus.value())).andReturn();
@@ -156,7 +162,7 @@ public class UserProfileRequestHandlerTest {
                             Class<T> clazz) throws Exception {
 
         MvcResult result = mockMvc.perform(delete(path)
-                .headers(getMultipleAuthHeaders())
+                .headers(getHttpHeaders(jwtIssuer, false))
                 .content(objectMapper.writeValueAsString(body))
                 .contentType(APPLICATION_JSON))
                 .andExpect(status().is(expectedHttpStatus.value())).andReturn();
@@ -174,7 +180,7 @@ public class UserProfileRequestHandlerTest {
                                        Class<T> clazz) throws Exception {
 
         MvcResult result = mockMvc.perform(delete(path)
-                .headers(getMultipleAuthHeaders())
+                .headers(getHttpHeaders(jwtIssuer, false))
                 .contentType(APPLICATION_JSON))
                 .andExpect(status().is(expectedHttpStatus.value())).andReturn();
 
@@ -183,19 +189,6 @@ public class UserProfileRequestHandlerTest {
                 .isNotEmpty();
 
         return objectMapper.readValue(result.getResponse().getContentAsString(), clazz);
-    }
-
-    private HttpHeaders getMultipleAuthHeaders() {
-
-        log.info("JWT TOKEN::" + JWT_TOKEN);
-        log.info("IDAM_TOKEN::" + IDAM_TOKEN);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(APPLICATION_JSON);
-
-        headers.add("ServiceAuthorization", JWT_TOKEN);
-        headers.add("Authorization", IDAM_TOKEN);
-
-        return headers;
     }
 
 }

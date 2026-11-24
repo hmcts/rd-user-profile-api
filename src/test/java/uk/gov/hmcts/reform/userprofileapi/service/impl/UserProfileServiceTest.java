@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -8,6 +9,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserIdamStatusWithEmailResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileDataResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
@@ -15,6 +17,7 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileRolesRe
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfilesDeletionResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfileIdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdentifierName;
 import uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.helper.UserProfileTestDataBuilder;
@@ -29,6 +32,7 @@ import uk.gov.hmcts.reform.userprofileapi.service.ResourceUpdator;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -115,13 +119,13 @@ class UserProfileServiceTest {
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
         UserProfileResponse expected = new UserProfileResponse(userProfile);
 
-        when(userProfileRetriever.retrieve(identifier, false)).thenReturn(userProfile);
+        when(userProfileRetriever.retrieve(identifier, false, null)).thenReturn(userProfile);
 
         UserProfileResponse resource = userProfileService.retrieve(identifier);
 
         assertThat(resource).usingRecursiveComparison().isEqualTo(expected);
 
-        verify(userProfileRetriever, times(1)).retrieve(any(), any(boolean.class));
+        verify(userProfileRetriever, times(1)).retrieve(any(), any(boolean.class), any());
 
     }
 
@@ -130,15 +134,16 @@ class UserProfileServiceTest {
         UserProfileIdentifier identifier = mock(UserProfileIdentifier.class);
 
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
-        UserProfileWithRolesResponse expected = new UserProfileWithRolesResponse(userProfile, true);
+        UserProfileWithRolesResponse expected = new UserProfileWithRolesResponse(userProfile, true,
+                "SRD");
 
-        when(userProfileRetriever.retrieve(identifier, true)).thenReturn(userProfile);
+        when(userProfileRetriever.retrieve(identifier, true, "SRD")).thenReturn(userProfile);
 
-        UserProfileWithRolesResponse resource = userProfileService.retrieveWithRoles(identifier);
+        UserProfileWithRolesResponse resource = userProfileService.retrieveWithRoles(identifier, "SRD");
 
         assertThat(resource).usingRecursiveComparison().isEqualTo(expected);
 
-        verify(userProfileRetriever, times(1)).retrieve(any(), any(boolean.class));
+        verify(userProfileRetriever, times(1)).retrieve(any(), any(boolean.class), any());
 
     }
 
@@ -166,9 +171,23 @@ class UserProfileServiceTest {
         UserProfileCreationData userProfileData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
         UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
 
-        when(userProfileCreator.reInviteUser(userProfileData)).thenReturn(userProfile);
+        when(userProfileCreator.reInviteUser(userProfileData, null)).thenReturn(userProfile);
 
-        UserProfileCreationResponse response = userProfileService.reInviteUser(userProfileData);
+        UserProfileCreationResponse response = userProfileService.reInviteUser(userProfileData, null);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getIdamId()).isEqualTo(userProfile.getIdamId());
+        assertThat(response.getIdamRegistrationResponse()).isEqualTo(201);
+    }
+
+    @Test
+    void test_reInviteUserFromSrd() {
+        UserProfileCreationData userProfileData = CreateUserProfileTestDataBuilder.buildCreateUserProfileData();
+        UserProfile userProfile = UserProfileTestDataBuilder.buildUserProfile();
+
+        when(userProfileCreator.reInviteUser(userProfileData, "SRD")).thenReturn(userProfile);
+
+        UserProfileCreationResponse response = userProfileService.reInviteUser(userProfileData, "SRD");
 
         assertThat(response).isNotNull();
         assertThat(response.getIdamId()).isEqualTo(userProfile.getIdamId());
@@ -233,5 +252,43 @@ class UserProfileServiceTest {
                 .isNotNull();
         verify(resourceUpdatorMock, times(1))
                 .updateUserProfileData(updateUserProfileData, "1234", "EXUI");
+    }
+
+    @Test
+    void test_UpdateUserProfileDataIdamStatus() {
+        UserProfileIdamStatus status = buildIdamStatus();
+
+        List<UserProfileIdamStatus> userProfiles = List.of(status);
+        UserProfileRolesResponse userProfileResponse = mock(UserProfileRolesResponse.class);
+        when(userProfileRetriever.retrieveMultipleProfilesByCategory("caseworker"))
+                .thenReturn(userProfiles);
+        UserIdamStatusWithEmailResponse response = userProfileService.retrieveIdamStatus("caseworker");
+        verify(userProfileRetriever, times(1))
+                .retrieveMultipleProfilesByCategory("caseworker");
+        assertThat(Objects.requireNonNull(response)
+                .getUserProfiles().get(0).getEmail())
+                .isEqualTo("test@email.com");
+        assertThat(Objects.requireNonNull(response)
+                .getUserProfiles().get(0).getIdamStatus())
+                .isEqualTo("pending");
+
+
+
+    }
+
+    @NotNull
+    private static UserProfileIdamStatus buildIdamStatus() {
+        UserProfileIdamStatus status = new UserProfileIdamStatus() {
+            @Override
+            public String getEmail() {
+                return "test@email.com";
+            }
+
+            @Override
+            public String getStatus() {
+                return "pending";
+            }
+        };
+        return status;
     }
 }

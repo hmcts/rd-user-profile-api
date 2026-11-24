@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,8 +10,10 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfileIdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdentifierName;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.UserCategory;
 import uk.gov.hmcts.reform.userprofileapi.helper.CreateUserProfileTestDataBuilder;
 import uk.gov.hmcts.reform.userprofileapi.repository.UserProfileRepository;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
@@ -19,11 +22,13 @@ import uk.gov.hmcts.reform.userprofileapi.service.UserProfileQueryProvider;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -155,4 +160,46 @@ class UserProfileQueryProviderTest {
         verify(userProfileRepositoryMock, Mockito.times(1)).findByIdamIdInAndStatusNot(any(),
                 any(IdamStatus.class));
     }
+
+    @Test
+    void test_findByUserCategory() {
+        UserProfileIdamStatus status = buildIdamStatus();
+        when(userProfileRepositoryMock.findByUserCategory(UserCategory.CASEWORKER)).thenReturn(List.of(status));
+        List<UserProfileIdamStatus> userProfiles = userProfileQueryProvider
+                .getProfilesByUserCategory("CASEWORKER");
+        verify(userProfileRepositoryMock, Mockito.times(1)).findByUserCategory(UserCategory.CASEWORKER);
+        assertThat(userProfiles).isNotNull();
+        assertThat(Objects.requireNonNull(userProfiles)
+                .get(0).getEmail())
+                .isEqualTo("test@email.com");
+        assertThat(Objects.requireNonNull(userProfiles)
+                .get(0).getStatus())
+                .isEqualTo("pending");
+    }
+
+
+    @Test
+    void test_findByUserCategory_ThrowsException() {
+        assertThatThrownBy(() ->  userProfileQueryProvider.getProfilesByUserCategory("caseworker"))
+                .hasMessage("Invalid userCategory supplied.");
+    }
+
+
+    @NotNull
+    private static UserProfileIdamStatus buildIdamStatus() {
+        UserProfileIdamStatus status = new UserProfileIdamStatus() {
+            @Override
+            public String getEmail() {
+                return "test@email.com";
+            }
+
+            @Override
+            public String getStatus() {
+                return "pending";
+            }
+        };
+        return status;
+    }
+
+
 }

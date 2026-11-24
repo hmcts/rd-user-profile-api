@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.userprofileapi.util;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.TextCodec;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,13 +19,12 @@ import uk.gov.hmcts.reform.userprofileapi.controller.WelcomeController;
 import uk.gov.hmcts.reform.userprofileapi.exception.ForbiddenException;
 import uk.gov.hmcts.reform.userprofileapi.service.impl.FeatureToggleServiceImpl;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -110,6 +111,12 @@ class FeatureConditionEvaluationTest {
         Assertions.assertTrue(featureConditionEvaluation.preHandle(httpRequest, httpServletResponse, handlerMethod));
         verify(featureConditionEvaluation, times(1))
                 .preHandle(httpRequest, httpServletResponse, handlerMethod);
+    }
+
+    @Test
+    void testRemoveBearerFromToken() {
+        String result = featureConditionEvaluation.removeBearerFromToken("token");
+        assertThat(result).isNotNull().isEqualTo("token");
     }
 
     static String generateDummyS2SToken() {

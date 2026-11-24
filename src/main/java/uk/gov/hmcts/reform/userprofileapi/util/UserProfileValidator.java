@@ -1,11 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.reform.userprofileapi.domain.enums.UserProfileField.STATUS;
-import static uk.gov.hmcts.reform.userprofileapi.domain.enums.UserProfileField.USERCATEGORY;
-import static uk.gov.hmcts.reform.userprofileapi.domain.enums.UserProfileField.USERTYPE;
-
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
@@ -17,6 +12,11 @@ import uk.gov.hmcts.reform.userprofileapi.exception.RequiredFieldMissingExceptio
 import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
 import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
+
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.reform.userprofileapi.domain.enums.UserProfileField.STATUS;
+import static uk.gov.hmcts.reform.userprofileapi.domain.enums.UserProfileField.USERCATEGORY;
+import static uk.gov.hmcts.reform.userprofileapi.domain.enums.UserProfileField.USERTYPE;
 
 public interface UserProfileValidator {
 

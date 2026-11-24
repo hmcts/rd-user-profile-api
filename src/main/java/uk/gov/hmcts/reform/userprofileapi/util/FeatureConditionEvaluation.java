@@ -1,6 +1,9 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
 import com.auth0.jwt.JWT;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -11,13 +14,10 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import uk.gov.hmcts.reform.userprofileapi.exception.ForbiddenException;
 import uk.gov.hmcts.reform.userprofileapi.service.FeatureToggleService;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.NotNull;
 import java.util.Map;
 
 import static java.util.Objects.nonNull;
-import static org.apache.commons.lang.BooleanUtils.isNotTrue;
+import static org.apache.commons.lang3.BooleanUtils.isNotTrue;
 import static org.apache.commons.lang3.StringUtils.SPACE;
 
 @Component
@@ -70,7 +70,7 @@ public class FeatureConditionEvaluation implements HandlerInterceptor {
         throw new ForbiddenException(flagName.concat(SPACE).concat(FORBIDDEN_EXCEPTION_LD));
     }
 
-    private String removeBearerFromToken(String token) {
+    public String removeBearerFromToken(String token) {
         if (isNotTrue(token.startsWith(BEARER))) {
             return token;
         } else {

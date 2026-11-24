@@ -1,10 +1,13 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import uk.gov.hmcts.reform.userprofileapi.exception.IdamServiceException;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
 import static java.util.Objects.nonNull;
 
@@ -31,5 +34,13 @@ public class UserProfileUtil {
         }
 
         return userEmail;
+    }
+
+    public static void idam5xxErrorResponse(String message, HttpStatus idamStatus) {
+        Optional<HttpStatus> idapStatusOptional = Optional.ofNullable(idamStatus);
+        if (idapStatusOptional.isPresent() && idapStatusOptional.get().is5xxServerError()) {
+            throw new IdamServiceException(message, HttpStatus.UNAUTHORIZED);
+        }
+
     }
 }

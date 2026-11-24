@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.userprofileapi.controller.advice;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -17,8 +18,6 @@ import uk.gov.hmcts.reform.userprofileapi.exception.ForbiddenException;
 import uk.gov.hmcts.reform.userprofileapi.exception.IdamServiceException;
 import uk.gov.hmcts.reform.userprofileapi.exception.RequiredFieldMissingException;
 import uk.gov.hmcts.reform.userprofileapi.exception.ResourceNotFoundException;
-
-import javax.servlet.http.HttpServletRequest;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -137,7 +136,8 @@ class UserProfileControllerAdviceTest {
         Exception ex = mock(Exception.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
 
-        when(ex.getMessage()).thenReturn(message);
+        // mockito reports unnecessary stubbing and 'strict' mock are enabled, remove
+        // when(ex.getMessage()).thenReturn(message);
 
         ResponseEntity<Object> response = advice.handleUnknownException(request, ex);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);

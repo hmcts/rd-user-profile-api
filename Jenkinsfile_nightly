@@ -1,7 +1,7 @@
 #!groovy
 
 properties([
-        pipelineTriggers([cron('21 01 * * *')]), // scheduling to trigger jenkins job
+        pipelineTriggers([cron('H 07 * * 1-5')]), // scheduling to trigger jenkins job
         parameters([
                 string(name: 'ENVIRONMENT', defaultValue: 'aat', description: 'Environment to test'),
                 string(name: 'URL_TO_TEST', defaultValue: 'http://rd-user-profile-api-aat.service.core-compute-aat.internal', description: 'The URL you want to run these tests against'),
@@ -11,7 +11,7 @@ properties([
         ])
 ])
 
-@Library("Infrastructure")
+@Library("Infrastructure@2.12.2")
 
 def type = "java"
 def product = "rd"
@@ -57,9 +57,14 @@ config.vaultSecrets = secrets
 withNightlyPipeline(type, product, component) {
 
     env.TEST_URL = params.URL_TO_TEST
-    env.S2S_URL_FOR_TESTS = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+    env.S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+    env.IDAM_URL = "https://idam-api.aat.platform.hmcts.net"
+    env.IDAM_OIDC_URL = "https://idam-web-public.aat.platform.hmcts.net"
     env.Rules = params.SecurityRules
     env.execution_environment = "aat"
+
+    // Var for testcontainers.org
+    env.TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX = "hmctsprod.azurecr.io/imported/"
 
     overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)
@@ -69,34 +74,11 @@ withNightlyPipeline(type, product, component) {
     enableSecurityScan()
     enableFortifyScan()
 
-    after('fullFunctionalTest') {
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
-
-        print "calling delete script for nightly"
-        withSubscription(subscription) {
-            withTeamSecrets(config, params.ENVIRONMENT) {
-                deleteFunctionalDbData()
-            }
-        }
-        print "done delete script for nightly"
+    afterAlways('securityScan') {
+        sh 'rm -rf functional-output; rm -f api-report.html report.json glue.txt zap.out'
     }
 
-     after('fortify-scan') {
-       steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
-     }
-
-    after('mutationTest') {
-        publishHTML target: [
-                allowMissing         : true,
-                alwaysLinkToLastBuild: true,
-                keepAll              : true,
-                reportDir            : "build/reports/pitest",
-                reportFiles          : "index.html",
-                reportName           : "Mutation Test Report"
-        ]
-    }
-
-    after('fullFunctionalTest') {
+    afterAlways('fullFunctionalTest') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
         publishHTML target: [
@@ -107,12 +89,42 @@ withNightlyPipeline(type, product, component) {
                 reportFiles          : "index.html",
                 reportName           : "Functional Tests Report"
         ]
-
+        print "calling delete script for nightly"
+        withSubscription(subscription) {
+            withTeamSecrets(config, params.ENVIRONMENT) {
+                deleteFunctionalDbData()
+            }
+        }
+        print "done delete script for nightly"
     }
+
+    afterAlways('fortify-scan') {
+       steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
+     }
+
+    afterAlways('mutationTest') {
+        publishHTML target: [
+                allowMissing         : true,
+                alwaysLinkToLastBuild: true,
+                keepAll              : true,
+                reportDir            : "build/reports/pitest",
+                reportFiles          : "index.html",
+                reportName           : "Mutation Test Report"
+        ]
+
+
+        // Authenticate Docker to hmctsprod ACR so Testcontainers can pull the Ryuk reaper
+        // and base images via TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX. Reuses the managed
+        // identity already established by `az login --identity` earlier in the pipeline.
+        sh '''
+          env AZURE_CONFIG_DIR=/opt/jenkins/.azure-nonprod az acr login --name hmctsprod
+        '''
+    }
+
 }
 
 def deleteFunctionalDbData() {
-    withDocker('jbergknoff/postgresql-client', "--entrypoint='' -e PGPASSWORD=${FUNC_DATABASE_PASS} -v ${WORKSPACE}/deletescript/:/deletescript") {
+    withDocker('hmctsprod.azurecr.io/imported/jbergknoff/postgresql-client', "--entrypoint='' -e PGPASSWORD=${FUNC_DATABASE_PASS} -v ${WORKSPACE}/deletescript/:/deletescript") {
         sh "chmod +x /deletescript/delete-functional-data.sh"
         sh "/deletescript/delete-functional-data.sh \
                         ${FUNC_DATABASE_USER} \

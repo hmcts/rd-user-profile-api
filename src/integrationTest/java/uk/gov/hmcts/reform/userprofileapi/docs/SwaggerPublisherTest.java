@@ -4,16 +4,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
-import uk.gov.hmcts.reform.userprofileapi.Application;
+import uk.gov.hmcts.reform.userprofileapi.integration.AuthorizationEnabledIntegrationTest;
 
 import java.io.File;
 import java.io.FileOutputStream;
 
 import static org.slf4j.LoggerFactory.getLogger;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.MOCK;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
@@ -22,12 +20,11 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
  * Built-in feature which saves service's swagger specs in temporary directory.
  * Each travis run on master should automatically save and upload (if updated) documentation.
  */
-@SpringBootTest(classes = Application.class, webEnvironment = MOCK)
-class SwaggerPublisherTest {
+class SwaggerPublisherTest extends AuthorizationEnabledIntegrationTest {
 
     private static final Logger LOG = getLogger(SwaggerPublisherTest.class);
 
-    private static final String SWAGGER_DOC_JSON_FILE = "/tmp/swagger-specs.json";
+    private static final String SWAGGER_DOC_JSON_FILE = "/tmp/openapi-specs.json";
 
     private MockMvc mockMvc;
 
@@ -36,7 +33,8 @@ class SwaggerPublisherTest {
 
     @BeforeEach
     public void setUp() {
-        this.mockMvc = webAppContextSetup(webApplicationContext).build();
+        this.mockMvc = webAppContextSetup(webApplicationContext)
+            .build();
     }
 
     @Test
@@ -49,7 +47,7 @@ class SwaggerPublisherTest {
             return;
         }
 
-        byte[] specs = mockMvc.perform(get("/v2/api-docs"))
+        byte[] specs = mockMvc.perform(get("/v3/api-docs"))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()

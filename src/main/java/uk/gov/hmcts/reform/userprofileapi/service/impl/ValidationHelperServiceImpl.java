@@ -1,5 +1,21 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
+import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
+import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
+import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
+import uk.gov.hmcts.reform.userprofileapi.service.ValidationHelperService;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.Optional;
+
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants.TOO_MANY_REQUESTS;
@@ -13,22 +29,6 @@ import static uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource.SYN
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.isUserIdValid;
 import static uk.gov.hmcts.reform.userprofileapi.util.UserProfileValidator.validateUserProfileStatus;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.Optional;
-
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.userprofileapi.domain.entities.UserProfile;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.IdamStatus;
-import uk.gov.hmcts.reform.userprofileapi.domain.enums.ResponseSource;
-import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
-import uk.gov.hmcts.reform.userprofileapi.service.AuditService;
-import uk.gov.hmcts.reform.userprofileapi.service.ValidationHelperService;
-
 @Service
 @Slf4j
 public class ValidationHelperServiceImpl implements ValidationHelperService {
@@ -41,6 +41,8 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
 
     @Value("${resendInterval}")
     private String resendInterval;
+
+    private static final String ORIGIN_SRD = "SRD";
 
     @Override
     public boolean validateUserId(String userId) {
@@ -113,11 +115,13 @@ public class ValidationHelperServiceImpl implements ValidationHelperService {
     }
 
     @Override
-    public UserProfile validateReInvitedUser(Optional<UserProfile> userProfileOpt) {
+    public UserProfile validateReInvitedUser(Optional<UserProfile> userProfileOpt, String origin) {
         validateUserIsPresent(userProfileOpt);
         UserProfile userProfile = userProfileOpt.orElse(null);
         validateUserStatus(userProfile, IdamStatus.PENDING);
-        validateUserLastUpdatedWithinSpecifiedTime(userProfile, Long.valueOf(resendInterval));
+        if (!ORIGIN_SRD.equals(origin)) {
+            validateUserLastUpdatedWithinSpecifiedTime(userProfile, Long.valueOf(resendInterval));
+        }
         return userProfile;
     }
 }

@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
-import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,7 +44,7 @@ class IdamServiceImplTest {
     private final IdamFeignClient idamFeignClientMock = Mockito.mock(IdamFeignClient.class);
 
     @InjectMocks
-    private final IdamService sut = new IdamServiceImpl();
+    private final IdamServiceImpl sut = new IdamServiceImpl();
 
     Map<String, Collection<String>> header = new HashMap<>();
     Request request = mock(Request.class);
@@ -113,7 +112,7 @@ class IdamServiceImplTest {
         RetryableException retryableExceptionMock = mock(RetryableException.class);
 
         HttpStatus status = idamService.gethttpStatusFromFeignException(retryableExceptionMock);
-        assertThat(status).isNotNull().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(status).isNotNull().isEqualTo(HttpStatus.UNAUTHORIZED);
 
         FeignException feignException = mock(FeignException.class);
         when(feignException.status()).thenReturn(400);
@@ -141,7 +140,7 @@ class IdamServiceImplTest {
 
         verify(idamFeignClientMock, times(1)).updateUserRoles(roleRequest, userId);
         verify(responseMock, times(2)).headers();
-        verify(responseMock, times(3)).status();
+        verify(responseMock, times(4)).status();
 
         assertThat(result).isNotNull();
     }
@@ -190,7 +189,7 @@ class IdamServiceImplTest {
 
         verify(idamFeignClientMock, times(1)).updateUserDetails(updateUserDetailsMock, userId);
         verify(responseMock, times(1)).headers();
-        verify(responseMock, times(3)).status();
+        verify(responseMock, times(4)).status();
 
         assertThat(result).isNotNull();
         assertThat(result.getIdamStatusCode()).isEqualTo(200);
@@ -228,6 +227,17 @@ class IdamServiceImplTest {
         IdamRolesInfo result = sut.addUserRoles(roleRequest, userId);
 
         verify(idamFeignClientMock, times(1)).addUserRoles(roleRequest, userId);
+        assertThat(result).isNotNull();
+    }
+
+    @Test
+    void test_buildIdamResponseFromFeignException() {
+        FeignException feignExceptionMock = Mockito.mock(FeignException.class);
+        when(feignExceptionMock.status()).thenReturn(StatusCode.NOT_FOUND.getStatus());
+
+
+        IdamRolesInfo result = sut.buildIdamResponseFromFeignException(feignExceptionMock);
+
         assertThat(result).isNotNull();
     }
 
