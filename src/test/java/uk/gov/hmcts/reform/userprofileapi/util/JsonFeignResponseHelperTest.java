@@ -4,8 +4,8 @@ import feign.Request;
 import feign.Response;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamErrorResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileCreationResponse;
@@ -125,13 +125,13 @@ class JsonFeignResponseHelperTest {
         Collection<String> list = Arrays.asList("gzip", "");
         header.put("content-encoding", list);
 
-        MultiValueMap<String, String> responseHeader = JsonFeignResponseHelper.convertHeaders(header);
-        assertThat(responseHeader).isNotEmpty();
+        HttpHeaders responseHeader = JsonFeignResponseHelper.convertHeaders(header);
+        assertThat(responseHeader.isEmpty()).isFalse();
 
         Collection<String> emptylist = new ArrayList<>();
         header.put("content-encoding", emptylist);
 
-        MultiValueMap<String, String> responseHeader1 = JsonFeignResponseHelper.convertHeaders(header);
+        HttpHeaders responseHeader1 = JsonFeignResponseHelper.convertHeaders(header);
         assertThat(responseHeader1.get("content-encoding")).isEmpty();
 
     }
@@ -145,7 +145,7 @@ class JsonFeignResponseHelperTest {
 
         assertThat(profileCreationResponseResponseEntity).isNotNull();
         assertThat(profileCreationResponseResponseEntity.getStatusCode().value()).isEqualTo(200);
-        assertThat(profileCreationResponseResponseEntity.getHeaders()).isNotEmpty();
+        assertThat(profileCreationResponseResponseEntity.getHeaders().isEmpty()).isFalse();
         assertThat(Objects.requireNonNull(profileCreationResponseResponseEntity.getBody()).getIdamId()).isEqualTo("1");
     }
 

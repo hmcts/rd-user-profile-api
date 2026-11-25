@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Request;
 import feign.Response;
 import org.junit.jupiter.api.Test;
@@ -14,6 +12,8 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
+import tools.jackson.databind.json.JsonMapper;
+import uk.gov.hmcts.reform.userprofileapi.config.ApplicationJsonMapper;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.IdamRegisterUserRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UpdateUserDetails;
@@ -463,8 +463,7 @@ class UserProfileCreatorTest {
         when(validationHelperService.validateReInvitedUser(any(), eq(null))).thenReturn(userProfile);
         IdamFeignClient.User userResponse = new IdamFeignClient.User();
         userResponse.setId("1234");
-        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
-                false);
+        JsonMapper mapper = ApplicationJsonMapper.create();
         String body = mapper.writeValueAsString(Set.of(userResponse));
 
         Response userProResponse = Response.builder().request(mock(Request.class)).body(body,
@@ -496,8 +495,7 @@ class UserProfileCreatorTest {
         when(validationHelperService.validateReInvitedUser(any(), eq("SRD"))).thenReturn(userProfile);
         IdamFeignClient.User userResponse = new IdamFeignClient.User();
         userResponse.setId("1234");
-        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
-                false);
+        JsonMapper mapper = ApplicationJsonMapper.create();
         String body = mapper.writeValueAsString(Set.of(userResponse));
 
         Response userProResponse = Response.builder().request(mock(Request.class)).body(body,
@@ -531,8 +529,7 @@ class UserProfileCreatorTest {
         when(validationHelperService.validateReInvitedUser(any(), anyString())).thenReturn(userProfile);
         IdamFeignClient.User userResponse = new IdamFeignClient.User();
         userResponse.setId("1234");
-        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
-                false);
+        JsonMapper mapper = ApplicationJsonMapper.create();
         String body = mapper.writeValueAsString(Set.of(userResponse));
 
         Response userProResponse = Response.builder().request(mock(Request.class)).body(body,
@@ -613,8 +610,7 @@ class UserProfileCreatorTest {
         when(validationHelperService.validateReInvitedUser(any(), anyString())).thenReturn(userProfile);
         IdamFeignClient.User userResponse = new IdamFeignClient.User();
         userResponse.setId("1234");
-        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
-                false);
+        JsonMapper mapper = ApplicationJsonMapper.create();
         String body = mapper.writeValueAsString(Set.of(userResponse));
 
         Response userProResponse = Response.builder().request(mock(Request.class)).body(body,
@@ -641,8 +637,7 @@ class UserProfileCreatorTest {
         when(validationHelperService.validateReInvitedUser(any(), anyString())).thenReturn(userProfile);
         IdamFeignClient.User userResponse = new IdamFeignClient.User();
         userResponse.setId("1234");
-        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
-                false);
+        JsonMapper mapper = ApplicationJsonMapper.create();
         String body = mapper.writeValueAsString(Set.of(userResponse));
 
         Response userProResponse = Response.builder().request(mock(Request.class)).body(body,
@@ -711,8 +706,7 @@ class UserProfileCreatorTest {
         when(validationHelperService.validateReInvitedUser(any(), anyString())).thenReturn(userProfile);
         IdamFeignClient.User userResponse = new IdamFeignClient.User();
         userResponse.setId("12345");
-        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
-                false);
+        JsonMapper mapper = ApplicationJsonMapper.create();
         String body = mapper.writeValueAsString(Set.of(userResponse));
 
         Response userProResponse = Response.builder().request(mock(Request.class)).body(body,
@@ -738,8 +732,7 @@ class UserProfileCreatorTest {
         when(validationHelperService.validateReInvitedUser(any(), anyString())).thenReturn(userProfile);
         IdamFeignClient.User userResponse = new IdamFeignClient.User();
         userResponse.setId("12345");
-        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
-                false);
+        JsonMapper mapper = ApplicationJsonMapper.create();
         String body = mapper.writeValueAsString(Set.of(userResponse));
 
         Response userProResponse = Response.builder().request(mock(Request.class)).body(body,
@@ -763,8 +756,7 @@ class UserProfileCreatorTest {
     void testLogIdamResponse() throws JsonProcessingException {
         IdamFeignClient.User userResponse = new IdamFeignClient.User();
         userResponse.setId("1234");
-        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
-                false);
+        JsonMapper mapper = ApplicationJsonMapper.create();
         String body = mapper.writeValueAsString(Set.of(userResponse));
         Response userProResponse = Response.builder().request(mock(Request.class)).body(body,
                 Charset.defaultCharset()).status(200).build();

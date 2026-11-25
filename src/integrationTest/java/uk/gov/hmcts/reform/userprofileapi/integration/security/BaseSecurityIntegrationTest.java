@@ -20,7 +20,7 @@ public class BaseSecurityIntegrationTest extends AuthorizationEnabledIntegration
             boolean expired) {
         return SerenityRest.given()
             .baseUri(testApplicationServer.getBaseUrl())
-            .headers(getHttpHeaders(issuer, expired));
+            .headers(getHttpHeaders(issuer, expired).toSingleValueMap());
     }
 
     protected RequestSpecification unexpiredJwt(

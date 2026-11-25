@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.userprofileapi.controller.advice;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +13,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.client.HttpClientErrorException;
+import tools.jackson.core.JacksonException;
 import uk.gov.hmcts.reform.userprofileapi.exception.ForbiddenException;
 import uk.gov.hmcts.reform.userprofileapi.exception.IdamServiceException;
 import uk.gov.hmcts.reform.userprofileapi.exception.RequiredFieldMissingException;
@@ -35,7 +35,7 @@ class UserProfileControllerAdviceTest {
     HttpMessageNotReadableException httpMessageNotReadableException;
 
     @Mock
-    LinkedList<JsonMappingException.Reference> path = new LinkedList<>();
+    LinkedList<JacksonException.Reference> path = new LinkedList<>();
 
     private final UserProfileControllerAdvice advice = new UserProfileControllerAdvice();
 
@@ -61,12 +61,12 @@ class UserProfileControllerAdviceTest {
     @Test
     void test_handle_invalid_serialization_exception() {
 
-        JsonMappingException jm = mock(JsonMappingException.class);
-        JsonMappingException.Reference rf = mock(JsonMappingException.Reference.class);
+        JacksonException jm = mock(JacksonException.class);
+        JacksonException.Reference rf = mock(JacksonException.Reference.class);
         when(httpMessageNotReadableException.getCause()).thenReturn(jm);
         when(jm.getPath()).thenReturn(Collections.unmodifiableList(path));
         when(jm.getPath().get(0)).thenReturn(rf);
-        when(jm.getPath().get(0).getFieldName()).thenReturn("field");
+        when(jm.getPath().get(0).getPropertyName()).thenReturn("field");
         ResponseEntity<Object> responseEntity = advice
             .customSerializationError(httpMessageNotReadableException);
 

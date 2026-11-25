@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import feign.Request;
 import feign.Response;
@@ -14,6 +12,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import tools.jackson.databind.json.JsonMapper;
+import uk.gov.hmcts.reform.userprofileapi.config.ApplicationJsonMapper;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.InvalidRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.AttributeResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.RoleAdditionResponse;
@@ -162,8 +162,7 @@ class UserProfileUpdatorTest {
         RoleAdditionResponse roleAdditionResponse = new RoleAdditionResponse();
         roleAdditionResponse.setIdamStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.toString());
         roleAdditionResponse.setIdamMessage("Failure");
-        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
-                false);
+        JsonMapper mapper = ApplicationJsonMapper.create();
         String body = mapper.writeValueAsString(userProfileResponse);
 
         Response response = Response.builder().request(mock(Request.class)).body(body,
@@ -229,8 +228,7 @@ class UserProfileUpdatorTest {
 
         UserProfileResponse userProfileRolesResponse = new UserProfileResponse();
         userProfileRolesResponse.setRoleDeletionResponse(rolesResponse);
-        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
-                false);
+        JsonMapper mapper = ApplicationJsonMapper.create();
         String body = mapper.writeValueAsString(userProfileRolesResponse);
 
         Response response = Response.builder().request(mock(Request.class)).body(body,
@@ -322,8 +320,7 @@ class UserProfileUpdatorTest {
         mockRolesData();
 
         String idamId = userProfile.getIdamId();
-        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
-                false);
+        JsonMapper mapper = ApplicationJsonMapper.create();
         String body = mapper.writeValueAsString(userProfileResponse);
 
         UserProfileRolesResponse response = sut.updateRoles(updateUserProfileData, idamId);
@@ -474,8 +471,7 @@ class UserProfileUpdatorTest {
         roleDeletionResponse.setIdamStatusCode(HttpStatus.OK.toString());
         roleDeletionResponse.setIdamMessage("Success");
 
-        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
-                false);
+        JsonMapper mapper = ApplicationJsonMapper.create();
         String body = mapper.writeValueAsString(roleDeletionResponse);
 
         when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.of(userProfile));
@@ -556,8 +552,7 @@ class UserProfileUpdatorTest {
 
         userProfileResponse.setRoleAdditionResponse(roleAdditionResponse);
 
-        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
-                false);
+        JsonMapper mapper = ApplicationJsonMapper.create();
         String body = mapper.writeValueAsString(userProfileResponse);
 
         when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.of(userProfile));

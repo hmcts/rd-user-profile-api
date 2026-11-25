@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.userprofileapi.client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import tools.jackson.databind.json.JsonMapper;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,7 +25,7 @@ import static uk.gov.hmcts.reform.userprofileapi.integration.AuthorizationEnable
 public class UserProfileRequestHandlerTest {
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private JsonMapper objectMapper;
 
     @Value("${spring.security.oauth2.client.provider.oidc.issuer-uri}")
     protected String jwtIssuer;

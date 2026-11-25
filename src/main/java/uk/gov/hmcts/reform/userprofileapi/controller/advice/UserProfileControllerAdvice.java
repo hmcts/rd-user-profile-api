@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.userprofileapi.controller.advice;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.HttpClientErrorException;
+import tools.jackson.core.JacksonException;
 import uk.gov.hmcts.reform.userprofileapi.exception.ForbiddenException;
 import uk.gov.hmcts.reform.userprofileapi.exception.IdamServiceException;
 import uk.gov.hmcts.reform.userprofileapi.exception.RequiredFieldMissingException;
@@ -74,9 +74,8 @@ public class UserProfileControllerAdvice {
         HttpMessageNotReadableException ex) {
 
         String field = "";
-        if (ex.getCause() != null) {
-            JsonMappingException jme = (JsonMappingException) ex.getCause();
-            field = jme.getPath().get(0).getFieldName();
+        if (ex.getCause() instanceof JacksonException jacksonException && !jacksonException.getPath().isEmpty()) {
+            field = jacksonException.getPath().get(0).getPropertyName();
         }
         ErrorResponse errorDetails = ErrorResponse.builder()
             .errorMessage(BAD_REQUEST.getReasonPhrase())
