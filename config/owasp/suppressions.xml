@@ -3,47 +3,15 @@
   <suppress>
     <notes>
       <![CDATA[
-        Reviewed 2026-06-11
+        Reviewed 2026-11-25
         False positive:
         CVE-2025-21199 applies to Microsoft Azure Agent and Site Recovery.
         Affected libraries reported by dependency-check are:
-        - applicationinsights-core 3.7.8
+        - applicationinsights-core 3.7.9
         Versions of used libraries are their latest respectively.
       ]]>
     </notes>
     <cve>CVE-2025-21199</cve>
-  </suppress>
-  <suppress>
-    <notes>
-      <![CDATA[
-        Reviewed 2026-06-11
-        False positive:
-        CVE-2026-33117 applies to Microsoft Azure SDK for Java.
-        Affected libraries reported by dependency-check are:
-        - azure-core 1.58.0
-        - azure-core-amqp 2.11.4
-        - azure-core-http-netty 1.16.4
-        - azure-json 1.5.1
-        Versions of used libraries are their latest respectively.
-      ]]>
-    </notes>
-    <cve>CVE-2026-33117</cve>
-  </suppress>
-  <suppress>
-    <notes>
-      <![CDATA[
-        Reviewed 2026-06-11
-        False positive:
-        CVE-2020-29582 applies to Kotlin SDK, a transitive dependency of
-        feign-okhttp 13.12 and okhttp 5.4.0 (latest available versions used).
-        Affected libraries reported by dependency-check are:
-        - kotlin-stdlib 1.9.25
-        - kotlin-stdlib-jdk7 1.9.25
-        - kotlin-stdlib-jdk8 1.9.25
-        Versions of used libraries are their latest respectively.
-      ]]>
-    </notes>
-    <cve>CVE-2020-29582</cve>
   </suppress>
   <suppress>
     <notes>
@@ -61,28 +29,16 @@
   <suppress>
     <notes>
       <![CDATA[
-        Reviewed 2026-07-03
+        Reviewed 2026-11-25
         False positive:
-        CVE-2026-54515 applies to jackson libraries.
-        Affected libraries reported by dependency-check are:
-        - jackson-core 2.22.0
-        - jackson-databind 2.22.0
-        Versions of used libraries are their latest respectively.
+        CVE-2026-53914 applies to kotlin-gradle-plugin build-cache metadata, not kotlin-stdlib.
+        NVD still attaches the JetBrains Kotlin CPE to the stdlib jars.
+        Affected libraries on the runtime classpath:
+        - kotlin-stdlib 2.3.21 (transitive of feign-okhttp / okhttp)
+        Remove when dependency-check no longer reports this CVE against kotlin-stdlib.
       ]]>
     </notes>
-    <cve>CVE-2026-54515</cve>
-  </suppress>
-  <suppress>
-    <notes>
-      <![CDATA[
-        Reviewed 2026-07-03
-        False positive:
-        CVE-2026-53914 applies to kotlin libraries.
-        Affected libraries reported by dependency-check are:
-        - kotlin-stdlib 1.9.25 (a transitive dependency of feign-okhttp 13.13)
-        Versions of used libraries are their latest respectively.
-      ]]>
-    </notes>
+    <packageUrl regex="true">^pkg:maven/org\.jetbrains\.kotlin/kotlin-stdlib.*@.*$</packageUrl>
     <cve>CVE-2026-53914</cve>
   </suppress>
   <suppress>
@@ -99,86 +55,4 @@
     <cve>CVE-2026-54399</cve>
     <cve>CVE-2026-54428</cve>
   </suppress>
-  <suppress>
-    <notes>
-      <![CDATA[
-        Reviewed 2026-08-07
-        No remedy released:
-        CVE-2026-66299 applies to apache tomcat libraries.
-        Affected libraries reported by dependency-check are:
-        - tomcat 10.1.57
-        Versions of used libraries are their latest respectively.
-      ]]>
-    </notes>
-    <cve>CVE-2026-66299</cve>
-  </suppress>
-  <suppress>
-        <notes>https://tools.hmcts.net/jira/browse/DTSRD-6681 spring framework</notes>
-        <cve>CVE-2026-59313</cve>
-        <cve>CVE-2026-59314</cve>
-        <cve>CVE-2026-47892</cve>
-        <cve>CVE-2026-59283</cve>
-        <cve>CVE-2026-47893</cve>
-        <cve>CVE-2026-59280</cve>
-        <cve>CVE-2026-47890</cve>
-        <cve>CVE-2026-47891</cve>
-        <cve>CVE-2026-59282</cve>
-        <cve>CVE-2026-59281</cve>
-        <cve>CVE-2026-47889</cve>
-        <cve>CVE-2026-47888</cve>
-        <cve>CVE-2026-47887</cve>
-        <cve>CVE-2026-47886</cve>
-        <cve>CVE-2026-47885</cve>
-        <cve>CVE-2026-47884</cve>
-        <cve>CVE-2026-47883</cve>
-        <cve>CVE-2026-41707</cve>
-  </suppress>
-  <suppress>
-        <notes>https://tools.hmcts.net/jira/browse/DTSRD-6684 spring security</notes>
-        <cve>CVE-2026-59270</cve>
-        <cve>CVE-2026-59276</cve>
-  </suppress>
-   <suppress>
-        <notes>https://tools.hmcts.net/jira/browse/DTSRD-6685 spring cloud</notes>
-        <cve>CVE-2026-59284</cve>
-    </suppress>
-   <suppress>
-        <notes>https://tools.hmcts.net/jira/browse/DTSRD-6689 Reactor Netty</notes>
-        <cve>CVE-2026-47874</cve>
-    </suppress>
-  <!-- CVE-2026-47834 - Spring Data JPA 3.5.13 -->
-<suppress>
-    <notes><![CDATA[
-        CVE-2026-47834 - Spring Data JPA 3.5.13.
-        Temporary suppression pending upgrade to a patched Spring version.
-    ]]></notes>
-    <packageUrl regex="true">
-        ^pkg:maven/org\.springframework\.data/spring-data-jpa@3\.5\.13$
-    </packageUrl>
-    <cve>CVE-2026-47834</cve>
-</suppress>
-
-<!-- CVE-2026-47841 - Spring Security 6.5.11 -->
-<suppress>
-    <notes><![CDATA[
-        CVE-2026-47841 - Spring Security 6.5.11.
-        Temporary suppression pending upgrade to a patched Spring version.
-    ]]></notes>
-    <packageUrl regex="true">
-        ^pkg:maven/org\.springframework\.security/spring-security-.*@6\.5\.11$
-    </packageUrl>
-    <cve>CVE-2026-47841</cve>
-</suppress>
-
-<!-- CVE-2026-47842 - Spring Security 6.5.11 -->
-<suppress>
-    <notes><![CDATA[
-        CVE-2026-47842 - Spring Security 6.5.11.
-        Temporary suppression pending upgrade to a patched Spring version.
-    ]]></notes>
-    <packageUrl regex="true">
-        ^pkg:maven/org\.springframework\.security/spring-security-.*@6\.5\.11$
-    </packageUrl>
-    <cve>CVE-2026-47842</cve>
-</suppress>
 </suppressions>
