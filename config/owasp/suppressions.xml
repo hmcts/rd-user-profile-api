@@ -16,6 +16,25 @@
   <suppress>
     <notes>
       <![CDATA[
+        Reviewed 2026-11-25
+        False positive:
+        CVE-2026-33117 is fixed in com.azure:azure-security-keyvault-keys 4.10.6.
+        That artifact is not on the classpath. NVD's microsoft:azure_sdk_for_java CPE
+        still matches Application Insights jars below 4.10.6.
+        Affected libraries:
+        - applicationinsights-core 3.7.9
+        - applicationinsights-web 2.6.4
+        - applicationinsights-logging-logback 2.6.4
+        - applicationinsights-spring-boot-starter 2.6.4
+        Remove when dependency-check stops attributing this CVE to these jars.
+      ]]>
+    </notes>
+    <packageUrl regex="true">^pkg:maven/com\.microsoft\.azure/applicationinsights-.*@.*$</packageUrl>
+    <cve>CVE-2026-33117</cve>
+  </suppress>
+  <suppress>
+    <notes>
+      <![CDATA[
         Reviewed 2026-06-18
         False positive:
         CVE-2025-7962 applies to angus-activation.

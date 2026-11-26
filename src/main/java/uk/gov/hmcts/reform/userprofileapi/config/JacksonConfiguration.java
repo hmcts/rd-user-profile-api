@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,9 +20,11 @@ public class JacksonConfiguration {
         return ApplicationJsonMapper::configure;
     }
 
-    @Autowired
-    void bindSharedJsonMapper(JsonMapper jsonMapper) {
-        JsonFeignResponseHelper.useMapper(jsonMapper);
-        JsonFeignResponseUtil.useMapper(jsonMapper);
+    @Bean
+    SmartInitializingSingleton bindSharedJsonMapper(JsonMapper jsonMapper) {
+        return () -> {
+            JsonFeignResponseHelper.useMapper(jsonMapper);
+            JsonFeignResponseUtil.useMapper(jsonMapper);
+        };
     }
 }

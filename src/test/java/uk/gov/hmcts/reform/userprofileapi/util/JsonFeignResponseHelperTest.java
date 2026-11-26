@@ -75,6 +75,17 @@ class JsonFeignResponseHelperTest {
     }
 
     @Test
+    void test_Decode_empty_body_returns_empty() {
+        Response response = Response.builder().status(409).reason("Conflict").headers(new HashMap<>())
+                .body("", UTF_8).request(mock(Request.class)).build();
+
+        Optional<IdamErrorResponse> decoded = JsonFeignResponseHelper.decode(
+                response, Optional.of(IdamErrorResponse.class));
+
+        assertThat(decoded).isEmpty();
+    }
+
+    @Test
     void test_Decode_for_non_gzip_with_decode_fails_with_ioException() {
         Request request = mock(Request.class);
         Response.Body bodyMock = mock(Response.Body.class);

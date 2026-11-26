@@ -31,6 +31,9 @@ java {
 ext {
     springCloudVersion = '2025.1.5'
 }
+// Boot 4 BOM manages Groovy 5; Rest Assured 5.x (via Serenity) NPEs on Groovy 5.
+// Keep Groovy 4 until Serenity brings Rest Assured 6+.
+ext['groovy.version'] = '4.0.28'
 
 def versions = [
         junit              : '5.14.4',
@@ -45,7 +48,7 @@ def versions = [
         launchDarklySdk    : '5.10.9',
         log4j              : '2.26.1',
         feign              : '3.8.0',
-        reformS2sClient    : '5.3.5',
+        reformS2sClient    : '6.1.2',
         testContainer_postgresql: '1.21.4',
         bouncycastle       : '1.85',
         logback            : '1.5.12',
@@ -375,7 +378,7 @@ dependencies {
     implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: versions.launchDarklySdk
 
     implementation group: 'io.jsonwebtoken', name: 'jjwt', version:'0.9.1'
-    implementation 'com.github.hmcts:idam-java-client:3.1.0'
+    implementation 'com.github.hmcts:idam-java-client:4.0.0'
     implementation group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '10.9.1'
 
     implementation group: 'org.flywaydb', name: 'flyway-database-postgresql'

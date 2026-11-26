@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import tools.jackson.core.JacksonException;
 import tools.jackson.databind.json.JsonMapper;
 import uk.gov.hmcts.reform.userprofileapi.config.ApplicationJsonMapper;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamErrorResponse;
@@ -54,7 +55,7 @@ public class JsonFeignResponseHelper {
 
     public static <T> Optional<T> decode(Response response, Optional<Class<T>> clazz) {
         Optional<T> result = Optional.empty();
-        if (clazz.isPresent()) {
+        if (clazz.isPresent() && response.body() != null) {
             try {
                 Optional<Collection<String>> encodings = Optional.ofNullable(response.headers()
                         .get("content-encoding"));
@@ -62,7 +63,9 @@ public class JsonFeignResponseHelper {
                         ? json.readValue(new GZIPInputStream(new BufferedInputStream(response.body().asInputStream())),
                         clazz.get())
                         : json.readValue(response.body().asReader(Charset.defaultCharset()), clazz.get()));
-            } catch (IOException e) {
+            } catch (IOException | JacksonException e) {
+                // Jackson 2 raised this as an IOException. Jackson 3 uses an unchecked exception
+                // for an empty body, which IDAM returns for several success and error statuses.
                 log.warn("{}:: Error could not decoded : {}", loggingComponentName, e.getLocalizedMessage());
             }
         }

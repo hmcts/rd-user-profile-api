@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import tools.jackson.core.JacksonException;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.json.JsonMapper;
 import uk.gov.hmcts.reform.userprofileapi.config.ApplicationJsonMapper;
@@ -31,10 +32,13 @@ public class JsonFeignResponseUtil {
     }
 
     public static Optional<Object> decode(Response response,  Object clazz) {
+        if (response.body() == null) {
+            return Optional.empty();
+        }
         try {
             return Optional.of(json.readValue(response.body().asReader(Charset.defaultCharset()),
                     (Class<Object>)clazz));
-        } catch (IOException e) {
+        } catch (IOException | JacksonException e) {
             return Optional.empty();
         }
     }
@@ -52,9 +56,11 @@ public class JsonFeignResponseUtil {
         Optional<Object> payload = Optional.empty();
 
         try {
-            payload = Optional.of(json.readValue(response.body().asReader(Charset.defaultCharset()), reference));
+            if (response.body() != null) {
+                payload = Optional.of(json.readValue(response.body().asReader(Charset.defaultCharset()), reference));
+            }
 
-        } catch (IOException ex) {
+        } catch (IOException | JacksonException ex) {
 
             log.error("error while reading the body", ex);
         }

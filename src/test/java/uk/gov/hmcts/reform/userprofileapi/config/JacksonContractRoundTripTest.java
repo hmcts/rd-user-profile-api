@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.userprofileapi.controller.request.UpdateUserDetails;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.IdamUserResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
+import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileWithRolesResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 import uk.gov.hmcts.reform.userprofileapi.resource.RoleName;
 import uk.gov.hmcts.reform.userprofileapi.resource.UpdateUserProfileData;
@@ -232,6 +233,26 @@ class JacksonContractRoundTripTest {
         assertThat(written.get("errorDescription").asString()).isEqualTo("email in invalid format");
         assertThat(written.get("timeStamp").asString()).isEqualTo("25-11-2026 10:00:00.000");
         assertThat(written.get("status").asInt()).isEqualTo(400);
+    }
+
+    @Test
+    void rolesResponseBindsFieldsInsteadOfTheDomainConstructor() {
+        String body = """
+                {
+                  "userIdentifier": "abc",
+                  "email": "person@example.com",
+                  "firstName": "Ann",
+                  "lastName": "Bee",
+                  "idamStatus": "ACTIVE",
+                  "roles": ["pui-case-manager"]
+                }
+                """;
+
+        UserProfileWithRolesResponse response = jsonMapper.readValue(body, UserProfileWithRolesResponse.class);
+
+        assertThat(response.getIdamId()).isEqualTo("abc");
+        assertThat(response.getEmail()).isEqualTo("person@example.com");
+        assertThat(response.getRoles()).containsExactly("pui-case-manager");
     }
 
     @Test

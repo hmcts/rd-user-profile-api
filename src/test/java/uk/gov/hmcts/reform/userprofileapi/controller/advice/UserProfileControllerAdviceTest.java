@@ -71,7 +71,34 @@ class UserProfileControllerAdviceTest {
             .customSerializationError(httpMessageNotReadableException);
 
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        assertThat(((ErrorResponse) responseEntity.getBody()).getErrorDescription())
+            .contains("field");
+    }
 
+    @Test
+    void test_handle_serialization_exception_when_cause_is_not_jackson() {
+        when(httpMessageNotReadableException.getCause()).thenReturn(new RuntimeException("not jackson"));
+
+        ResponseEntity<Object> responseEntity = advice
+            .customSerializationError(httpMessageNotReadableException);
+
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        assertThat(((ErrorResponse) responseEntity.getBody()).getErrorDescription())
+            .doesNotContain("field");
+    }
+
+    @Test
+    void test_handle_serialization_exception_when_jackson_path_is_empty() {
+        JacksonException jm = mock(JacksonException.class);
+        when(httpMessageNotReadableException.getCause()).thenReturn(jm);
+        when(jm.getPath()).thenReturn(Collections.emptyList());
+
+        ResponseEntity<Object> responseEntity = advice
+            .customSerializationError(httpMessageNotReadableException);
+
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        assertThat(((ErrorResponse) responseEntity.getBody()).getErrorDescription())
+            .doesNotContain("field");
     }
 
     @Test

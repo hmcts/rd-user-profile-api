@@ -40,7 +40,9 @@ class SmokeTest {
             assertThat(response.body().asString())
                     .contains("Welcome to the User Profile API");
         } else {
-            Assertions.fail();
+            Assertions.fail("Smoke GET / against " + targetInstance
+                    + " returned status=" + (response == null ? "null" : response.statusCode())
+                    + " body=" + (response == null ? "null" : response.body().asString()));
         }
     }
 }
