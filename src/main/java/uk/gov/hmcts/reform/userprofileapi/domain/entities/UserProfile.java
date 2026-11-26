@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -109,6 +110,7 @@ public class UserProfile {
     }
 
 
+    @JsonIgnore
     public void setStatus(UserProfileCreationData userProfileCreationData) {
         this.status = userProfileCreationData.getStatus();
     }
@@ -117,6 +119,7 @@ public class UserProfile {
         this.status = status;
     }
 
+    @JsonIgnore
     public void setRoles(IdamRolesInfo idamrolesInfo) {
         Optional.ofNullable(idamrolesInfo).ifPresent(
                 idamRolesInfo -> Optional.ofNullable(idamRolesInfo.getRoles())

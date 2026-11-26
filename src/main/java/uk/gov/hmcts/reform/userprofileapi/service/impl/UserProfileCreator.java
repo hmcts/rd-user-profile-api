@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.userprofileapi.service.impl;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import feign.Response;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -11,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import tools.jackson.core.type.TypeReference;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorConstants;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.IdamRegisterUserRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UpdateUserDetails;

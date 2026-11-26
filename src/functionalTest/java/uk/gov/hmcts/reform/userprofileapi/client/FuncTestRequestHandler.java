@@ -1,20 +1,21 @@
 package uk.gov.hmcts.reform.userprofileapi.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.rest.SerenityRest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import tools.jackson.databind.json.JsonMapper;
+import uk.gov.hmcts.reform.userprofileapi.config.ApplicationJsonMapper;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
 public class FuncTestRequestHandler {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final JsonMapper objectMapper = ApplicationJsonMapper.create();
 
     protected String baseUrl;
     protected String s2sToken;

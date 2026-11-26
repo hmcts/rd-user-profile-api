@@ -210,7 +210,7 @@ class ValidationHelperServiceTest {
 
     @Test
     void test_validateUserPersistedWithException_withInvalidHttpStatusCode() {
-        assertThrows(ErrorPersistingException.class, () -> sut.validateUserPersisted(HttpStatus.I_AM_A_TEAPOT));
+        assertThrows(ErrorPersistingException.class, () -> sut.validateUserPersisted(HttpStatus.NOT_IMPLEMENTED));
     }
 
 

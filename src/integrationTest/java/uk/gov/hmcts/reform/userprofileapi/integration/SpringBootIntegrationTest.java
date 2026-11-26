@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.userprofileapi.integration;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import net.serenitybdd.annotations.WithTag;
 import net.serenitybdd.annotations.WithTags;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,7 +9,9 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import tools.jackson.databind.json.JsonMapper;
 import uk.gov.hmcts.reform.userprofileapi.Application;
+import uk.gov.hmcts.reform.userprofileapi.config.ApplicationJsonMapper;
 import uk.gov.hmcts.reform.userprofileapi.integration.util.TestApplicationServer;
 import uk.gov.hmcts.reform.userprofileapi.integration.wiremock.WireMockContextInitializer;
 
@@ -28,10 +28,7 @@ public abstract class SpringBootIntegrationTest {
     @Autowired
     protected TestApplicationServer testApplicationServer;
 
-    public static ObjectMapper getObjectMapper() {
-
-        return new ObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
+    public static JsonMapper getObjectMapper() {
+        return ApplicationJsonMapper.create();
     }
 }

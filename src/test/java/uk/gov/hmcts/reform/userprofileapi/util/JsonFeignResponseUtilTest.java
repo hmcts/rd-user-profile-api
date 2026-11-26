@@ -1,12 +1,12 @@
 package uk.gov.hmcts.reform.userprofileapi.util;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import feign.Request;
 import feign.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
+import tools.jackson.core.type.TypeReference;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserProfileResponse;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 
@@ -64,6 +64,38 @@ class JsonFeignResponseUtilTest {
     }
 
     @Test
+    void testDecodeReturnsEmptyWhenBodyIsNull() {
+        when(responseMock.body()).thenReturn(null);
+
+        Optional<Object> actual = JsonFeignResponseUtil.decode(this.responseMock, String.class);
+
+        assertThat(actual).isEmpty();
+    }
+
+    @Test
+    void testToResponseEntityReturnsEmptyPayloadWhenBodyIsNull() {
+        when(responseMock.body()).thenReturn(null);
+
+        ResponseEntity<Object> actual = JsonFeignResponseUtil.toResponseEntity(this.responseMock,
+                new TypeReference<List<IdamFeignClient.User>>() {
+                });
+
+        assertThat(actual).isNotNull();
+        assertThat(actual.getBody()).isNull();
+        assertThat(actual.getStatusCode().value()).isEqualTo(statusCode);
+    }
+
+    @Test
+    void testDecodeReturnsEmptyWhenBodyIsEmpty() {
+        Response response = Response.builder().status(409).reason("Conflict").headers(new HashMap<>())
+                .body("", UTF_8).request(mock(Request.class)).build();
+
+        Optional<Object> actual = JsonFeignResponseUtil.decode(response, UserProfileResponse.class);
+
+        assertThat(actual).isEmpty();
+    }
+
+    @Test
     void privateConstructorTest() throws Exception {
         Constructor<JsonFeignResponseUtil> constructor = JsonFeignResponseUtil.class.getDeclaredConstructor();
         assertTrue(Modifier.isPrivate(constructor.getModifiers()));
@@ -115,12 +147,12 @@ class JsonFeignResponseUtilTest {
                 "content-length"));
         header.put("content-encoding", list);
 
-        MultiValueMap<String, String> responseHeader = JsonFeignResponseUtil.convertHeaders(header);
-        assertThat(responseHeader).isNotEmpty();
+        HttpHeaders responseHeader = JsonFeignResponseUtil.convertHeaders(header);
+        assertThat(responseHeader.isEmpty()).isFalse();
 
         Collection<String> emptylist = new ArrayList<>();
         header.put("content-encoding", emptylist);
-        MultiValueMap<String, String> responseHeader1 = JsonFeignResponseUtil.convertHeaders(header);
+        HttpHeaders responseHeader1 = JsonFeignResponseUtil.convertHeaders(header);
 
         assertThat(responseHeader1.get("content-encoding")).isEmpty();
     }
@@ -138,7 +170,7 @@ class JsonFeignResponseUtilTest {
 
         assertThat(entity).isNotNull();
         assertThat(entity.getStatusCode().value()).isEqualTo(200);
-        assertThat(entity.getHeaders()).isNotEmpty();
+        assertThat(entity.getHeaders().isEmpty()).isFalse();
         assertThat(((UserProfileResponse) entity.getBody()).getIdamId()).isEqualTo("1");
     }
 }

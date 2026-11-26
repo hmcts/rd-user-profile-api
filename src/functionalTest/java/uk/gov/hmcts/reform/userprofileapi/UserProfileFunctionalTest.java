@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.userprofileapi;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.annotations.WithTag;
@@ -15,6 +14,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import tools.jackson.databind.json.JsonMapper;
+import uk.gov.hmcts.reform.userprofileapi.config.ApplicationJsonMapper;
 import uk.gov.hmcts.reform.userprofileapi.controller.advice.ErrorResponse;
 import uk.gov.hmcts.reform.userprofileapi.controller.request.UserProfileDataRequest;
 import uk.gov.hmcts.reform.userprofileapi.controller.response.UserIdamStatusWithEmailResponse;
@@ -65,7 +66,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
     public static final String DELETE_USER_BY_ID_OR_EMAIL_PATTERN =
             "UserProfileController.deleteUserProfileByIdOrEmailPattern";
 
-    private ObjectMapper objectMapper;
+    private JsonMapper objectMapper;
     private static List<String> endpoints;
     private static UpdateUserProfileData updateUserProfileData;
     private static UserProfileCreationResponse activeUserProfile;
@@ -91,7 +92,7 @@ public class UserProfileFunctionalTest extends AbstractFunctional {
     }
 
     public void setUpTestData() {
-        objectMapper = new ObjectMapper();
+        objectMapper = ApplicationJsonMapper.create();
 
         endpoints = of("/v1/userprofile/1", "/v1/userprofile");
 

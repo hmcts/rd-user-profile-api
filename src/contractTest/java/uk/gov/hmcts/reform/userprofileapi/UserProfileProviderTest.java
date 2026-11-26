@@ -5,7 +5,7 @@ import au.com.dius.pact.provider.junit5.PactVerificationInvocationContextProvide
 import au.com.dius.pact.provider.junitsupport.Provider;
 import au.com.dius.pact.provider.junitsupport.State;
 import au.com.dius.pact.provider.junitsupport.loader.PactBroker;
-import au.com.dius.pact.provider.spring.junit5.MockMvcTestTarget;
+import au.com.dius.pact.provider.spring.spring7.Spring7MockMvcTestTarget;
 import com.google.common.collect.Maps;
 import feign.Request;
 import feign.RequestTemplate;
@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
@@ -57,7 +58,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith({SpringExtension.class, MockitoExtension.class})
 @Provider("rd_user_profile_api_service")
 @PactBroker(scheme = "${PACT_BROKER_SCHEME:http}", host = "${PACT_BROKER_URL:localhost}",
         port = "${PACT_BROKER_PORT:9292}")
@@ -97,7 +98,7 @@ public class UserProfileProviderTest {
 
     @BeforeEach
     void beforeCreate(PactVerificationContext context) {
-        MockMvcTestTarget testTarget = new MockMvcTestTarget();
+        Spring7MockMvcTestTarget testTarget = new Spring7MockMvcTestTarget();
         System.getProperties().setProperty("pact.verifier.publishResults", "true");
         testTarget.setControllers(new UserProfileController(userProfileService, idamService,
                 validationService, "preview"));

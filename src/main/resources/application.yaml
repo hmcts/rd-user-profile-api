@@ -15,6 +15,9 @@ management:
 spring:
   application:
     name: User Profile API
+  # Boot's Jackson 3 JsonMapper owns MVC and Feign JSON. JacksonConfiguration applies the
+  # inclusion, date, enum, unknown-property, and omitted-primitive settings. Do not set
+  # spring.http.converters.preferred-json-mapper: jackson2 or spring.jackson.use-jackson2-defaults.
   jackson.date-format: yyyy-MM-dd
   flyway:
     enabled: true
