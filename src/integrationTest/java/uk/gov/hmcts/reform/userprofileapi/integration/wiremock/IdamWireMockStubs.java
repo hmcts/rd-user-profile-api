@@ -256,8 +256,8 @@ public final class IdamWireMockStubs {
                         .withBody(body)));
     }
 
-    public static void mockWithDeleteRoleSuccess() {
-        idamMockServer.stubFor(WireMock.delete(urlMatching("/api/v1/users/.*"))
+    public static void mockWithDeleteRoleSuccess(String userId, String role) {
+        idamMockServer.stubFor(WireMock.delete(urlPathEqualTo("/api/v1/users/" + userId + "/roles/" + role))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withStatus(200)
@@ -266,7 +266,9 @@ public final class IdamWireMockStubs {
 
     public static void mockWithDeleteRoleFailure(HttpStatus httpStatus,
                                                  boolean isBodyRequired,
-                                                 boolean isUnassignedRole) {
+                                                 boolean isUnassignedRole,
+                                                 String userId,
+                                                 String... roles) {
         String body = null;
 
         if (httpStatus == HttpStatus.PRECONDITION_FAILED && isBodyRequired) {
@@ -291,8 +293,10 @@ public final class IdamWireMockStubs {
                     .withBody(body);
         }
 
-        idamMockServer.stubFor(WireMock.delete(urlMatching("/api/v1/users/.*"))
-                .willReturn(response));
+        for (String role : roles) {
+            idamMockServer.stubFor(WireMock.delete(urlPathEqualTo("/api/v1/users/" + userId + "/roles/" + role))
+                    .willReturn(response));
+        }
     }
 
     public static void mockWithGetSuccess() throws JsonProcessingException {
