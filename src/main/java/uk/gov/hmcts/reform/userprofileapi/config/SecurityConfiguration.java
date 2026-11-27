@@ -22,10 +22,11 @@ import org.springframework.security.oauth2.jwt.JwtDecoders;
 import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
+import uk.gov.hmcts.reform.authorisation.ServiceAuthorisationApi;
 import uk.gov.hmcts.reform.authorisation.filters.ServiceAuthFilter;
-import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 import uk.gov.hmcts.reform.userprofileapi.config.security.IdamSecurityProperties;
 import uk.gov.hmcts.reform.userprofileapi.oidc.JwtGrantedAuthoritiesConverter;
 
@@ -83,10 +84,14 @@ public class SecurityConfiguration {
 
     @Bean
     @Order(1)
-    public SecurityFilterChain profileMatchFilterChain(HttpSecurity http, AuthTokenValidator tokenValidator)
-            throws Exception {
+    public SecurityFilterChain profileMatchFilterChain(HttpSecurity http,
+                                                       ServiceAuthorisationApi serviceAuthorisationApi,
+                                                       JwtDecoder jwtDecoder,
+                                                       ProfileMatchAuthorisation authorisation) throws Exception {
+        var provider = new JwtAuthenticationProvider(jwtDecoder);
+        provider.setJwtAuthenticationConverter(jwtAuthenticationConverter);
         http.securityMatcher("/v1/userprofile/users/match")
-                .addFilterBefore(new ServiceAuthFilter(tokenValidator, List.of("rd_professional_api")),
+                .addFilterBefore(authorisation.serviceFilter(serviceAuthorisationApi),
                         BearerTokenAuthenticationFilter.class)
                 .addFilterAfter(new ProfileMatchBodyFilter(),
                         org.springframework.security.web.access.intercept.AuthorizationFilter.class)
@@ -96,7 +101,8 @@ public class SecurityConfiguration {
                 .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth.anyRequest().hasAuthority("prd-admin"))
                 .oauth2ResourceServer(auth -> auth.authenticationEntryPoint(restAuthenticationEntryPoint)
-                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)));
+                        .authenticationManagerResolver(request -> authentication ->
+                                authorisation.await(request, () -> provider.authenticate(authentication))));
         return http.build();
     }
 

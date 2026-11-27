@@ -21,7 +21,7 @@ public interface UserProfileRepository extends CrudRepository<UserProfile, Long>
             SELECT idam_id AS "userIdentifier", first_name AS "firstName", last_name AS "lastName",
                    email_address AS email,
                    lower(first_name || ' ' || last_name) LIKE lower(:pattern) ESCAPE '!' AS "nameMatches"
-            FROM dbuserprofile.user_profile
+            FROM {h-schema}user_profile
             WHERE idam_id IN (:userIds) AND idam_status IS DISTINCT FROM 'DELETED'
             """, nativeQuery = true)
     List<UserProfileMatch> matchProfiles(@Param("userIds") List<String> userIds, @Param("pattern") String pattern);

@@ -10,13 +10,20 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCache;
+import org.springframework.cache.caffeine.CaffeineCacheManager;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.hmcts.reform.userprofileapi.exception.UnauthorizedException;
 
 import java.util.HashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -92,5 +99,53 @@ class IdamRepositoryTest {
         assertThat(thrown.getMessage()).contains("User is not authorized");
 
 
+    }
+
+    @Test
+    void concurrentRequestsShareOneColdTokenLookup() throws Exception {
+        var firstLoadStarted = new CountDownLatch(1);
+        var releaseLoad = new CountDownLatch(1);
+        var overlappingLoad = new CountDownLatch(1);
+        var secondRequestStarted = new CountDownLatch(1);
+        UserInfo userInfo = mock(UserInfo.class);
+        when(idamClient.getUserInfo("Bearer same-token")).thenAnswer(invocation -> {
+            if (firstLoadStarted.getCount() == 0) {
+                overlappingLoad.countDown();
+            } else {
+                firstLoadStarted.countDown();
+                assertThat(releaseLoad.await(5, TimeUnit.SECONDS)).isTrue();
+            }
+            return userInfo;
+        });
+
+        try (var context = new AnnotationConfigApplicationContext();
+             var requests = Executors.newFixedThreadPool(2)) {
+            context.register(Caching.class, IdamRepository.class);
+            context.registerBean(IdamClient.class, () -> idamClient);
+            context.registerBean(CacheManager.class, () -> new CaffeineCacheManager("token"));
+            context.refresh();
+            IdamRepository repository = context.getBean(IdamRepository.class);
+            var first = requests.submit(() -> repository.getUserInfo("same-token"));
+            try {
+                assertThat(firstLoadStarted.await(5, TimeUnit.SECONDS)).isTrue();
+                final var second = requests.submit(() -> {
+                    secondRequestStarted.countDown();
+                    return repository.getUserInfo("same-token");
+                });
+                assertThat(secondRequestStarted.await(5, TimeUnit.SECONDS)).isTrue();
+                assertThat(overlappingLoad.await(500, TimeUnit.MILLISECONDS)).isFalse();
+                releaseLoad.countDown();
+                assertThat(first.get(5, TimeUnit.SECONDS)).isSameAs(userInfo);
+                assertThat(second.get(5, TimeUnit.SECONDS)).isSameAs(userInfo);
+                verify(idamClient).getUserInfo("Bearer same-token");
+            } finally {
+                releaseLoad.countDown();
+            }
+        }
+    }
+
+    @TestConfiguration(proxyBeanMethods = false)
+    @EnableCaching
+    static class Caching {
     }
 }

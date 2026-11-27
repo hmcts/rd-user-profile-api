@@ -31,7 +31,7 @@ public class IdamRepository {
         this.cacheManager = cacheManager;
     }
 
-    @Cacheable(value = "token")
+    @Cacheable(value = "token", sync = true)
     public UserInfo getUserInfo(String jwtToken) {
         CaffeineCache caffeineCache = (CaffeineCache) cacheManager.getCache("token");
         Cache<Object, Object> nativeCache = requireNonNull(caffeineCache).getNativeCache();
