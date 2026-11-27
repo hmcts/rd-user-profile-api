@@ -1,0 +1,193 @@
+{
+  "consumer": {
+    "name": "rd_professional_api"
+  },
+  "interactions": [
+    {
+      "description": "Scoped name match classifies match nonmatch and unavailable",
+      "providerStates": [
+        {
+          "name": "Scoped name match classifies match nonmatch and unavailable"
+        }
+      ],
+      "request": {
+        "body": {
+          "fullNameContains": "smith",
+          "userIds": [
+            "synthetic-a",
+            "synthetic-b",
+            "synthetic-c"
+          ]
+        },
+        "headers": {
+          "Authorization": "Bearer test-token",
+          "Content-Type": "application/json",
+          "ServiceAuthorization": "Bearer s2s-token",
+          "X-Organisation-Search-Deadline": "4102444800000"
+        },
+        "matchingRules": {
+          "header": {
+            "X-Organisation-Search-Deadline": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9]{13}"
+                }
+              ]
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/v1/userprofile/users/match"
+      },
+      "response": {
+        "body": {
+          "matchedProfiles": [
+            {
+              "email": "ada@example.invalid",
+              "firstName": "Ada",
+              "lastName": "Smith",
+              "userIdentifier": "synthetic-a"
+            }
+          ],
+          "unavailableUserIds": [
+            "synthetic-c"
+          ]
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "Scoped name match returns successful zero matches",
+      "providerStates": [
+        {
+          "name": "Scoped name match returns successful zero matches"
+        }
+      ],
+      "request": {
+        "body": {
+          "fullNameContains": "absent",
+          "userIds": [
+            "synthetic-a",
+            "synthetic-b",
+            "synthetic-c"
+          ]
+        },
+        "headers": {
+          "Authorization": "Bearer test-token",
+          "Content-Type": "application/json",
+          "ServiceAuthorization": "Bearer s2s-token",
+          "X-Organisation-Search-Deadline": "4102444800000"
+        },
+        "matchingRules": {
+          "header": {
+            "X-Organisation-Search-Deadline": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9]{13}"
+                }
+              ]
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/v1/userprofile/users/match"
+      },
+      "response": {
+        "body": {
+          "matchedProfiles": [
+
+          ],
+          "unavailableUserIds": [
+            "synthetic-c"
+          ]
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "Scoped page display partitions all requested ids",
+      "providerStates": [
+        {
+          "name": "Scoped page display partitions all requested ids"
+        }
+      ],
+      "request": {
+        "body": {
+          "fullNameContains": "",
+          "userIds": [
+            "synthetic-a",
+            "synthetic-b",
+            "synthetic-c"
+          ]
+        },
+        "headers": {
+          "Authorization": "Bearer test-token",
+          "Content-Type": "application/json",
+          "ServiceAuthorization": "Bearer s2s-token",
+          "X-Organisation-Search-Deadline": "4102444800000"
+        },
+        "matchingRules": {
+          "header": {
+            "X-Organisation-Search-Deadline": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9]{13}"
+                }
+              ]
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/v1/userprofile/users/match"
+      },
+      "response": {
+        "body": {
+          "matchedProfiles": [
+            {
+              "email": "ada@example.invalid",
+              "firstName": "Ada",
+              "lastName": "Smith",
+              "userIdentifier": "synthetic-a"
+            },
+            {
+              "email": "grace@example.invalid",
+              "firstName": "Grace",
+              "lastName": "Jones",
+              "userIdentifier": "synthetic-b"
+            }
+          ],
+          "unavailableUserIds": [
+            "synthetic-c"
+          ]
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "status": 200
+      }
+    }
+  ],
+  "metadata": {
+    "pact-jvm": {
+      "version": "4.6.17"
+    },
+    "pactSpecification": {
+      "version": "3.0.0"
+    }
+  },
+  "provider": {
+    "name": "rd_user_profile_api_service"
+  }
+}

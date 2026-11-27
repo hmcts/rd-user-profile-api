@@ -117,25 +117,35 @@ class JwtGrantedAuthoritiesConverterTest {
     }
 
     @Test
-    void test_shouldReturnUserInfo() {
-        List<String> roles = new ArrayList<>();
-        roles.add(TestConstants.PUI_CASE_MANAGER);
-        roles.add(TestConstants.PUI_FINANCE_MANAGER);
-
-        when(jwtMock.hasClaim(anyString())).thenReturn(true);
-        when(jwtMock.getClaim(anyString())).thenReturn("access_token");
-        when(jwtMock.getTokenValue()).thenReturn("access_token");
-        when(userInfoMock.getRoles()).thenReturn(roles);
-        when(idamRepositoryMock.getUserInfo(anyString())).thenReturn(userInfoMock);
-
-        converter.convert(jwtMock);
-        UserInfo userInfo = converter.getUserInfo();
-
-        assertThat(userInfo).isNotNull();
-        verify(jwtMock, times(1)).hasClaim(anyString());
-        verify(jwtMock, times(1)).getClaim(anyString());
-        verify(jwtMock, times(1)).getTokenValue();
-        verify(userInfoMock, times(1)).getRoles();
-        verify(idamRepositoryMock, times(1)).getUserInfo(anyString());
+    void overlappingCallersKeepTheirOwnRoles() throws Exception {
+        UserInfo admin = mock(UserInfo.class);
+        UserInfo ordinary = mock(UserInfo.class);
+        when(admin.getRoles()).thenReturn(List.of("prd-admin"));
+        when(ordinary.getRoles()).thenReturn(List.of("caseworker"));
+        var barrier = new java.util.concurrent.CyclicBarrier(2);
+        when(idamRepositoryMock.getUserInfo(anyString())).thenAnswer(invocation -> {
+            barrier.await(5, java.util.concurrent.TimeUnit.SECONDS);
+            return "admin".equals(invocation.getArgument(0)) ? admin : ordinary;
+        });
+        try (var pool = java.util.concurrent.Executors.newFixedThreadPool(2)) {
+            var tasks = new ArrayList<java.util.concurrent.Callable<Void>>();
+            for (String token : List.of("admin", "ordinary")) {
+                tasks.add(() -> {
+                    var jwt = Jwt.withTokenValue(token).header("alg", "RS256")
+                            .claim("tokenName", "access_token").build();
+                    var snapshots = new ArrayList<Collection<GrantedAuthority>>();
+                    for (int attempt = 0; attempt < 100; attempt++) {
+                        snapshots.add(converter.convert(jwt));
+                    }
+                    assertThat(snapshots).allSatisfy(authorities -> assertThat(authorities)
+                            .extracting(GrantedAuthority::getAuthority)
+                            .containsExactly("admin".equals(token) ? "prd-admin" : "caseworker"));
+                    return null;
+                });
+            }
+            for (var future : pool.invokeAll(tasks)) {
+                future.get(10, java.util.concurrent.TimeUnit.SECONDS);
+            }
+        }
     }
 }
