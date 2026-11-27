@@ -40,9 +40,8 @@ public class IdamServiceImpl implements IdamService {
     @Override
     public IdamRegistrationInfo registerUser(IdamRegisterUserRequest requestData) {
         IdamRegistrationInfo result;
-        try  {
-            log.debug("in Idam to create user profile");
-            Response response = idamClient.createUserProfile(requestData);
+        log.debug("in Idam to create user profile");
+        try (Response response = idamClient.createUserProfile(requestData)) {
             ResponseEntity<Object> entity = JsonFeignResponseHelper.toResponseEntity(response,
                     getResponseMapperClass(response, null));
             result = new IdamRegistrationInfo(entity);

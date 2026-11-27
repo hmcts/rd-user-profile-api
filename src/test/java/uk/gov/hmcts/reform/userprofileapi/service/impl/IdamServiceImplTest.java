@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.userprofileapi.domain.IdamRegistrationInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.IdamRolesInfo;
 import uk.gov.hmcts.reform.userprofileapi.domain.feign.IdamFeignClient;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -52,20 +53,20 @@ class IdamServiceImplTest {
             .body("{\"idamId\": 1}", UTF_8).request(request).build();
 
     @Test
-    void test_RegisterUser() {
+    void test_RegisterUser() throws IOException {
         IdamRegisterUserRequest dataMock = Mockito.mock(IdamRegisterUserRequest.class);
-        Response responseMock = Mockito.mock(Response.class);
+        Response.Body responseBody = mock(Response.Body.class);
+        Response response = Response.builder().request(request).status(CREATED.getStatus())
+                .body(responseBody).build();
 
-        when(idamFeignClientMock.createUserProfile(dataMock)).thenReturn(responseMock);
-        when(responseMock.status()).thenReturn(CREATED.getStatus());
-        when(responseMock.headers()).thenReturn(headerData);
+        when(idamFeignClientMock.createUserProfile(dataMock)).thenReturn(response);
 
         IdamRegistrationInfo idamId = sut.registerUser(dataMock);
 
         assertThat(idamId.getIdamRegistrationResponse()).isNotNull();
         assertThat(idamId.getIdamRegistrationResponse().value()).isEqualTo(HttpStatus.ACCEPTED.value());
 
-        verify(idamFeignClientMock, times(1)).createUserProfile(any());
+        verify(responseBody).close();
     }
 
     @Test

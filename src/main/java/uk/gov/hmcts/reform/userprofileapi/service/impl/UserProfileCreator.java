@@ -122,34 +122,35 @@ public class UserProfileCreator implements ResourceCreator<UserProfileCreationDa
         String emailSearchQuery = emailKey + email;
         Map<String, String> formParams = new HashMap<>();
         formParams.put("query", emailSearchQuery);
-        Response response = idamFeignClient.getUserFeed(formParams);
-        logIdamResponse(response);
-        if (response.status() == 200) {
-            ResponseEntity<Object> responseEntity = JsonFeignResponseUtil.toResponseEntity(response,
-                    new TypeReference<Set<IdamFeignClient.User>>() {
-                    });
-            Set<IdamFeignClient.User> users = (Set<IdamFeignClient.User>) Objects.requireNonNull(
-                    responseEntity.getBody());
-            if (!CollectionUtils.isEmpty(users)) {
-                IdamFeignClient.User user;
-                if ((user = users.stream().findFirst().orElse(null)) != null
-                        && !userProfile.getIdamId().equals(user.getId())) {
-                    log.info("Updating Idam Id in user profile");
-                    userProfile.setIdamId(user.getId());
-                    userProfile.setIdamRegistrationResponse(HttpStatus.CREATED.value());
-                    userProfile.setStatus(IdamStatus.ACTIVE);
-                    saveUserProfile(userProfile);
-                    return userProfile;
-                } else if (ORIGIN_SRD.equals(origin)
-                        && (user = users.stream().findFirst().orElse(null)) != null
-                        && userProfile.getIdamId().equals(user.getId())
-                        && user.isActive()) {
-                    userProfile.setIdamRegistrationResponse(HttpStatus.CREATED.value());
-                    userProfile.setStatus(IdamStatus.ACTIVE);
-                    saveUserProfile(userProfile);
-                    return userProfile;
-                }
+        try (Response response = idamFeignClient.getUserFeed(formParams)) {
+            logIdamResponse(response);
+            if (response.status() == 200) {
+                ResponseEntity<Object> responseEntity = JsonFeignResponseUtil.toResponseEntity(response,
+                        new TypeReference<Set<IdamFeignClient.User>>() {
+                        });
+                Set<IdamFeignClient.User> users = (Set<IdamFeignClient.User>) Objects.requireNonNull(
+                        responseEntity.getBody());
+                if (!CollectionUtils.isEmpty(users)) {
+                    IdamFeignClient.User user;
+                    if ((user = users.stream().findFirst().orElse(null)) != null
+                            && !userProfile.getIdamId().equals(user.getId())) {
+                        log.info("Updating Idam Id in user profile");
+                        userProfile.setIdamId(user.getId());
+                        userProfile.setIdamRegistrationResponse(HttpStatus.CREATED.value());
+                        userProfile.setStatus(IdamStatus.ACTIVE);
+                        saveUserProfile(userProfile);
+                        return userProfile;
+                    } else if (ORIGIN_SRD.equals(origin)
+                            && (user = users.stream().findFirst().orElse(null)) != null
+                            && userProfile.getIdamId().equals(user.getId())
+                            && user.isActive()) {
+                        userProfile.setIdamRegistrationResponse(HttpStatus.CREATED.value());
+                        userProfile.setStatus(IdamStatus.ACTIVE);
+                        saveUserProfile(userProfile);
+                        return userProfile;
+                    }
 
+                }
             }
         }
         return registerReInvitedUserInSidam(profileData, userProfile);
