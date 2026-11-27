@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.userprofileapi.resource.UserProfileCreationData;
 import uk.gov.hmcts.reform.userprofileapi.service.IdamService;
 import uk.gov.hmcts.reform.userprofileapi.service.ValidationHelperService;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -456,19 +457,14 @@ class UserProfileCreatorTest {
     }
 
     @Test
-    void test_reInvite_user_successfully() throws JsonProcessingException {
+    void test_reInvite_user_successfully() throws IOException {
         when(idamService.registerUser(any())).thenReturn(idamRegistrationInfo);
         when(userProfileRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(userProfile));
         when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);
         when(validationHelperService.validateReInvitedUser(any(), eq(null))).thenReturn(userProfile);
-        IdamFeignClient.User userResponse = new IdamFeignClient.User();
-        userResponse.setId("1234");
-        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
-                false);
-        String body = mapper.writeValueAsString(Set.of(userResponse));
-
-        Response userProResponse = Response.builder().request(mock(Request.class)).body(body,
-                Charset.defaultCharset()).status(400).build();
+        Response.Body lookupBody = mock(Response.Body.class);
+        Response userProResponse = Response.builder().request(mock(Request.class))
+                .status(400).body(lookupBody).build();
 
         when(idamFeignClient.getUserFeed(any())).thenReturn(userProResponse);
 
@@ -477,7 +473,8 @@ class UserProfileCreatorTest {
         assertThat(response).usingRecursiveComparison().isEqualTo(userProfile);
         assertThat(response.getIdamRegistrationResponse()).isEqualTo(CREATED.value());
 
-        InOrder inOrder = inOrder(idamService, userProfileRepository);
+        InOrder inOrder = inOrder(lookupBody, idamService, userProfileRepository);
+        inOrder.verify(lookupBody).close();
         inOrder.verify(idamService, times(1)).registerUser(any(IdamRegisterUserRequest.class));
         inOrder.verify(userProfileRepository, times(0)).findByEmail(any(String.class));
         inOrder.verify(userProfileRepository, times(1)).save(any(UserProfile.class));

@@ -114,7 +114,6 @@ class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTe
         mockWithGetSuccess(userId, true);
         mockWithUpdateRolesSuccess(userId);
         mockWithUpdateRolesSuccess(userId);
-        mockWithDeleteRoleSuccess();
         UserProfileCreationData data = buildCreateUserProfileData();
 
         UserProfileCreationResponse createdResource =
@@ -146,6 +145,7 @@ class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTe
 
         UpdateUserProfileData userRoles1 = new UpdateUserProfileData();
         RoleName role = new RoleName("pui-case-manager");
+        mockWithDeleteRoleSuccess(userId, role.getName());
         Set<RoleName> rolesDelete = new HashSet<>();
         rolesDelete.add(role);
         userRoles1.setRolesDelete(rolesDelete);
@@ -240,7 +240,8 @@ class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTe
         String userId = persistedUserProfile.getIdamId();
         assertThat(userId).isNotNull();
 
-        mockWithDeleteRoleFailure(HttpStatus.PRECONDITION_FAILED, isBodyRequired, isUnassignedRole);
+        mockWithDeleteRoleFailure(HttpStatus.PRECONDITION_FAILED, isBodyRequired, isUnassignedRole,
+                userId, role1.getName(), role2.getName());
 
         UpdateUserProfileData userRoles = new UpdateUserProfileData();
 
@@ -258,7 +259,10 @@ class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTe
         );
 
         userProfileRolesResponse.getRoleDeletionResponse().forEach(roleDeletionResponse -> {
-            assertThat(roleDeletionResponse.getIdamStatusCode()).isEqualTo(statusCode);
+            assertThat(roleDeletionResponse.getIdamStatusCode())
+                    .as("IDAM response for role %s (%s)", roleDeletionResponse.getRoleName(),
+                            roleDeletionResponse.getIdamMessage())
+                    .isEqualTo(statusCode);
             assertThat(roleDeletionResponse.getIdamMessage())
                     .isEqualTo(expectedErrorMessage);
         });
@@ -279,7 +283,8 @@ class AddAndDeleteRolesWithIdamIntTest extends AuthorizationEnabledIntegrationTe
         String userId = persistedUserProfile.getIdamId();
         assertThat(userId).isNotNull();
 
-        mockWithDeleteRoleFailure(HttpStatus.INTERNAL_SERVER_ERROR, isBodyRequired, isUnassignedRole);
+        mockWithDeleteRoleFailure(HttpStatus.INTERNAL_SERVER_ERROR, isBodyRequired, isUnassignedRole,
+                userId, role1.getName(), role2.getName());
 
         UpdateUserProfileData userRoles = new UpdateUserProfileData();
 

@@ -11,6 +11,7 @@ import feign.Request;
 import feign.RequestTemplate;
 import feign.Response;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -95,13 +96,21 @@ public class UserProfileProviderTest {
         context.verifyInteraction();
     }
 
+    private final UserProfileMatchProviderStates match = new UserProfileMatchProviderStates();
+
     @BeforeEach
     void beforeCreate(PactVerificationContext context) {
         MockMvcTestTarget testTarget = new MockMvcTestTarget();
         System.getProperties().setProperty("pact.verifier.publishResults", "true");
         testTarget.setControllers(new UserProfileController(userProfileService, idamService,
-                validationService, "preview"));
+                validationService, "preview"), match.controller());
         context.setTarget(testTarget);
+        context.addStateChangeHandlers(match);
+    }
+
+    @AfterEach
+    void closeMatcher() {
+        match.closeMatcher();
     }
 
     @State({"A user profile with roles get request is submitted with valid Id"})

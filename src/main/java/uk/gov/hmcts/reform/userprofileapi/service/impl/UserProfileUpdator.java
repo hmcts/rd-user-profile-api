@@ -161,26 +161,20 @@ public class UserProfileUpdator implements ResourceUpdator<UpdateUserProfileData
 
     @SuppressWarnings("unchecked")
     private RoleDeletionResponse deleteRolesInIdam(String userId, String roleName, UserProfile userProfile) {
-        ResponseEntity<Object> responseEntity;
-        Response response = null;
-        try  {
-            response = idamClient.deleteUserRole(userId, roleName);
-            responseEntity = JsonFeignResponseHelper.toResponseEntity(response, getResponseMapperClass(response, null));
-        } catch (FeignException ex) {
-            responseEntity = status(getHttpStatusFromFeignException(ex).value()).build();
-            auditService.persistAudit(HttpStatus.valueOf(responseEntity.getStatusCode().value()),
-                    userProfile, ResponseSource.API);
-        }
-        RoleDeletionResponse result = new RoleDeletionResponse(roleName, responseEntity);
-        Optional<Response> respOptional = Optional.ofNullable(response);
-        if (respOptional.isPresent()) {
-            HttpStatus httpStatus = HttpStatus.valueOf(response.status());
-            if (httpStatus.is5xxServerError()) {
+        try (Response response = idamClient.deleteUserRole(userId, roleName)) {
+            ResponseEntity<Object> responseEntity = JsonFeignResponseHelper.toResponseEntity(response,
+                    getResponseMapperClass(response, null));
+            var result = new RoleDeletionResponse(roleName, responseEntity);
+            if (HttpStatus.valueOf(response.status()).is5xxServerError()) {
                 result.setIdamStatusCode(String.valueOf(HttpStatus.UNAUTHORIZED.value()));
                 result.setIdamMessage(IdamStatusResolver.IDAM_5XX_ERROR_RESPONSE);
             }
+            return result;
+        } catch (FeignException ex) {
+            HttpStatus httpStatus = getHttpStatusFromFeignException(ex);
+            auditService.persistAudit(httpStatus, userProfile, ResponseSource.API);
+            return new RoleDeletionResponse(roleName, status(httpStatus).build());
         }
-        return result;
     }
 
     public HttpStatus getHttpStatusFromFeignException(FeignException ex) {

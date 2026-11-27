@@ -469,24 +469,17 @@ class UserProfileUpdatorTest {
         roles.add(roleName1);
 
         updateUserProfileData.setRolesDelete(roles);
-        RoleDeletionResponse roleDeletionResponse = new RoleDeletionResponse();
-        roleDeletionResponse.setRoleName("pui-case-manager");
-        roleDeletionResponse.setIdamStatusCode(HttpStatus.OK.toString());
-        roleDeletionResponse.setIdamMessage("Success");
-
-        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
-                false);
-        String body = mapper.writeValueAsString(roleDeletionResponse);
-
         when(userProfileRepositoryMock.findByIdamId(any(String.class))).thenReturn(Optional.of(userProfile));
 
+        Response.Body body = mock(Response.Body.class);
         Response response = Response.builder().request(Request.create(Request.HttpMethod.DELETE, "",
-                new HashMap<>(), Request.Body.empty(), null)).body(body,
-                Charset.defaultCharset()).status(200).build();
+                new HashMap<>(), Request.Body.empty(), null)).body(body).status(200).build();
 
         when(idamFeignClientMock.deleteUserRole("1234", "pui-case-manager")).thenReturn(response);
 
-        return sut.updateRoles(updateUserProfileData, userProfile.getIdamId());
+        UserProfileRolesResponse result = sut.updateRoles(updateUserProfileData, userProfile.getIdamId());
+        verify(body).close();
+        return result;
     }
 
     @Test
